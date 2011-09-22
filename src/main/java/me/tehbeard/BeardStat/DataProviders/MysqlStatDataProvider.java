@@ -187,7 +187,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		sqlFlusher(HashMap<String,PlayerStatBlob> toWrite){
 			this.toWrite = toWrite;
 		}
-		@Override
 		public void run() {
 			BeardStat.printDebugCon("[Writing to database]");
 

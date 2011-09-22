@@ -4,4 +4,12 @@
   <artifactId>me.tehbeard.BeardStat</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>BeardStat</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.bukkit</groupId>
+  		<artifactId>bukkit</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<scope>import</scope>
+  	</dependency>
+  </dependencies>
 </project>

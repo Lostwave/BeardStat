@@ -101,7 +101,7 @@ public class EntityStatCollector implements IStatCollector {
 			PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills", entity.getClass().getSimpleName().replace("Craft", "")).incrementStat(1);
 		}				
 		//ENTITY KILLS PLAYER
-		if((entity instanceof Player) && !(attacker instanceof Player)){
+		if((entity instanceof Player) && !(attacker instanceof Player) && attacker !=null){
 			PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",attacker.getClass().getSimpleName().replace("Craft", "")).incrementStat(1);
 			BeardStat.printDebugCon("Death by entity for player logged");
 			BeardStat.printDebugCon("" + attacker.getClass().getSimpleName().replace("Craft", ""));

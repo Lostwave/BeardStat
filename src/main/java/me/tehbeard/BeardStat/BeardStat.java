@@ -11,7 +11,6 @@ import me.tehbeard.BeardStat.StatCollectors.*;
 import me.tehbeard.BeardStat.commands.*;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.listeners.*;
-import net.minecraft.server.World;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,11 +21,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 /**
- * BeardStat Statistic's tracking for the gentlemen server
+ * BeardStat Statistic's tracking for the gentleman server
  * @author James
  *
  */
@@ -38,10 +35,9 @@ public class BeardStat extends JavaPlugin {
 	public static HashMap<String,Long> loginTimes = new HashMap<String,Long>();
 	private static final String PERM_PREFIX = "stat";
 
-	public static WorldEditPlugin we = null;
 	public static boolean hasPermission(Player player,String node){
 
-		return (player.hasPermission(PERM_PREFIX + "." + node) || player.isOp());
+		return player.hasPermission(PERM_PREFIX + "." + node);
 
 
 	}
@@ -58,7 +54,6 @@ public class BeardStat extends JavaPlugin {
 		}
 	}
 
-	@Override
 	public void onDisable() {
 		//flush database to cache
 
@@ -71,10 +66,8 @@ public class BeardStat extends JavaPlugin {
 		self = null;
 	}
 
-	@Override
 	public void onEnable() {
 
-		we = (WorldEditPlugin)getServer().getPluginManager().getPlugin("WorldEdit");
 		
 		self = this;
 		// TODO Auto-generated method stub
@@ -228,12 +221,23 @@ public class BeardStat extends JavaPlugin {
 
 	public class dbFlusher implements Runnable{
 
-		@Override
 		public void run() {
 			BeardStat.printCon("Flushing to database.");
 			PlayerStatManager.clearCache(true);
 			BeardStat.printCon("flush completed");
 		}
 
+	}
+	/**
+	 * Returns length of current session in memory
+	 * @param player
+	 * @return
+	 */
+	public int sessionTime(String player){
+		if( BeardStat.loginTimes.containsKey(player)){
+			return Integer.parseInt(""+BeardStat.loginTimes.get(player)/1000L);
+			
+		}
+		return 0;
 	}
 }

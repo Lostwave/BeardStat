@@ -163,9 +163,15 @@ public class StatPlayerListener extends PlayerListener {
 	}
 
 	private void calc_timeonline(String player){
+		if( BeardStat.loginTimes.containsKey(player)){
 		long seconds = ((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L;
 		PlayerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 		BeardStat.loginTimes.remove(player);		
+		}
+		else
+		{
+			BeardStat.printDebugCon("Attempted to calculate time for a player who doesn't have a record!");
+		}
 	}
 
 

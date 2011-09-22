@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public class playedOtherCommand implements CommandExecutor {
 
-	@Override
+	
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
 			String[] args) {
 		Player pp = null ;

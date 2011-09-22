@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 
 public class playedCommand implements CommandExecutor {
 
-	@Override
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
 			String[] args) {
 		if(sender instanceof Player){
