@@ -43,12 +43,15 @@ public class statCommand implements CommandExecutor {
 								}
 								else
 								{
+
 									sender.sendMessage(msg);
+									msg="";
 									break;
 								}
 							}
+							if(!msg.equals("")){
 							sender.sendMessage(msg);
-							msg="";
+							msg="";}
 						}
 						return true;
 						
