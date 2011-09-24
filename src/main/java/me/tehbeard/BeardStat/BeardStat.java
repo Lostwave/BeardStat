@@ -29,6 +29,7 @@ import org.bukkit.util.config.Configuration;
  */
 public class BeardStat extends JavaPlugin {
 
+
 	public static Configuration config;
 	public static BeardStat self;
 	private int runner;

@@ -68,7 +68,7 @@ public class PlayerStatCollector implements IStatCollector {
 	}
 
 	public void onPlayerPortal(Player player,Location to,Location  From){
-
+		PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","portal").incrementStat(1);
 	}
 
 	public void onPlayerTeleport(Player player,Location to,Location  From){
