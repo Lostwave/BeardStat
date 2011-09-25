@@ -52,8 +52,10 @@ public class EntityStatCollector implements IStatCollector {
 		BeardStat.printDebugCon("entity death collector Fired");//Type.ENTITY_DEATH
 		// TODO Auto-generated method stub
 		EntityDamageEvent event = entity.getLastDamageCause();
-		DamageCause cause = event.getCause();
-
+		DamageCause cause = null;
+		if(event!=null){
+		cause = event.getCause();
+		}
 
 		Entity attacker = null;
 		Block block = null;

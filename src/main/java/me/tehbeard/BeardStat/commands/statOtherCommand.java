@@ -19,7 +19,7 @@ public class statOtherCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 		if(sender instanceof Player){
-			if(!BeardStat.hasPermission((Player)sender, "command.statother")){return true;}
+			if(!BeardStat.hasPermission((Player)sender, "command.stat.other")){return true;}
 			if(args.length > 0)
 			{
 

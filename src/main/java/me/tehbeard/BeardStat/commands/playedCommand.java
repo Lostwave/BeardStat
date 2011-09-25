@@ -28,11 +28,10 @@ public class playedCommand implements CommandExecutor {
 			
 			
 			sender.sendMessage("you have played: "+ 
-					weeks +"w "+
-					days +"d "+
-					hours +"h "+
-					minutes +"m "
-					);
+					weeks +"wks "+
+					days +"days "+
+					hours +"hours "+
+					minutes +"mins");
 			
 			
 			

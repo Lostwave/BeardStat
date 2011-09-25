@@ -20,7 +20,7 @@ public class playedOtherCommand implements CommandExecutor {
 		Player pp = null ;
 		if(args.length==1){
 			pp = BeardStat.self.getServer().getPlayer(args[0]);
-			if(!BeardStat.hasPermission((Player)sender, "command.played")){return true;}
+			if(!BeardStat.hasPermission((Player)sender, "command.played.other")){return true;}
 			if(pp==null){
 				List<Player> ply = BeardStat.self.getServer().matchPlayer(args[0]);
 				if(ply.size()>1){

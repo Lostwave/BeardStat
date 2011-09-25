@@ -59,6 +59,7 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 			{
 				return blob;
 			}
+			BeardStat.printDebugCon("FAILED TO LOAD KEY FROM DATABASE!" + player);
 			return null;
 		}
 		catch(Exception e){
