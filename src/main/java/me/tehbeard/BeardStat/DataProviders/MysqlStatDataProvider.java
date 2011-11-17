@@ -23,6 +23,8 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 
 	protected static PreparedStatement prepSetPlayerStat;
+	
+	protected static PreparedStatement keepAlive;
 
 	private static HashMap<String,PlayerStatBlob> writeCache = new HashMap<String,PlayerStatBlob>();
 
@@ -38,12 +40,19 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 				BeardStat.config.getString("stats.database.username"),
 				BeardStat.config.getString("stats.database.password"));
 
+		keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`"); 
 		BeardStat.printCon("Checking for table");
 
 	      ResultSet rs = conn.getMetaData().getTables(null, null, "stats", null);
 	      if (!rs.next()) {
 	    	BeardStat.printCon("Stats table not found, creating table");
-	        PreparedStatement ps = conn.prepareStatement("");
+	        PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
+ " `player` varchar(32) NOT NULL DEFAULT '-',"+
+ " `category` varchar(32) NOT NULL DEFAULT 'stats',"+
+ " `stat` varchar(32) NOT NULL DEFAULT '-',"+
+ " `value` int(11) NOT NULL DEFAULT '0',"+
+ " PRIMARY KEY (`player`,`category`,`stat`)"+
+") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 	        ps.executeUpdate();
 	        ps.close();
 	        BeardStat.printCon("created table");
@@ -192,6 +201,10 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 			// TODO Auto-generated method stub
 			try {
+				int deltaRows;  
+				ResultSet size = keepAlive.executeQuery();
+				deltaRows = size.getInt(1);
+				size.close();
 				Long t1 = (new Date()).getTime();
 				int objects = 0;
 				prepSetPlayerStat.clearBatch();
@@ -220,7 +233,9 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 				if(objects > 0){
 					BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
 				}
-
+				size = keepAlive.executeQuery();
+				BeardStat.printCon("" +( size.getInt(1) - deltaRows) + " rows added to database in last Update");
+				size.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

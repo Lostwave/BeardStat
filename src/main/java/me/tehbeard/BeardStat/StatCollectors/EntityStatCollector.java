@@ -74,11 +74,15 @@ public class EntityStatCollector implements IStatCollector {
 		//set attacker and entity total k/d accordingly
 		if(entity instanceof Player){
 			PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths","total").incrementStat(1);
+			if(cause!=null){
 			PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
+			}
 		}
 		if(attacker instanceof Player){
 			PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills","total").incrementStat(1);
+			if(cause!=null){
 			PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
+			}
 
 		}
 
@@ -88,12 +92,6 @@ public class EntityStatCollector implements IStatCollector {
 			PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills","Player").incrementStat(1);
 		}
 		//global damage count
-
-//TODO: FIX THIS
-		/*PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",attacker.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(1);
-			PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",block.getType().toString().toLowerCase().replace("_", "")).incrementStat(1);
-		*/
-
 
 		//PLAYER KILLS ENTITY
 

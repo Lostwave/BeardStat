@@ -1,20 +1,57 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
-version: 0.1
+version: 0.2.5
 depend: [Permissions]
 commands:
     stats:
         description: Show stats about yourself
         usage: /stats [stats]...
+        aliases: [bstats]
     statsother:
         description: Show stats about others
         usage: /statsother [Player] [stats]...
+        aliases: [bstatsother]
     played:
         description: Show play time
         usage: /played
+        aliases: [bplayed]
     playedother:
         description: Show play time of other
         usage: /playedother [Player]
+        aliases: [bplayedother]
     statsget:
         description: Show stats for an offline player
         usage: /statsget [Player] [stats]...
+        aliases: [bstatsget]
+permissions:
+  stat.*:
+    description: Allows use of all stat commands
+    default: op
+    children:
+      stat.command.stat: true
+      stat.command.played: true
+      stat.command.played.other: true
+      stat.command.stat.get: true
+      stat.command.stat.other: true
+  stat.players:
+    description: Allows use of all stat commands
+    default: true
+    children:
+      stat.command.stat: true
+      stat.command.played: true
+            
+  stat.command.stat:
+    description: View your own stats
+  stat.command.played:
+    description: Allows you to view your /played
+  stat.command.played.other:
+    description: See how much others have played
+    default: op
+  stat.command.stat.get:
+    description: Pull stats from db for offline player
+    default: op
+  stat.command.stat.other:
+    description: View other's stats
+    default: op
+
+    

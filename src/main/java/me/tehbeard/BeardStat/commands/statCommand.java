@@ -22,6 +22,15 @@ public class statCommand implements CommandExecutor {
 		if(sender instanceof Player){
 			if(!BeardStat.hasPermission((Player)sender, "command.stat")){return true;}
 			if(args.length > 0){
+				if(args[0].equals("-h")){
+					sender.sendMessage(ChatColor.GREEN + "Stats Help page");
+					sender.sendMessage(ChatColor.GREEN + "/stats : Default display of your stats");
+					sender.sendMessage(ChatColor.GREEN + "/stats -h : This page");
+					sender.sendMessage(ChatColor.GREEN + "/stats kills.total deaths.total : value of those stats");
+					sender.sendMessage(ChatColor.GREEN + "/stats -c : list categories you have stats for");
+					sender.sendMessage(ChatColor.GREEN + "/stats -c blockcreate : List stats you have for that category");
+					return true;
+				}
 				if(args[0].equals("-c")){
 					if(args.length==2){
 
@@ -151,7 +160,10 @@ public class statCommand implements CommandExecutor {
 					}
 					i+=1;
 				}
+				
+				
 			}
+			sender.sendMessage(ChatColor.GREEN + "Use /stats -h to display the help page!");
 			return true;
 		}
 

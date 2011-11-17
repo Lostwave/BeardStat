@@ -32,6 +32,8 @@ public class StatPlayerListener extends PlayerListener {
 		// TODO Auto-generated method stub
 		for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 			((PlayerStatCollector)sc).onPlayerJoin(event.getPlayer());
+			PlayerStatManager.getPlayerBlob(event.getPlayer().getName());
+			BeardStat.loginTimes.put(event.getPlayer().getName(), (new Date()).getTime());
 		}
 	}
 
@@ -80,9 +82,6 @@ public class StatPlayerListener extends PlayerListener {
 		if(event.getResult() == Result.ALLOWED){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerLogin(event.getPlayer());
-				PlayerStatManager.getPlayerBlob(event.getPlayer().getName());
-				BeardStat.loginTimes.put(event.getPlayer().getName(), (new Date()).getTime());
-
 			}}
 	}
 	public void onPlayerQuit(PlayerQuitEvent event) {

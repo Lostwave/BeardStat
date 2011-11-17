@@ -35,6 +35,13 @@ public class PlayerStatManager {
 		while(i.hasNext()){
 			Entry<String, PlayerStatBlob> entry = i.next();
 			if(flush){
+				String player = entry.getKey();
+				if(BeardStat.loginTimes.containsKey(player)){
+					long seconds = (((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L);
+					BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
+					PlayerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+					BeardStat.loginTimes.put(player,(new Date()).getTime());
+				}
 				backendDatabase.pushPlayerStatBlob(entry.getValue());
 			}
 			//remove offline players
@@ -61,7 +68,7 @@ public class PlayerStatManager {
 				long seconds = (((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L);
 				BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
 				PlayerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
-				BeardStat.loginTimes.put(player,0L);
+				BeardStat.loginTimes.put(player,(new Date()).getTime());
 			}
 			
 			BeardStat.loginTimes.put(player,0L);
