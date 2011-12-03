@@ -168,8 +168,13 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 				pb.addStat(ps);
 			}
 			rs.close();
-
+			
+			
+			
 			BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
+			
+			if(pb.getStats().size()==0 && create==false){return null;}
+			
 			return pb;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
