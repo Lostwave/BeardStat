@@ -1,6 +1,7 @@
 package me.tehbeard.BeardStat;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -14,6 +15,7 @@ import me.tehbeard.BeardStat.listeners.*;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
@@ -31,7 +33,7 @@ import org.bukkit.util.config.Configuration;
 public class BeardStat extends JavaPlugin {
 
 
-	public static Configuration config;
+	public static YamlConfiguration config;
 	public static BeardStat self;
 	private int runner;
 	public static HashMap<String,Long> loginTimes = new HashMap<String,Long>();
@@ -77,8 +79,8 @@ public class BeardStat extends JavaPlugin {
 		if(!(new File(getDataFolder(),"BeardStat.yml")).exists()){
 			initalConfig();
 		}
-		config = new Configuration(new File(getDataFolder(),"BeardStat.yml"));
-		config.load();
+		config = YamlConfiguration.loadConfiguration(new File(getDataFolder(),"BeardStat.yml"));
+		
 
 		//set DB HERE
 		printCon("Connecting to database");
@@ -204,15 +206,20 @@ public class BeardStat extends JavaPlugin {
 	 * Creates the inital config
 	 */
 	private void initalConfig() {
-		config = new Configuration(new File(getDataFolder(),"BeardStat.yml"));
-		config.load();
-		config.setProperty("stats.database.type", "mysql");
-		config.setProperty("stats.database.host", "localhost");
-		config.setProperty("stats.database.username", "Beardstats");
-		config.setProperty("stats.database.password", "changeme");
-		config.setProperty("stats.database.database", "stats");
-
-		config.save();
+		File f = new File(getDataFolder(),"BeardStat.yml");
+		config = YamlConfiguration.loadConfiguration(f);
+		
+		config.set("stats.database.type", "mysql");
+		config.set("stats.database.host", "localhost");
+		config.set("stats.database.username", "Beardstats");
+		config.set("stats.database.password", "changeme");
+		config.set("stats.database.database", "stats");
+		try {
+			config.save(f);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
