@@ -208,7 +208,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			try {
 				int deltaRows;  
 				ResultSet size = keepAlive.executeQuery();
-				deltaRows = size.getInt(1);
 				size.close();
 				Long t1 = (new Date()).getTime();
 				int objects = 0;
@@ -238,9 +237,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 				if(objects > 0){
 					BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
 				}
-				size = keepAlive.executeQuery();
-				BeardStat.printCon("" +( size.getInt(1) - deltaRows) + " rows added to database in last Update");
-				size.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
