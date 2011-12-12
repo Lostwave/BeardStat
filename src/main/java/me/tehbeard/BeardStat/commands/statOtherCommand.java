@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 
-public class statOtherCommand implements CommandExecutor {
+public class StatOtherCommand implements CommandExecutor {
 
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label,

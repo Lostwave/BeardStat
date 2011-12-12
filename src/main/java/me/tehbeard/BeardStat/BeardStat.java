@@ -188,11 +188,11 @@ public class BeardStat extends JavaPlugin {
 		runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 2400L, 2400L);
 
 		printCon("Loading commands");
-		getCommand("stats").setExecutor(new statCommand());
-		getCommand("statsother").setExecutor(new statOtherCommand());
+		getCommand("stats").setExecutor(new StatCommand());
+		getCommand("statsother").setExecutor(new StatOtherCommand());
 		getCommand("played").setExecutor(new playedCommand());
 		getCommand("playedother").setExecutor(new playedOtherCommand());
-		getCommand("statsget").setExecutor(new statGetCommand());
+		getCommand("statsget").setExecutor(new StatGetCommand());
 
 		for(Player player: getServer().getOnlinePlayers()){
 			BeardStat.loginTimes.put(player.getName(), (new Date()).getTime());
