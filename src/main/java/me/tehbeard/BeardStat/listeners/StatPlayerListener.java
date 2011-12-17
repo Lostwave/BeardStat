@@ -120,7 +120,7 @@ public class StatPlayerListener extends PlayerListener {
 	public void onPlayerTeleport(PlayerTeleportEvent event){
 		if(event.isCancelled()==false){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
-				((PlayerStatCollector)sc).onPlayerTeleport(event.getPlayer(),event.getTo(),event.getFrom());
+				((PlayerStatCollector)sc).onPlayerTeleport(event.getPlayer(),event.getTo(),event.getFrom(),event.getCause());
 			}
 		}
 	}

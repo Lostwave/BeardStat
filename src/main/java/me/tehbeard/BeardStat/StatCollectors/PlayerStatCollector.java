@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
 
@@ -71,8 +72,14 @@ public class PlayerStatCollector implements IStatCollector {
 		PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","portal").incrementStat(1);
 	}
 
-	public void onPlayerTeleport(Player player,Location to,Location  From){
+	public void onPlayerTeleport(Player player,Location to,Location  From, TeleportCause teleportCause){
+		if(teleportCause == TeleportCause.ENDER_PEARL){
+			PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse","enderpearl").incrementStat(1);
+		}
+		else
+		{
 		PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","teleport").incrementStat(1);
+		}
 	}
 
 	public void onPlayerToggleSneak(Player player,boolean isSneaking){
