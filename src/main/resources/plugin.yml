@@ -1,7 +1,6 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
-version: 0.2.5
-depend: [DroxPerms]
+version: 0.3
 commands:
     stats:
         description: Show stats about yourself
