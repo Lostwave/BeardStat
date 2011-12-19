@@ -209,7 +209,7 @@ public class BeardStat extends JavaPlugin {
 		File f = new File(getDataFolder(),"BeardStat.yml");
 		config = YamlConfiguration.loadConfiguration(f);
 		
-		config.set("stats.database.type", "mysql");
+		config.set("stats.database.type", "file");
 		config.set("stats.database.host", "localhost");
 		config.set("stats.database.username", "Beardstats");
 		config.set("stats.database.password", "changeme");
