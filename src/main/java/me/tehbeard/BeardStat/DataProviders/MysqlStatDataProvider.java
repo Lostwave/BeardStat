@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Properties;
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
@@ -31,14 +32,18 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	MysqlStatDataProvider() throws SQLException{
 
 
-		String conStr = String.format("jdbc:mysql://%s/%s",
+		String conUrl = String.format("jdbc:mysql://%s/%s",
 				BeardStat.config.getString("stats.database.host"), 
 				BeardStat.config.getString("stats.database.database"));
 
+		BeardStat.printCon("Configuring....");
+		Properties conStr = new Properties();
+		conStr.put("user",BeardStat.config.getString("stats.database.username",""));
+		conStr.put("password",BeardStat.config.getString("stats.database.password",""));
+		conStr.put("autoReconnect","true");
+		conStr.put("maxReconnects","6");
 		BeardStat.printCon("Connecting....");
-		conn = DriverManager.getConnection(conStr,
-				BeardStat.config.getString("stats.database.username"),
-				BeardStat.config.getString("stats.database.password"));
+		conn = DriverManager.getConnection(conUrl,conStr);
 
 		keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`"); 
 		BeardStat.printCon("Checking for table");
