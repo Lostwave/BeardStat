@@ -3,9 +3,10 @@ package me.tehbeard.BeardStat.DataProviders;
 import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.Properties;
 
+import me.tehbeard.BeardAch.BeardAch;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
@@ -18,20 +19,14 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 public class MysqlStatDataProvider extends IStatDataProvider {
 
 	Connection conn;
-
 	//protected static PreparedStatement prepGetPlayerStat;
 	protected static PreparedStatement prepGetAllPlayerStat;
-
-
 	protected static PreparedStatement prepSetPlayerStat;
-	
 	protected static PreparedStatement keepAlive;
 
 	private static HashMap<String,PlayerStatBlob> writeCache = new HashMap<String,PlayerStatBlob>();
 
-	MysqlStatDataProvider() throws SQLException{
-
-
+	protected void createConnection(){
 		String conUrl = String.format("jdbc:mysql://%s/%s",
 				BeardStat.config.getString("stats.database.host"), 
 				BeardStat.config.getString("stats.database.database"));
@@ -41,42 +36,67 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		conStr.put("user",BeardStat.config.getString("stats.database.username",""));
 		conStr.put("password",BeardStat.config.getString("stats.database.password",""));
 		conStr.put("autoReconnect","true");
-		conStr.put("maxReconnects","6");
+		conStr.put("maxReconnects","600");
 		BeardStat.printCon("Connecting....");
-		conn = DriverManager.getConnection(conUrl,conStr);
+		try {
+			conn = DriverManager.getConnection(conUrl,conStr);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-		keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`"); 
+	protected void checkAndMakeTable(){
 		BeardStat.printCon("Checking for table");
+		try{
+			ResultSet rs = conn.getMetaData().getTables(null, null, "stats", null);
+			if (!rs.next()) {
+				BeardStat.printCon("Stats table not found, creating table");
+				PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
+						" `player` varchar(32) NOT NULL DEFAULT '-',"+
+						" `category` varchar(32) NOT NULL DEFAULT 'stats',"+
+						" `stat` varchar(32) NOT NULL DEFAULT '-',"+
+						" `value` int(11) NOT NULL DEFAULT '0',"+
+						" PRIMARY KEY (`player`,`category`,`stat`)"+
+						") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+				ps.executeUpdate();
+				ps.close();
+				BeardStat.printCon("created table");
+			}
+			else
+			{
+				BeardStat.printCon("Table found");
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-	      ResultSet rs = conn.getMetaData().getTables(null, null, "stats", null);
-	      if (!rs.next()) {
-	    	BeardStat.printCon("Stats table not found, creating table");
-	        PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
- " `player` varchar(32) NOT NULL DEFAULT '-',"+
- " `category` varchar(32) NOT NULL DEFAULT 'stats',"+
- " `stat` varchar(32) NOT NULL DEFAULT '-',"+
- " `value` int(11) NOT NULL DEFAULT '0',"+
- " PRIMARY KEY (`player`,`category`,`stat`)"+
-") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
-	        ps.executeUpdate();
-	        ps.close();
-	        BeardStat.printCon("created table");
-	      }
-	      else
-	      {
-	    	  BeardStat.printCon("Table found");
-	      }
-	      rs.close();
-	      
-	      BeardStat.printDebugCon("Preparing statements");
-		//prepGetPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
-		prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
-		BeardStat.printDebugCon("Player stat statement created");
+	protected void prepareStatements(){
+		try{
+			BeardStat.printDebugCon("Preparing statements");
 
-		prepSetPlayerStat = conn.prepareStatement("INSERT INTO `stats`(`player`,`category`,`stat`,`value`) values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
-		BeardStat.printDebugCon("Set player stat statement created");
+			keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`");
+			//prepGetPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
+			prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
+			BeardStat.printDebugCon("Player stat statement created");
+			prepSetPlayerStat = conn.prepareStatement("INSERT INTO `stats`(`player`,`category`,`stat`,`value`) values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
+			BeardStat.printDebugCon("Set player stat statement created");
+			BeardStat.printCon("Initaised MySQL Data Provider.");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-		BeardStat.printCon("Initaised MySQL Data Provider.");
+	MysqlStatDataProvider() throws SQLException{
+
+		createConnection();
+		checkAndMakeTable();
+		prepareStatements();
+
 
 
 
@@ -173,13 +193,13 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 				pb.addStat(ps);
 			}
 			rs.close();
-			
-			
-			
+
+
+
 			BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-			
+
 			if(pb.getStats().size()==0 && create==false){return null;}
-			
+
 			return pb;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -211,36 +231,50 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 			// TODO Auto-generated method stub
 			try {
-				int deltaRows;  
-				ResultSet size = keepAlive.executeQuery();
-				size.close();
-				Long t1 = (new Date()).getTime();
-				int objects = 0;
-				prepSetPlayerStat.clearBatch();
-				for(PlayerStatBlob pb:toWrite.values()){
-					BeardStat.printDebugCon("Packing stats for "+pb.getName());
-					BeardStat.printDebugCon("[");
-					for(PlayerStat ps:pb.getStats()){
-						BeardStat.printDebugCon("stat: " + ps.getCat() + "->"+ ps.getName() + " = " + ps.getValue());
-						prepSetPlayerStat.setString(1, pb.getName());
-						prepSetPlayerStat.setString(2, ps.getCat());
-						prepSetPlayerStat.setString(3, ps.getName());
-						prepSetPlayerStat.setInt(4, ps.getValue());
-						prepSetPlayerStat.setInt(5, ps.getValue());
-						prepSetPlayerStat.addBatch();
-						objects+=1;
-					}
-					BeardStat.printDebugCon("]");
+
+
+				//if connection is closed, attempt to rebuild connection
+				if(conn.isClosed()){
+					BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
+					createConnection();
+					prepareStatements();
 				}
+				else
+				{
+					//KEEP ALIVE  
+					keepAlive.clearBatch();
+					keepAlive.executeQuery();
 
-				prepSetPlayerStat.executeBatch();
 
-				long t2 = (new Date()).getTime();
-				BeardStat.printDebugCon("[Database write Completed]");
-				BeardStat.printDebugCon("Objects written to database: " + objects);
-				BeardStat.printDebugCon("Time taken to write to Database: " + (t2-t1) + "milliseconds");
-				if(objects > 0){
-					BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
+
+					Long t1 = (new Date()).getTime();
+					int objects = 0;
+					prepSetPlayerStat.clearBatch();
+					for(PlayerStatBlob pb:toWrite.values()){
+						BeardStat.printDebugCon("Packing stats for "+pb.getName());
+						BeardStat.printDebugCon("[");
+						for(PlayerStat ps:pb.getStats()){
+							BeardStat.printDebugCon("stat: " + ps.getCat() + "->"+ ps.getName() + " = " + ps.getValue());
+							prepSetPlayerStat.setString(1, pb.getName());
+							prepSetPlayerStat.setString(2, ps.getCat());
+							prepSetPlayerStat.setString(3, ps.getName());
+							prepSetPlayerStat.setInt(4, ps.getValue());
+							prepSetPlayerStat.setInt(5, ps.getValue());
+							prepSetPlayerStat.addBatch();
+							objects+=1;
+						}
+						BeardStat.printDebugCon("]");
+					}
+
+					prepSetPlayerStat.executeBatch();
+
+					long t2 = (new Date()).getTime();
+					BeardStat.printDebugCon("[Database write Completed]");
+					BeardStat.printDebugCon("Objects written to database: " + objects);
+					BeardStat.printDebugCon("Time taken to write to Database: " + (t2-t1) + "milliseconds");
+					if(objects > 0){
+						BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
+					}
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

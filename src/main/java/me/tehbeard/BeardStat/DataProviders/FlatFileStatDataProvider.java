@@ -3,7 +3,7 @@ package me.tehbeard.BeardStat.DataProviders;
 import java.io.File;
 import java.util.HashMap;
 
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.config.ConfigurationNode;
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -18,7 +18,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
  */
 public class FlatFileStatDataProvider extends IStatDataProvider {
 
-	Configuration database;
+	YamlConfiguration database;
 
 	public static FlatFileStatDataProvider newInstance() {
 		// TODO Auto-generated method stub
@@ -26,9 +26,9 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 	}
 
 	public FlatFileStatDataProvider() {
-		database = new Configuration(new File(BeardStat.self.getDataFolder(),"stats.yml"));
+		database = YamlConfiguration.loadConfiguration(new File(BeardStat.self.getDataFolder(),"stats.yml"));
 		BeardStat.printCon("Creating FlatFile DataProvider");
-		database.load();
+		
 
 	}
 
@@ -39,10 +39,10 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 
 	public PlayerStatBlob pullPlayerStatBlob(String player,boolean create) {
 		// TODO Auto-generated method stub
-		BeardStat.printCon("Loading stats for player " + player);
+		/*BeardStat.printCon("Loading stats for player " + player);
 
 		try{
-			ConfigurationNode pl = database.getNode("stats.players." + player);
+			ConfigurationNode pl = database.get("stats.players." + player);
 
 			PlayerStatBlob blob = new PlayerStatBlob(player,0);
 			if(pl!=null){
@@ -65,16 +65,15 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 		catch(Exception e){
 			e.printStackTrace();
 			return null;
-		}
+		}*/
+		return null;
 	}
 
 
-	/**
-	 * 
-	 */
+	
 	public void pushPlayerStatBlob(PlayerStatBlob player) {
 		// TODO Auto-generated method stub
-		HashMap<String,Integer> nodes = new HashMap<String, Integer>();
+		/*HashMap<String,Integer> nodes = new HashMap<String, Integer>();
 
 		for(PlayerStat stat : player.getStats()){
 
@@ -83,13 +82,13 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 		}
 		database.setProperty("stats.players." + player.getName(), nodes);
 		//TODO: Flush to I/O every X Seconds?
-		database.save();
+		database.save();*/
 	}
 
 	@Override
 	public void flush() {
 		// TODO Auto-generated method stub
-		database.save();
+		//database.save();
 	}
 
 }
