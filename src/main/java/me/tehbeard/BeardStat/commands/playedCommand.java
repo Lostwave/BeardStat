@@ -23,7 +23,7 @@ public class playedCommand implements CommandExecutor {
 			int days = (int)Math.ceil((seconds -604800*weeks) / 86400);
 		    int hours = (int)Math.ceil((seconds - (86400 * days + 604800*weeks)) / 3600);
 		    int minutes = (int)Math.ceil((seconds - (604800*weeks + 86400 * days + 3600 * hours)) / 60);
-		    
+  
 			
 			
 			

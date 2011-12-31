@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 
 import me.tehbeard.BeardStat.BeardStat;
-import me.tehbeard.BeardStat.DataProviders.FlatFileStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import java.util.Map.Entry;
 

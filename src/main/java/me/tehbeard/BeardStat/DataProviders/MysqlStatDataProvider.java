@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import java.util.Properties;
 
-import me.tehbeard.BeardAch.BeardAch;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
@@ -233,14 +232,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			try {
 
 
-				//if connection is closed, attempt to rebuild connection
-				if(conn.isClosed()){
-					BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
-					createConnection();
-					prepareStatements();
-				}
-				else
-				{
+				
 					//KEEP ALIVE  
 					keepAlive.clearBatch();
 					keepAlive.executeQuery();
@@ -275,10 +267,12 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 					if(objects > 0){
 						BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
 					}
-				}
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
+				createConnection();
+				prepareStatements();
 			}
 		}
 

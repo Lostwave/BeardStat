@@ -1,6 +1,6 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
-version: 0.3
+version: {VERSION}
 commands:
     stats:
         description: Show stats about yourself
