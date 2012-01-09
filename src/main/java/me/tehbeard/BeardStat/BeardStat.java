@@ -1,7 +1,7 @@
 package me.tehbeard.BeardStat;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,9 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.permissions.Permissible;
-import org.bukkit.plugin.Plugin;
+
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
 
 
 /**
@@ -203,7 +202,6 @@ public class BeardStat extends JavaPlugin {
 
 		printCon("Loading commands");
 		getCommand("stats").setExecutor(new StatCommand());
-		getCommand("statsother").setExecutor(new StatOtherCommand());
 		getCommand("played").setExecutor(new playedCommand());
 		getCommand("playedother").setExecutor(new playedOtherCommand());
 		getCommand("statsget").setExecutor(new StatGetCommand());

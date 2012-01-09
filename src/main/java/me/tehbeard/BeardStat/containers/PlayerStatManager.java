@@ -9,7 +9,7 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import java.util.Map.Entry;
 
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 /**
  * Provides a cache between backend storage and the stats plugin
  * @author James
@@ -44,7 +44,7 @@ public class PlayerStatManager {
 				backendDatabase.pushPlayerStatBlob(entry.getValue());
 			}
 			//remove offline players
-			if(BeardStat.self.getServer().getPlayer(entry.getKey())==null){
+			if(Bukkit.getServer().getPlayer(entry.getKey())==null){
 				i.remove();
 			}
 			

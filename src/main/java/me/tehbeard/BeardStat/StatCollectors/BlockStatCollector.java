@@ -1,6 +1,5 @@
 package me.tehbeard.BeardStat.StatCollectors;
 
-import java.util.HashSet;
 
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 

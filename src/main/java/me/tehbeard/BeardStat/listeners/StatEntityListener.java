@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 
+@SuppressWarnings("deprecation")
 public class StatEntityListener extends EntityListener{
 
 

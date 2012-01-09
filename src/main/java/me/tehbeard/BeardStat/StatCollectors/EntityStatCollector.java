@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
+
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByProjectileEvent;
@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("deprecation")
 public class EntityStatCollector implements IStatCollector {
 
 	public void onEntityDamage(Entity entity, DamageCause cause, int damage,Entity attacker, Block block) {
@@ -58,7 +59,7 @@ public class EntityStatCollector implements IStatCollector {
 		}
 
 		Entity attacker = null;
-		Block block = null;
+		//Block block = null;
 
 		if(event instanceof EntityDamageByEntityEvent){
 			attacker = ((EntityDamageByEntityEvent)event).getDamager();

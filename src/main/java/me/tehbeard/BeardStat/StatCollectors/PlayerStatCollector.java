@@ -2,11 +2,10 @@ package me.tehbeard.BeardStat.StatCollectors;
 
 import java.util.Date;
 
-import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
+
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -16,7 +15,7 @@ import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.inventory.ItemStack;
+
 
 
 /**

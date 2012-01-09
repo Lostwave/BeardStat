@@ -7,7 +7,7 @@ import me.tehbeard.BeardStat.StatCollectors.StatCollectorManager;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SignChangeEvent;
+
 
 public class StatBlockListener extends BlockListener{
 
