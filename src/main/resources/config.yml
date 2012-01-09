@@ -1,0 +1,7 @@
+stats:
+  database:
+    type: "file"
+    host: "localhost"
+    username: "Beardstats"
+    password: "changeme"
+    database: "stats"

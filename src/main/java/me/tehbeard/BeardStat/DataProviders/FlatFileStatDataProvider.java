@@ -1,13 +1,11 @@
 package me.tehbeard.BeardStat.DataProviders;
 
 import java.io.File;
-import java.util.HashMap;
+
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.util.config.ConfigurationNode;
 
 import me.tehbeard.BeardStat.BeardStat;
-import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 
@@ -20,13 +18,10 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 
 	YamlConfiguration database;
 
-	public static FlatFileStatDataProvider newInstance() {
-		// TODO Auto-generated method stub
-		return new FlatFileStatDataProvider();
-	}
+	
 
-	public FlatFileStatDataProvider() {
-		database = YamlConfiguration.loadConfiguration(new File(BeardStat.self.getDataFolder(),"stats.yml"));
+	public FlatFileStatDataProvider(File file) {
+		database = YamlConfiguration.loadConfiguration(file);
 		BeardStat.printCon("Creating FlatFile DataProvider");
 		
 

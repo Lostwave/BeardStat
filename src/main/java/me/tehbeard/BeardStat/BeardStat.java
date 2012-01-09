@@ -2,6 +2,7 @@ package me.tehbeard.BeardStat;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -33,8 +34,8 @@ import org.bukkit.util.config.Configuration;
 public class BeardStat extends JavaPlugin {
 
 
-	public static YamlConfiguration config;
-	public static BeardStat self;
+
+	private static BeardStat self;
 	private int runner;
 	public static HashMap<String,Long> loginTimes = new HashMap<String,Long>();
 	private static final String PERM_PREFIX = "stat";
@@ -50,12 +51,12 @@ public class BeardStat extends JavaPlugin {
 	}
 
 	public static void printDebugCon(String line){
-		if(config!=null){
-			if(config.getBoolean("general.debug", false)){
-				System.out.println("[BeardStat][DEBUG] " + line);
 
-			}
+		if(self.getConfig().getBoolean("general.debug", false)){
+			System.out.println("[BeardStat][DEBUG] " + line);
+
 		}
+
 	}
 
 	public void onDisable() {
@@ -72,30 +73,43 @@ public class BeardStat extends JavaPlugin {
 
 	public void onEnable() {
 
-		
+
 		self = this;
-		// TODO Auto-generated method stub
+
 		printCon("Starting BeardStat");
-		if(!(new File(getDataFolder(),"BeardStat.yml")).exists()){
-			initalConfig();
-		}
-		config = YamlConfiguration.loadConfiguration(new File(getDataFolder(),"BeardStat.yml"));
+
+
+		updateConfig();
+		
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+
 		
 
 		//set DB HERE
 		printCon("Connecting to database");
-		printCon("Using " + config.getString("stats.database.type") + " Adpater");
-		if(config.getString("stats.database.type")==null){
+		printCon("Using " + getConfig().getString("stats.database.type") + " Adpater");
+		if(getConfig().getString("stats.database.type")==null){
 			printCon("INVALID ADAPTER SELECTED");
 			getPluginLoader().disablePlugin(this);
 			return;
 		}
 		IStatDataProvider db =null;
-		if(config.getString("stats.database.type").equals("mysql")){
-			db = MysqlStatDataProvider.newInstance();
+		if(getConfig().getString("stats.database.type").equals("mysql")){
+			try {
+				db = new MysqlStatDataProvider(
+						getConfig().getString("stats.database.host"),
+						getConfig().getString("stats.database.database"),
+						getConfig().getString("stats.database.username"),
+						getConfig().getString("stats.database.password")
+						);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		if(config.getString("stats.database.type").equals("file")){
-			db = FlatFileStatDataProvider.newInstance();	
+		if(getConfig().getString("stats.database.type").equals("file")){
+			db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
 		}
 
 
@@ -105,10 +119,10 @@ public class BeardStat extends JavaPlugin {
 			return;
 		}
 		PlayerStatManager.setDatabase(db);
-		
-		
-		
-		
+
+
+
+
 		printCon("Registering events and collectors");
 		/**
 		 * REGISTER STAT COLLECTORS
@@ -169,10 +183,10 @@ public class BeardStat extends JavaPlugin {
 		getServer().getPluginManager().registerEvent(Type.PLAYER_TOGGLE_SNEAK, spl,Priority.Monitor,this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_BUCKET_EMPTY, spl,Priority.Monitor,this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_BUCKET_FILL, spl,Priority.Monitor,this);
-		
-		
-		
-		
+
+
+
+
 
 		//entity listener (Damage/taming)
 		StatEntityListener sel = new StatEntityListener();
@@ -205,20 +219,23 @@ public class BeardStat extends JavaPlugin {
 	/**
 	 * Creates the inital config
 	 */
-	private void initalConfig() {
+	private void updateConfig() {
+		//Transfer config if nessecary
 		File f = new File(getDataFolder(),"BeardStat.yml");
-		config = YamlConfiguration.loadConfiguration(f);
+		if(f.exists()){
+			printCon("OLD CONFIG FILE FOUND, TRANSFERING TO NEW CONFIG");
+			YamlConfiguration config = YamlConfiguration.loadConfiguration(f);
+			config.set("stats.version", getDescription().getVersion());
+			getConfig().setDefaults(config);
+			getConfig().options().copyDefaults(true);
+			saveConfig();
+			f.delete();
+		}
 		
-		config.set("stats.database.type", "file");
-		config.set("stats.database.host", "localhost");
-		config.set("stats.database.username", "Beardstats");
-		config.set("stats.database.password", "changeme");
-		config.set("stats.database.database", "stats");
-		try {
-			config.save(f);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(!getConfig().get("stats.version","").equals(getDescription().getVersion())){
+			printCon("WARNING! CONFIG LOADING FROM PREVIOUS VERSION");
+			getConfig().set("stats.version", getDescription().getVersion());
+			saveConfig();
 		}
 	}
 	@Override
@@ -245,7 +262,7 @@ public class BeardStat extends JavaPlugin {
 	public int sessionTime(String player){
 		if( BeardStat.loginTimes.containsKey(player)){
 			return Integer.parseInt(""+BeardStat.loginTimes.get(player)/1000L);
-			
+
 		}
 		return 0;
 	}

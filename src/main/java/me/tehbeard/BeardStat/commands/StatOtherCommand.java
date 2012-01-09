@@ -7,6 +7,7 @@ import java.util.List;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,10 +26,10 @@ public class StatOtherCommand implements CommandExecutor {
 
 				Player pp = null ;
 				if(args.length>1){
-					pp = BeardStat.self.getServer().getPlayer(args[0]);
+					pp = Bukkit.getServer().getPlayer(args[0]);
 
 					if(pp==null){
-						List<Player> ply = BeardStat.self.getServer().matchPlayer(args[0]);
+						List<Player> ply = Bukkit.getServer().matchPlayer(args[0]);
 						if(ply.size()>1){
 							for(Player p:ply){
 								if(p.getName().equals(args[0])){

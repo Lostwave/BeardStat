@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import java.util.Properties;
 
+import org.bukkit.Bukkit;
+
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
@@ -18,6 +20,11 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 public class MysqlStatDataProvider extends IStatDataProvider {
 
 	Connection conn;
+	
+	private String host;
+	private String database;
+	private String username;
+	private String password;
 	//protected static PreparedStatement prepGetPlayerStat;
 	protected static PreparedStatement prepGetAllPlayerStat;
 	protected static PreparedStatement prepSetPlayerStat;
@@ -27,20 +34,19 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 	protected void createConnection(){
 		String conUrl = String.format("jdbc:mysql://%s/%s",
-				BeardStat.config.getString("stats.database.host"), 
-				BeardStat.config.getString("stats.database.database"));
+				host, 
+				database);
 
 		BeardStat.printCon("Configuring....");
 		Properties conStr = new Properties();
-		conStr.put("user",BeardStat.config.getString("stats.database.username",""));
-		conStr.put("password",BeardStat.config.getString("stats.database.password",""));
+		conStr.put("user",username);
+		conStr.put("password",password);
 		conStr.put("autoReconnect","true");
 		conStr.put("maxReconnects","600");
 		BeardStat.printCon("Connecting....");
 		try {
 			conn = DriverManager.getConnection(conUrl,conStr);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -68,7 +74,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -85,13 +90,22 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			BeardStat.printDebugCon("Set player stat statement created");
 			BeardStat.printCon("Initaised MySQL Data Provider.");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	MysqlStatDataProvider() throws SQLException{
+	public MysqlStatDataProvider(String host,String database,String username,String password) throws SQLException{
 
+		this.host = host;
+		this.database = database;
+		this.username = username;
+		this.password = password;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			BeardStat.printCon("MySQL Library not found!");
+		}
 		createConnection();
 		checkAndMakeTable();
 		prepareStatements();
@@ -99,31 +113,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 
 
-	}
-	/**
-	 * Create a new instance of this Data Provider
-	 * @return
-	 */
-	public static IStatDataProvider newInstance(){
-		//Attempt to load the SQLite library
-		MysqlStatDataProvider dp = null;
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			BeardStat.printCon("MySQL Library not found!");
-			return null;
-
-		}
-		try {
-			dp = new MysqlStatDataProvider();
-		} catch(SQLException e){
-			BeardStat.printCon("Failed to initaise MySQL Data Provider. Dumping error.");
-			e.printStackTrace();
-			BeardStat.printCon("Shutting down BeardStats");
-			return null;
-		}
-		return dp;
 	}
 
 
@@ -171,7 +160,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	@Override
 	public void flush() {
 		//run SQL in async thread
-		BeardStat.self.getServer().getScheduler().scheduleAsyncDelayedTask(BeardStat.self, new sqlFlusher(pullCacheToThread()));
+		Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(null, new sqlFlusher(pullCacheToThread()));
 
 		//(new sqlFlusher(pullCacheToThread())).run();
 	}
