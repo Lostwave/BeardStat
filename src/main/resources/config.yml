@@ -5,3 +5,6 @@ stats:
     username: "Beardstats"
     password: "changeme"
     database: "stats"
+  worlds:
+    - creative
+    - tutorialIsland

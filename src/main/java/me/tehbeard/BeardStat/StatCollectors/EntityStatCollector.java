@@ -59,7 +59,7 @@ public class EntityStatCollector implements IStatCollector {
 		}
 
 		Entity attacker = null;
-		//Block block = null;
+		Block block = null;
 
 		if(event instanceof EntityDamageByEntityEvent){
 			attacker = ((EntityDamageByEntityEvent)event).getDamager();

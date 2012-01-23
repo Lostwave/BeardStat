@@ -5,6 +5,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import me.tehbeard.BeardStat.DataProviders.FlatFileStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
@@ -159,12 +160,12 @@ public class BeardStat extends JavaPlugin {
 		//register event listeners
 
 		//block listener
-		StatBlockListener sbl = new StatBlockListener();
+		StatBlockListener sbl = new StatBlockListener(getConfig().getStringList("stats.worlds"));
 		getServer().getPluginManager().registerEvent(Type.BLOCK_BREAK, sbl,Priority.Monitor,this);
 		getServer().getPluginManager().registerEvent(Type.BLOCK_PLACE, sbl,Priority.Monitor,this);
 
 		//player listener
-		StatPlayerListener spl = new StatPlayerListener();
+		StatPlayerListener spl = new StatPlayerListener(getConfig().getStringList("stats.worlds"));
 		getServer().getPluginManager().registerEvent(Type.PLAYER_CHAT, spl,Priority.Monitor,this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, spl,Priority.Monitor,this);
 		getServer().getPluginManager().registerEvent(Type.PLAYER_DROP_ITEM, spl,Priority.Monitor,this);
@@ -188,7 +189,7 @@ public class BeardStat extends JavaPlugin {
 
 
 		//entity listener (Damage/taming)
-		StatEntityListener sel = new StatEntityListener();
+		StatEntityListener sel = new StatEntityListener(getConfig().getStringList("stats.worlds"));
 		getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE,sel,Priority.Monitor,this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_DEATH,sel,Priority.Monitor,this);
 		getServer().getPluginManager().registerEvent(Type.ENTITY_REGAIN_HEALTH,sel,Priority.Monitor,this);

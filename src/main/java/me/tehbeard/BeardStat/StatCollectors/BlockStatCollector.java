@@ -59,7 +59,9 @@ public class BlockStatCollector implements IStatCollector {
 					(clickedBlock.getType() == Material.TNT && item.getType()==Material.FLINT_AND_STEEL)){
 				PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
 			}
-
+			if(clickedBlock.getType().equals(Material.CHEST)){
+				PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","openchest").incrementStat(1);
+			}
 
 		}
 	}

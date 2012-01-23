@@ -1,6 +1,7 @@
 package me.tehbeard.BeardStat.listeners;
 
 import java.util.Date;
+import java.util.List;
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.StatCollectors.*;
@@ -18,8 +19,12 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
  */
 public class StatPlayerListener extends PlayerListener {
 
+	List<String> worlds;
+	
 
-
+	public StatPlayerListener(List<String> worlds){
+		this.worlds = worlds;
+	}
 	@Override
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
 		// TODO Auto-generated method stub
@@ -42,26 +47,26 @@ public class StatPlayerListener extends PlayerListener {
 		}
 	}
 	public void onPlayerChat(PlayerChatEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerChat(event.getPlayer(), event.getMessage());
 			}
 		}
 	}
 	public void onPlayerDropItem(PlayerDropItemEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerDropItem(event.getPlayer(),event.getItemDrop());
 			}}
 	}
 	public void onPlayerFish(PlayerFishEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerFish(event.getPlayer(),event.getState());
 			}}
 	}
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerInteractEntity(event.getPlayer(),event.getRightClicked());
 			}
@@ -70,7 +75,7 @@ public class StatPlayerListener extends PlayerListener {
 	}
 
 	public void onPlayerKick(PlayerKickEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerKick(event.getPlayer(),event.getLeaveMessage());
 			}
@@ -79,7 +84,7 @@ public class StatPlayerListener extends PlayerListener {
 
 	}
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		if(event.getResult() == Result.ALLOWED){
+		if(event.getResult() == Result.ALLOWED && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerLogin(event.getPlayer());
 			}}
@@ -96,7 +101,8 @@ public class StatPlayerListener extends PlayerListener {
 		if(event.isCancelled()==false &&
 				event.getTo().getBlockX() != event.getFrom().getBlockX() && 
 				event.getTo().getBlockY() != event.getFrom().getBlockY() && 
-				event.getTo().getBlockZ() != event.getFrom().getBlockZ()){
+				event.getTo().getBlockZ() != event.getFrom().getBlockZ() && 
+				!worlds.contains(event.getPlayer().getWorld().getName())){
 
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerMove(event.getPlayer(),event.getFrom(),event.getTo());
@@ -104,28 +110,28 @@ public class StatPlayerListener extends PlayerListener {
 		}
 	}
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerPickup(event.getPlayer(),event.getItem());
 			}
 		}
 	}
 	public void onPlayerPortal(PlayerPortalEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerPortal(event.getPlayer(),event.getTo(),event.getFrom());
 			}
 		}
 	}
 	public void onPlayerTeleport(PlayerTeleportEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
 				((PlayerStatCollector)sc).onPlayerTeleport(event.getPlayer(),event.getTo(),event.getFrom(),event.getCause());
 			}
 		}
 	}
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){				
 				((PlayerStatCollector)sc).onPlayerToggleSneak(event.getPlayer(),event.isSneaking());
 			}
@@ -133,14 +139,14 @@ public class StatPlayerListener extends PlayerListener {
 	}
 
 	public void onPlayerBucketFill(PlayerBucketFillEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){				
 				((BlockStatCollector)sc).onPlayerBucketFill(event.getPlayer(),event.getBucket());
 			}
 		}
 	}
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event){
-		if(event.isCancelled()==false){
+		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){				
 				((BlockStatCollector)sc).onPlayerBucketEmpty(event.getPlayer(),event.getBucket());
 			}
@@ -148,11 +154,9 @@ public class StatPlayerListener extends PlayerListener {
 	}
 
 	public void onPlayerInteract(PlayerInteractEvent event){
+
 		if(event.getClickedBlock()!=null){
-			if(event.getClickedBlock().getType().equals(Material.CHEST)){
-				PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","openchest").incrementStat(1);
-			}
-			if(event.isCancelled()==false){
+			if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
 				for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){				
 					((BlockStatCollector)sc).onPlayerBlockInteract(event.getPlayer(), event.getAction(), event.getItem(), event.getClickedBlock(), event.getBlockFace(),event.useItemInHand());
