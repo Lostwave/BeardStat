@@ -7,11 +7,13 @@ import me.tehbeard.BeardStat.StatCollectors.BlockStatCollector;
 import me.tehbeard.BeardStat.StatCollectors.StatCollectorManager;
 
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 
-public class StatBlockListener extends BlockListener{
+public class StatBlockListener implements Listener{
 
 	List<String> worlds;
 	
@@ -21,7 +23,7 @@ public class StatBlockListener extends BlockListener{
 	}
 	
 	
-	@Override
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
@@ -30,7 +32,7 @@ public class StatBlockListener extends BlockListener{
 		}
 	}
 
-	@Override
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 			for( IStatCollector sc : StatCollectorManager.getCollectors(event.getType())){
