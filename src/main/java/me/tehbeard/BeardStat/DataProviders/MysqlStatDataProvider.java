@@ -41,8 +41,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		Properties conStr = new Properties();
 		conStr.put("user",username);
 		conStr.put("password",password);
-		conStr.put("autoReconnect","true");
-		conStr.put("maxReconnects","600");
 		BeardStat.printCon("Connecting....");
 		try {
 			conn = DriverManager.getConnection(conUrl,conStr);
