@@ -195,6 +195,24 @@ public class StatPlayerListener implements Listener {
 			}
 		}
 	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onPlayerExp(PlayerExpChangeEvent event){
+		if(!worlds.contains(event.getPlayer().getWorld().getName())){
+			Player player = event.getPlayer();
+			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","lifetimexp").incrementStat(event.getAmount());
+			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentxp").setValue(player.getTotalExperience() + event.getAmount());
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onPlayerExpLevel(PlayerLevelChangeEvent event){
+		if(!worlds.contains(event.getPlayer().getWorld().getName())){
+			Player player = event.getPlayer();
+			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentlvl").setValue(event.getNewLevel());
+		}
+	}
+	
 	private void calc_timeonline(String player){
 		if( BeardStat.loginTimes.containsKey(player)){
 			long seconds = ((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L;
