@@ -201,7 +201,7 @@ public class StatPlayerListener implements Listener {
 		if(!worlds.contains(event.getPlayer().getWorld().getName())){
 			Player player = event.getPlayer();
 			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","lifetimexp").incrementStat(event.getAmount());
-			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentxp").setValue(player.getTotalExperience() + event.getAmount());
+			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentexp").setValue(player.getTotalExperience() + event.getAmount());
 		}
 	}
 	
