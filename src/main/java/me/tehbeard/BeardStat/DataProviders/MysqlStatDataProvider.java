@@ -19,7 +19,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
  */
 public class MysqlStatDataProvider extends IStatDataProvider {
 
-	Connection conn;
+	protected Connection conn;
 	
 	private String host;
 	private String database;
@@ -60,7 +60,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 						" `category` varchar(32) NOT NULL DEFAULT 'stats',"+
 						" `stat` varchar(32) NOT NULL DEFAULT '-',"+
 						" `value` int(11) NOT NULL DEFAULT '0',"+
-						" PRIMARY KEY (`player`,`category`,`stat`)"+
+						" PRIMARY KEY (`player`)"+
 						") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 				ps.executeUpdate();
 				ps.close();
@@ -81,7 +81,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			BeardStat.printDebugCon("Preparing statements");
 
 			keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`");
-			//prepGetPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
 			prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
 			BeardStat.printDebugCon("Player stat statement created");
 			prepSetPlayerStat = conn.prepareStatement("INSERT INTO `stats`(`player`,`category`,`stat`,`value`) values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
@@ -101,7 +100,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			BeardStat.printCon("MySQL Library not found!");
 		}
 		createConnection();
@@ -164,7 +162,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	}
 	@Override
 	public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
-		// TODO Auto-generated method stub
 		try {
 			long t1 = (new Date()).getTime();
 			PlayerStatBlob pb = null;
@@ -188,7 +185,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 			return pb;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -215,7 +211,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		public void run() {
 			BeardStat.printDebugCon("[Writing to database]");
 
-			// TODO Auto-generated method stub
 			try {
 
 
@@ -256,7 +251,6 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 					}
 				
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
 				createConnection();
 				prepareStatements();
