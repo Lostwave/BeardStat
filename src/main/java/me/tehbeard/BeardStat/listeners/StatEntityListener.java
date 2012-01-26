@@ -177,18 +177,22 @@ public class StatEntityListener implements Listener{
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBowShoot(EntityShootBowEvent event){
-		if(event.getEntity() instanceof Player){
-			Player p = (Player) event.getEntity();
-			
-			//total shots fired
-			PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","shots").incrementStat(1);
-			
-			if(event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)){
-				PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","fireshots").incrementStat(1);
-			}
-			
-			if(event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)){
-				PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","infiniteshots").incrementStat(1);
+
+		if(event.isCancelled()==false && !worlds.contains(event.getEntity().getWorld().getName())){
+			if(event.getEntity() instanceof Player){
+				Player p = (Player) event.getEntity();
+
+				//total shots fired
+				PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","shots").incrementStat(1);
+
+				if(event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)){
+					PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","fireshots").incrementStat(1);
+				}
+
+				if(event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)){
+					PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","infiniteshots").incrementStat(1);
+				}
+
 			}
 		}
 	}
