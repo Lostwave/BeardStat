@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -154,6 +156,18 @@ public class StatEntityListener implements Listener{
 	public void onEntityTame(EntityTameEvent event) {
 		if(event.isCancelled()==false && event.getOwner() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
 			PlayerStatManager.getPlayerBlob(((Player)event.getOwner()).getName()).getStat("stats","tame"+event.getEntity().getClass().getSimpleName().replace("craft", "")).incrementStat(1);
+		}
+	}
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onPotionSplash(PotionSplashEvent event){
+		ThrownPotion potion = event.getPotion();
+		System.out.println("Potion class: " + potion.getClass().toString());
+		
+		for(Entity e :event.getAffectedEntities()){
+			if(e instanceof Player){
+				Player p = (Player) e;
+			PlayerStatManager.getPlayerBlob(p.getName()).getStat("potions","splashhit").incrementStat(1);
+			}
 		}
 	}
 }
