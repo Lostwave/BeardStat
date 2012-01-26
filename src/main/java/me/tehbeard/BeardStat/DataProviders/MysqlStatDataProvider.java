@@ -105,13 +105,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		createConnection();
 		checkAndMakeTable();
 		prepareStatements();
-
-
-
-
 	}
-
-
 
 	public PlayerStatBlob pullPlayerStatBlob(String player) {
 		return pullPlayerStatBlob(player,true);
@@ -177,10 +171,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			}
 			rs.close();
 
-
-
 			BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-
 			if(pb.getStats().size()==0 && create==false){return null;}
 
 			return pb;
@@ -190,16 +181,12 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		return null;
 	}
 
-
 	private HashMap<String,PlayerStatBlob> pullCacheToThread(){
 		synchronized(writeCache){
 			HashMap<String,PlayerStatBlob> tmp = writeCache;
 			writeCache = new HashMap<String,PlayerStatBlob>();
 			return tmp;
-
 		}
-
-
 	}
 
 	class sqlFlusher implements Runnable {

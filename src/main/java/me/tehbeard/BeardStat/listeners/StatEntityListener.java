@@ -5,7 +5,7 @@ import java.util.List;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
-import org.bukkit.block.Block;
+
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -15,7 +15,6 @@ import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -42,12 +41,8 @@ public class StatEntityListener implements Listener{
 		if(event.isCancelled()==false && !worlds.contains(event.getEntity().getWorld().getName())){
 
 			Entity attacker = null;
-			Block block = null;
 			if(event instanceof EntityDamageByEntityEvent){
 				attacker = ((EntityDamageByEntityEvent)event).getDamager();
-			}
-			if(event instanceof EntityDamageByBlockEvent){
-				block  = ((EntityDamageByBlockEvent)event).getDamager();
 			}
 			Entity entity = event.getEntity();
 			int damage = event.getDamage();
@@ -57,6 +52,7 @@ public class StatEntityListener implements Listener{
 				//global damage count
 				PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","total").incrementStat(damage);
 				PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken", cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
+				
 				//pvp damage
 				if(attacker instanceof Player){
 					PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","player").incrementStat(damage);
@@ -89,15 +85,10 @@ public class StatEntityListener implements Listener{
 		}
 
 		Entity attacker = null;
-		Block block = null;
 
 		if(lastCause instanceof EntityDamageByEntityEvent){
 			attacker = ((EntityDamageByEntityEvent)lastCause).getDamager();
 			BeardStat.printDebugCon("attack ID'd Fired");//Type.ENTITY_DEATH
-		}
-		if(lastCause instanceof EntityDamageByBlockEvent){
-			BeardStat.printDebugCon("block ID'd Fired");//Type.ENTITY_DEATH
-			block = ((EntityDamageByBlockEvent)lastCause).getDamager();
 		}
 		Entity entity = event.getEntity();
 
