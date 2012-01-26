@@ -7,6 +7,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
 import org.bukkit.block.Block;
 
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
@@ -19,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.EntityTameEvent;
@@ -26,9 +28,9 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class StatEntityListener implements Listener{
 
-	
+
 	List<String> worlds;
-	
+
 
 	public StatEntityListener(List<String> worlds){
 		this.worlds = worlds;
@@ -50,29 +52,29 @@ public class StatEntityListener implements Listener{
 			Entity entity = event.getEntity();
 			int damage = event.getDamage();
 			DamageCause cause = event.getCause();
-				//if the player gets attacked
-				if(entity instanceof Player){
-					//global damage count
-					PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","total").incrementStat(damage);
-					PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken", cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
-					//pvp damage
-					if(attacker instanceof Player){
-						PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","player").incrementStat(damage);
-						PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt","player").incrementStat(damage);
-						//mob damage
-					} else if(attacker!=null){				
-						PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",attacker.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(damage);
-					}
-
-
-				}else{
-					if(attacker instanceof Player){
-						//global damage dealt
-						PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt","total").incrementStat(damage);
-						PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt",cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
-						PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt",entity.getClass().getSimpleName().toLowerCase().replace("craft","")).incrementStat(damage);
-					}				
+			//if the player gets attacked
+			if(entity instanceof Player){
+				//global damage count
+				PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","total").incrementStat(damage);
+				PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken", cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
+				//pvp damage
+				if(attacker instanceof Player){
+					PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","player").incrementStat(damage);
+					PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt","player").incrementStat(damage);
+					//mob damage
+				} else if(attacker!=null){				
+					PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",attacker.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(damage);
 				}
+
+
+			}else{
+				if(attacker instanceof Player){
+					//global damage dealt
+					PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt","total").incrementStat(damage);
+					PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt",cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
+					PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt",entity.getClass().getSimpleName().toLowerCase().replace("craft","")).incrementStat(damage);
+				}				
+			}
 
 		}
 	}
@@ -83,7 +85,7 @@ public class StatEntityListener implements Listener{
 		EntityDamageEvent lastCause = event.getEntity().getLastDamageCause();
 		DamageCause cause = null;
 		if(lastCause!=null){
-		cause = lastCause.getCause();
+			cause = lastCause.getCause();
 		}
 
 		Entity attacker = null;
@@ -98,18 +100,18 @@ public class StatEntityListener implements Listener{
 			block = ((EntityDamageByBlockEvent)lastCause).getDamager();
 		}
 		Entity entity = event.getEntity();
-		
+
 		//set attacker and entity total k/d accordingly
 		if(entity instanceof Player){
 			PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths","total").incrementStat(1);
 			if(cause!=null){
-			PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
+				PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
 			}
 		}
 		if(attacker instanceof Player){
 			PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills","total").incrementStat(1);
 			if(cause!=null){
-			PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
+				PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
 			}
 
 		}
@@ -138,11 +140,11 @@ public class StatEntityListener implements Listener{
 		}
 
 
-		 
+
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-		
+
 		if(event.isCancelled()==false && event.getEntity() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
 			int amount = event.getAmount();
 			RegainReason reason = event.getRegainReason();
@@ -160,13 +162,33 @@ public class StatEntityListener implements Listener{
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPotionSplash(PotionSplashEvent event){
-		ThrownPotion potion = event.getPotion();
-		System.out.println("Potion class: " + potion.getClass().toString());
-		
-		for(Entity e :event.getAffectedEntities()){
-			if(e instanceof Player){
-				Player p = (Player) e;
-			PlayerStatManager.getPlayerBlob(p.getName()).getStat("potions","splashhit").incrementStat(1);
+		if(event.isCancelled()==false && !worlds.contains(event.getPotion().getWorld().getName())){
+			ThrownPotion potion = event.getPotion();
+			System.out.println("Potion class: " + potion.getClass().toString());
+
+			for(Entity e :event.getAffectedEntities()){
+				if(e instanceof Player){
+					Player p = (Player) e;
+					PlayerStatManager.getPlayerBlob(p.getName()).getStat("potions","splashhit").incrementStat(1);
+				}
+			}
+		}
+	}
+
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onBowShoot(EntityShootBowEvent event){
+		if(event.getEntity() instanceof Player){
+			Player p = (Player) event.getEntity();
+			
+			//total shots fired
+			PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","shots").incrementStat(1);
+			
+			if(event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)){
+				PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","fireshots").incrementStat(1);
+			}
+			
+			if(event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)){
+				PlayerStatManager.getPlayerBlob(p.getName()).getStat("bow","infiniteshots").incrementStat(1);
 			}
 		}
 	}

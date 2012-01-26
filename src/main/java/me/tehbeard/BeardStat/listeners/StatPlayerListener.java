@@ -162,7 +162,6 @@ public class StatPlayerListener implements Listener {
 							action!=null &&
 							clickedBlock!=null){
 
-
 						if(result.equals(Result.DENY)==false){
 							/*lighter
 							  sign
