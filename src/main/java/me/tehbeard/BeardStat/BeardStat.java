@@ -33,6 +33,9 @@ public class BeardStat extends JavaPlugin {
 
 
 
+	public static  BeardStat self(){
+		return self;
+	}
 	private static BeardStat self;
 	private int runner;
 	public static HashMap<String,Long> loginTimes = new HashMap<String,Long>();

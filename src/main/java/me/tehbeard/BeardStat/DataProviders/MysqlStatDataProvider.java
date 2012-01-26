@@ -158,7 +158,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	@Override
 	public void flush() {
 		//run SQL in async thread
-		Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(null, new sqlFlusher(pullCacheToThread()));
+		Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new sqlFlusher(pullCacheToThread()));
 
 		//(new sqlFlusher(pullCacheToThread())).run();
 	}
