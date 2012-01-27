@@ -37,7 +37,6 @@ public class StatPlayerListener implements Listener {
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
-		// TODO Auto-generated method stub
 		if(event.getAnimationType()==PlayerAnimationType.ARM_SWING){
 			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","armswing").incrementStat(1);
 		}
@@ -45,7 +44,6 @@ public class StatPlayerListener implements Listener {
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		// TODO Auto-generated method stub
 		PlayerStatManager.getPlayerBlob(event.getPlayer().getName());
 		PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","login").incrementStat(1);
 		PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogin").setValue( (int)((new Date()).getTime()/1000L));

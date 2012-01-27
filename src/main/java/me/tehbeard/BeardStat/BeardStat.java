@@ -76,7 +76,7 @@ public class BeardStat extends JavaPlugin {
 
 
 		self = this;
-
+		
 		printCon("Starting BeardStat");
 
 
