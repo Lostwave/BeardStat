@@ -17,17 +17,17 @@ import org.bukkit.Bukkit;
  */
 public class PlayerStatManager {
 
-	private static HashMap<String,PlayerStatBlob> cache = new HashMap<String,PlayerStatBlob>();
-	private static IStatDataProvider backendDatabase = null;
+	private HashMap<String,PlayerStatBlob> cache = new HashMap<String,PlayerStatBlob>();
+	private IStatDataProvider backendDatabase = null;
 
-	public static void setDatabase(IStatDataProvider database){
-		PlayerStatManager.backendDatabase = database;
+	public PlayerStatManager(IStatDataProvider database){
+		backendDatabase = database;
 	}
 	/**
 	 * clears the cache of all offline players, and optionally flushes the data to the backend storage.
 	 * @param flush
 	 */
-	public static void clearCache(boolean flush){
+	public void clearCache(boolean flush){
 		if(backendDatabase == null){return;}
 		Iterator<Entry<String, PlayerStatBlob>> i = cache.entrySet().iterator();
 		if(i==null){return;}
@@ -38,7 +38,7 @@ public class PlayerStatManager {
 				if(BeardStat.loginTimes.containsKey(player)){
 					long seconds = (((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L);
 					BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
-					PlayerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+					getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 					BeardStat.loginTimes.put(player,(new Date()).getTime());
 				}
 				backendDatabase.pushPlayerStatBlob(entry.getValue());
@@ -56,7 +56,7 @@ public class PlayerStatManager {
 	/**
 	 * Force save of all cached stats to backend storage
 	 */
-	public static void saveCache(){
+	public void saveCache(){
 		if(backendDatabase == null){return;}
 		Iterator<Entry<String, PlayerStatBlob>> i = cache.entrySet().iterator();
 
@@ -66,7 +66,7 @@ public class PlayerStatManager {
 			if(BeardStat.loginTimes.containsKey(player)){
 				long seconds = (((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L);
 				BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
-				PlayerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+				getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 				BeardStat.loginTimes.put(player,(new Date()).getTime());
 			}
 			
@@ -85,7 +85,7 @@ public class PlayerStatManager {
 	 * @param name
 	 * @return
 	 */
-	public static PlayerStatBlob getPlayerBlob(String name){
+	public PlayerStatBlob getPlayerBlob(String name){
 		if(backendDatabase == null){return null;}
 		if(!cache.containsKey(name)){
 			cache.put(name,backendDatabase.pullPlayerStatBlob(name));
@@ -97,7 +97,7 @@ public class PlayerStatManager {
 	 * @param name player to find
 	 * @return The player's stat blob or a null if not found
 	 */
-	public static PlayerStatBlob findPlayerBlob(String name){
+	public PlayerStatBlob findPlayerBlob(String name){
 		if(backendDatabase == null){return null;}
 		if(!cache.containsKey(name)){
 			PlayerStatBlob pbs = backendDatabase.pullPlayerStatBlob(name,false);
@@ -108,7 +108,7 @@ public class PlayerStatManager {
 		}
 		return cache.get(name);
 	}
-	public static void flush(){
+	public void flush(){
 		backendDatabase.flush();
 	}
 }

@@ -17,6 +17,12 @@ import org.bukkit.entity.Player;
 public class playedOtherCommand implements CommandExecutor {
 
 
+	private PlayerStatManager playerStatManager;
+
+	public playedOtherCommand(PlayerStatManager playerStatManager) {
+		this.playerStatManager = playerStatManager;
+	}
+
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
 			String[] args) {
 		Player pp = null ;
@@ -40,12 +46,12 @@ public class playedOtherCommand implements CommandExecutor {
 			PlayerStatBlob blob;
 
 			if(pp==null){
-				blob = PlayerStatManager.findPlayerBlob(args[0]);
+				blob = playerStatManager.findPlayerBlob(args[0]);
 				sender.sendMessage(ChatColor.GOLD + args[0]);
 			}
 			else
 			{
-				blob = PlayerStatManager.findPlayerBlob(pp.getName());
+				blob = playerStatManager.findPlayerBlob(pp.getName());
 				sender.sendMessage(ChatColor.GOLD + pp.getName());
 				seconds +=(				(
 						(new Date()).getTime() - BeardStat.loginTimes.get(pp.getName())

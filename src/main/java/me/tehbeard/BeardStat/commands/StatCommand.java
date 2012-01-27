@@ -16,6 +16,11 @@ import org.bukkit.entity.Player;
 
 public class StatCommand implements CommandExecutor {
 
+	private PlayerStatManager playerStatManager;
+
+	public StatCommand(PlayerStatManager playerStatManager) {
+		this.playerStatManager = playerStatManager;
+	}
 
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
 			String[] args) {
@@ -36,7 +41,7 @@ public class StatCommand implements CommandExecutor {
 
 						sender.sendMessage(ChatColor.LIGHT_PURPLE + "getting stats in category");
 						HashSet<String> stats = new HashSet<String>();
-						for( PlayerStat ps :PlayerStatManager.getPlayerBlob(((Player)sender).getName()).getStats()){
+						for( PlayerStat ps :playerStatManager.getPlayerBlob(((Player)sender).getName()).getStats()){
 							if(ps.getCat().equals(args[1])){
 								stats.add(ps.getName());
 							}
@@ -67,7 +72,7 @@ public class StatCommand implements CommandExecutor {
 					}else{
 						sender.sendMessage(ChatColor.LIGHT_PURPLE + "getting categories");
 						HashSet<String> cats = new HashSet<String>();
-						for( PlayerStat ps :PlayerStatManager.getPlayerBlob(((Player)sender).getName()).getStats()){
+						for( PlayerStat ps :playerStatManager.getPlayerBlob(((Player)sender).getName()).getStats()){
 							if(!cats.contains(ps.getCat())){
 								cats.add(ps.getCat());
 							}
@@ -105,8 +110,8 @@ public class StatCommand implements CommandExecutor {
 					if(part.length==2){
 						BeardStat.printDebugCon("sending stat to player"); 
 
-						if(PlayerStatManager.getPlayerBlob(((Player)sender).getName()).hasStat(part[0],part[1])){
-							sender.sendMessage(arg +": " + PlayerStatManager.getPlayerBlob(((Player)sender).getName()).getStat(part[0],part[1]).getValue());
+						if(playerStatManager.getPlayerBlob(((Player)sender).getName()).hasStat(part[0],part[1])){
+							sender.sendMessage(arg +": " + playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat(part[0],part[1]).getValue());
 						}
 						else
 						{
@@ -127,7 +132,7 @@ public class StatCommand implements CommandExecutor {
 
 				//send playtime
 				if(BeardStat.loginTimes.containsKey((((Player)sender).getName()))){
-					long seconds = PlayerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() +
+					long seconds = playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() +
 							(((new Date()).getTime() - BeardStat.loginTimes.get(((Player)sender).getName()))/1000);
 					int weeks   = (int) seconds / 604800;
 					int days = (int)Math.ceil((seconds -604800*weeks) / 86400);
@@ -155,8 +160,8 @@ public class StatCommand implements CommandExecutor {
 						BeardStat.printDebugCon(cat + " -> " + stat);
 					}
 
-					if(PlayerStatManager.getPlayerBlob(((Player)sender).getName()).hasStat(cat,stat)){
-						sender.sendMessage(ChatColor.LIGHT_PURPLE + statTitle[i]+ ": " + ChatColor.WHITE + PlayerStatManager.getPlayerBlob(((Player)sender).getName()).getStat(cat,stat).getValue());
+					if(playerStatManager.getPlayerBlob(((Player)sender).getName()).hasStat(cat,stat)){
+						sender.sendMessage(ChatColor.LIGHT_PURPLE + statTitle[i]+ ": " + ChatColor.WHITE + playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat(cat,stat).getValue());
 					}
 					i+=1;
 				}

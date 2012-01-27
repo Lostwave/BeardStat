@@ -13,11 +13,17 @@ import org.bukkit.entity.Player;
 
 public class playedCommand implements CommandExecutor {
 
+	private PlayerStatManager playerStatManager;
+
+	public playedCommand(PlayerStatManager playerStatManager) {
+		this.playerStatManager = playerStatManager;
+		}
+
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
 			String[] args) {
 		if(sender instanceof Player){
 			if(!BeardStat.hasPermission((Player)sender, "command.played")){return true;}
-			long seconds = PlayerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() +
+			long seconds = playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() +
 			(((new Date()).getTime() - BeardStat.loginTimes.get(((Player)sender).getName()))/1000);
 			int weeks   = (int) seconds / 604800;
 			int days = (int)Math.ceil((seconds -604800*weeks) / 86400);

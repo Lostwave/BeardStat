@@ -30,23 +30,24 @@ import org.bukkit.inventory.ItemStack;
 public class StatPlayerListener implements Listener {
 
 	List<String> worlds;
+	private PlayerStatManager playerStatManager;
 
-
-	public StatPlayerListener(List<String> worlds){
+	public StatPlayerListener(List<String> worlds,PlayerStatManager playerStatManager){
 		this.worlds = worlds;
-	}
+		this.playerStatManager = playerStatManager;
+		}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
 		if(event.getAnimationType()==PlayerAnimationType.ARM_SWING){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","armswing").incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","armswing").incrementStat(1);
 		}
 
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		PlayerStatManager.getPlayerBlob(event.getPlayer().getName());
-		PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","login").incrementStat(1);
-		PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogin").setValue( (int)((new Date()).getTime()/1000L));
+		playerStatManager.getPlayerBlob(event.getPlayer().getName());
+		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","login").incrementStat(1);
+		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogin").setValue( (int)((new Date()).getTime()/1000L));
 		BeardStat.loginTimes.put(event.getPlayer().getName(), (new Date()).getTime());
 
 	}
@@ -54,14 +55,14 @@ public class StatPlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerChat(PlayerChatEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chatletters").incrementStat(event.getMessage().length());
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chat").incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chatletters").incrementStat(event.getMessage().length());
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chat").incrementStat(1);
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerDropItem(PlayerDropItemEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(
+			playerStatManager.getPlayerBlob(
 					event.getPlayer().getName()).getStat("itemdrop",event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","")).incrementStat(event.getItemDrop().getItemStack().getAmount()
 							);
 		}
@@ -69,14 +70,14 @@ public class StatPlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerFish(PlayerFishEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","fishcaught").incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","fishcaught").incrementStat(1);
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerKick(PlayerKickEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","kicks").incrementStat(1);
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogout").setValue( (int)((new Date()).getTime()/1000L));
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","kicks").incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogout").setValue( (int)((new Date()).getTime()/1000L));
 			calc_timeonline(event.getPlayer().getName());
 		}
 
@@ -84,7 +85,7 @@ public class StatPlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 
-		PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogout").setValue( (int)((new Date()).getTime()/1000L));
+		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogout").setValue( (int)((new Date()).getTime()/1000L));
 		calc_timeonline(event.getPlayer().getName());
 
 	}
@@ -101,21 +102,21 @@ public class StatPlayerListener implements Listener {
 			from = event.getFrom();
 			to = event.getTo();
 			if(from.distance(to) < 5){
-				PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)from.distance(to));
+				playerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)from.distance(to));
 			}
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("itempickup",event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","")).incrementStat(event.getItem().getItemStack().getAmount());
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("itempickup",event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","")).incrementStat(event.getItem().getItemStack().getAmount());
 
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerPortal(PlayerPortalEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","portal").incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","portal").incrementStat(1);
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -124,11 +125,11 @@ public class StatPlayerListener implements Listener {
 			TeleportCause teleportCause = event.getCause();
 			Player player = event.getPlayer();
 			if(teleportCause == TeleportCause.ENDER_PEARL){
-				PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse","enderpearl").incrementStat(1);
+				playerStatManager.getPlayerBlob(player.getName()).getStat("itemuse","enderpearl").incrementStat(1);
 			}
 			else
 			{
-				PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","teleport").incrementStat(1);
+				playerStatManager.getPlayerBlob(player.getName()).getStat("stats","teleport").incrementStat(1);
 			}
 
 		}
@@ -136,14 +137,14 @@ public class StatPlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("block","fill"+ event.getBucket().toString()).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("block","fill"+ event.getBucket().toString()).incrementStat(1);
 
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("block","empty"+ event.getBucket().toString()).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("block","empty"+ event.getBucket().toString()).incrementStat(1);
 
 		}
 	}
@@ -176,15 +177,15 @@ public class StatPlayerListener implements Listener {
 									item.getType()==Material.WATER_BUCKET||
 									item.getType()==Material.LAVA_BUCKET
 							){
-								PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",item.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+								playerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",item.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
 							}
 						}
 						if(clickedBlock.getType() == Material.CAKE_BLOCK||
 								(clickedBlock.getType() == Material.TNT && item.getType()==Material.FLINT_AND_STEEL)){
-							PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+							playerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
 						}
 						if(clickedBlock.getType().equals(Material.CHEST)){
-							PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","openchest").incrementStat(1);
+							playerStatManager.getPlayerBlob(player.getName()).getStat("stats","openchest").incrementStat(1);
 						}
 
 					}
@@ -199,8 +200,8 @@ public class StatPlayerListener implements Listener {
 	public void onPlayerExp(PlayerExpChangeEvent event){
 		if(!worlds.contains(event.getPlayer().getWorld().getName())){
 			Player player = event.getPlayer();
-			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","lifetimexp").incrementStat(event.getAmount());
-			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentexp").setValue(player.getTotalExperience() + event.getAmount());
+			playerStatManager.getPlayerBlob(player.getName()).getStat("exp","lifetimexp").incrementStat(event.getAmount());
+			playerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentexp").setValue(player.getTotalExperience() + event.getAmount());
 		}
 	}
 	
@@ -208,7 +209,7 @@ public class StatPlayerListener implements Listener {
 	public void onPlayerExpLevel(PlayerLevelChangeEvent event){
 		if(!worlds.contains(event.getPlayer().getWorld().getName())){
 			Player player = event.getPlayer();
-			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentlvl").setValue(event.getNewLevel());
+			playerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentlvl").setValue(event.getNewLevel());
 		}
 	}
 
@@ -218,15 +219,15 @@ public class StatPlayerListener implements Listener {
 		Player player = event.getEnchanter();
 		
 		if(event.isCancelled()==false && !worlds.contains(player.getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(player.getName()).getStat("enchant","total").incrementStat(1);
-			PlayerStatManager.getPlayerBlob(player.getName()).getStat("enchant","totallvlspent").incrementStat(event.getExpLevelCost());
+			playerStatManager.getPlayerBlob(player.getName()).getStat("enchant","total").incrementStat(1);
+			playerStatManager.getPlayerBlob(player.getName()).getStat("enchant","totallvlspent").incrementStat(event.getExpLevelCost());
 		}
 	}
 	
 	private void calc_timeonline(String player){
 		if( BeardStat.loginTimes.containsKey(player)){
 			long seconds = ((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L;
-			PlayerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+			playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 
 			BeardStat.loginTimes.remove(player);		
 		}

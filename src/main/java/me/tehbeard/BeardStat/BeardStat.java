@@ -38,9 +38,19 @@ public class BeardStat extends JavaPlugin {
 	}
 	private static BeardStat self;
 	private int runner;
+	private PlayerStatManager playerStatManager;
 	public static HashMap<String,Long> loginTimes = new HashMap<String,Long>();
 	private static final String PERM_PREFIX = "stat";
 
+	/**
+	 * Returns the stat manager for use by other plugins
+	 * @return
+	 */
+	public PlayerStatManager getStatManager(){
+		return playerStatManager;
+	}
+	
+	
 	public static boolean hasPermission(Permissible player,String node){
 
 		return player.hasPermission(PERM_PREFIX + "." + node);
@@ -66,7 +76,7 @@ public class BeardStat extends JavaPlugin {
 		printCon("Stopping auto flusher");
 		getServer().getScheduler().cancelTask(runner);
 		printCon("Flushing cache to database");
-		PlayerStatManager.saveCache();
+		playerStatManager.saveCache();
 		printCon("Cache flushed to database");
 
 		self = null;
@@ -119,7 +129,7 @@ public class BeardStat extends JavaPlugin {
 			getPluginLoader().disablePlugin(this);
 			return;
 		}
-		PlayerStatManager.setDatabase(db);
+		playerStatManager = new PlayerStatManager(db);
 
 
 
@@ -131,9 +141,9 @@ public class BeardStat extends JavaPlugin {
 
 		//block listener
 		List<String> worldList = getConfig().getStringList("stats.worlds");
-		StatBlockListener sbl = new StatBlockListener(worldList);
-		StatPlayerListener spl = new StatPlayerListener(worldList);
-		StatEntityListener sel = new StatEntityListener(worldList);
+		StatBlockListener sbl = new StatBlockListener(worldList,playerStatManager);
+		StatPlayerListener spl = new StatPlayerListener(worldList,playerStatManager);
+		StatEntityListener sel = new StatEntityListener(worldList,playerStatManager);
 		
 		getServer().getPluginManager().registerEvents(sbl, this);
 		getServer().getPluginManager().registerEvents(spl, this);
@@ -145,10 +155,10 @@ public class BeardStat extends JavaPlugin {
 		runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 2400L, 2400L);
 
 		printCon("Loading commands");
-		getCommand("stats").setExecutor(new StatCommand());
-		getCommand("played").setExecutor(new playedCommand());
-		getCommand("playedother").setExecutor(new playedOtherCommand());
-		getCommand("statsget").setExecutor(new StatGetCommand());
+		getCommand("stats").setExecutor(new StatCommand(playerStatManager));
+		getCommand("played").setExecutor(new playedCommand(playerStatManager));
+		getCommand("playedother").setExecutor(new playedOtherCommand(playerStatManager));
+		getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
 
 		for(Player player: getServer().getOnlinePlayers()){
 			BeardStat.loginTimes.put(player.getName(), (new Date()).getTime());
@@ -191,7 +201,7 @@ public class BeardStat extends JavaPlugin {
 
 		public void run() {
 			BeardStat.printCon("Flushing to database.");
-			PlayerStatManager.clearCache(true);
+			playerStatManager.clearCache(true);
 			BeardStat.printCon("flush completed");
 		}
 

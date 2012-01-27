@@ -15,25 +15,28 @@ public class StatBlockListener implements Listener{
 
 	List<String> worlds;
 
+	private PlayerStatManager playerStatManager;
 
-	public StatBlockListener(List<String> worlds){
+	public StatBlockListener(List<String> worlds,	PlayerStatManager playerStatManager){
 		this.worlds = worlds;
+		this.playerStatManager = playerStatManager;
+
 	}
 
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
 		}
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
-			PlayerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
 		}
 	}
 

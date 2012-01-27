@@ -20,6 +20,12 @@ import org.bukkit.entity.Player;
 public class StatGetCommand implements CommandExecutor {
 
 
+	private PlayerStatManager playerStatManager;
+
+	public StatGetCommand(PlayerStatManager playerStatManager) {
+		this.playerStatManager = playerStatManager;
+	}
+
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 		if(sender instanceof Player){
@@ -27,7 +33,7 @@ public class StatGetCommand implements CommandExecutor {
 		}
 
 		if(args.length > 1){
-			PlayerStatBlob psb = PlayerStatManager.findPlayerBlob(args[0]);
+			PlayerStatBlob psb = playerStatManager.findPlayerBlob(args[0]);
 			if(psb==null){
 				sender.sendMessage("player not found");
 				return true;
@@ -104,7 +110,7 @@ public class StatGetCommand implements CommandExecutor {
 			for(int i=1;i<args.length;i++){
 				arg = args[i];
 				String[] part = arg.split("\\.");
-				
+
 
 				if(part.length==2){
 					BeardStat.printDebugCon("sending stat to player"); 
