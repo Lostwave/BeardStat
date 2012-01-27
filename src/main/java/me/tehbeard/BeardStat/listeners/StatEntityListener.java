@@ -99,6 +99,7 @@ public class StatEntityListener implements Listener{
 				PlayerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
 			}
 		}
+		
 		if(attacker instanceof Player){
 			PlayerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills","total").incrementStat(1);
 			if(cause!=null){

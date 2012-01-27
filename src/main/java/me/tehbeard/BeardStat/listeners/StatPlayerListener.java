@@ -17,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -210,6 +211,17 @@ public class StatPlayerListener implements Listener {
 		if(!worlds.contains(event.getPlayer().getWorld().getName())){
 			Player player = event.getPlayer();
 			PlayerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentlvl").setValue(event.getNewLevel());
+		}
+	}
+
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onEnchant(EnchantItemEvent event){
+		
+		Player player = event.getEnchanter();
+		
+		if(event.isCancelled()==false && !worlds.contains(player.getWorld().getName())){
+			PlayerStatManager.getPlayerBlob(player.getName()).getStat("enchant","total").incrementStat(1);
+			PlayerStatManager.getPlayerBlob(player.getName()).getStat("enchant","totallvlspent").incrementStat(event.getExpLevelCost());
 		}
 	}
 	
