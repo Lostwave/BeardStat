@@ -8,3 +8,9 @@ stats:
   worlds:
     - creative
     - tutorialIsland
+  pages:
+    default:
+      "blocks placed": "stats.totalblockcreate"
+      "blocks broken": "stats.totalblockdestroy"
+      kills: "kills.total"
+      deaths: "deaths.total"
