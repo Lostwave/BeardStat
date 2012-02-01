@@ -1,11 +1,15 @@
 package me.tehbeard.BeardStat.DataProviders;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 
@@ -19,9 +23,10 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 	YamlConfiguration database;
 
 	
-
+	File file;
 	public FlatFileStatDataProvider(File file) {
 		database = YamlConfiguration.loadConfiguration(file);
+		this.file = file;
 		BeardStat.printCon("Creating FlatFile DataProvider");
 		
 
@@ -34,14 +39,14 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 
 	public PlayerStatBlob pullPlayerStatBlob(String player,boolean create) {
 		// TODO Auto-generated method stub
-		/*BeardStat.printCon("Loading stats for player " + player);
+		BeardStat.printDebugCon("Loading stats for player " + player);
 
 		try{
-			ConfigurationNode pl = database.get("stats.players." + player);
+			ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
 
 			PlayerStatBlob blob = new PlayerStatBlob(player,0);
 			if(pl!=null){
-				for(String key : pl.getKeys()){
+				for(String key : pl.getKeys(false)){
 					BeardStat.printDebugCon("loading stat " +key);
 					BeardStat.printDebugCon("parts " + key.split("\\-")[0] + " : "+
 							key.split("\\-")[1]);
@@ -60,24 +65,28 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 		catch(Exception e){
 			e.printStackTrace();
 			return null;
-		}*/
-		return null;
+		}
 	}
 
 
 	
 	public void pushPlayerStatBlob(PlayerStatBlob player) {
 		// TODO Auto-generated method stub
-		/*HashMap<String,Integer> nodes = new HashMap<String, Integer>();
+		HashMap<String,Integer> nodes = new HashMap<String, Integer>();
 
 		for(PlayerStat stat : player.getStats()){
 
 			nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
 
 		}
-		database.setProperty("stats.players." + player.getName(), nodes);
+		database.set("stats.players." + player.getName(), nodes);
 		//TODO: Flush to I/O every X Seconds?
-		database.save();*/
+		try {
+			database.save(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
