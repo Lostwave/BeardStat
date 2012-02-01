@@ -101,8 +101,10 @@ public class StatPlayerListener implements Listener {
 			Player player = event.getPlayer();
 			from = event.getFrom();
 			to = event.getTo();
-			if(from.distance(to) < 5){
-				playerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)from.distance(to));
+			if(from.getWorld().equals(to.getWorld())){
+				if(from.distance(to) < 5){
+					playerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)from.distance(to));
+				}
 			}
 		}
 	}
@@ -158,9 +160,9 @@ public class StatPlayerListener implements Listener {
 				ItemStack item = event.getItem();
 				Block clickedBlock = event.getClickedBlock();
 				Result result = event.useItemInHand();
-					if(item !=null &&
-							action!=null &&
-							clickedBlock!=null){
+				if(item !=null &&
+						action!=null &&
+						clickedBlock!=null){
 
 						if(result.equals(Result.DENY)==false){
 							/*lighter
@@ -188,7 +190,8 @@ public class StatPlayerListener implements Listener {
 							playerStatManager.getPlayerBlob(player.getName()).getStat("stats","openchest").incrementStat(1);
 						}
 
-					}
+
+				}
 
 
 
