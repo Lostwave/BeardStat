@@ -101,8 +101,10 @@ public class StatPlayerListener implements Listener {
 			Player player = event.getPlayer();
 			from = event.getFrom();
 			to = event.getTo();
-			if(from.distance(to) < 5){
-				PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)from.distance(to));
+			if(from.getWorld().equals(to.getWorld())){
+				if(from.distance(to) < 5){
+					PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)from.distance(to));
+				}
 			}
 		}
 	}
@@ -158,38 +160,38 @@ public class StatPlayerListener implements Listener {
 				ItemStack item = event.getItem();
 				Block clickedBlock = event.getClickedBlock();
 				Result result = event.useItemInHand();
-					if(item !=null &&
-							action!=null &&
-							clickedBlock!=null){
+				if(item !=null &&
+						action!=null &&
+						clickedBlock!=null){
 
 
-						if(result.equals(Result.DENY)==false){
-							/*lighter
+					if(result.equals(Result.DENY)==false){
+						/*lighter
 							  sign
 							  tnt
 							  bucket
 							  waterbucket
 							  lavabucket
 							  cakeblock*/
-							if(item.getType()==Material.FLINT_AND_STEEL ||
-									item.getType()==Material.FLINT_AND_STEEL ||
-									item.getType()==Material.SIGN ||
-									item.getType()==Material.BUCKET||
-									item.getType()==Material.WATER_BUCKET||
-									item.getType()==Material.LAVA_BUCKET
-							){
-								PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",item.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
-							}
+						if(item.getType()==Material.FLINT_AND_STEEL ||
+								item.getType()==Material.FLINT_AND_STEEL ||
+								item.getType()==Material.SIGN ||
+								item.getType()==Material.BUCKET||
+								item.getType()==Material.WATER_BUCKET||
+								item.getType()==Material.LAVA_BUCKET
+								){
+							PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",item.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
 						}
-						if(clickedBlock.getType() == Material.CAKE_BLOCK||
-								(clickedBlock.getType() == Material.TNT && item.getType()==Material.FLINT_AND_STEEL)){
-							PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
-						}
-						if(clickedBlock.getType().equals(Material.CHEST)){
-							PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","openchest").incrementStat(1);
-						}
-
 					}
+					if(clickedBlock.getType() == Material.CAKE_BLOCK||
+							(clickedBlock.getType() == Material.TNT && item.getType()==Material.FLINT_AND_STEEL)){
+						PlayerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+					}
+					if(clickedBlock.getType().equals(Material.CHEST)){
+						PlayerStatManager.getPlayerBlob(player.getName()).getStat("stats","openchest").incrementStat(1);
+					}
+
+				}
 
 
 
