@@ -3,7 +3,7 @@ echo "Building BeardStat"
 
 #Get Initial version
 VERSION=`git describe --tags`
-TARGET_DIR="/home/james/bukkit/plugins/BeardStat-0.0.1-SNAPSHOT.jar"
+TARGET_DIR="/home/james/bukkit/plugins/BeardStat.jar"
 
 #Add Uncommited  and DEV tags
 # Update the index
@@ -28,7 +28,7 @@ TARGET_DIR="/home/james/bukkit/plugins/BeardStat-0.0.1-SNAPSHOT.jar"
 
     if [ $err = 1 ]
     then
-        VERSION=$VERSION"-DEV-"`date +%s`
+        #VERSION=$VERSION"-DEV-"`date +%s`
         echo  "ALERT: Building Uncommited changes!"
 
     fi
@@ -46,7 +46,7 @@ mvn package
 cp plugin.yml src/main/resources/plugin.yml
 
 echo "Installing to local bukkit server"
-cp target/BeardStat-0.0.1-SNAPSHOT.jar $TARGET_DIR
+cp target/BeardStat-0.4.jar $TARGET_DIR
 
 echo "Done"
 echo "Version:" $VERSION
