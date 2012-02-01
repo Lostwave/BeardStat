@@ -35,6 +35,8 @@ public class StatCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.GREEN + "/stats kills.total deaths.total : value of those stats");
 					sender.sendMessage(ChatColor.GREEN + "/stats -c : list categories you have stats for");
 					sender.sendMessage(ChatColor.GREEN + "/stats -c blockcreate : List stats you have for that category");
+					sender.sendMessage(ChatColor.GREEN + "/statpage : list available stat pages");
+					sender.sendMessage(ChatColor.GREEN + "/statpage page : show a specific stat page");
 					return true;
 				}
 				if(args[0].equals("-c")){
@@ -148,7 +150,7 @@ public class StatCommand implements CommandExecutor {
 							minutes + ChatColor.LIGHT_PURPLE + " mins ");
 				}
 
-				Bukkit.dispatchCommand(sender, "/statpage default");
+				Bukkit.dispatchCommand(sender, "statpage default");
 				
 				
 			}
