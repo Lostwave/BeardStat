@@ -63,7 +63,7 @@ public class BeardStat extends JavaPlugin {
 
 	public static void printDebugCon(String line){
 
-		if(self.getConfig().getBoolean("general.debug", false)){
+		if(self != null && self.getConfig().getBoolean("general.debug", false)){
 			System.out.println("[BeardStat][DEBUG] " + line);
 
 		}
