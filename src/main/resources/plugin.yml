@@ -1,5 +1,6 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
+softdepend: [vault]
 version: {VERSION}
 commands:
     stats:
