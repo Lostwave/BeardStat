@@ -113,7 +113,7 @@ public class StatEntityListener implements Listener{
 		//PVP
 		if(entity instanceof Player && attacker instanceof Player){
 			playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths","player").incrementStat(1);
-			playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills","Player").incrementStat(1);
+			playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills","player").incrementStat(1);
 		}
 		//global damage count
 
