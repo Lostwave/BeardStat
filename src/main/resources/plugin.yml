@@ -22,6 +22,10 @@ commands:
         description: Show stats for an offline player
         usage: /statsget [Player] [stats]...
         aliases: [bstatsget]
+    statpage:
+        description: View the various stats pages
+        usage: /statpage [page]
+        aliases: [bstatpage]
 permissions:
   stat.*:
     description: Allows use of all stat commands

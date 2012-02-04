@@ -38,7 +38,7 @@ public class PlayerStatManager {
 				if(BeardStat.loginTimes.containsKey(player)){
 					long seconds = (((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L);
 					BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
-					getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+				getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 					BeardStat.loginTimes.put(player,(new Date()).getTime());
 				}
 				backendDatabase.pushPlayerStatBlob(entry.getValue());

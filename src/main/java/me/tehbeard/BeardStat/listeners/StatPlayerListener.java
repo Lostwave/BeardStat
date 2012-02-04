@@ -7,7 +7,6 @@ import me.tehbeard.BeardStat.BeardStat;
 
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -139,14 +138,14 @@ public class StatPlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("block","fill"+ event.getBucket().toString()).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","fill"+ event.getBucket().toString()).incrementStat(1);
 
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("block","empty"+ event.getBucket().toString()).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","empty"+ event.getBucket().toString()).incrementStat(1);
 
 		}
 	}

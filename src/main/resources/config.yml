@@ -8,3 +8,13 @@ stats:
   worlds:
     - creative
     - tutorialIsland
+  pages:
+    default:
+      - "blocks placed:stats.totalblockcreate"
+      - "blocks broken:stats.totalblockdestroy"
+      - "kills:kills.total"
+      - "deaths:deaths.total"
+    archery:
+      - "total shots:bow.shots"
+      - "fire shots:bow.fireshots"
+      - "Epirus bow shots:bow.infiniteshots"

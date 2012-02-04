@@ -8,6 +8,7 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,6 +35,8 @@ public class StatCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.GREEN + "/stats kills.total deaths.total : value of those stats");
 					sender.sendMessage(ChatColor.GREEN + "/stats -c : list categories you have stats for");
 					sender.sendMessage(ChatColor.GREEN + "/stats -c blockcreate : List stats you have for that category");
+					sender.sendMessage(ChatColor.GREEN + "/statpage : list available stat pages");
+					sender.sendMessage(ChatColor.GREEN + "/statpage page : show a specific stat page");
 					return true;
 				}
 				if(args[0].equals("-c")){
@@ -147,24 +150,7 @@ public class StatCommand implements CommandExecutor {
 							minutes + ChatColor.LIGHT_PURPLE + " mins ");
 				}
 
-				//display default stats
-				String[] stats = {"stats.totalblockcreate","stats.totalblockdestroy","kills.total","deaths.total"};
-				String[] statTitle = {"blocks placed","blocks broken","kills","deaths"};
-				int i =0;
-				for(String stati:stats){
-					String cat=null;
-					String stat=null;
-					if(stati.split("\\.").length==2){
-						cat = stati.split("\\.")[0];
-						stat = stati.split("\\.")[1];
-						BeardStat.printDebugCon(cat + " -> " + stat);
-					}
-
-					if(playerStatManager.getPlayerBlob(((Player)sender).getName()).hasStat(cat,stat)){
-						sender.sendMessage(ChatColor.LIGHT_PURPLE + statTitle[i]+ ": " + ChatColor.WHITE + playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat(cat,stat).getValue());
-					}
-					i+=1;
-				}
+				Bukkit.dispatchCommand(sender, "statpage default");
 				
 				
 			}
