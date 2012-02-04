@@ -74,7 +74,7 @@ public class StatPlayerListener implements Listener {
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerKick(PlayerKickEvent event){
-		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
+		if(event.isCancelled()==false){
 			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","kicks").incrementStat(1);
 			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogout").setValue( (int)((new Date()).getTime()/1000L));
 			calc_timeonline(event.getPlayer().getName());
