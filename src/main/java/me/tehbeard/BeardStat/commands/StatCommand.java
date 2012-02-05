@@ -89,11 +89,6 @@ public class StatCommand implements CommandExecutor {
 									if(i>0){msg+=", ";}
 									msg+=it.next();
 								}
-								else
-								{
-									sender.sendMessage(msg);
-									break;
-								}
 							}
 							sender.sendMessage(msg);
 							msg="";
