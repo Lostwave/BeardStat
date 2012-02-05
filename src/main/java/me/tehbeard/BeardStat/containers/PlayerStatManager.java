@@ -9,6 +9,7 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 
+
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -77,7 +78,14 @@ public class PlayerStatManager {
 			
 			
 		}
+		if(backendDatabase instanceof MysqlStatDataProvider){
+			MysqlStatDataProvider sq = (MysqlStatDataProvider)backendDatabase;
+			sq.flushNow();
+		}
+		else
+		{
 		backendDatabase.flush();
+		}
 	}
 
 
@@ -111,9 +119,7 @@ public class PlayerStatManager {
 		return cache.get(name);
 	}
 	public void flush(){
-		if(backendDatabase instanceof MysqlStatDataProvider){
-			((MysqlStatDataProvider)backendDatabase).flushNow();
-		}
+		
 		backendDatabase.flush();
 	}
 }

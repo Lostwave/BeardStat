@@ -25,14 +25,29 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	private String database;
 	private String username;
 	private String password;
-	
-	private boolean flushNOW =false;
+
 	//protected static PreparedStatement prepGetPlayerStat;
 	protected static PreparedStatement prepGetAllPlayerStat;
 	protected static PreparedStatement prepSetPlayerStat;
 	protected static PreparedStatement keepAlive;
 
 	private static HashMap<String,PlayerStatBlob> writeCache = new HashMap<String,PlayerStatBlob>();
+
+	public MysqlStatDataProvider(String host,String database,String username,String password) throws SQLException{
+
+		this.host = host;
+		this.database = database;
+		this.username = username;
+		this.password = password;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			BeardStat.printCon("MySQL Library not found!");
+		}
+		createConnection();
+		checkAndMakeTable();
+		prepareStatements();
+	}
 
 	protected void createConnection(){
 		String conUrl = String.format("jdbc:mysql://%s/%s",
@@ -96,21 +111,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		}
 	}
 
-	public MysqlStatDataProvider(String host,String database,String username,String password) throws SQLException{
 
-		this.host = host;
-		this.database = database;
-		this.username = username;
-		this.password = password;
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			BeardStat.printCon("MySQL Library not found!");
-		}
-		createConnection();
-		checkAndMakeTable();
-		prepareStatements();
-	}
 
 	public PlayerStatBlob pullPlayerStatBlob(String player) {
 		return pullPlayerStatBlob(player,true);
@@ -155,14 +156,8 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	@Override
 	public void flush() {
 		//run SQL in async thread
-		if(flushNOW==false){
 		Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new sqlFlusher(pullCacheToThread()));
-		}
-		else
-		{
-			System.out.println("Saving in same thread");
-			(new sqlFlusher(pullCacheToThread())).run();
-		}
+
 	}
 	@Override
 	public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
@@ -232,6 +227,9 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 				}
 
 				int[] r = prepSetPlayerStat.executeBatch();
+				for(int rr :r){
+					BeardStat.printCon(":: " +rr);
+				}
 
 				long t2 = (new Date()).getTime();
 				BeardStat.printDebugCon("[Database write Completed]");
@@ -251,7 +249,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	}
 
 	public void flushNow(){
-		flushNOW = true;
-	
+		System.out.println("Saving in same thread");
+		(new sqlFlusher(pullCacheToThread())).run();
 	}
 }
