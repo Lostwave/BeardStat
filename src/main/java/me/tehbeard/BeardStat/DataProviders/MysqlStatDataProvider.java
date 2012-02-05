@@ -20,7 +20,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 public class MysqlStatDataProvider extends IStatDataProvider {
 
 	protected Connection conn;
-	
+
 	private String host;
 	private String database;
 	private String username;
@@ -55,13 +55,16 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			ResultSet rs = conn.getMetaData().getTables(null, null, "stats", null);
 			if (!rs.next()) {
 				BeardStat.printCon("Stats table not found, creating table");
-				PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
-						" `player` varchar(32) NOT NULL DEFAULT '-',"+
-						" `category` varchar(32) NOT NULL DEFAULT 'stats',"+
-						" `stat` varchar(32) NOT NULL DEFAULT '-',"+
-						" `value` int(11) NOT NULL DEFAULT '0',"+
-						" PRIMARY KEY (`player`)"+
-						") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+				PreparedStatement ps = conn.prepareStatement(
+								"CREATE TABLE IF NOT EXISTS `stats` (" +
+								"`player` varchar(32) NOT NULL," +
+								"`category` varchar(32) NOT NULL," +
+								"`stat` varchar(32) NOT NULL," +
+								"`value` int(11) NOT NULL," +
+								"UNIQUE KEY `entryIndex` (`player`,`category`,`stat`)," +
+								"KEY `player` (`player`))" +
+						" ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
 				ps.executeUpdate();
 				ps.close();
 				BeardStat.printCon("created table");
@@ -197,46 +200,40 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		}
 		public void run() {
 			BeardStat.printDebugCon("[Writing to database]");
-
 			try {
+				//KEEP ALIVE  
+				keepAlive.clearBatch();
+				keepAlive.executeQuery();
 
-
-				
-					//KEEP ALIVE  
-					keepAlive.clearBatch();
-					keepAlive.executeQuery();
-
-
-
-					Long t1 = (new Date()).getTime();
-					int objects = 0;
-					prepSetPlayerStat.clearBatch();
-					for(PlayerStatBlob pb:toWrite.values()){
-						BeardStat.printDebugCon("Packing stats for "+pb.getName());
-						BeardStat.printDebugCon("[");
-						for(PlayerStat ps:pb.getStats()){
-							BeardStat.printDebugCon("stat: " + ps.getCat() + "->"+ ps.getName() + " = " + ps.getValue());
-							prepSetPlayerStat.setString(1, pb.getName());
-							prepSetPlayerStat.setString(2, ps.getCat());
-							prepSetPlayerStat.setString(3, ps.getName());
-							prepSetPlayerStat.setInt(4, ps.getValue());
-							prepSetPlayerStat.setInt(5, ps.getValue());
-							prepSetPlayerStat.addBatch();
-							objects+=1;
-						}
-						BeardStat.printDebugCon("]");
+				Long t1 = (new Date()).getTime();
+				int objects = 0;
+				prepSetPlayerStat.clearBatch();
+				for(PlayerStatBlob pb:toWrite.values()){
+					BeardStat.printDebugCon("Packing stats for "+pb.getName());
+					BeardStat.printDebugCon("[");
+					for(PlayerStat ps:pb.getStats()){
+						BeardStat.printDebugCon("stat: " + ps.getCat() + "->"+ ps.getName() + " = " + ps.getValue());
+						prepSetPlayerStat.setString(1, pb.getName());
+						prepSetPlayerStat.setString(2, ps.getCat());
+						prepSetPlayerStat.setString(3, ps.getName());
+						prepSetPlayerStat.setInt(4, ps.getValue());
+						prepSetPlayerStat.setInt(5, ps.getValue());
+						prepSetPlayerStat.addBatch();
+						objects+=1;
 					}
+					BeardStat.printDebugCon("]");
+				}
 
-					prepSetPlayerStat.executeBatch();
+				int[] r = prepSetPlayerStat.executeBatch();
 
-					long t2 = (new Date()).getTime();
-					BeardStat.printDebugCon("[Database write Completed]");
-					BeardStat.printDebugCon("Objects written to database: " + objects);
-					BeardStat.printDebugCon("Time taken to write to Database: " + (t2-t1) + "milliseconds");
-					if(objects > 0){
-						BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
-					}
-				
+				long t2 = (new Date()).getTime();
+				BeardStat.printDebugCon("[Database write Completed]");
+				BeardStat.printDebugCon("Objects written to database: " + objects);
+				BeardStat.printDebugCon("Time taken to write to Database: " + (t2-t1) + "milliseconds");
+				if(objects > 0){
+					BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
+				}
+
 			} catch (SQLException e) {
 				BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
 				createConnection();
