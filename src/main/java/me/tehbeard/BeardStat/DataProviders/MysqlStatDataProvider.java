@@ -228,7 +228,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 				int[] r = prepSetPlayerStat.executeBatch();
 				for(int rr :r){
-					BeardStat.printCon(":: " +rr);
+					BeardStat.printDebugCon(":: " +rr);
 				}
 
 				long t2 = (new Date()).getTime();
