@@ -25,6 +25,8 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	private String database;
 	private String username;
 	private String password;
+	
+	private boolean flushNOW =false;
 	//protected static PreparedStatement prepGetPlayerStat;
 	protected static PreparedStatement prepGetAllPlayerStat;
 	protected static PreparedStatement prepSetPlayerStat;
@@ -61,7 +63,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 								"`category` varchar(32) NOT NULL," +
 								"`stat` varchar(32) NOT NULL," +
 								"`value` int(11) NOT NULL," +
-								"UNIQUE KEY `entryIndex` (`player`,`category`,`stat`)," +
+								"PRIMARY KEY `entryIndex` (`player`,`category`,`stat`)," +
 								"KEY `player` (`player`))" +
 						" ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
@@ -86,7 +88,9 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 			keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`");
 			prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
 			BeardStat.printDebugCon("Player stat statement created");
-			prepSetPlayerStat = conn.prepareStatement("INSERT INTO `stats`(`player`,`category`,`stat`,`value`) values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
+			prepSetPlayerStat = conn.prepareStatement("INSERT INTO `stats`" +
+					"(`player`,`category`,`stat`,`value`) " +
+					"values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
 			BeardStat.printDebugCon("Set player stat statement created");
 			BeardStat.printCon("Initaised MySQL Data Provider.");
 		} catch (SQLException e) {
@@ -153,9 +157,14 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	@Override
 	public void flush() {
 		//run SQL in async thread
+		if(flushNOW==false){
 		Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new sqlFlusher(pullCacheToThread()));
-
-		//(new sqlFlusher(pullCacheToThread())).run();
+		}
+		else
+		{
+			System.out.println("Saving in same thread");
+			(new sqlFlusher(pullCacheToThread())).run();
+		}
 	}
 	@Override
 	public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
@@ -243,4 +252,8 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 
 	}
 
+	public void flushNow(){
+		flushNOW = true;
+	
+	}
 }
