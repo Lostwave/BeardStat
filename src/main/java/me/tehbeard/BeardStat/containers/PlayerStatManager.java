@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat.containers;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -12,7 +13,6 @@ import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 /**
  * Provides a cache between backend storage and the stats plugin
  * @author James
@@ -30,7 +30,7 @@ public class PlayerStatManager {
 	 * clears the cache of all offline players, and optionally flushes the data to the backend storage.
 	 * @param flush
 	 */
-	public void clearCache(boolean flush){
+	public void clearCache(List<String> onlinePlayers,boolean flush){
 		if(backendDatabase == null){return;}
 		Iterator<Entry<String, PlayerStatBlob>> i = cache.entrySet().iterator();
 		if(i==null){return;}
@@ -47,7 +47,7 @@ public class PlayerStatManager {
 				backendDatabase.pushPlayerStatBlob(entry.getValue());
 			}
 			//remove offline players
-			if(Bukkit.getServer().getPlayer(entry.getKey())==null){
+			if(!onlinePlayers.contains(entry.getKey())){
 				i.remove();
 			}
 			

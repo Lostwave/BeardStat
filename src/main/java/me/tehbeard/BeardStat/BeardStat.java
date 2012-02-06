@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat;
 import java.io.File;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.tehbeard.BeardStat.commands.*;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.listeners.*;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -203,7 +205,11 @@ public class BeardStat extends JavaPlugin {
 
 		public void run() {
 			BeardStat.printCon("Flushing to database.");
-			playerStatManager.clearCache(true);
+			List<String> players = new ArrayList<String>(Bukkit.getOnlinePlayers().length);
+			for(Player p: Bukkit.getOnlinePlayers()){
+				players.add(p.getName());
+			}
+			playerStatManager.clearCache(players,true);
 			BeardStat.printCon("flush completed");
 		}
 
