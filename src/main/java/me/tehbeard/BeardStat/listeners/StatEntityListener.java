@@ -151,7 +151,7 @@ public class StatEntityListener implements Listener{
         if((entity instanceof Player)==false && attacker instanceof Player){
             //global damage dealt
             //playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kill_by_"+ cause.toString().toLowerCase()).incrementStat(1);
-            playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills", entity.getClass().getSimpleName().replace("Craft", "")).incrementStat(1);
+            playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills", entity.getClass().getSimpleName().replace("Craft", "").replace("Part","").toLowerCase()).incrementStat(1);
         }				
         //ENTITY KILLS PLAYER
         if((entity instanceof Player) && !(attacker instanceof Player) && attacker !=null){
