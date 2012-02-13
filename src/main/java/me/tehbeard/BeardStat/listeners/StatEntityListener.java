@@ -7,6 +7,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
 
 
+import org.bukkit.Effect;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.*;
 
 public class StatEntityListener implements Listener{
 
@@ -61,13 +63,12 @@ public class StatEntityListener implements Listener{
                 //global damage count
                 playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","total").incrementStat(damage);
                 //handle projectiles
-                if(cause == DamageCause.PROJECTILE){
+                if(projectile!=null){
                     playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",projectile.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(damage);
                 }
-                else
-                {
+                
                     playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken", cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
-                }
+                
 
                 //pvp damage
                 if(attacker instanceof Player){
@@ -101,10 +102,14 @@ public class StatEntityListener implements Listener{
         }
 
         Entity attacker = null;
-
+        Projectile projectile = null;
         if(lastCause instanceof EntityDamageByEntityEvent){
             attacker = ((EntityDamageByEntityEvent)lastCause).getDamager();
             BeardStat.printDebugCon("attack ID'd Fired");//Type.ENTITY_DEATH
+            if(attacker instanceof Projectile){
+                projectile  = ((Projectile)attacker);
+                attacker = projectile.getShooter();
+            }
         }
         Entity entity = event.getEntity();
 
@@ -114,12 +119,18 @@ public class StatEntityListener implements Listener{
             if(cause!=null){
                 playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
             }
+            if(projectile!=null){
+                playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",projectile.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(1);
+            }
         }
 
         if(attacker instanceof Player){
             playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills","total").incrementStat(1);
             if(cause!=null){
                 playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
+            }
+            if(projectile!=null){
+                playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",projectile.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(1);
             }
 
         }
@@ -141,8 +152,6 @@ public class StatEntityListener implements Listener{
         //ENTITY KILLS PLAYER
         if((entity instanceof Player) && !(attacker instanceof Player) && attacker !=null){
             playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",attacker.getClass().getSimpleName().replace("Craft", "")).incrementStat(1);
-            BeardStat.printDebugCon("Death by entity for player logged");
-            BeardStat.printDebugCon("" + attacker.getClass().getSimpleName().replace("Craft", ""));
 
 
         }
@@ -172,11 +181,16 @@ public class StatEntityListener implements Listener{
     public void onPotionSplash(PotionSplashEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPotion().getWorld().getName())){
             ThrownPotion potion = event.getPotion();
-
+            
             for(Entity e :event.getAffectedEntities()){
                 if(e instanceof Player){
                     Player p = (Player) e;
                     playerStatManager.getPlayerBlob(p.getName()).getStat("potions","splashhit").incrementStat(1);
+                    //added per potion details
+                    for(PotionEffect potionEffect : potion.getEffects()){
+                     String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
+                     playerStatManager.getPlayerBlob(p.getName()).getStat("potions","splash" + effect).incrementStat(1);
+                    }
                 }
             }
         }
