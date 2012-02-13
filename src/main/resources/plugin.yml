@@ -1,6 +1,6 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
-version: {VERSION}
+version: ${project.plugin.version}
 commands:
     stats:
         description: Show stats about yourself
