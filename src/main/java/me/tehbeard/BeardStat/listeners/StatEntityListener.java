@@ -41,19 +41,23 @@ public class StatEntityListener implements Listener{
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
+    public void onEntityDamage(EntityDamageEvent event) {
 
         if(event.isCancelled()==false && !worlds.contains(event.getEntity().getWorld().getName())){
 
-            Entity attacker = event.getDamager();
-
+            Entity attacker = null;
             Projectile projectile = null;
-            //handle arrow attacks
-            if(event.getDamager() instanceof Projectile){
-                projectile  = ((Projectile)attacker);
-                attacker = projectile.getShooter();
-            }
+            if(event instanceof EntityDamageByEntityEvent){
+                EntityDamageByEntityEvent ed = (EntityDamageByEntityEvent)event;
+                attacker = ed.getDamager();
 
+                
+                //handle arrow attacks
+                if(ed.getDamager() instanceof Projectile){
+                    projectile  = ((Projectile)attacker);
+                    attacker = projectile.getShooter();
+                }
+            }
 
             Entity entity = event.getEntity();
             int damage = event.getDamage();
@@ -66,9 +70,9 @@ public class StatEntityListener implements Listener{
                 if(projectile!=null){
                     playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",projectile.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(damage);
                 }
-                
-                    playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken", cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
-                
+
+                playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken", cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
+
 
                 //pvp damage
                 if(attacker instanceof Player){
@@ -181,15 +185,15 @@ public class StatEntityListener implements Listener{
     public void onPotionSplash(PotionSplashEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPotion().getWorld().getName())){
             ThrownPotion potion = event.getPotion();
-            
+
             for(Entity e :event.getAffectedEntities()){
                 if(e instanceof Player){
                     Player p = (Player) e;
                     playerStatManager.getPlayerBlob(p.getName()).getStat("potions","splashhit").incrementStat(1);
                     //added per potion details
                     for(PotionEffect potionEffect : potion.getEffects()){
-                     String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
-                     playerStatManager.getPlayerBlob(p.getName()).getStat("potions","splash" + effect).incrementStat(1);
+                        String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
+                        playerStatManager.getPlayerBlob(p.getName()).getStat("potions","splash" + effect).incrementStat(1);
                     }
                 }
             }
