@@ -26,6 +26,11 @@ commands:
         description: View the various stats pages
         usage: /statpage [page]
         aliases: [bstatpage]
+    laston:
+        description: View the various stats pages
+        usage: /laston [player]
+        aliases: [blaston]
+        
 permissions:
   stat.*:
     description: Allows use of all stat commands
@@ -36,6 +41,7 @@ permissions:
       stat.command.played.other: true
       stat.command.stat.get: true
       stat.command.stat.other: true
+      stat.command.laston: true
   stat.players:
     description: Allows use of all stat commands
     default: true
@@ -56,5 +62,7 @@ permissions:
   stat.command.stat.other:
     description: View other's stats
     default: op
-
+  stat.command.laston:
+    description: View when a player was last online
+    default: op
     
