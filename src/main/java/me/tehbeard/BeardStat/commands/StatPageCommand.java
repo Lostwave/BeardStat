@@ -3,7 +3,6 @@ package me.tehbeard.BeardStat.commands;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -15,7 +14,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 public class StatPageCommand implements CommandExecutor {
 
