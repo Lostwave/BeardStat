@@ -117,7 +117,7 @@ public class BeardStat extends JavaPlugin {
 						getConfig().getString("stats.database.password")
 						);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+			    System.out.println("Panic! Chaos! Something happened when trying to access the sql server, error dump below.");
 				e.printStackTrace();
 			}
 		}
@@ -146,10 +146,11 @@ public class BeardStat extends JavaPlugin {
 		StatBlockListener sbl = new StatBlockListener(worldList,playerStatManager);
 		StatPlayerListener spl = new StatPlayerListener(worldList,playerStatManager);
 		StatEntityListener sel = new StatEntityListener(worldList,playerStatManager);
-		
+		StatVehicleListener svl = new StatVehicleListener(worldList, playerStatManager);
 		getServer().getPluginManager().registerEvents(sbl, this);
 		getServer().getPluginManager().registerEvents(spl, this);
 		getServer().getPluginManager().registerEvents(sel, this);
+		getServer().getPluginManager().registerEvents(svl, this);
 		
 
 
