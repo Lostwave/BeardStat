@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
+
 public class StatVehicleListener implements Listener {
 
     
@@ -37,8 +38,10 @@ public class StatVehicleListener implements Listener {
             if(from.getWorld().equals(to.getWorld())){
                 if(from.distance(to) < 10){
                     playerStatManager.getPlayerBlob(player.getName()).getStat("vehicle",
-                            event.getVehicle().getClass().getSimpleName().toLowerCase().replace("craft", "")
+                            event.getVehicle().getType().toString().toLowerCase()
                             ).incrementStat((int)from.distance(to));
+                    
+                    
                 }
             }
         }
