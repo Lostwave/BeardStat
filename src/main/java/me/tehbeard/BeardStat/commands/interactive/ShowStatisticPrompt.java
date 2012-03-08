@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
@@ -41,7 +42,7 @@ public class ShowStatisticPrompt extends MessagePrompt{
     public String getPromptText(ConversationContext context) {
         Player player = ((Player)context.getForWhom());
         String msg = (String)context.getSessionData("c") + " :: " + (String)context.getSessionData("s") + " ";
-        msg += playerStatManager.getPlayerBlob(player.getName()).getStat((String)context.getSessionData("c"), (String)context.getSessionData("s")).getValue();
+        msg += FormatFactory.formatStat(playerStatManager.getPlayerBlob(player.getName()).getStat((String)context.getSessionData("c"), (String)context.getSessionData("s")));
         return msg;
     }
 

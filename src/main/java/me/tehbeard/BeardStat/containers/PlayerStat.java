@@ -21,9 +21,6 @@ public class PlayerStat{
 		this.cat=cat;
 	}
 
-	public PlayerStat(String name){
-		this("stats",name,0);
-	}
 
 
 	/**
@@ -70,8 +67,7 @@ public class PlayerStat{
 	}
 
 
-	public String getCat() {
-		
+	public String getCat() {	
 		return cat;
 	}
 
