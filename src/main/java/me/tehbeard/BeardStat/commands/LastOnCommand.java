@@ -11,7 +11,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class LastOnCommand implements CommandExecutor {
 
@@ -19,9 +18,9 @@ public class LastOnCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
             String[] args) {
-        Player pp = null ;
         if(args.length==1){
             if(!BeardStat.hasPermission(sender, "command.laston")){return true;}
+            
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
             if(player!=null){
                 Date d = new Date(player.getLastPlayed());
@@ -30,6 +29,14 @@ public class LastOnCommand implements CommandExecutor {
             }
             sender.sendMessage(ChatColor.GOLD + "Could not find record for player " + args[0] + ".");
 
+        }
+        if(args.length == 0){
+            if(Bukkit.getOfflinePlayers().length < 20){
+                for(OfflinePlayer p:Bukkit.getOfflinePlayers()){
+                    Date d = new Date(p.getLastPlayed());
+                    sender.sendMessage(ChatColor.DARK_RED + p.getName() +" "+ ChatColor.GOLD + d.toString());
+                }
+            }
         }
 
         return false;
