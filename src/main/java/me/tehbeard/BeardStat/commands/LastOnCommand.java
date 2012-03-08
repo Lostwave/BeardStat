@@ -31,7 +31,7 @@ public class LastOnCommand implements CommandExecutor {
 
         }
         if(args.length == 0){
-            if(Bukkit.getOfflinePlayers().length < 20){
+            if(BeardStat.self().getConfig().getBoolean("stats.lastonall",false)){
                 for(OfflinePlayer p:Bukkit.getOfflinePlayers()){
                     Date d = new Date(p.getLastPlayed());
                     sender.sendMessage(ChatColor.DARK_RED + p.getName() +" "+ ChatColor.GOLD + d.toString());
