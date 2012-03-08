@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
@@ -13,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.conversations.Conversation;
 import org.bukkit.entity.Player;
 
 public class StatCommand implements CommandExecutor {
@@ -21,6 +23,7 @@ public class StatCommand implements CommandExecutor {
 
 	public StatCommand(PlayerStatManager playerStatManager) {
 		this.playerStatManager = playerStatManager;
+		
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
@@ -28,10 +31,14 @@ public class StatCommand implements CommandExecutor {
 		if(sender instanceof Player){
 			if(!BeardStat.hasPermission((Player)sender, "command.stat")){return true;}
 			if(args.length > 0){
+	             if(args[0].equals("-i")){
+	                 ((Player) sender).beginConversation(new Conversation(BeardStat.self(), (Player)sender, SelectCategoryPrompt.getInstance()));
+	             }
 				if(args[0].equals("-h")){
 					sender.sendMessage(ChatColor.GREEN + "Stats Help page");
 					sender.sendMessage(ChatColor.GREEN + "/stats : Default display of your stats");
 					sender.sendMessage(ChatColor.GREEN + "/stats -h : This page");
+					sender.sendMessage(ChatColor.GREEN + "/stats -i : Interactive stats menu");
 					sender.sendMessage(ChatColor.GREEN + "/stats kills.total deaths.total : value of those stats");
 					sender.sendMessage(ChatColor.GREEN + "/stats -c : list categories you have stats for");
 					sender.sendMessage(ChatColor.GREEN + "/stats -c blockcreate : List stats you have for that category");
