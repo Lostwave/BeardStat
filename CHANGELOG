@@ -3,3 +3,5 @@ Grapefruit release
 * Latest RB Support
 * /laston command to view when a player was last online
 * added vehicle stat tracking
+* Added interactive stat navigation using Conversation API
+* Updated entity listeners to use EntityType for name generation
