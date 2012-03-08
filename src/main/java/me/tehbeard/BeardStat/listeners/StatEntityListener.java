@@ -6,6 +6,7 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ComplexEntityPart;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -57,6 +58,9 @@ public class StatEntityListener implements Listener{
             }
 
             Entity entity = event.getEntity();
+            if(entity instanceof ComplexEntityPart){
+                entity = ((ComplexEntityPart)entity).getParent();
+            }
             int damage = event.getDamage();
             DamageCause cause = event.getCause();
             //if the player gets attacked
