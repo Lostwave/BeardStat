@@ -65,7 +65,7 @@ public class StatEntityListener implements Listener{
                 playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken","total").incrementStat(damage);
                 //handle projectiles
                 if(projectile!=null){
-                    playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",projectile.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(damage);
+                    playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",projectile.getType().toString().toLowerCase().replace("_", "")).incrementStat(damage);
                 }
 
                 playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken", cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
@@ -77,7 +77,7 @@ public class StatEntityListener implements Listener{
                     playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt","player").incrementStat(damage);
                     //mob damage
                 } else if(attacker!=null){				
-                    playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",attacker.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(damage);
+                    playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("damagetaken",attacker.getType().toString().toLowerCase().replace("_", "")).incrementStat(damage);
                 }
 
 
@@ -86,7 +86,7 @@ public class StatEntityListener implements Listener{
                     //global damage dealt
                     playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt","total").incrementStat(damage);
                     playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt",cause.toString().toLowerCase().replace("_","")).incrementStat(damage);
-                    playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt",entity.getClass().getSimpleName().toLowerCase().replace("craft","")).incrementStat(damage);
+                    playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("damagedealt",entity.getType().toString().toLowerCase().replace("_","")).incrementStat(damage);
                 }				
             }
 
@@ -121,7 +121,7 @@ public class StatEntityListener implements Listener{
                 playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
             }
             if(projectile!=null){
-                playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",projectile.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(1);
+                playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",projectile.getType().toString().toLowerCase().replace("_", "")).incrementStat(1);
             }
         }
 
@@ -131,7 +131,7 @@ public class StatEntityListener implements Listener{
                 playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",cause.toString().toLowerCase().replace("_","")).incrementStat(1);
             }
             if(projectile!=null){
-                playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",projectile.getClass().getSimpleName().toLowerCase().replace("craft", "")).incrementStat(1);
+                playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills",projectile.getType().toString().toLowerCase().replace("_", "")).incrementStat(1);
             }
 
         }
@@ -148,11 +148,11 @@ public class StatEntityListener implements Listener{
         if((entity instanceof Player)==false && attacker instanceof Player){
             //global damage dealt
             //playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kill_by_"+ cause.toString().toLowerCase()).incrementStat(1);
-            playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills", entity.getClass().getSimpleName().replace("Craft", "").replace("Part","").toLowerCase()).incrementStat(1);
+            playerStatManager.getPlayerBlob(((Player)attacker).getName()).getStat("kills", entity.getType().toString().replace("_", "").toLowerCase()).incrementStat(1);
         }				
         //ENTITY KILLS PLAYER
         if((entity instanceof Player) && !(attacker instanceof Player) && attacker !=null){
-            playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",attacker.getClass().getSimpleName().replace("Craft", "")).incrementStat(1);
+            playerStatManager.getPlayerBlob(((Player)entity).getName()).getStat("deaths",attacker.getType().toString().replace("_", "")).incrementStat(1);
 
 
         }
@@ -175,7 +175,7 @@ public class StatEntityListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
         if(event.isCancelled()==false && event.getOwner() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
-            playerStatManager.getPlayerBlob(((Player)event.getOwner()).getName()).getStat("stats","tame"+event.getEntity().getClass().getSimpleName().replace("craft", "")).incrementStat(1);
+            playerStatManager.getPlayerBlob(((Player)event.getOwner()).getName()).getStat("stats","tame"+event.getEntity().getType().toString().replace("_", "")).incrementStat(1);
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
