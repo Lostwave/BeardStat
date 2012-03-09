@@ -208,13 +208,17 @@ public class BeardStat extends JavaPlugin {
 	public class dbFlusher implements Runnable{
 
 		public void run() {
+		    if(getConfig().getBoolean("general.verbose",false)){
 			BeardStat.printCon("Flushing to database.");
+		    }
 			List<String> players = new ArrayList<String>(Bukkit.getOnlinePlayers().length);
 			for(Player p: Bukkit.getOnlinePlayers()){
 				players.add(p.getName());
 			}
 			playerStatManager.clearCache(players,true);
+			if(getConfig().getBoolean("general.verbose",false)){
 			BeardStat.printCon("flush completed");
+			}
 		}
 
 	}
