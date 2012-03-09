@@ -4,19 +4,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.entity.Player;
-
-import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
-import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
 public class FormatFactory{
 
-    private final PlayerStatManager playerStatManager;
     public static final FormatFactory instance = new FormatFactory();
     private Map<String,StatFormatter> mapping = new HashMap<String, StatFormatter>();
     private FormatFactory() {
-        playerStatManager = BeardStat.self().getStatManager();
         mapping.put("stats.playedfor",new StatFormatter() {
 
             public String format(int value) {

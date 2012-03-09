@@ -1,19 +1,15 @@
 package me.tehbeard.BeardStat.commands.interactive;
 
-import java.util.HashSet;
-import java.util.Iterator;
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.commands.formatters.FormatFactory;
-import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
-import org.bukkit.ChatColor;
+
 import org.bukkit.conversations.BooleanPrompt;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.MessagePrompt;
 import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.ValidatingPrompt;
 import org.bukkit.entity.Player;
 
 public class ShowStatisticPrompt extends MessagePrompt{
