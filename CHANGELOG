@@ -5,3 +5,4 @@ Grapefruit release
 * added vehicle stat tracking
 * Added interactive stat navigation using Conversation API
 * Updated entity listeners to use EntityType for name generation
+* Added crafting stats tracking
