@@ -147,10 +147,12 @@ public class BeardStat extends JavaPlugin {
 		StatPlayerListener spl = new StatPlayerListener(worldList,playerStatManager);
 		StatEntityListener sel = new StatEntityListener(worldList,playerStatManager);
 		StatVehicleListener svl = new StatVehicleListener(worldList, playerStatManager);
+		StatCraftListener scl = new StatCraftListener(worldList,playerStatManager);
 		getServer().getPluginManager().registerEvents(sbl, this);
 		getServer().getPluginManager().registerEvents(spl, this);
 		getServer().getPluginManager().registerEvents(sel, this);
 		getServer().getPluginManager().registerEvents(svl, this);
+		getServer().getPluginManager().registerEvents(scl, this);
 		
 
 
