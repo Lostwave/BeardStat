@@ -38,7 +38,6 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 	}
 
 	public PlayerStatBlob pullPlayerStatBlob(String player,boolean create) {
-		// TODO Auto-generated method stub
 		BeardStat.printDebugCon("Loading stats for player " + player);
 
 		try{
@@ -71,7 +70,6 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 
 	
 	public void pushPlayerStatBlob(PlayerStatBlob player) {
-		// TODO Auto-generated method stub
 		HashMap<String,Integer> nodes = new HashMap<String, Integer>();
 
 		for(PlayerStat stat : player.getStats()){
@@ -80,18 +78,16 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 
 		}
 		database.set("stats.players." + player.getName(), nodes);
-		//TODO: Flush to I/O every X Seconds?
 		try {
 			database.save(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    BeardStat.printCon("IO error occured when trying to save player data");
+		    e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void flush() {
-		// TODO Auto-generated method stub
 		//database.save();
 	}
 

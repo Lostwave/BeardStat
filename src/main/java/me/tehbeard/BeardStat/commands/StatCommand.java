@@ -1,6 +1,5 @@
 package me.tehbeard.BeardStat.commands;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -136,9 +135,9 @@ public class StatCommand implements CommandExecutor {
 				sender.sendMessage(ChatColor.GOLD + "-= your Stats =-");
 
 				//send playtime
-				if(BeardStat.loginTimes.containsKey((((Player)sender).getName()))){
+				
 					long seconds = playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() +
-							(((new Date()).getTime() - BeardStat.loginTimes.get(((Player)sender).getName()))/1000);
+							BeardStat.self().getSessionTime(((Player)sender).getName());
 					int weeks   = (int) seconds / 604800;
 					int days = (int)Math.ceil((seconds -604800*weeks) / 86400);
 					int hours = (int)Math.ceil((seconds - (86400 * days + 604800*weeks)) / 3600);
@@ -150,7 +149,7 @@ public class StatCommand implements CommandExecutor {
 							days + ChatColor.LIGHT_PURPLE + " days " + ChatColor.WHITE+
 							hours + ChatColor.LIGHT_PURPLE + " hours " + ChatColor.WHITE+
 							minutes + ChatColor.LIGHT_PURPLE + " mins ");
-				}
+				
 
 				Bukkit.dispatchCommand(sender, "statpage default");
 				

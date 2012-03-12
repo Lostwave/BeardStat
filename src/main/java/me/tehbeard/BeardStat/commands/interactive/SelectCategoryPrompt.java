@@ -65,7 +65,7 @@ public class SelectCategoryPrompt extends ValidatingPrompt{
     protected Prompt acceptValidatedInput(ConversationContext context,
             String input) {
         context.setSessionData("c", input);
-        return SelectCategoryPrompt.getInstance();
+        return SelectStatisticPrompt.getInstance();
     }
 
 }

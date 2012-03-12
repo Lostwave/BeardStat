@@ -1,7 +1,6 @@
 
 package me.tehbeard.BeardStat.commands;
 
-import java.util.Date;
 import java.util.List;
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -54,11 +53,8 @@ public class playedOtherCommand implements CommandExecutor {
 			{
 				blob = playerStatManager.findPlayerBlob(pp.getName());
 				sender.sendMessage(ChatColor.GOLD + pp.getName());
-				seconds +=(				(
-						(new Date()).getTime() - BeardStat.loginTimes.get(pp.getName())
+				seconds += BeardStat.self().getSessionTime(((Player)sender).getName());
 
-						)/1000L
-						);
 			}
 
 			if(blob != null){

@@ -38,12 +38,12 @@ public class PlayerStatManager {
 			Entry<String, PlayerStatBlob> entry = i.next();
 			if(flush){
 				String player = entry.getKey();
-				if(BeardStat.loginTimes.containsKey(player)){
-					long seconds = (((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L);
+					long seconds = BeardStat.self().getSessionTime(player);
+
 					BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
 				getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
-					BeardStat.loginTimes.put(player,(new Date()).getTime());
-				}
+					BeardStat.self().setLoginTime(player,(new Date()).getTime());
+				
 				backendDatabase.pushPlayerStatBlob(entry.getValue());
 			}
 			//remove offline players
@@ -66,14 +66,13 @@ public class PlayerStatManager {
 		while(i.hasNext()){
 			Entry<String, PlayerStatBlob> entry = i.next();
 			String player = entry.getKey();
-			if(BeardStat.loginTimes.containsKey(player)){
-				long seconds = (((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L);
+			
+				long seconds = BeardStat.self().getSessionTime(player);
+
 				BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
 				getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
-				BeardStat.loginTimes.put(player,(new Date()).getTime());
-			}
+				BeardStat.self().setLoginTime(player,System.currentTimeMillis());
 			
-			BeardStat.loginTimes.put(player,0L);
 			backendDatabase.pushPlayerStatBlob(entry.getValue());
 			
 			

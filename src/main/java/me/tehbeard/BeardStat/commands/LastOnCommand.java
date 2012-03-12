@@ -1,5 +1,6 @@
 package me.tehbeard.BeardStat.commands;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -24,7 +25,7 @@ public class LastOnCommand implements CommandExecutor {
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
             if(player!=null){
                 Date d = new Date(player.getLastPlayed());
-                sender.sendMessage(ChatColor.GOLD + d.toString());
+                sender.sendMessage(ChatColor.DARK_RED + args[0] +" was last on "+ ChatColor.GOLD + (new SimpleDateFormat()).format(d));
                 return true;
             }
             sender.sendMessage(ChatColor.GOLD + "Could not find record for player " + args[0] + ".");
@@ -34,7 +35,8 @@ public class LastOnCommand implements CommandExecutor {
             if(BeardStat.self().getConfig().getBoolean("stats.lastonall",false)){
                 for(OfflinePlayer p:Bukkit.getOfflinePlayers()){
                     Date d = new Date(p.getLastPlayed());
-                    sender.sendMessage(ChatColor.DARK_RED + p.getName() +" "+ ChatColor.GOLD + d.toString());
+                    
+                    sender.sendMessage(ChatColor.DARK_RED + p.getName() +" was last on "+ ChatColor.GOLD + (new SimpleDateFormat()).format(d));
                 }
             }
         }

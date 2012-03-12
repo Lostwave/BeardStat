@@ -41,7 +41,7 @@ public class BeardStat extends JavaPlugin {
 	private static BeardStat self;
 	private int runner;
 	private PlayerStatManager playerStatManager;
-	public static HashMap<String,Long> loginTimes = new HashMap<String,Long>();
+	private HashMap<String,Long> loginTimes;
 	private static final String PERM_PREFIX = "stat";
 
 	/**
@@ -88,7 +88,7 @@ public class BeardStat extends JavaPlugin {
 
 
 		self = this;
-		
+	loginTimes = new HashMap<String,Long>();
 		printCon("Starting BeardStat");
 
 
@@ -148,6 +148,7 @@ public class BeardStat extends JavaPlugin {
 		StatEntityListener sel = new StatEntityListener(worldList,playerStatManager);
 		StatVehicleListener svl = new StatVehicleListener(worldList, playerStatManager);
 		StatCraftListener scl = new StatCraftListener(worldList,playerStatManager);
+		
 		getServer().getPluginManager().registerEvents(sbl, this);
 		getServer().getPluginManager().registerEvents(spl, this);
 		getServer().getPluginManager().registerEvents(sel, this);
@@ -169,7 +170,7 @@ public class BeardStat extends JavaPlugin {
 		getCommand("laston").setExecutor(new LastOnCommand());
 
 		for(Player player: getServer().getOnlinePlayers()){
-			BeardStat.loginTimes.put(player.getName(), (new Date()).getTime());
+			loginTimes.put(player.getName(), (new Date()).getTime());
 		}
 
 
@@ -227,11 +228,28 @@ public class BeardStat extends JavaPlugin {
 	 * @param player
 	 * @return
 	 */
-	public int sessionTime(String player){
-		if( BeardStat.loginTimes.containsKey(player)){
-			return Integer.parseInt(""+BeardStat.loginTimes.get(player)/1000L);
+	public int getSessionTime(String player){
+		if(loginTimes.containsKey(player)){
+			return Integer.parseInt("" + ((System.currentTimeMillis()  - loginTimes.get(player))/1000L));
 
 		}
 		return 0;
+	}
+	
+	public Long getLoginTime(String player){
+	    if(!loginTimes.containsKey(player)){
+	        setLoginTime(player,System.currentTimeMillis());
+	    }
+	    return loginTimes.get(player);
+	    
+	}
+	
+	public void setLoginTime(String player,long time){
+        loginTimes.put(player,time);
+        
+    }
+	
+	public void wipeLoginTime(String player){
+	    loginTimes.remove(player);
 	}
 }

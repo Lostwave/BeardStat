@@ -47,7 +47,7 @@ public class StatPlayerListener implements Listener {
 		playerStatManager.getPlayerBlob(event.getPlayer().getName());
 		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","login").incrementStat(1);
 		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogin").setValue( (int)((new Date()).getTime()/1000L));
-		BeardStat.loginTimes.put(event.getPlayer().getName(), (new Date()).getTime());
+		BeardStat.self().setLoginTime(event.getPlayer().getName(), (new Date()).getTime());
 
 	}
 
@@ -91,9 +91,9 @@ public class StatPlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if(event.isCancelled()==false &&
-				event.getTo().getBlockX() != event.getFrom().getBlockX() && 
-				event.getTo().getBlockY() != event.getFrom().getBlockY() && 
-				event.getTo().getBlockZ() != event.getFrom().getBlockZ() && 
+				(event.getTo().getBlockX() != event.getFrom().getBlockX() || 
+				event.getTo().getBlockY() != event.getFrom().getBlockY() || 
+				event.getTo().getBlockZ() != event.getFrom().getBlockZ() )&& 
 				!worlds.contains(event.getPlayer().getWorld().getName())){
 
 			Location from,to;
@@ -101,8 +101,8 @@ public class StatPlayerListener implements Listener {
 			from = event.getFrom();
 			to = event.getTo();
 			if(from.getWorld().equals(to.getWorld())){
-				if(from.distance(to) < 5){
-					playerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)from.distance(to));
+				if(from.distance(to) < 8){
+					playerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)Math.ceil(from.distance(to)));
 				}
 			}
 		}
@@ -227,16 +227,12 @@ public class StatPlayerListener implements Listener {
 	}
 	
 	private void calc_timeonline(String player){
-		if( BeardStat.loginTimes.containsKey(player)){
-			long seconds = ((new Date()).getTime() - BeardStat.loginTimes.get(player))/1000L;
+		
+			long seconds = (System.currentTimeMillis() - BeardStat.self().getLoginTime(player))/1000L;
 			playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 
-			BeardStat.loginTimes.remove(player);		
-		}
-		else
-		{
-			BeardStat.printDebugCon("Attempted to calculate time for a player who doesn't have a record!");
-		}
+			BeardStat.self().wipeLoginTime(player);		
+			
 	}
 
 
