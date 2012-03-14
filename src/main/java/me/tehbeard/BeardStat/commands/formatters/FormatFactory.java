@@ -30,7 +30,9 @@ public class FormatFactory{
             public String format(int value) {
                 return (new Date(value)).toString();
             }
+        
         };
+        mapping.put("stats.firstlogin", date);
         mapping.put("stats.lastlogin", date);
         mapping.put("stats.lastlogout", date);
     }
