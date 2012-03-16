@@ -47,7 +47,7 @@ public class StatPlayerListener implements Listener {
 		playerStatManager.getPlayerBlob(event.getPlayer().getName());
 		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","login").incrementStat(1);
 		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogin").setValue( (int)(System.currentTimeMillis()/1000L));
-		if(!playerStatManager.getPlayerBlob(event.getPlayer().getName()).hasStat("stats", "firstLogin")){
+		if(!playerStatManager.getPlayerBlob(event.getPlayer().getName()).hasStat("stats", "firstlogin")){
 		    playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","firstlogin").setValue( (int)(System.currentTimeMillis()/1000L));    
 		}
 		
@@ -142,14 +142,14 @@ public class StatPlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","fill"+ event.getBucket().toString()).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","fill"+ event.getBucket().toString().toLowerCase().replace("_","")).incrementStat(1);
 
 		}
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event){
 		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","empty"+ event.getBucket().toString()).incrementStat(1);
+			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","empty"+ event.getBucket().toString().toLowerCase().replace("_","")).incrementStat(1);
 
 		}
 	}
@@ -177,11 +177,8 @@ public class StatPlayerListener implements Listener {
 							  cakeblock*/
 							if(item.getType()==Material.FLINT_AND_STEEL ||
 									item.getType()==Material.FLINT_AND_STEEL ||
-									item.getType()==Material.SIGN ||
-									item.getType()==Material.BUCKET||
-									item.getType()==Material.WATER_BUCKET||
-									item.getType()==Material.LAVA_BUCKET
-							){
+									item.getType()==Material.SIGN 
+									){
 								playerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",item.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
 							}
 						}
