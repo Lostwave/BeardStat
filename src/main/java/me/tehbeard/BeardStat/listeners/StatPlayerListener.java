@@ -48,7 +48,7 @@ public class StatPlayerListener implements Listener {
 		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","login").incrementStat(1);
 		playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogin").setValue( (int)(System.currentTimeMillis()/1000L));
 		if(!playerStatManager.getPlayerBlob(event.getPlayer().getName()).hasStat("stats", "firstlogin")){
-		    playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","firstlogin").setValue( (int)(System.currentTimeMillis()/1000L));    
+		    playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
 		}
 		
 		BeardStat.self().setLoginTime(event.getPlayer().getName(), (new Date()).getTime());
