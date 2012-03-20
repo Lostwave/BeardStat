@@ -123,6 +123,8 @@ enderportal
 enderportalframe
 enderstone
 dragonegg
+redstonelampoff
+redstonelampon
 
 Dumping item data
 ===
@@ -254,6 +256,8 @@ cauldronitem
 eyeofender
 speckledmelon
 monsteregg
+expbottle
+fireball
 goldrecord
 greenrecord
 record3
@@ -277,6 +281,7 @@ fireball
 smallfireball
 enderpearl
 endersignal
+thrownexpbottle
 primedtnt
 fallingblock
 minecart
@@ -303,6 +308,8 @@ squid
 wolf
 mushroomcow
 snowman
+ocelot
+irongolem
 villager
 endercrystal
 splashpotion
