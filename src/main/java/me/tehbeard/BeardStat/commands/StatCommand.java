@@ -14,11 +14,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationCanceller;
+import org.bukkit.conversations.ConversationContext;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 
 public class StatCommand implements CommandExecutor {
 
 	private PlayerStatManager playerStatManager;
+
+	private ConversationFactory cFactory = new ConversationFactory(BeardStat.self());
 
 	public StatCommand(PlayerStatManager playerStatManager) {
 		this.playerStatManager = playerStatManager;
@@ -31,7 +36,8 @@ public class StatCommand implements CommandExecutor {
 			if(!BeardStat.hasPermission((Player)sender, "command.stat")){return true;}
 			if(args.length > 0){
 	             if(args[0].equals("-i")){
-	                 ((Player) sender).beginConversation(new Conversation(BeardStat.self(), (Player)sender, SelectCategoryPrompt.getInstance()));
+	                 
+	                 ((Player) sender).beginConversation(cFactory.withFirstPrompt(SelectCategoryPrompt.getInstance()).buildConversation((Player)sender));
 	             }
 				if(args[0].equals("-h")){
 					sender.sendMessage(ChatColor.GREEN + "Stats Help page");
