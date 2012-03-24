@@ -28,6 +28,17 @@ public class StatCraftListener implements Listener {
             String item = event.getRecipe().getResult().getType().toString().toLowerCase().replace("_","");
             int amount = event.getRecipe().getResult().getAmount();
             Player p = (Player)event.getWhoClicked();
+            
+            /**
+             * if MetaDataable, make the item string correct
+             */
+            if(MetaDataCaputre.hasMetaData(event.getRecipe().getResult().getType())){
+                item = 
+                        event.getRecipe().getResult().getType().toString().toLowerCase().replace("_","") + 
+                        "_" + event.getRecipe().getResult().getData();
+                
+            }
+            
             System.out.println(event.getRecipe().getResult().toString());
             playerStatManager.getPlayerBlob(p.getName()).getStat("crafting", item).incrementStat(amount);
         }
