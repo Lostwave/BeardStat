@@ -1,6 +1,8 @@
 Honey release
 =============
 * type: is now case insensitive
+* Metadata tracked for specific blocks, used in certain events either 
+as an addition (wood) or soley (dyes)
 
 Grapefruit release
 ==================

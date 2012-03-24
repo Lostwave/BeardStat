@@ -18,9 +18,9 @@ import org.bukkit.material.MaterialData;
  * @author james
  *
  */
-public class MetaDataCaputre {
+public class MetaDataCapture {
 
-    private static int[] mats = {5,6,17,351,263,43,44,35,98};
+    private static int[] mats = {5,6,17,351,43,44,35,98};
     
     public static boolean hasMetaData(Material mat){
         for(int i : mats){

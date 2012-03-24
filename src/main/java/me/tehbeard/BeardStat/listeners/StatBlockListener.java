@@ -29,7 +29,7 @@ public class StatBlockListener implements Listener{
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
-            if(MetaDataCaputre.hasMetaData(event.getBlock().getType())){
+            if(MetaDataCapture.hasMetaData(event.getBlock().getType())){
                 playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",
                         event.getBlock().getType().toString().toLowerCase().replace("_","") + 
                         "_" +
@@ -44,7 +44,7 @@ public class StatBlockListener implements Listener{
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
-            if(MetaDataCaputre.hasMetaData(event.getBlock().getType())){
+            if(MetaDataCapture.hasMetaData(event.getBlock().getType())){
                 playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",
                         event.getBlock().getType().toString().toLowerCase().replace("_","") + 
                         "_" +

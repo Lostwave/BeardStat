@@ -73,7 +73,7 @@ public class StatPlayerListener implements Listener {
             /**
              * if MetaDataable, make the item string correct
              */
-            if(MetaDataCaputre.hasMetaData(event.getItemDrop().getItemStack().getType())){
+            if(MetaDataCapture.hasMetaData(event.getItemDrop().getItemStack().getType())){
                 item = 
                         event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","") + 
                         "_" + event.getItemDrop().getItemStack().getData();
@@ -135,7 +135,7 @@ public class StatPlayerListener implements Listener {
             /**
              * if MetaDataable, make the item string correct
              */
-            if(MetaDataCaputre.hasMetaData(event.getItem().getItemStack().getType())){
+            if(MetaDataCapture.hasMetaData(event.getItem().getItemStack().getType())){
                 item = 
                         event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") + 
                         "_" + event.getItem().getItemStack().getData();
@@ -200,7 +200,7 @@ public class StatPlayerListener implements Listener {
                 /**
                  * if MetaDataable, make the item string correct
                  */
-                if(MetaDataCaputre.hasMetaData(event.getPlayer().getItemInHand().getType())){
+                if(MetaDataCapture.hasMetaData(event.getPlayer().getItemInHand().getType())){
                     psb.getStat("dye",  
                             event.getPlayer().getItemInHand().getType().toString().toLowerCase().replace("_","") + 
                             "_" + event.getPlayer().getItemInHand().getData()).incrementStat(1);

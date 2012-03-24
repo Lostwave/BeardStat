@@ -32,7 +32,7 @@ public class StatCraftListener implements Listener {
             /**
              * if MetaDataable, make the item string correct
              */
-            if(MetaDataCaputre.hasMetaData(event.getRecipe().getResult().getType())){
+            if(MetaDataCapture.hasMetaData(event.getRecipe().getResult().getType())){
                 item = 
                         event.getRecipe().getResult().getType().toString().toLowerCase().replace("_","") + 
                         "_" + event.getRecipe().getResult().getData();
