@@ -13,33 +13,47 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class StatBlockListener implements Listener{
 
-	List<String> worlds;
+    List<String> worlds;
 
-	private PlayerStatManager playerStatManager;
+    private PlayerStatManager playerStatManager;
 
-	public StatBlockListener(List<String> worlds,	PlayerStatManager playerStatManager){
-		this.worlds = worlds;
-		this.playerStatManager = playerStatManager;
+    public StatBlockListener(List<String> worlds,	PlayerStatManager playerStatManager){
+        this.worlds = worlds;
+        this.playerStatManager = playerStatManager;
 
-	}
+    }
 
 
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBlockPlace(BlockPlaceEvent event) {
-		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
-		}
-	}
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
+            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
+            if(MetaDataCaputre.hasMetaData(event.getBlock().getType())){
+                playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",
+                        event.getBlock().getType().toString().toLowerCase().replace("_","") + 
+                        "_" +
+                        event.getBlock().getData()
+                        ).incrementStat(1);
+            }
+        }
+    }
 
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBlockBreak(BlockBreakEvent event) {
-		if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
-			playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
-		}
-	}
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
+            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
+            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+            if(MetaDataCaputre.hasMetaData(event.getBlock().getType())){
+                playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",
+                        event.getBlock().getType().toString().toLowerCase().replace("_","") + 
+                        "_" +
+                        event.getBlock().getData()
+                        ).incrementStat(1);
+            }
+        }
+    }
 
-	
+
 
 }
