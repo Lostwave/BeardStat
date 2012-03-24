@@ -108,7 +108,7 @@ public class BeardStat extends JavaPlugin {
 			return;
 		}
 		IStatDataProvider db =null;
-		if(getConfig().getString("stats.database.type").equals("mysql")){
+		if(getConfig().getString("stats.database.type").equalsIgnoreCase("mysql")){
 			try {
 				db = new MysqlStatDataProvider(
 						getConfig().getString("stats.database.host"),
@@ -119,9 +119,10 @@ public class BeardStat extends JavaPlugin {
 			} catch (SQLException e) {
 			    System.out.println("Panic! Chaos! Something happened when trying to access the sql server, error dump below.");
 				e.printStackTrace();
+				return;
 			}
 		}
-		if(getConfig().getString("stats.database.type").equals("file")){
+		if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
 			db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
 		}
 
