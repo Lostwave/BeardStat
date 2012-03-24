@@ -2127,6 +2127,7 @@
    fall              - Damage from falling.
    fire              - Damage from standing in a fire.
    firetick          - Damage from being on fire.
+   melting           - Related to snow golems, should never come up
    lava              - Damage from being in lava.
    drowning          - Damage from drowning.
    blockexplosion    - Damage from TNT exploding.
