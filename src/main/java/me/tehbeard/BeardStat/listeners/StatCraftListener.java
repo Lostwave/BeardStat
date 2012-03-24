@@ -35,7 +35,7 @@ public class StatCraftListener implements Listener {
             if(MetaDataCapture.hasMetaData(event.getRecipe().getResult().getType())){
                 item = 
                         event.getRecipe().getResult().getType().toString().toLowerCase().replace("_","") + 
-                        "_" + event.getRecipe().getResult().getData();
+                        "_" + event.getRecipe().getResult().getDurability();
                 
             }
             

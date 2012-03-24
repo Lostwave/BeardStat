@@ -1,7 +1,6 @@
 package me.tehbeard.BeardStat.listeners;
 
 import org.bukkit.Material;
-import org.bukkit.material.MaterialData;
 
 /**
  * translates a material to the metadata to capture.

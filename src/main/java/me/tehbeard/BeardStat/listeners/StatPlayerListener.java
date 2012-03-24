@@ -203,7 +203,7 @@ public class StatPlayerListener implements Listener {
                 if(MetaDataCapture.hasMetaData(event.getPlayer().getItemInHand().getType())){
                     psb.getStat("dye",  
                             event.getPlayer().getItemInHand().getType().toString().toLowerCase().replace("_","") + 
-                            "_" + event.getPlayer().getItemInHand().getData()).incrementStat(1);
+                            "_" + event.getPlayer().getItemInHand().getDurability()).incrementStat(1);
                     
                 }
                 
