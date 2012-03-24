@@ -76,7 +76,7 @@ public class StatPlayerListener implements Listener {
             if(MetaDataCapture.hasMetaData(event.getItemDrop().getItemStack().getType())){
                 item = 
                         event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","") + 
-                        "_" + event.getItemDrop().getItemStack().getData();
+                        "_" + event.getItemDrop().getItemStack().getDurability();
                 
             }
             
@@ -138,7 +138,7 @@ public class StatPlayerListener implements Listener {
             if(MetaDataCapture.hasMetaData(event.getItem().getItemStack().getType())){
                 item = 
                         event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") + 
-                        "_" + event.getItem().getItemStack().getData();
+                        "_" + event.getItem().getItemStack().getDurability();
                 
             }
             
