@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Beardstat by tehbeard</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Beardstat</h1>
+        <p>Player Statistics for the Modern Bukkit.</p>
+        <p class="view"><a href="https://github.com/tehbeard/BeardStat">View the Project on GitHub <small>tehbeard/BeardStat</small></a></p>
+        <ul>
+          <li><a href="https://github.com/tehbeard/BeardStat/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/tehbeard/BeardStat/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/tehbeard/BeardStat">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><img src="http://i.imgur.com/EVwOj.png" alt="BeardStat Logo"></p>
+
+<h3>Player Statistics for the modern bukkit</h3>
+
+<p>BeardStat provides simple, yet powerful recording of player statistics (blocks mined, creepers killed, deaths by drowning, play time, last login, how much xp you've collected.).</p>
+
+<p>Recent new additions to BeardStat include shearing, dyeing and crafting stats (crafting stats are broken due to a bukkit bug, will update as we find which build it's fixed in :) ), alongside improvements to make it easier and better.</p>
+
+<p>BeardStat provides  MySQL and flatfile (yml) as storage mechanisms for statistics.</p>
+
+<p>Available since Grapefruit, we provide a web API, allowing you to integrate BeardStat into your website, with detailed stats breakdowns, top tens</p>
+
+<p>BeardStat is also easy to work. Plugins can add their own custom stat collectors (such as breaking a block with a specific tool, or trying shear a creeper). <a href="http://dev.bukkit.org/server-mods/beardach/">BeardAch</a> utilises BeardStat's API to provide statistic based achievements, alongside many other triggers.</p>
+
+<h2>Grapefruit is here! Twice the taste, half the calories!</h2>
+
+<p>0.4 - Grapefruit is here, and with it the first version of the  web API as well! And a bunch of shiny new features.</p>
+
+<h3>Web API</h3>
+
+<ul>
+<li>Show a player's stats on your website</li>
+<li>Customisable layout/ build your own.</li>
+<li>Customisable stats listing (bundle coalore, ironore and more together for a "miner" metastat)</li>
+<li>top tens!</li>
+<li>Rich documentation of how to use the API in your site, what stats are available.</li>
+</ul><h3>Plugin</h3>
+
+<ul>
+<li>Latest RB Support (Support for 1.1-R5 onwards)</li>
+<li>/laston [player] command to view when a player was last online</li>
+<li>configure /laston to display all players (WARNING: SMALL WHITELISTED ONLY!, 20k+ players is a very bad idea to spam a player with)</li>
+</ul><p>Activate displaying all players via adding this to the config
+    stats:
+      lastonall:true</p>
+
+<ul>
+<li>Added formatters to make stats like stats.firstlogin prettier</li>
+<li>Added interactive stat navigation using Conversation API</li>
+<li>Crafting stats (This is broken at the moment due to a bukkit bug not firing the event properly)</li>
+<li>milking stats</li>
+<li>shearing stats</li>
+<li>Vehicle stats</li>
+<li>Major bug fix related to online time</li>
+<li>bug fix for movement stat so it actually triggers.</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/tehbeard">tehbeard</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
