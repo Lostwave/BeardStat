@@ -6,10 +6,6 @@ commands:
         description: Show stats about yourself
         usage: /stats [stats]...
         aliases: [bstats]
-    statsother:
-        description: Show stats about others
-        usage: /statsother [Player] [stats]...
-        aliases: [bstatsother]
     played:
         description: Show play time
         usage: /played
@@ -40,7 +36,6 @@ permissions:
       stat.command.played: true
       stat.command.played.other: true
       stat.command.stat.get: true
-      stat.command.stat.other: true
       stat.command.laston: true
   stat.players:
     description: Allows use of all stat commands
@@ -58,9 +53,6 @@ permissions:
     default: op
   stat.command.stat.get:
     description: Pull stats from db for offline player
-    default: op
-  stat.command.stat.other:
-    description: View other's stats
     default: op
   stat.command.laston:
     description: View when a player was last online

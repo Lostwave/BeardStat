@@ -18,7 +18,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
  * @author James
  *
  */
-public class FlatFileStatDataProvider extends IStatDataProvider {
+public class FlatFileStatDataProvider implements IStatDataProvider {
 
 	YamlConfiguration database;
 
@@ -86,7 +86,6 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 		}
 	}
 
-	@Override
 	public void flush() {
 		//database.save();
 	}

@@ -17,7 +17,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
  * @author James
  *
  */
-public class MysqlStatDataProvider extends IStatDataProvider {
+public class MysqlStatDataProvider implements IStatDataProvider {
 
 	protected Connection conn;
 
@@ -118,8 +118,7 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 	}
 
 
-	@Override
-	public void  pushPlayerStatBlob(PlayerStatBlob player) {
+	public void pushPlayerStatBlob(PlayerStatBlob player) {
 
 		//create a copy of the player stat blob to write to the 
 		synchronized(writeCache){
@@ -153,13 +152,13 @@ public class MysqlStatDataProvider extends IStatDataProvider {
 		}
 	}
 
-	@Override
+
 	public void flush() {
 		//run SQL in async thread
 		Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new sqlFlusher(pullCacheToThread()));
 
 	}
-	@Override
+
 	public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
 		try {
 			long t1 = (new Date()).getTime();
