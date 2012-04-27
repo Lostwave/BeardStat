@@ -1,0 +1,7 @@
+.project
+.classpath
+target
+build.sh
+.settings
+releases
+bin
