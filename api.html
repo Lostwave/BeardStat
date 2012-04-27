@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Beardstat by tehbeard :: Integrating with BeardStat</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Beardstat</h1>
+        <p>Player Statistics for the Modern Bukkit.</p>
+        <p class="view"><a href="https://github.com/tehbeard/BeardStat">View the Project on GitHub <small>tehbeard/BeardStat</small></a></p>
+        <ul>
+          <li><a href="https://github.com/tehbeard/BeardStat/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/tehbeard/BeardStat/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/tehbeard/BeardStat">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><img src="http://i.imgur.com/EVwOj.png" alt="BeardStat Logo"></p>
+        <h3>Player Statistics for the modern bukkit</h3>
+        <p>
+        Integration with BeardStat is a simple four step process. 
+        <ol>
+          <li>Add BeardStat as a soft dependency to your plugin.</li>
+          <li>Use the code below to get the Statistics Manager</li>
+          <li>Consult the documents as you work with the manager and other classes</li>
+          <li>Build awesome statistics for your plugin!</li>
+        </ol>
+        </p>
+        <p>
+        The following code will get the stat manager from the plugin. <br />
+        When you wish to use the StatManager, perform a <code>if(stats!=null)</code><br />
+        first to ensure it has been loaded.
+        </p>
+<pre>
+<code>
+PlayerStatManager stats = null;
+BeardStat bs = (BeardStat) Bukkit.getServer().getPluginManager().getPlugin("BeardStat");
+        if(bs!=null && bs.isEnabled()){
+            stats = bs.getStatManager();
+        }
+</code>
+</pre>
+        <hr>
+        <h2>API Information</h2>
+        <p>This section contains details about classes you will use when interacting with BeardStat.<br/>
+        Specifically methods that are considered stable/nessecary to use the API are discussed here.<br />
+        Use of any other methods in the supplied classes is not reccomended, as they are liable to change,<br/>
+        or be dangerous. Also, the stat manager is not thread-safe, conduct all operations manipulating stats <br />
+        inside the main thread.</p>
+
+        <h3>BeardStat</h3>
+        Primarily a utility class for you, only one of the  methods is of concern.<br />
+        <code>PlayerStatManager getStatManager()</code> <strong>:: gives you the PlayerStatManager object</strong><br/>
+        <hr>
+        <h3>PlayerStatManager</h3>
+        The main class you will use to get stats on players<br />
+        <code>PlayerStatBlob getPlayerBlob(String name)</code> <strong>:: Gets the PlayerStatBlob of a player, creating one if one does not exist</strong><br/>
+        <code>PlayerStatBlob findPlayerBlob(String name)</code> <strong>:: Gets the PlayerStatBlob of a player, returns null if no records exist for that player</strong><br/>
+
+        <h3>PlayerStatBlob</h3>
+        This class holds all the stats related to a single player.<br />
+        <code>PlayerStat getStat(java.lang.String cat,java.lang.String name)</code><br/>
+        <strong>:: returns the PlayerStat object for that stat</strong><br/>
+
+        <code>boolean hasStat(java.lang.String cat,java.lang.String name)</code><br/>
+        <strong>:: returns true if the player has a record for that stat</strong><br/>
+
+        <h3>PlayerStat</h3>
+        Provides a nice layer around the raw stat.<br />
+        <code>int getValue()</code> <strong>:: return current value of this stat </strong><br/>
+        <code>void setValue(int value)</code> <strong>:: set value of this stat</strong><br/>
+        <code>void incrementStat(int i)</code> <strong>:: add i to current value of stat</strong><br/>
+        <code>void decrementStat(int i)</code> <strong>:: subtract i from current value of stat</strong><br/>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/tehbeard">tehbeard</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
