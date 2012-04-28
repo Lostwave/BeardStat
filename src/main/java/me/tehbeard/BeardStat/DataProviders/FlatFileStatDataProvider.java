@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat.DataProviders;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,6 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import me.tehbeard.BeardStat.containers.TopPlayed;
 
 
 /**
@@ -67,6 +69,10 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 		}
 	}
 
+	public List<TopPlayed> pullTopPlayed(){
+		// not implemented for flat file.
+		return null;
+	}
 
 	
 	public void pushPlayerStatBlob(PlayerStatBlob player) {

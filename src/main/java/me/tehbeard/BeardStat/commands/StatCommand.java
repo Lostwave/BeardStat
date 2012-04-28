@@ -33,7 +33,10 @@ public class StatCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
 			String[] args) {
 		if(sender instanceof Player){
-			if(!BeardStat.hasPermission((Player)sender, "command.stat")){return true;}
+			if(!BeardStat.hasPermission((Player)sender, "command.stat")){
+    			BeardStat.sendNoPermissionError(sender);
+    			return true;
+    		}
 			if(args.length > 0){
 	             if(args[0].equals("-i")){
 	                 
@@ -49,6 +52,9 @@ public class StatCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.GREEN + "/stats -c blockcreate : List stats you have for that category");
 					sender.sendMessage(ChatColor.GREEN + "/statpage : list available stat pages");
 					sender.sendMessage(ChatColor.GREEN + "/statpage page : show a specific stat page");
+					sender.sendMessage(ChatColor.GREEN + "/laston [user] : show when you [or user] was last on");
+					sender.sendMessage(ChatColor.GREEN + "/firston [user] : show when you [or user] was first on");
+					sender.sendMessage(ChatColor.GREEN + "/played [user] : shows how long you [or user] have played");
 					return true;
 				}
 				if(args[0].equals("-c")){

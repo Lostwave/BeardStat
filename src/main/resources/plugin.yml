@@ -30,6 +30,14 @@ commands:
         description: View the various stats pages
         usage: /laston [player]
         aliases: [blaston]
+    firston:
+        description: View the various stats pages
+        usage: /firston [player]
+        aliases: [bfirston]
+    topPlayed:
+        description: View the various stats pages
+        usage: /topPlayed
+        aliases: [btopPlayed]
         
 permissions:
   stat.*:
@@ -42,6 +50,8 @@ permissions:
       stat.command.stat.get: true
       stat.command.stat.other: true
       stat.command.laston: true
+      stat.command.firston: true
+      stat.command.topPlayed: true
   stat.players:
     description: Allows use of all stat commands
     default: true
@@ -64,5 +74,11 @@ permissions:
     default: op
   stat.command.laston:
     description: View when a player was last online
+    default: op
+  stat.command.firston:
+    description: View when a player was first online
+    default: op
+  stat.command.topPlayed: 
+    description: View top players on the server
     default: op
     

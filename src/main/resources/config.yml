@@ -5,6 +5,7 @@ stats:
     username: "Beardstats"
     password: "changeme"
     database: "stats"
+  topplayedcount: 25
   worlds:
     - creative
     - tutorialIsland
@@ -18,3 +19,6 @@ stats:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
+general:
+  prefix: BeardStat
+  debug: false

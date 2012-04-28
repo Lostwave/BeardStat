@@ -14,9 +14,11 @@ import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 
 import me.tehbeard.BeardStat.commands.*;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import me.tehbeard.BeardStat.containers.TopPlayedManager;
 import me.tehbeard.BeardStat.listeners.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,9 +40,11 @@ public class BeardStat extends JavaPlugin {
 	public static  BeardStat self(){
 		return self;
 	}
+	
 	private static BeardStat self;
 	private int runner;
 	private PlayerStatManager playerStatManager;
+	private TopPlayedManager topPlayedManager;
 	private HashMap<String,Long> loginTimes;
 	private static final String PERM_PREFIX = "stat";
 
@@ -52,6 +56,17 @@ public class BeardStat extends JavaPlugin {
 		return playerStatManager;
 	}
 	
+	private int topPlayerCount = 0;
+	public int TopPlayerCount(){
+		if(topPlayerCount == 0){
+			topPlayerCount = getConfig().getInt("stats.topplayedcount", 25); 
+		}
+		if(topPlayerCount > 100){
+			topPlayerCount = 100;
+		}
+		return topPlayerCount;
+	}
+	
 	
 	public static boolean hasPermission(Permissible player,String node){
 
@@ -60,13 +75,16 @@ public class BeardStat extends JavaPlugin {
 
 	}
 	public static void printCon(String line){
-		System.out.println("[BeardStat] " + line);
+		if(self != null)
+			System.out.println("[" + self.getConfig().getString("general.prefix", "BeardStat") + "] " + line);
+		else
+			System.out.println("[BeardStat] " + line);
 	}
 
 	public static void printDebugCon(String line){
 
 		if(self != null && self.getConfig().getBoolean("general.debug", false)){
-			System.out.println("[BeardStat][DEBUG] " + line);
+			System.out.println("[" + self.getConfig().getString("general.prefix", "BeardStat") + "][DEBUG] " + line);
 
 		}
 
@@ -132,7 +150,7 @@ public class BeardStat extends JavaPlugin {
 			return;
 		}
 		playerStatManager = new PlayerStatManager(db);
-
+		topPlayedManager = new TopPlayedManager(db);
 
 
 
@@ -164,10 +182,12 @@ public class BeardStat extends JavaPlugin {
 		
 		getCommand("stats").setExecutor(new StatCommand(playerStatManager));
 		getCommand("played").setExecutor(new playedCommand(playerStatManager));
-		getCommand("playedother").setExecutor(new playedOtherCommand(playerStatManager));
+		getCommand("playedother").setExecutor(new playedCommand(playerStatManager));
 		getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
 		getCommand("statpage").setExecutor(new StatPageCommand(this));
 		getCommand("laston").setExecutor(new LastOnCommand());
+		getCommand("firston").setExecutor(new FirstOnCommand());
+		getCommand("topPlayed").setExecutor(new TopPlayedCommand(topPlayedManager));
 
 		for(Player player: getServer().getOnlinePlayers()){
 			loginTimes.put(player.getName(), (new Date()).getTime());
@@ -178,10 +198,10 @@ public class BeardStat extends JavaPlugin {
 	}
 
 	/**
-	 * Creates the inital config
+	 * Creates the initial config
 	 */
 	private void updateConfig() {
-		//Transfer config if nessecary
+		//Transfer config if necessary
 		File f = new File(getDataFolder(),"BeardStat.yml");
 		if(f.exists()){
 			printCon("OLD CONFIG FILE FOUND, TRANSFERING TO NEW CONFIG");
@@ -251,5 +271,13 @@ public class BeardStat extends JavaPlugin {
 	
 	public void wipeLoginTime(String player){
 	    loginTimes.remove(player);
+	}
+	
+	public static void sendNoPermissionError(CommandSender sender){
+		sendNoPermissionError(sender, "You don't have permission to use that command.");
+	}
+	
+	public static void sendNoPermissionError(CommandSender sender, String message){
+		sender.sendMessage(ChatColor.RED + message);
 	}
 }

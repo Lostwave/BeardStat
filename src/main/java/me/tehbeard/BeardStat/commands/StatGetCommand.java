@@ -29,7 +29,10 @@ public class StatGetCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 		if(sender instanceof Player){
-			if(!BeardStat.hasPermission((Player)sender, "command.stat.get")){return true;}
+			if(!BeardStat.hasPermission((Player)sender, "command.stat.get")){
+    			BeardStat.sendNoPermissionError(sender);
+    			return true;
+    		}
 		}
 
 		if(args.length > 1){

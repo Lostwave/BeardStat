@@ -15,7 +15,7 @@
     <!-- Repository for Bukkit -->
       <repository>
         <id>bukkit-repo</id>
-        <url>http://repo.bukkit.org/artifactory/repo</url>
+        <url>https://github.com/Bukkit/Bukkit.git</url>
       </repository>
    </repositories>
                               
@@ -38,7 +38,7 @@
   	<dependency>
   		<groupId>org.bukkit</groupId>
   		<artifactId>bukkit</artifactId>
-  		<version>1.2.3-R0.2-SNAPSHOT</version>
+  		<version>1.2.5-R1.3-SNAPSHOT</version>
   	</dependency>
   </dependencies>
 </project>

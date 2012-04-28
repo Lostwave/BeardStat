@@ -19,11 +19,16 @@ public class LastOnCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
             String[] args) {
-        if(args.length==1){
-            if(!BeardStat.hasPermission(sender, "command.laston")){return true;}
-            
+
+    	if(!BeardStat.hasPermission(sender, "command.laston")){
+			BeardStat.sendNoPermissionError(sender);
+			return true;
+		}
+    	
+    	if(args.length==1){
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
             if(player!=null){
+            	// shouldn't it use our stat?
                 Date d = new Date(player.getLastPlayed());
                 sender.sendMessage(ChatColor.DARK_RED + args[0] +" was last on "+ ChatColor.GOLD + (new SimpleDateFormat()).format(d));
                 return true;
@@ -33,10 +38,15 @@ public class LastOnCommand implements CommandExecutor {
         }
         if(args.length == 0){
             if(BeardStat.self().getConfig().getBoolean("stats.lastonall",false)){
+            	int count = 0;
                 for(OfflinePlayer p:Bukkit.getOfflinePlayers()){
+                	// limit to 100 to keep it from going forever.
+                	if(count > 100) return true;
+                	
+                	// shouldn't it use our stat?
                     Date d = new Date(p.getLastPlayed());
-                    
                     sender.sendMessage(ChatColor.DARK_RED + p.getName() +" was last on "+ ChatColor.GOLD + (new SimpleDateFormat()).format(d));
+                    count++;
                 }
             }
         }
