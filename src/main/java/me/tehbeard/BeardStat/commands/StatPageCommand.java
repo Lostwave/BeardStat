@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -35,11 +36,31 @@ public class StatPageCommand implements CommandExecutor {
 			}
 		}
 	}
-	public boolean onCommand(CommandSender sender, Command cmd, String lbl,
-			String[] args) {
-		if(args.length==1 && sender instanceof Player){
-			if(pages.containsKey(args[0])){
-				for(String entry:pages.get(args[0])){
+	public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
+		String playername = "";
+		String pagename = "";
+		if(sender instanceof ConsoleCommandSender){
+			if(args.length == 2){
+				playername = args[0];
+				pagename = args[1];
+			}
+		}
+		else if(sender instanceof Player){
+			if(args.length == 2){ 
+				playername = args[0];
+				pagename = args[1];
+			}
+			else if(args.length == 1)
+			{
+				playername = ((Player)sender).getName();
+				pagename = args[0];
+			}
+		}
+		
+			
+		if(playername.length() > 0 && pagename.length() > 0){
+			if(pages.containsKey(pagename)){
+				for(String entry:pages.get(pagename)){
 					String[] p = entry.split("\\:");
 					if(p.length==2){
 
@@ -47,7 +68,7 @@ public class StatPageCommand implements CommandExecutor {
 							String cat,stat;
 							cat = p[1].split("\\.")[0];
 							stat = p[1].split("\\.")[1];
-							sender.sendMessage(ChatColor.LIGHT_PURPLE + p[0] + ": " + ChatColor.WHITE + playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat(cat,stat).getValue());
+							sender.sendMessage(ChatColor.LIGHT_PURPLE + p[0] + ": " + ChatColor.WHITE + playerStatManager.getPlayerBlob(playername).getStat(cat,stat).getValue());
 						}
 					}
 				}

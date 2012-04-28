@@ -79,21 +79,30 @@ public class playedCommand implements CommandExecutor {
             	 sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.");
 	          }
       	}
-  		if(seconds > 0){
+
+  		sender.sendMessage(GetPlayedString(seconds));
+
+        return true;
+    }
+    
+    public static String GetPlayedString(long seconds){
+    	String output = "";
+    	if(seconds > 0){
         	int weeks   = (int) seconds / 604800;
             int days = (int)Math.ceil((seconds -604800*weeks) / 86400);
             int hours = (int)Math.ceil((seconds - (86400 * days + 604800*weeks)) / 3600);
             int minutes = (int)Math.ceil((seconds - (604800*weeks + 86400 * days + 3600 * hours)) / 60);
 
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "playtime: " + ChatColor.WHITE+ 
+			output = ChatColor.LIGHT_PURPLE + "playtime: " + ChatColor.WHITE+ 
 					weeks + ChatColor.LIGHT_PURPLE +  " wks " + ChatColor.WHITE +
 					days + ChatColor.LIGHT_PURPLE + " days " + ChatColor.WHITE+
 					hours + ChatColor.LIGHT_PURPLE + " hours " + ChatColor.WHITE+
-					minutes + ChatColor.LIGHT_PURPLE + " mins ");
+					minutes + ChatColor.LIGHT_PURPLE + " mins ";
   		}
   		else{
 			BeardStat.printDebugCon("Play time returned 0");
   		}
-        return true;
+  		
+    	return output;
     }
 }
