@@ -30,7 +30,7 @@ public class TopPlayedCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
 
-    	if(!BeardStat.hasPermission(sender, "command.topPlayed")){
+    	if(!BeardStat.hasPermission(sender, "command.topplayed")){
 			BeardStat.sendNoPermissionError(sender);
         	return true;
         }
