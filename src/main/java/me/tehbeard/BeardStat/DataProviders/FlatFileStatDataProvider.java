@@ -2,7 +2,12 @@ package me.tehbeard.BeardStat.DataProviders;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,6 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import me.tehbeard.BeardStat.containers.TopPlayer;
 
 
 /**
@@ -89,5 +95,15 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 	public void flush() {
 		//database.save();
 	}
+
+    public List<TopPlayer> pullTopPlayers(String category){
+        // not implemented for flat file.
+        return null;
+    }
+    
+    public List<String> pullAllStatsInCategory(String category){
+        // not implemented for flat file.
+        return null;
+    }
 
 }

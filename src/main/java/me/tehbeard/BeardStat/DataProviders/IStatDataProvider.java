@@ -1,6 +1,9 @@
 package me.tehbeard.BeardStat.DataProviders;
 
+import java.util.List;
+
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import me.tehbeard.BeardStat.containers.TopPlayer;
 
 
 /**
@@ -36,4 +39,14 @@ public interface IStatDataProvider {
 	 * Forces the DataProvider to flush data to the backend, in the case of a second level cache.
 	 */
 	public void flush();
+	
+    /**
+     * Gets the top XX players from the database
+     */
+    public abstract List<TopPlayer> pullTopPlayers(String category);
+
+    /**
+     * Gets the all possible stats in a specific category
+     */
+    public abstract List<String> pullAllStatsInCategory(String category);
 }

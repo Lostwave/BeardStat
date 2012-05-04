@@ -11,6 +11,7 @@ import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 
 
+
 import java.util.Map.Entry;
 
 /**
@@ -22,6 +23,8 @@ public class PlayerStatManager {
 
 	private HashMap<String,PlayerStatBlob> cache = new HashMap<String,PlayerStatBlob>();
 	private IStatDataProvider backendDatabase = null;
+	private HashMap<String,List<TopPlayer>> topplayercache = new HashMap<String,List<TopPlayer>>();
+	private HashMap<String, Long> topplayercacheage = new HashMap<String,Long>();
 
 	public PlayerStatManager(IStatDataProvider database){
 		backendDatabase = database;
@@ -121,4 +124,33 @@ public class PlayerStatManager {
 		
 		backendDatabase.flush();
 	}
+
+    /**
+     * Retrieve a players Stat Blob, or create one if it doesn't exist
+     * @param name
+     * @return
+     */
+    public List<TopPlayer> getTopPlayers(String category){
+        if(backendDatabase == null){return null;}
+        
+        // only get the topplayers if the cache over an hour old.
+        if(!this.topplayercache.containsKey(category) || Math.abs(this.topplayercacheage.get(category) - (new Date()).getTime()) > 3600000){
+            this.topplayercache.put(category, backendDatabase.pullTopPlayers(category));
+            this.topplayercacheage.put(category, (new Date()).getTime());
+            BeardStat.printDebugCon("Getting topplayed from database.");
+        }
+        else{
+            BeardStat.printDebugCon("Getting topplayed from cache.");
+        }
+        
+        return this.topplayercache.get(category);
+    }
+    
+    public List<String> getAllStatsInCategory(String category){
+        if(backendDatabase == null){return null;}
+
+        List<String> output = backendDatabase.pullAllStatsInCategory(category);
+        
+        return output;
+    }
 }

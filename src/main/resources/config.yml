@@ -18,3 +18,7 @@ stats:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
+  topplayedcount: 30
+general:
+  prefix: BeardStats
+  debug: true

@@ -45,6 +45,8 @@ public class BeardStat extends JavaPlugin {
 	private HashMap<String,Long> loginTimes;
 	private static final String PERM_PREFIX = "stat";
 
+	public static boolean isVersionUpdated = false;
+	
 	/**
 	 * Returns the stat manager for use by other plugins
 	 * @return
@@ -53,6 +55,17 @@ public class BeardStat extends JavaPlugin {
 		return playerStatManager;
 	}
 	
+    private int topPlayerCount = 0;
+    public int getTopPlayerCount(){
+        if(topPlayerCount == 0){
+            topPlayerCount = getConfig().getInt("stats.topplayedcount", 25); 
+        }
+        if(topPlayerCount > 100){
+            topPlayerCount = 100;
+        }
+        return topPlayerCount;
+    }
+
 	
 	public static boolean hasPermission(Permissible player,String node){
 
@@ -169,6 +182,7 @@ public class BeardStat extends JavaPlugin {
 		getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
 		getCommand("statpage").setExecutor(new StatPageCommand(this));
 		getCommand("laston").setExecutor(new LastOnCommand(playerStatManager));
+        getCommand("topplayer").setExecutor(new TopPlayerCommand(playerStatManager));
 
 		for(Player player: getServer().getOnlinePlayers()){
 			loginTimes.put(player.getName(), (new Date()).getTime());
@@ -196,10 +210,12 @@ public class BeardStat extends JavaPlugin {
 		
 		if(!getConfig().get("stats.version","").equals(getDescription().getVersion())){
 			printCon("WARNING! CONFIG LOADING FROM PREVIOUS VERSION");
+			isVersionUpdated = true;
 			getConfig().set("stats.version", getDescription().getVersion());
 			saveConfig();
 		}
 	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 		sender.sendMessage("Command not implemented!");

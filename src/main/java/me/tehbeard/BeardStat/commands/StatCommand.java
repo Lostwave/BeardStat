@@ -65,7 +65,7 @@ public class StatCommand implements CommandExecutor {
             if (args[0].equalsIgnoreCase("-i")) {
                 cmdtype = CommandType.interactive;
             }
-            else if (args[0].equalsIgnoreCase("-h")) {
+            else if (args[0].equalsIgnoreCase("-h") || args[0].equals("?")) {
                 cmdtype = CommandType.help;
             }
             else if (args[0].equalsIgnoreCase("-c")) {
@@ -218,9 +218,9 @@ public class StatCommand implements CommandExecutor {
         if (BeardStat.hasPermission(sender, "command.played")) {
             sender.sendMessage(ChatColor.GREEN + "/played [user] : shows how long you [or user] have played");
         }
-//        if (BeardStat.hasPermission(sender, "command.topplayed")) {
-//            sender.sendMessage(ChatColor.GREEN + "/topplayed : shows top players on the server");
-//        }
+        if (BeardStat.hasPermission(sender, "command.topplayer")) {
+            sender.sendMessage(ChatColor.GREEN + "/topplayer : shows top players on the server");
+        }
     }
 
     public static void SendCategoryMessage(CommandSender sender, Collection<PlayerStat> playerstats, String cat) {
