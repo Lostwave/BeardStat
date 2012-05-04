@@ -41,7 +41,7 @@ public class LastOnCommand implements CommandExecutor {
             player = Bukkit.getOfflinePlayer(args[0]);
             name = args[0];
 
-            blob = playerStatManager.getPlayerBlob(args[0]);
+            blob = playerStatManager.findPlayerBlob(args[0]);
         }
         else if(args.length == 0){
             if(! (sender instanceof Player)){
@@ -53,15 +53,15 @@ public class LastOnCommand implements CommandExecutor {
             if(player!=null){
                 name = player.getName();
                 bukkitDate = player.getFirstPlayed();
-                blob = playerStatManager.getPlayerBlob(name);
+                blob = playerStatManager.findPlayerBlob(name);
             }
         }
         
-        sender.sendMessage(GetFirstOnString(name, blob, player));
+        sender.sendMessage(GetLastOnString(name, blob, player));
         return true;
     }
     
-    public static String[] GetFirstOnString(String name, PlayerStatBlob blob, OfflinePlayer player){
+    public static String[] GetLastOnString(String name, PlayerStatBlob blob, OfflinePlayer player){
         ArrayList<String> output = new ArrayList<String>();
 
         long bFirst = 0;
