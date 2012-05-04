@@ -3,17 +3,13 @@ main: me.tehbeard.BeardStat.BeardStat
 version: ${project.plugin.version}
 commands:
     stats:
-        description: Show stats about yourself
+        description: Show stats about yourself or another player
         usage: /stats [stats]...
         aliases: [bstats]
     played:
-        description: Show play time
-        usage: /played
+        description: Show play time for you or another player
+        usage: /played [player]
         aliases: [bplayed]
-    playedother:
-        description: Show play time of other
-        usage: /playedother [Player]
-        aliases: [bplayedother]
     statsget:
         description: Show stats for an offline player
         usage: /statsget [Player] [stats]...

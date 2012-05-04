@@ -17,6 +17,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.listeners.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -165,7 +166,6 @@ public class BeardStat extends JavaPlugin {
 		
 		getCommand("stats").setExecutor(new StatCommand(playerStatManager));
 		getCommand("played").setExecutor(new playedCommand(playerStatManager));
-		getCommand("playedother").setExecutor(new playedOtherCommand(playerStatManager));
 		getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
 		getCommand("statpage").setExecutor(new StatPageCommand(this));
 		getCommand("laston").setExecutor(new LastOnCommand());
@@ -253,4 +253,13 @@ public class BeardStat extends JavaPlugin {
 	public void wipeLoginTime(String player){
 	    loginTimes.remove(player);
 	}
+
+    public static void sendNoPermissionError(CommandSender sender){
+        sendNoPermissionError(sender, "You don't have permission to use that command.");
+    }
+    
+    public static void sendNoPermissionError(CommandSender sender, String message){
+        sender.sendMessage(ChatColor.RED + message);
+    }
 }
+
