@@ -169,6 +169,7 @@ public class BeardStat extends JavaPlugin {
 		getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
 		getCommand("statpage").setExecutor(new StatPageCommand(this));
 		getCommand("laston").setExecutor(new LastOnCommand());
+        getCommand("firston").setExecutor(new FirstOnCommand(playerStatManager));
 
 		for(Player player: getServer().getOnlinePlayers()){
 			loginTimes.put(player.getName(), (new Date()).getTime());

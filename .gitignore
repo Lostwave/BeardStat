@@ -3,5 +3,7 @@
 target
 build.sh
 .settings
+org.eclipse.jdt.core.prefs
+org.maven.ide.eclipse.prefs
 releases
 bin

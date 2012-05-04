@@ -22,6 +22,10 @@ commands:
         description: View the various stats pages
         usage: /laston [player]
         aliases: [blaston]
+    firston:
+        description: View the various stats pages
+        usage: /firston [player]
+        aliases: [bfirston]
         
 permissions:
   stat.*:
