@@ -40,12 +40,12 @@ public class TopPlayerCommand implements CommandExecutor {
 
     	    if(args[0].equalsIgnoreCase("-c")){
     	        if(getCategories() != null){
-    	            String categorylist = "ChatColor.LIGHT_PURPLE";
+    	            String categorylist = "";
     	            sender.sendMessage(ChatColor.GOLD + "Possible categories for topplayer command: ");
         	        for(String cat:getCategories()){
         	            categorylist += cat + " ";
         	        }
-        	        sender.sendMessage(categorylist);
+        	        sender.sendMessage(ChatColor.LIGHT_PURPLE + categorylist);
     	        }
                 return true;
     	    }
