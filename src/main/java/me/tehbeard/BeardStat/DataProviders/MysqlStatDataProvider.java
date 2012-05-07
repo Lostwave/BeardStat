@@ -23,7 +23,6 @@ import me.tehbeard.BeardStat.containers.TopPlayer;
 public class MysqlStatDataProvider implements IStatDataProvider {
 
 	protected Connection conn;
-    private static final String PLAYEDFORPROCNAME = "topplayed";
 
 	private String host;
 	private String database;
@@ -71,14 +70,28 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			e.printStackTrace();
 		}
 	}
+	
+	protected Connection getOrCreateConnection(){
+        try{
+    	    if(conn == null){
+    	        createConnection();
+    	    }
+    	    else if(conn.isClosed()){
+    	        createConnection();
+    	    }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+	    return conn;    
+	}
 
 	protected void checkAndMakeTable(){
 		BeardStat.printCon("Checking for table");
 		try{
-			ResultSet rs = conn.getMetaData().getTables(null, null, "stats", null);
+			ResultSet rs = getOrCreateConnection().getMetaData().getTables(null, null, "stats", null);
 			if (!rs.next()) {
 				BeardStat.printCon("Stats table not found, creating table");
-				PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
+				PreparedStatement ps = getOrCreateConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
 						" `player` varchar(32) NOT NULL DEFAULT '-',"+
 						" `category` varchar(32) NOT NULL DEFAULT 'stats',"+
 						" `stat` varchar(32) NOT NULL DEFAULT '-',"+
@@ -97,37 +110,23 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		
-	      BeardStat.printCon("Checking for " + PLAYEDFORPROCNAME + " routine");
-	        try{
-	            ResultSet rs = conn.getMetaData().getProcedures(null, "stats", PLAYEDFORPROCNAME);
-	            if (!rs.next()) {
-	                BeardStat.printCon("topPlayers routine not found, creating routine");
-	                CreateTopPlayersRoutine();
-	                BeardStat.printCon("created routine");
-	            }
-	            else
-	            {
-	                BeardStat.printCon("Routine found");
-	                if(BeardStat.isVersionUpdated){
-	                    BeardStat.printCon("Version Updated, Altering Routine");
-	                    CreateTopPlayersRoutine();
-	                }
-	            }
-	            rs.close();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
+		}		
 	}
 
-   protected void CreateTopPlayersRoutine(){
-	    try{
-    	    PreparedStatement ps = conn.prepareStatement("DROP PROCEDURE IF EXISTS `" + PLAYEDFORPROCNAME + "';CREATE PROCEDURE `" + PLAYEDFORPROCNAME + "`(maxrows int, stat varchar(20)) " +
-                    "BEGIN " +
-                    "SET @currow = 0; " +
-                    "SELECT @currow := @currow + 1 as Rank " +
-                    "    , p.player as Player " +
+	protected void prepareStatements(){
+		try{
+			BeardStat.printDebugCon("Preparing statements");
+
+			keepAlive = getOrCreateConnection().prepareStatement("SELECT COUNT(*) from `stats`");
+			prepGetAllPlayerStat = getOrCreateConnection().prepareStatement("SELECT * FROM stats WHERE player=?");
+			BeardStat.printDebugCon("Player stat statement created");
+
+			prepSetPlayerStat = getOrCreateConnection().prepareStatement("INSERT INTO `stats`" +
+					"(`player`,`category`,`stat`,`value`) " +
+					"values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
+			
+			prepTopPlayersStat = getOrCreateConnection().prepareStatement(
+                    "SELECT p.player as Player " +
                     "    , CASE WHEN stat='playedfor' THEN Concat(LPAD(floor(p.value / 60 / 60 / 24), 2, '0'), 'd ', LPAD(floor(p.value / 60 / 60 % 24), 2, '0'), 'h ', LPAD(floor(p.value / 60 % 24 % 60), 2, '0'), 'm ', LPAD(floor(p.value / 60 % 24 % 60 * 60 % 60), 2, '0'), 's') " + 
                     "       WHEN stat='firstlogin' THEN FROM_UNIXTIME(value) " + 
                     "       WHEN stat='lastlogin' THEN FROM_UNIXTIME(value) " + 
@@ -136,32 +135,11 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                     "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='firstlogin') as FirstLogin " +
                     "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='lastlogin') as LastLogin " +
                     "FROM stats p " +
-                    "WHERE p.stat=stat " +
+                    "WHERE p.stat=? " +
                     "ORDER BY p.value DESC " +
-                    "LIMIT 0,maxrows; " +
-                    "END");
-
-            ps.executeBatch();
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-	    
-	}
-	
-
-	protected void prepareStatements(){
-		try{
-			BeardStat.printDebugCon("Preparing statements");
-
-			keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`");
-			prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
-			BeardStat.printDebugCon("Player stat statement created");
-			prepSetPlayerStat = conn.prepareStatement("INSERT INTO `stats`" +
-					"(`player`,`category`,`stat`,`value`) " +
-					"values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
-			prepTopPlayersStat = conn.prepareStatement("Call " + PLAYEDFORPROCNAME + "(?, ?);");
-			prepAllStatsInCategory = conn.prepareStatement("SELECT DISTINCT stat FROM stats WHERE category=?");
+                    "LIMIT 0,?; "
+                    );
+			prepAllStatsInCategory = getOrCreateConnection().prepareStatement("SELECT DISTINCT stat FROM stats WHERE category=?");
 			BeardStat.printDebugCon("Set player stat statement created");
 			BeardStat.printCon("Initaised MySQL Data Provider.");
 		} catch (SQLException e) {
@@ -221,7 +199,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 		try {
 			long t1 = (new Date()).getTime();
 			PlayerStatBlob pb = null;
-
+			
 			//try to pull it from the db
 			prepGetAllPlayerStat.setString(1, player);
 			ResultSet rs = prepGetAllPlayerStat.executeQuery();
@@ -249,11 +227,12 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
         try {
             //try to pull it from the db
-            prepTopPlayersStat.setInt(1, BeardStat.self().getTopPlayerCount());
-            prepTopPlayersStat.setString(2, category);
+            prepTopPlayersStat.setString(1, category);
+            prepTopPlayersStat.setInt(2, BeardStat.self().getTopPlayerCount());
             ResultSet rs = prepTopPlayersStat.executeQuery();
+            int count = 1;
             while(rs.next()){
-                TopPlayer item = new TopPlayer(rs.getInt("Rank"),rs.getString("Player"),rs.getString("TimeOnServer"), rs.getDate("FirstLogin"), rs.getDate("LastLogin"));
+                TopPlayer item = new TopPlayer(count++,rs.getString("Player"),rs.getString("TimeOnServer"), rs.getDate("FirstLogin"), rs.getDate("LastLogin"));
                 topPlayed.add(item);
             }
             rs.close();
