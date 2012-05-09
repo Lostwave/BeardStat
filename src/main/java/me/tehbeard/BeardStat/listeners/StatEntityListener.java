@@ -100,6 +100,11 @@ public class StatEntityListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event) {
 
+        //ignore the blacklisted worlds
+        if(worlds.contains(event.getEntity().getWorld().getName())){
+            return;
+        }
+
         EntityDamageEvent lastCause = event.getEntity().getLastDamageCause();
         DamageCause cause = null;
         if(lastCause!=null){

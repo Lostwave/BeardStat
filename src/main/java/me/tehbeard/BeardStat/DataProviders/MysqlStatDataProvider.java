@@ -1,8 +1,10 @@
 package me.tehbeard.BeardStat.DataProviders;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import java.util.Properties;
 
@@ -11,6 +13,7 @@ import org.bukkit.Bukkit;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import me.tehbeard.BeardStat.containers.TopPlayer;
 
 /**
  * Provides backend storage to a mysql database
@@ -30,6 +33,8 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 	protected static PreparedStatement prepGetAllPlayerStat;
 	protected static PreparedStatement prepSetPlayerStat;
 	protected static PreparedStatement keepAlive;
+    protected static PreparedStatement prepTopPlayersStat;
+    protected static PreparedStatement prepAllStatsInCategory;
 
 	private static HashMap<String,PlayerStatBlob> writeCache = new HashMap<String,PlayerStatBlob>();
 
@@ -65,14 +70,28 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			e.printStackTrace();
 		}
 	}
+	
+	protected Connection getOrCreateConnection(){
+        try{
+    	    if(conn == null){
+    	        createConnection();
+    	    }
+    	    else if(conn.isClosed()){
+    	        createConnection();
+    	    }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+	    return conn;    
+	}
 
 	protected void checkAndMakeTable(){
 		BeardStat.printCon("Checking for table");
 		try{
-			ResultSet rs = conn.getMetaData().getTables(null, null, "stats", null);
+			ResultSet rs = getOrCreateConnection().getMetaData().getTables(null, null, "stats", null);
 			if (!rs.next()) {
 				BeardStat.printCon("Stats table not found, creating table");
-				PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
+				PreparedStatement ps = getOrCreateConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
 						" `player` varchar(32) NOT NULL DEFAULT '-',"+
 						" `category` varchar(32) NOT NULL DEFAULT 'stats',"+
 						" `stat` varchar(32) NOT NULL DEFAULT '-',"+
@@ -91,19 +110,36 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}		
 	}
 
 	protected void prepareStatements(){
 		try{
 			BeardStat.printDebugCon("Preparing statements");
 
-			keepAlive = conn.prepareStatement("SELECT COUNT(*) from `stats`");
-			prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM stats WHERE player=?");
+			keepAlive = getOrCreateConnection().prepareStatement("SELECT COUNT(*) from `stats`");
+			prepGetAllPlayerStat = getOrCreateConnection().prepareStatement("SELECT * FROM stats WHERE player=?");
 			BeardStat.printDebugCon("Player stat statement created");
-			prepSetPlayerStat = conn.prepareStatement("INSERT INTO `stats`" +
+
+			prepSetPlayerStat = getOrCreateConnection().prepareStatement("INSERT INTO `stats`" +
 					"(`player`,`category`,`stat`,`value`) " +
 					"values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
+			
+			prepTopPlayersStat = getOrCreateConnection().prepareStatement(
+                    "SELECT p.player as Player " +
+                    "    , CASE WHEN stat='playedfor' THEN Concat(LPAD(floor(p.value / 60 / 60 / 24), 2, '0'), 'd ', LPAD(floor(p.value / 60 / 60 % 24), 2, '0'), 'h ', LPAD(floor(p.value / 60 % 24 % 60), 2, '0'), 'm ', LPAD(floor(p.value / 60 % 24 % 60 * 60 % 60), 2, '0'), 's') " + 
+                    "       WHEN stat='firstlogin' THEN FROM_UNIXTIME(value) " + 
+                    "       WHEN stat='lastlogin' THEN FROM_UNIXTIME(value) " + 
+                    "       ELSE FORMAT(value, 0) " + 
+                    "      END as TimeOnServer " +
+                    "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='firstlogin') as FirstLogin " +
+                    "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='lastlogin') as LastLogin " +
+                    "FROM stats p " +
+                    "WHERE p.stat=? " +
+                    "ORDER BY p.value DESC " +
+                    "LIMIT 0,?; "
+                    );
+			prepAllStatsInCategory = getOrCreateConnection().prepareStatement("SELECT DISTINCT stat FROM stats WHERE category=?");
 			BeardStat.printDebugCon("Set player stat statement created");
 			BeardStat.printCon("Initaised MySQL Data Provider.");
 		} catch (SQLException e) {
@@ -163,7 +199,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 		try {
 			long t1 = (new Date()).getTime();
 			PlayerStatBlob pb = null;
-
+			
 			//try to pull it from the db
 			prepGetAllPlayerStat.setString(1, player);
 			ResultSet rs = prepGetAllPlayerStat.executeQuery();
@@ -184,6 +220,57 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 		}
 		return null;
 	}
+	
+   public List<TopPlayer> pullTopPlayers(String category){
+        long t1 = (new Date()).getTime();
+        List<TopPlayer> topPlayed = new ArrayList<TopPlayer>();
+
+        try {
+            //try to pull it from the db
+            prepTopPlayersStat.setString(1, category);
+            prepTopPlayersStat.setInt(2, BeardStat.self().getTopPlayerCount());
+            ResultSet rs = prepTopPlayersStat.executeQuery();
+            int count = 1;
+            while(rs.next()){
+                TopPlayer item = new TopPlayer(count++,rs.getString("Player"),rs.getString("TimeOnServer"), rs.getDate("FirstLogin"), rs.getDate("LastLogin"));
+                topPlayed.add(item);
+            }
+            rs.close();
+    
+            BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
+            if(topPlayed.size()==0){return null;}
+        } 
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return topPlayed;
+    }
+
+    public List<String> pullAllStatsInCategory(String category){
+        long t1 = (new Date()).getTime();
+
+        if(category.length() == 0)
+        { return null; }
+
+        List<String> cats = new ArrayList<String>();
+        try{
+            prepAllStatsInCategory.setString(1, category);
+            
+            ResultSet rs = prepAllStatsInCategory.executeQuery();
+            while(rs.next()){
+                cats.add(rs.getString(1));
+            }
+            rs.close();
+    
+            BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
+            if(cats.size()==0){return null;}
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return cats;
+    }
 
 	private HashMap<String,PlayerStatBlob> pullCacheToThread(){
 		synchronized(writeCache){

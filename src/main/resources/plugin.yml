@@ -3,17 +3,13 @@ main: me.tehbeard.BeardStat.BeardStat
 version: ${project.plugin.version}
 commands:
     stats:
-        description: Show stats about yourself
+        description: Show stats about yourself or another player
         usage: /stats [stats]...
         aliases: [bstats]
     played:
-        description: Show play time
-        usage: /played
+        description: Show play time for you or another player
+        usage: /played [player]
         aliases: [bplayed]
-    playedother:
-        description: Show play time of other
-        usage: /playedother [Player]
-        aliases: [bplayedother]
     statsget:
         description: Show stats for an offline player
         usage: /statsget [Player] [stats]...
@@ -26,6 +22,10 @@ commands:
         description: View the various stats pages
         usage: /laston [player]
         aliases: [blaston]
+    topPlayer:
+        description: View the top xx players on the server
+        usage: /topPlayer
+        aliases: [btopPlayer]
         
 permissions:
   stat.*:
@@ -36,7 +36,9 @@ permissions:
       stat.command.played: true
       stat.command.played.other: true
       stat.command.stat.get: true
+      stat.command.stat.other: true
       stat.command.laston: true
+      stat.command.topplayer: true
   stat.players:
     description: Allows use of all stat commands
     default: true
@@ -46,6 +48,9 @@ permissions:
             
   stat.command.stat:
     description: View your own stats
+  stat.command.stat.other:
+    description: View other's stats
+    default: op
   stat.command.played:
     description: Allows you to view your /played
   stat.command.played.other:
@@ -56,5 +61,8 @@ permissions:
     default: op
   stat.command.laston:
     description: View when a player was last online
+    default: op
+  stat.command.topplayer: 
+    description: View top players on the server
     default: op
     
