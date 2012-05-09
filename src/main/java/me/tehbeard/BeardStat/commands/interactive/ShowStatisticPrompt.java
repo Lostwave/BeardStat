@@ -4,48 +4,44 @@ package me.tehbeard.BeardStat.commands.interactive;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import me.tehbeard.vocalise.parser.ConfigurablePrompt;
+import me.tehbeard.vocalise.parser.PromptBuilder;
+import me.tehbeard.vocalise.parser.PromptTag;
 
 
-import org.bukkit.conversations.BooleanPrompt;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.MessagePrompt;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 
-public class ShowStatisticPrompt extends MessagePrompt{
+@PromptTag(tag="showstat")
+public class ShowStatisticPrompt extends MessagePrompt implements ConfigurablePrompt{
 
 
-    private static Prompt self = new ShowStatisticPrompt();
     private PlayerStatManager playerStatManager = BeardStat.self().getStatManager();
-    private Prompt promptAgain = new BooleanPrompt() {
-        
-        public String getPromptText(ConversationContext context) {
-            return "Search a new stat?";
-        }
-        
-        @Override
-        protected Prompt acceptValidatedInput(ConversationContext context,
-                boolean input) {
-            return input ? SelectCategoryPrompt.getInstance() : END_OF_CONVERSATION;
-        }
-    };
+    private Prompt next;
 
-    public static Prompt getInstance(){return self ;}
-
-    private ShowStatisticPrompt(){
+    public ShowStatisticPrompt(){
 
     }
     public String getPromptText(ConversationContext context) {
-        Player player = ((Player)context.getForWhom());
-        String msg = (String)context.getSessionData("c") + " :: " + (String)context.getSessionData("s") + " ";
-        msg += FormatFactory.formatStat(playerStatManager.getPlayerBlob(player.getName()).getStat((String)context.getSessionData("c"), (String)context.getSessionData("s")));
+        String player = (String) context.getSessionData("player");
+        
+        String msg = (String)context.getSessionData("c") + "." + (String)context.getSessionData("s") + " = ";
+        msg += FormatFactory.formatStat(playerStatManager.getPlayerBlob(player).getStat((String)context.getSessionData("c"), (String)context.getSessionData("s")));
         return msg;
     }
 
     @Override
     protected Prompt getNextPrompt(ConversationContext context) {
-        return promptAgain ;
+        return next;
     }
 
+    public void configure(ConfigurationSection config, PromptBuilder builder) {
 
+        builder.makePromptRef(config.getString("id"),this);
+        next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder.generatePrompt(config.getConfigurationSection("next"));
+    }
 }

@@ -1,14 +1,20 @@
 package me.tehbeard.BeardStat.commands;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.commands.interactive.FindPlayerPrompt;
 import me.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
+import me.tehbeard.BeardStat.commands.interactive.SelectStatisticPrompt;
+import me.tehbeard.BeardStat.commands.interactive.SetSelfPrompt;
+import me.tehbeard.BeardStat.commands.interactive.ShowStatisticPrompt;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import me.tehbeard.vocalise.parser.PromptBuilder;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,18 +22,28 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.conversations.ConversationFactory;
+import org.bukkit.conversations.Conversable;
 import org.bukkit.entity.Player;
 
 public class StatCommand implements CommandExecutor {
 
     private PlayerStatManager playerStatManager;
 
-    private ConversationFactory cFactory = new ConversationFactory(BeardStat.self());
 
+    private PromptBuilder builder;
+    
     public StatCommand(PlayerStatManager playerStatManager) {
         this.playerStatManager = playerStatManager;
-
+        builder = new PromptBuilder(BeardStat.self());
+        builder.AddPrompts(
+                SelectCategoryPrompt.class,
+                SelectStatisticPrompt.class,
+                ShowStatisticPrompt.class,
+                SetSelfPrompt.class,
+                FindPlayerPrompt.class);
+        
+        builder.load(BeardStat.self().getResource("me/tehbeard/BeardStat/commands/interactive/interactive.yml"));
+                                                   
     }
 
     private enum CommandType {
@@ -86,13 +102,15 @@ public class StatCommand implements CommandExecutor {
             return true;
         case interactive:
             if (usertype == SenderType.player) {
-                ((Player) sender).beginConversation(cFactory.withFirstPrompt(SelectCategoryPrompt.getInstance()).buildConversation((Player) sender));
+                HashMap<Object, Object> map = new HashMap<Object,Object>();
+                map.put("player", sender);
+                builder.makeConversation((Conversable) sender,map);
+                return true;
             }
             else {
                 sender.sendMessage(ChatColor.RED + "You cannot run this command from the console.");
                 return false;
             }
-            break;
         case category:
             player = "";
             String cat = "";

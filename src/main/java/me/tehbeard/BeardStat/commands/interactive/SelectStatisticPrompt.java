@@ -6,30 +6,34 @@ import java.util.Iterator;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import me.tehbeard.vocalise.parser.ConfigurablePrompt;
+import me.tehbeard.vocalise.parser.PromptBuilder;
+import me.tehbeard.vocalise.parser.PromptTag;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.ValidatingPrompt;
-import org.bukkit.entity.Player;
 
-public class SelectStatisticPrompt extends ValidatingPrompt{
+@PromptTag(tag="getstat")
+public class SelectStatisticPrompt extends ValidatingPrompt implements ConfigurablePrompt{
 
 
-    private static Prompt self = new SelectStatisticPrompt();
+
     private PlayerStatManager playerStatManager = BeardStat.self().getStatManager();
+    private Prompt next;
 
-    public static Prompt getInstance(){return self ;}
-
-    private SelectStatisticPrompt(){
+    public SelectStatisticPrompt(){
 
     }
     public String getPromptText(ConversationContext context) {
-        Player player = ((Player)context.getForWhom());
+        String player = (String)context.getSessionData("player");
 
         //begin paste
         HashSet<String> stats = new HashSet<String>();
-        for( PlayerStat ps :playerStatManager.getPlayerBlob(player.getName()).getStats()){
+        for( PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
             if(ps.getCat().equalsIgnoreCase((String)context.getSessionData("c"))){
                 stats.add(ps.getName());
             }
@@ -52,8 +56,8 @@ public class SelectStatisticPrompt extends ValidatingPrompt{
 
     @Override
     protected boolean isInputValid(ConversationContext context, String input) {
-        Player player = ((Player)context.getForWhom());
-        for(PlayerStat ps :playerStatManager.getPlayerBlob(player.getName()).getStats()){
+        String player = (String) context.getSessionData("player");
+        for(PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
             if(ps.getCat().equalsIgnoreCase((String)context.getSessionData("c"))){
                 if(ps.getName().equalsIgnoreCase(input)){
                     return true;
@@ -67,7 +71,12 @@ public class SelectStatisticPrompt extends ValidatingPrompt{
     protected Prompt acceptValidatedInput(ConversationContext context,
             String input) {
         context.setSessionData("s", input);
-        return ShowStatisticPrompt.getInstance();
+        return  next;
+    }
+    public void configure(ConfigurationSection config, PromptBuilder builder) {
+
+        builder.makePromptRef(config.getString("id"),this);
+        next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder.generatePrompt(config.getConfigurationSection("next"));
     }
 
 }
