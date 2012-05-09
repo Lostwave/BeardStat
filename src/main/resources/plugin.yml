@@ -1,6 +1,7 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
 version: ${project.plugin.version}
+authors: [Tehbeard,Lostwave]
 commands:
     stats:
         description: Show stats about yourself or another player

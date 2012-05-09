@@ -157,7 +157,7 @@ public class BeardStat extends JavaPlugin {
 		//register event listeners
 
 		//block listener
-		List<String> worldList = getConfig().getStringList("stats.worlds");
+		List<String> worldList = getConfig().getStringList("stats.blacklist");
 		StatBlockListener sbl = new StatBlockListener(worldList,playerStatManager);
 		StatPlayerListener spl = new StatPlayerListener(worldList,playerStatManager);
 		StatEntityListener sel = new StatEntityListener(worldList,playerStatManager);
@@ -208,10 +208,21 @@ public class BeardStat extends JavaPlugin {
 			f.delete();
 		}
 		
+        //convert old world lists over to blacklist
+        if(getConfig().contains("stats.worlds")){
+            printCon("Moving blacklist to new location");
+            getConfig().set("stats.blacklist", getConfig().getStringList("stats.worlds"));
+            getConfig().set("stats.worlds",null);
+        }
+        
+
+		
 		if(!getConfig().get("stats.version","").equals(getDescription().getVersion())){
 			printCon("WARNING! CONFIG LOADING FROM PREVIOUS VERSION");
 			isVersionUpdated = true;
 			getConfig().set("stats.version", getDescription().getVersion());
+			
+
 			saveConfig();
 		}
 	}

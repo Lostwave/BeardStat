@@ -5,7 +5,7 @@ stats:
     username: "Beardstats"
     password: "changeme"
     database: "stats"
-  worlds:
+  blacklist:
     - creative
     - tutorialIsland
   pages:

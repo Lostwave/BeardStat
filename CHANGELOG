@@ -4,6 +4,14 @@ Honey release
 * Metadata tracked for specific blocks, used in certain events either 
 as an addition (wood) or soley (dyes)
 
+* /playedother removed, functionality rolled into /played command
+* /fiston added
+* /laston added /firston to display
+* /topplayer added
+* Deaths now respect blacklist
+* exp.lifetimelvl details total levels earned
+* Blacklist changed around blacklist: instead of worlds:
+
 Grapefruit release
 ==================
 * Latest RB Support

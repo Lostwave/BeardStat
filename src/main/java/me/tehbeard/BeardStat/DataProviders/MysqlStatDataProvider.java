@@ -75,6 +75,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         try{
     	    if(conn == null){
     	        createConnection();
+    	        prepareStatements();//Rebuild statements
     	    }
     	    else if(conn.isClosed()){
     	        createConnection();
