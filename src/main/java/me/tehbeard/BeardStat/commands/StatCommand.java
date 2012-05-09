@@ -1,10 +1,8 @@
 package me.tehbeard.BeardStat.commands;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
@@ -18,9 +16,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.conversations.Conversation;
-import org.bukkit.conversations.ConversationCanceller;
-import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 
@@ -53,7 +48,7 @@ public class StatCommand implements CommandExecutor {
         }
 
         // set the sender type
-        if (sender instanceof ConsoleCommandSender || sender instanceof ConsoleCommandSender) {
+        if (sender instanceof ConsoleCommandSender) {
             usertype = SenderType.console;
         }
         else if (sender instanceof Player) {
