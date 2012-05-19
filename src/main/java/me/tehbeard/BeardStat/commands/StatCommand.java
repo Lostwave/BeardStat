@@ -42,7 +42,7 @@ public class StatCommand implements CommandExecutor {
                 SetSelfPrompt.class,
                 FindPlayerPrompt.class);
         
-        builder.load(BeardStat.self().getResource("me/tehbeard/BeardStat/commands/interactive/interactive.yml"));
+        builder.load(BeardStat.self().getResource("interactive.yml"));
                                                    
     }
 
