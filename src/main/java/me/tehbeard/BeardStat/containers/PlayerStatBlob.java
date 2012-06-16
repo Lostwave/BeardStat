@@ -38,6 +38,7 @@ public class PlayerStatBlob{
 	 */
 	public void addStat(PlayerStat stat){
 		stats.add(stat);
+		stat.owner = this;
 	}
 	
 	/**

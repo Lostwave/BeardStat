@@ -1,5 +1,9 @@
 package me.tehbeard.BeardStat.containers;
 
+import org.bukkit.Bukkit;
+
+import me.tehbeard.BeardStat.StatChangeEvent;
+
 /**
  * Represents a players stat
  * @author James
@@ -8,7 +12,7 @@ package me.tehbeard.BeardStat.containers;
 
 public class PlayerStat{
 
-
+	PlayerStatBlob owner = null;
 	private String name;
 	private int value;
 	private String cat="stats";
@@ -36,8 +40,7 @@ public class PlayerStat{
 	 * @param value
 	 */
 	public void setValue(int value){
-		this.value = value;
-		archive=true;
+		changeValue(value);
 	}
 
 	/**
@@ -53,8 +56,8 @@ public class PlayerStat{
 	 * @param i
 	 */
 	public void incrementStat(int i){
-		value += i;
-		archive=true;
+		if(i < 0 ){throw new IllegalArgumentException("Cannot increment by negative number!");}
+		changeValue(value + i);
 	}
 
 	/**
@@ -62,8 +65,8 @@ public class PlayerStat{
 	 * @param i
 	 */
 	public void decrementStat(int i){
-		value -= i;
-		archive=true;
+		if(i < 0 ){throw new IllegalArgumentException("Cannot decrement by negative number!");}
+		changeValue(value - i);
 	}
 
 
@@ -79,5 +82,19 @@ public class PlayerStat{
 		return archive;
 	}
 
+	public PlayerStatBlob getOwner(){
+		return owner;
+	}
+	
+	private void changeValue(int to){
+		StatChangeEvent event = new StatChangeEvent(this, to);
+		Bukkit.getPluginManager().callEvent(event);
+		if(!event.isCancelled()){
+			value = event.getNewValue();
+			archive = true;
+		}
+	}
+	
+	
 
 }
