@@ -11,6 +11,7 @@
 		<project.plugin.flavour>honey</project.plugin.flavour>
 		<project.plugin.version>${project.version}.${project.minor}-${project.plugin.flavour}</project.plugin.version>
 		<project.plugin.minor>7</project.plugin.minor>
+		<project.config.version>1</project.config.version>
 	</properties>
 
 	<repositories>
