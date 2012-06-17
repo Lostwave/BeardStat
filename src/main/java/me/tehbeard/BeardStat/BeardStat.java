@@ -1,6 +1,7 @@
 package me.tehbeard.BeardStat;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import me.tehbeard.BeardStat.Metrics.Plotter;
 import me.tehbeard.BeardStat.DataProviders.FlatFileStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
@@ -204,6 +206,26 @@ public class BeardStat extends JavaPlugin {
         }
 
 
+        Metrics metrics;
+        try {
+            metrics = new Metrics(this);
+
+
+            metrics.addCustomData(new Plotter(getConfig().getString("stats.database.type").toLowerCase()){
+
+                @Override
+                public int getValue() {
+                    // TODO Auto-generated method stub
+                    return 1;
+                }
+
+            });
+
+            metrics.start();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         printCon("BeardStat Loaded");
     }
 
