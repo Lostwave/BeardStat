@@ -13,8 +13,10 @@ import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 
 import me.tehbeard.BeardStat.commands.*;
+import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.listeners.*;
+import me.tehbeard.utils.expressions.InFixExpression;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -101,7 +103,7 @@ public class BeardStat extends JavaPlugin {
 
     public void onEnable() {
 
-        
+
 
         self = this;
         loginTimes = new HashMap<String,Long>();
@@ -110,17 +112,16 @@ public class BeardStat extends JavaPlugin {
 
         updateConfig();
 
-        
+
         if(!new File(getDataFolder(),"config.yml").exists()
                 ||
-                
+
                 (getConfig().getInt("stats.version") < Integer.parseInt("${project.config.version}"))
                 ){
             getConfig().options().copyDefaults(true);
-            
+
         }
-        System.out.println("Config Version: ${project.config.version}");
-        
+
         saveConfig();
 
 
@@ -163,6 +164,8 @@ public class BeardStat extends JavaPlugin {
 
 
 
+        printCon("initializing composite stats");
+        loadCompositeStats();
 
         printCon("Registering events and collectors");
 
@@ -230,14 +233,7 @@ public class BeardStat extends JavaPlugin {
 
 
 
-        if(!getConfig().get("stats.version","").equals(getDescription().getVersion())){
-            printCon("WARNING! CONFIG LOADING FROM PREVIOUS VERSION");
-            isVersionUpdated = true;
-            getConfig().set("stats.version", getDescription().getVersion());
 
-
-            saveConfig();
-        }
     }
 
     @Override
@@ -325,6 +321,19 @@ public class BeardStat extends JavaPlugin {
         self.getLogger().severe("=========================================");
         self.getLogger().severe("             End error dump              ");
         self.getLogger().severe("=========================================");
+
+    }
+
+
+    private void loadCompositeStats(){
+
+        for(String cstat : getConfig().getStringList("customstats")){
+
+            String[] i = cstat.split("\\=");
+            PlayerStatBlob.addDynamicStat(i[0].trim(), i[1].trim());
+
+
+        }
 
     }
 }

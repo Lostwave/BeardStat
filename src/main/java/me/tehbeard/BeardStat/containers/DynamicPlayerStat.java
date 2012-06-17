@@ -21,10 +21,9 @@ public class DynamicPlayerStat implements PlayerStat {
     private PlayerStatBlob owner;
     private InFixExpression expression;
     
-    public DynamicPlayerStat(String expr,String cat,String stat){
+    public DynamicPlayerStat(String cat,String stat,String expr){
         this.cat = cat;
         this.stat = stat;
-        this.owner = owner;
         this.expression = new InFixExpression(expr);
         
 

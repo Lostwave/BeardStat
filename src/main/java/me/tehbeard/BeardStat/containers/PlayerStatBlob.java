@@ -1,8 +1,12 @@
 package me.tehbeard.BeardStat.containers;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import me.tehbeard.utils.expressions.InFixExpression;
 import me.tehbeard.utils.expressions.VariableProvider;
 
 /**
@@ -12,9 +16,23 @@ import me.tehbeard.utils.expressions.VariableProvider;
  */
 public class PlayerStatBlob implements VariableProvider{
 
+    private static Map<String,String> dynamics = new HashMap<String, String>();
+    
+    public static void addDynamicStat(String stat,String expr){
+        dynamics.put(stat,expr);
+    }
+    
+    private void addDynamics(){
+        for(Entry<String, String> entry  : dynamics.entrySet()){
+            
+            System.out.println("Making " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
+            addStat(new DynamicPlayerStat(entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue()));
+        }
+    }
     
     private HashSet<PlayerStat> stats;
     private String name;
+
     public String getName() {
         return name;
     }
@@ -33,6 +51,8 @@ public class PlayerStatBlob implements VariableProvider{
         this.name = name;
         playerID=ID;
         stats = new HashSet<PlayerStat>();
+        
+        addDynamics();
     }
 
     /**

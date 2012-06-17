@@ -15,6 +15,7 @@ stats:
       - "blocks broken:stats.totalblockdestroy"
       - "kills:kills.total"
       - "deaths:deaths.total"
+      - "killdeath:comp.kd"
     archery:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
@@ -22,7 +23,6 @@ stats:
   topplayedcount: 30
 general:
   prefix: BeardStats
-  debug: true
+  debug: false
 customstats:
-  cat:
-    
+  - "comp.kd = $kills.total - $deaths.total"

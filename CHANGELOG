@@ -1,5 +1,6 @@
 Honey release
 =============
+* Composite stats allows for more advanced dynamic stats
 * type: is now case insensitive
 * Metadata tracked for specific blocks, used in certain events either 
 as an addition (wood) or soley (dyes)
