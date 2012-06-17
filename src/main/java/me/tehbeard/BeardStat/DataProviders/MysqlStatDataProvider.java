@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import me.tehbeard.BeardStat.containers.StaticPlayerStat;
 import me.tehbeard.BeardStat.containers.TopPlayer;
 
 /**
@@ -178,7 +179,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                 }else{
                     if(ps.isArchive()){
                         BeardStat.printDebugCon("Caching stat " + ps.getName() + " as new");
-                        PlayerStat nps = new PlayerStat(ps.getCat(),ps.getName(),ps.getValue());
+                        PlayerStat nps = new StaticPlayerStat(ps.getCat(),ps.getName(),ps.getValue());
 
                         copy.addStat(nps);
                         ps.clearArchive();
@@ -211,7 +212,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             pb = new PlayerStatBlob(player,0);
             while(rs.next()){
                 //`category`,`stat`,`value`
-                PlayerStat ps = new PlayerStat(rs.getString(2),rs.getString(3),rs.getInt(4));
+                PlayerStat ps = new StaticPlayerStat(rs.getString(2),rs.getString(3),rs.getInt(4));
                 pb.addStat(ps);
             }
             rs.close();
