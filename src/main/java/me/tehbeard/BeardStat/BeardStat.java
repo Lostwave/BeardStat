@@ -101,6 +101,7 @@ public class BeardStat extends JavaPlugin {
 
     public void onEnable() {
 
+        
 
         self = this;
         loginTimes = new HashMap<String,Long>();
@@ -109,11 +110,11 @@ public class BeardStat extends JavaPlugin {
 
         updateConfig();
 
-        YamlConfiguration versions = YamlConfiguration.loadConfiguration(getResource("version.yml"));
+        
         if(!new File(getDataFolder(),"config.yml").exists()
                 ||
                 
-                (getConfig().getInt("stats.version") < versions.getInt("configversion"))
+                (getConfig().getInt("stats.version") < Integer.parseInt("${project.config.version}"))
                 ){
             getConfig().options().copyDefaults(true);
             

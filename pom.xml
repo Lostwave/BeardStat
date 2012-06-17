@@ -9,8 +9,8 @@
 
 	<properties>
 		<project.plugin.flavour>honey</project.plugin.flavour>
-		<project.plugin.version>${project.version}.${project.minor}-${project.plugin.flavour}</project.plugin.version>
 		<project.plugin.minor>7</project.plugin.minor>
+		<project.plugin.version>${project.version}.${project.plugin.minor}-${project.plugin.flavour}</project.plugin.version>
 		<project.config.version>1</project.config.version>
 	</properties>
 
@@ -38,6 +38,7 @@
 	</dependencies>
 
 	<build>
+	    <sourceDirectory>target/src</sourceDirectory>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
@@ -48,6 +49,13 @@
 					<include>config.yml</include>
 					<include>interactive.yml</include>
 				</includes>
+			</resource>
+
+			<resource>
+				<filtering>true</filtering>
+				<targetPath>../src</targetPath>
+				<directory>${basedir}/src/main/java/</directory>
+				<includes><include>me/tehbeard/BeardStat/BeardStat.java</include></includes>
 			</resource>
 		</resources>
 		<plugins>
