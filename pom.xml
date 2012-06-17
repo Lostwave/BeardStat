@@ -35,11 +35,15 @@
 			<artifactId>Vocalise</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>me.tehbeard</groupId>
+			<artifactId>utils</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
-	    <sourceDirectory>target/src</sourceDirectory>
-		<resources>
+    	<resources>
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
@@ -49,13 +53,6 @@
 					<include>config.yml</include>
 					<include>interactive.yml</include>
 				</includes>
-			</resource>
-
-			<resource>
-				<filtering>true</filtering>
-				<targetPath>../src</targetPath>
-				<directory>${basedir}/src/main/java/</directory>
-				<includes><include>me/tehbeard/BeardStat/BeardStat.java</include></includes>
 			</resource>
 		</resources>
 		<plugins>
@@ -73,12 +70,19 @@
 							<artifactSet>
 								<includes>
 									<include>me.tehbeard:Vocalise</include>
+									<include>me.tehbeard:utils</include>
 								</includes>
+								
+								
 							</artifactSet>
 							<relocations>
 								<relocation>
 									<pattern>me.tehbeard.vocalise</pattern>
 									<shadedPattern>me.tehbeard.BeardStat.vocalise</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>me.tehbeard.utils</pattern>
+									<shadedPattern>me.tehbeard.BeardStat.utils</shadedPattern>
 								</relocation>
 							</relocations>
 							<minimizeJar>true</minimizeJar>
