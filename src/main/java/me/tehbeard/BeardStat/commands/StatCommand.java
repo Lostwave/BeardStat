@@ -32,6 +32,7 @@ public class StatCommand implements CommandExecutor {
 
     private PromptBuilder builder;
     
+    @SuppressWarnings("unchecked")
     public StatCommand(PlayerStatManager playerStatManager) {
         this.playerStatManager = playerStatManager;
         builder = new PromptBuilder(BeardStat.self());

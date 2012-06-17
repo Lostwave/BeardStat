@@ -11,7 +11,6 @@ import me.tehbeard.vocalise.parser.PromptBuilder;
 import me.tehbeard.vocalise.parser.PromptTag;
 
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;

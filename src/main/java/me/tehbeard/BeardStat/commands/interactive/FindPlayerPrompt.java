@@ -9,7 +9,6 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.vocalise.parser.ConfigurablePrompt;
 import me.tehbeard.vocalise.parser.PromptBuilder;
 import me.tehbeard.vocalise.parser.PromptTag;
-import me.tehbeard.vocalise.prompts.input.InputStringPrompt;
 
 @PromptTag(tag="findplayer")
 public class FindPlayerPrompt extends ValidatingPrompt implements ConfigurablePrompt {

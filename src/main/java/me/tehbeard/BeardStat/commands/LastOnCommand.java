@@ -34,7 +34,6 @@ public class LastOnCommand implements CommandExecutor {
         }
         
         String name = "";
-        long bukkitDate = 0;
         PlayerStatBlob blob = null;
         OfflinePlayer player = null;
         if(args.length==1){
@@ -52,7 +51,6 @@ public class LastOnCommand implements CommandExecutor {
             player = Bukkit.getOfflinePlayer(sender.getName()); 
             if(player!=null){
                 name = player.getName();
-                bukkitDate = player.getFirstPlayed();
                 blob = playerStatManager.findPlayerBlob(name);
             }
         }

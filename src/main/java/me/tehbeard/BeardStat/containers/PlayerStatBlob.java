@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.tehbeard.utils.expressions.InFixExpression;
 import me.tehbeard.utils.expressions.VariableProvider;
 
 /**

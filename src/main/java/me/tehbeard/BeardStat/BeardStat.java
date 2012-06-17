@@ -16,7 +16,6 @@ import me.tehbeard.BeardStat.commands.*;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.listeners.*;
-import me.tehbeard.utils.expressions.InFixExpression;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

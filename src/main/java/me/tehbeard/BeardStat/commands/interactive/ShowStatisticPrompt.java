@@ -9,12 +9,10 @@ import me.tehbeard.vocalise.parser.PromptBuilder;
 import me.tehbeard.vocalise.parser.PromptTag;
 
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.MessagePrompt;
 import org.bukkit.conversations.Prompt;
-import org.bukkit.entity.Player;
 
 @PromptTag(tag="showstat")
 public class ShowStatisticPrompt extends MessagePrompt implements ConfigurablePrompt{
