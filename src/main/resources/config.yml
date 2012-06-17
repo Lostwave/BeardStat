@@ -1,5 +1,4 @@
 stats:
-  version: ${project.config.version}
   database:
     type: "file"
     host: "localhost"
@@ -23,6 +22,3 @@ stats:
 general:
   prefix: BeardStats
   debug: true
-customstats:
-  cat:
-    

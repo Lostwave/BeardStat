@@ -109,17 +109,7 @@ public class BeardStat extends JavaPlugin {
 
         updateConfig();
 
-        YamlConfiguration versions = YamlConfiguration.loadConfiguration(getResource("version.yml"));
-        if(!new File(getDataFolder(),"config.yml").exists()
-                ||
-                
-                (getConfig().getInt("stats.version") < versions.getInt("configversion"))
-                ){
-            getConfig().options().copyDefaults(true);
-            
-        }
-        System.out.println("Config Version: ${project.config.version}");
-        
+        getConfig().options().copyDefaults(true);
         saveConfig();
 
 
@@ -300,7 +290,7 @@ public class BeardStat extends JavaPlugin {
     public static void sendNoPermissionError(CommandSender sender, String message){
         sender.sendMessage(ChatColor.RED + message);
     }
-
+    
     public static void mysqlError(SQLException e){
         self.getLogger().severe("=========================================");
         self.getLogger().severe("              DATABASE ERROR             ");

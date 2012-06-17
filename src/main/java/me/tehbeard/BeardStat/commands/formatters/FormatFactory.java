@@ -46,12 +46,5 @@ public class FormatFactory{
         }
         return "" + stat.getValue();
     }
-    
-    public static void addStringFormat(String cat,String stat,String format){
-        String tag = cat + "." + stat;
-        
-        instance.mapping.put(tag, new StaticStatFormatter(format));
-
-    }
 
 }

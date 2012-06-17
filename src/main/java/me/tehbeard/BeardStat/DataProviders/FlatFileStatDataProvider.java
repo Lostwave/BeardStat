@@ -12,7 +12,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
-import me.tehbeard.BeardStat.containers.StaticPlayerStat;
 import me.tehbeard.BeardStat.containers.TopPlayer;
 
 
@@ -52,7 +51,7 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 					BeardStat.printDebugCon("loading stat " +key);
 					BeardStat.printDebugCon("parts " + key.split("\\-")[0] + " : "+
 							key.split("\\-")[1]);
-					blob.addStat(new StaticPlayerStat(key.split("\\-")[0]
+					blob.addStat(new PlayerStat(key.split("\\-")[0]
 							,key.split("\\-")[1], pl.getInt(key, 0)));
 				}
 				return blob;
