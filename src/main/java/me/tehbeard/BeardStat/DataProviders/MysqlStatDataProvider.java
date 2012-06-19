@@ -83,6 +83,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             }
             else if(conn.isClosed()){
                 createConnection();
+                prepareStatements();
             }
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
