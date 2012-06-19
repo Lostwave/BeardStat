@@ -27,6 +27,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     private String host;
     private String database;
+    private String table;
     private String username;
     private String password;
 
@@ -39,10 +40,11 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     private static HashMap<String,PlayerStatBlob> writeCache = new HashMap<String,PlayerStatBlob>();
 
-    public MysqlStatDataProvider(String host,String database,String username,String password) throws SQLException{
+    public MysqlStatDataProvider(String host,String database,String table,String username,String password) throws SQLException{
 
         this.host = host;
         this.database = database;
+        this.table = table;
         this.username = username;
         this.password = password;
         try {
@@ -95,10 +97,10 @@ public class MysqlStatDataProvider implements IStatDataProvider {
     protected void checkAndMakeTable(){
         BeardStat.printCon("Checking for table");
         try{
-            ResultSet rs = getOrCreateConnection().getMetaData().getTables(null, null, "stats", null);
+            ResultSet rs = getOrCreateConnection().getMetaData().getTables(null, null, table, null);
             if (!rs.next()) {
                 BeardStat.printCon("Stats table not found, creating table");
-                PreparedStatement ps = getOrCreateConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `stats` ("+
+                PreparedStatement ps = getOrCreateConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `" + table + "` ("+
                         " `player` varchar(32) NOT NULL DEFAULT '-',"+
                         " `category` varchar(32) NOT NULL DEFAULT 'stats',"+
                         " `stat` varchar(32) NOT NULL DEFAULT '-',"+
@@ -124,11 +126,11 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         try{
             BeardStat.printDebugCon("Preparing statements");
 
-            keepAlive = getOrCreateConnection().prepareStatement("SELECT COUNT(*) from `stats`");
-            prepGetAllPlayerStat = getOrCreateConnection().prepareStatement("SELECT * FROM stats WHERE player=?");
+            keepAlive = getOrCreateConnection().prepareStatement("SELECT COUNT(*) from `" + table + "`");
+            prepGetAllPlayerStat = getOrCreateConnection().prepareStatement("SELECT * FROM " + table + " WHERE player=?");
             BeardStat.printDebugCon("Player stat statement created");
 
-            prepSetPlayerStat = getOrCreateConnection().prepareStatement("INSERT INTO `stats`" +
+            prepSetPlayerStat = getOrCreateConnection().prepareStatement("INSERT INTO `" + table + "`" +
                     "(`player`,`category`,`stat`,`value`) " +
                     "values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
 
@@ -141,12 +143,12 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                             "      END as TimeOnServer " +
                             "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='firstlogin') as FirstLogin " +
                             "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='lastlogin') as LastLogin " +
-                            "FROM stats p " +
+                            "FROM " + table + " p " +
                             "WHERE p.stat=? " +
                             "ORDER BY p.value DESC " +
                             "LIMIT 0,?; "
                     );
-            prepAllStatsInCategory = getOrCreateConnection().prepareStatement("SELECT DISTINCT stat FROM stats WHERE category=?");
+            prepAllStatsInCategory = getOrCreateConnection().prepareStatement("SELECT DISTINCT " + table + " FROM stats WHERE category=?");
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised MySQL Data Provider.");
         } catch (SQLException e) {

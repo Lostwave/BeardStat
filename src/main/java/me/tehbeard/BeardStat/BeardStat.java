@@ -141,6 +141,7 @@ public class BeardStat extends JavaPlugin {
                 db = new MysqlStatDataProvider(
                         getConfig().getString("stats.database.host"),
                         getConfig().getString("stats.database.database"),
+                        getConfig().getString("stats.database.table"),
                         getConfig().getString("stats.database.username"),
                         getConfig().getString("stats.database.password")
                         );

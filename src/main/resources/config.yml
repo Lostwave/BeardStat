@@ -6,6 +6,7 @@ stats:
     username: "Beardstats"
     password: "changeme"
     database: "stats"
+    table: "stats"
   blacklist:
     - creative
     - tutorialIsland
