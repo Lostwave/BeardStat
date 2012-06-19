@@ -48,7 +48,7 @@ public class BeardStat extends JavaPlugin {
     private HashMap<String,Long> loginTimes;
     private static final String PERM_PREFIX = "stat";
 
-    public static boolean isVersionUpdated = false;
+    //public static boolean isVersionUpdated = false;
 
     /**
      * Returns the stat manager for use by other plugins
@@ -77,13 +77,14 @@ public class BeardStat extends JavaPlugin {
 
     }
     public static void printCon(String line){
-        System.out.println("[BeardStat] " + line);
+        self.getLogger().info(line);
+        //System.out.println("[BeardStat] " + line);
     }
 
     public static void printDebugCon(String line){
 
         if(self != null && self.getConfig().getBoolean("general.debug", false)){
-            System.out.println("[BeardStat][DEBUG] " + line);
+            printCon("[DEBUG] " + line);
 
         }
 
@@ -104,26 +105,14 @@ public class BeardStat extends JavaPlugin {
 
     public void onEnable() {
 
-
-
+        //start initialisation
         self = this;
         loginTimes = new HashMap<String,Long>();
         printCon("Starting BeardStat");
 
 
+        //run config updater
         updateConfig();
-
-
-        if(!new File(getDataFolder(),"config.yml").exists()
-                ||
-
-                (getConfig().getInt("stats.version") < Integer.parseInt("${project.config.version}"))
-                ){
-            getConfig().options().copyDefaults(true);
-
-        }
-
-        saveConfig();
 
 
 
@@ -150,8 +139,6 @@ public class BeardStat extends JavaPlugin {
                 mysqlError(e);
             }
         }
-
-
         if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
             db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
         }
@@ -162,19 +149,21 @@ public class BeardStat extends JavaPlugin {
             getPluginLoader().disablePlugin(this);
             return;
         }
+
+        //start the player manager
         playerStatManager = new PlayerStatManager(db);
 
 
 
         printCon("initializing composite stats");
+        //parse the composite stats
         loadCompositeStats();
 
         printCon("Registering events and collectors");
 
 
         //register event listeners
-
-        //block listener
+        //get blacklist, then start and register each type of listener
         List<String> worldList = getConfig().getStringList("stats.blacklist");
         StatBlockListener sbl = new StatBlockListener(worldList,playerStatManager);
         StatPlayerListener spl = new StatPlayerListener(worldList,playerStatManager);
@@ -190,11 +179,13 @@ public class BeardStat extends JavaPlugin {
 
 
 
+        //start Database flusher.
         printCon("Starting flush, defaulting to every 2 Minutes");
         runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 2400L, 2400L);
 
-        printCon("Loading commands");
 
+        //load the commands.
+        printCon("Loading commands");
         getCommand("stats").setExecutor(new StatCommand(playerStatManager));
         getCommand("played").setExecutor(new playedCommand(playerStatManager));
         getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
@@ -202,11 +193,13 @@ public class BeardStat extends JavaPlugin {
         getCommand("laston").setExecutor(new LastOnCommand(playerStatManager));
         getCommand("topplayer").setExecutor(new TopPlayerCommand(playerStatManager));
 
+        //Incase of /reload, set all logged in player names.
         for(Player player: getServer().getOnlinePlayers()){
             loginTimes.put(player.getName(), (new Date()).getTime());
         }
 
 
+        /** ===METRICS CODE=== **/
         Metrics metrics;
         try {
             metrics = new Metrics(this);
@@ -216,7 +209,6 @@ public class BeardStat extends JavaPlugin {
 
                 @Override
                 public int getValue() {
-                    // TODO Auto-generated method stub
                     return 1;
                 }
 
@@ -224,17 +216,18 @@ public class BeardStat extends JavaPlugin {
 
             metrics.start();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         printCon("BeardStat Loaded");
     }
 
     /**
-     * Creates the inital config
+     * Update config as needed.
      */
     private void updateConfig() {
-        //Transfer config if nessecary
+
+
+        //Convert from old BeardStat.yml file (REMOVE IN 0.5)
         File f = new File(getDataFolder(),"BeardStat.yml");
         if(f.exists()){
             printCon("OLD CONFIG FILE FOUND, TRANSFERING TO NEW CONFIG");
@@ -246,7 +239,8 @@ public class BeardStat extends JavaPlugin {
             f.delete();
         }
 
-        //convert old world lists over to blacklist
+
+        //convert old world lists over to blacklist (introduced. 0.4.7 - Honey)
         if(getConfig().contains("stats.worlds")){
             printCon("Moving blacklist to new location");
             getConfig().set("stats.blacklist", getConfig().getStringList("stats.worlds"));
@@ -255,7 +249,21 @@ public class BeardStat extends JavaPlugin {
 
 
 
+        //Standard defaults updater
+        if(!new File(getDataFolder(),"config.yml").exists()){
+            printCon("Writing default config file to disk.");
+            getConfig().set("stats.configversion",null);
+            getConfig().options().copyDefaults(true);
+        }
+        if(getConfig().getInt("stats.configversion",0) < Integer.parseInt("${project.config.version}")){
 
+            printCon("Updating config to include newest configuration options");
+            getConfig().set("stats.configversion",null);
+            getConfig().options().copyDefaults(true);
+
+        }
+
+        saveConfig();
     }
 
     @Override
