@@ -23,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -339,7 +340,7 @@ public class BeardStat extends JavaPlugin {
         case 1042:self.getLogger().severe("Cannot find hostname provided");break;
         case 1044:
         case 1045:self.getLogger().severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this remote machine");break;
-
+        case 1049:self.getLogger().severe("Cannot locate datavase, check you spelt it correctly and username has access rights.");break;
 
         default:self.getLogger().severe("Error code not found, either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");break; 
         }
