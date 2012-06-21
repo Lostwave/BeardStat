@@ -159,6 +159,7 @@ public class BeardStat extends JavaPlugin {
         printCon("initializing composite stats");
         //parse the composite stats
         loadCompositeStats();
+        loadFormats();
 
         printCon("Registering events and collectors");
 
@@ -366,6 +367,13 @@ public class BeardStat extends JavaPlugin {
 
         }
 
+    }
+    
+    private void loadFormats(){
+        for(String format : getConfig().getStringList("customformats")){
+            String stat = format.split(":")[0];
+            String formating = format.replace(stat + ":","");
+        }
     }
 }
 
