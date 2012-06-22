@@ -103,4 +103,7 @@ public class StaticPlayerStat implements PlayerStat{
 	
 	
 
+	public String toString(){
+	    return cat + "." + name + "=" + value;
+	}
 }

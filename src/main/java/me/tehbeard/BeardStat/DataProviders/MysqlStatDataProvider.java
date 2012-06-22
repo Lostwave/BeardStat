@@ -3,16 +3,17 @@ package me.tehbeard.BeardStat.DataProviders;
 import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
 
 import java.util.Properties;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 
 import me.tehbeard.BeardStat.BeardStat;
-import me.tehbeard.BeardStat.containers.BlockedSet;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
@@ -37,7 +38,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement prepSetPlayerStat;
     protected static PreparedStatement keepAlive;
 
-    private HashMap<String,BlockedSet<PlayerStat>> writeCache = new HashMap<String,BlockedSet<PlayerStat>>();
+    private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
     public MysqlStatDataProvider(String host,String database,String table,String username,String password) throws SQLException{
 
@@ -95,7 +96,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
      * 
      * @return
      */
-    private boolean checkConnection(){
+    private synchronized boolean checkConnection(){
         BeardStat.printDebugCon("Checking connection");
         try {
             if(conn == null || !conn.isValid(0)){
@@ -208,7 +209,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         synchronized (writeCache) {
 
 
-            BlockedSet<PlayerStat> copy = writeCache.containsKey(player.getName()) ? writeCache.get(player.getName()) : new BlockedSet<PlayerStat>();
+            HashSet<PlayerStat> copy = writeCache.containsKey(player.getName()) ? writeCache.get(player.getName()) : new HashSet<PlayerStat>();
 
             for(PlayerStat ps : player.getStats()){
                 if(ps.isArchive()){
@@ -227,33 +228,46 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     public void flush() {
 
-        synchronized (writeCache) {
+        new Thread(new Runnable() {
+
+            public void run() {
+                synchronized (writeCache) {
 
 
-            for(Entry<String, BlockedSet<PlayerStat>> entry : writeCache.entrySet()){
-                try {
-                    BlockedSet<PlayerStat> pb = entry.getValue();
-                    pb.setBlocked(true);
-                    prepSetPlayerStat.clearBatch();
-                    for(PlayerStat ps : pb){
-
-                        prepSetPlayerStat.setString(1, entry.getKey());
-
-                        prepSetPlayerStat.setString(2, ps.getCat());
-                        prepSetPlayerStat.setString(3, ps.getName());
-                        prepSetPlayerStat.setInt(4, ps.getValue());
-                        prepSetPlayerStat.setInt(5, ps.getValue());
-                        prepSetPlayerStat.addBatch();
+                    if(!checkConnection()){
+                        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
                     }
-                    prepSetPlayerStat.executeBatch();
-                    BeardStat.printDebugCon("Saved.");
-                } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    else{
+                        BeardStat.printDebugCon("Saving to database");
+                        for(Entry<String, HashSet<PlayerStat>> entry : writeCache.entrySet()){
+                            try {
+                                HashSet<PlayerStat> pb = entry.getValue();
+
+                                BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
+                                prepSetPlayerStat.clearBatch();
+                                for(PlayerStat ps : pb){
+
+                                    prepSetPlayerStat.setString(1, entry.getKey());
+
+                                    prepSetPlayerStat.setString(2, ps.getCat());
+                                    prepSetPlayerStat.setString(3, ps.getName());
+                                    prepSetPlayerStat.setInt(4, ps.getValue());
+                                    prepSetPlayerStat.setInt(5, ps.getValue());
+                                    prepSetPlayerStat.addBatch();
+                                }
+                                prepSetPlayerStat.executeBatch();
+                               
+                            } catch (SQLException e) {
+                                checkConnection();
+                            }
+                        }
+                        BeardStat.printDebugCon("Clearing write cache");
+                        writeCache.clear();
+                    }
                 }
+
             }
-            writeCache.clear();
-        }
+        }).start();
     }
 
 
