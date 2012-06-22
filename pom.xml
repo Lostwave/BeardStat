@@ -23,7 +23,7 @@
 			<id>escapecraft-repo</id>
 			<url>http://dev.escapecraft.com/maven</url>
 		</repository>
-		
+
 	</repositories>
 
 
@@ -47,26 +47,25 @@
 	</dependencies>
 
 	<distributionManagement>
-   <repository>
-     <id>dev-repo</id>
-     <name>dev.escapecraft.com Releases</name>
-     <url>scp://dev.escapecraft.com/var/www/maven</url>
-   </repository>
-   <snapshotRepository>
-     <id>dev-repo-snap</id>
-     <name>dev.escapecraft.com Snapshots</name>
-     <url>scp://dev.escapecraft.com/var/www/maven</url>
-   </snapshotRepository>
- </distributionManagement>
- <build>
-  <extensions>
-     <extension>
-       <groupId>org.apache.maven.wagon</groupId>
-       <artifactId>wagon-ssh</artifactId>
-       <version>2.2</version>
-     </extension>
-   </extensions>
-    	<sourceDirectory>target/src</sourceDirectory>
+		<repository>
+			<id>dev-repo</id>
+			<name>dev.escapecraft.com Releases</name>
+			<url>scp://dev.escapecraft.com/var/www/maven</url>
+		</repository>
+		<snapshotRepository>
+			<id>dev-repo-snap</id>
+			<name>dev.escapecraft.com Snapshots</name>
+			<url>scp://dev.escapecraft.com/var/www/maven</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.2</version>
+			</extension>
+		</extensions>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
@@ -83,7 +82,9 @@
 				<filtering>true</filtering>
 				<targetPath>../src</targetPath>
 				<directory>${basedir}/src/main/java/</directory>
-				<includes><include>me/tehbeard/BeardStat/BeardStat.java</include></includes>
+				<includes>
+					<include>me/tehbeard/BeardStat/BeardStat.java</include>
+				</includes>
 			</resource>
 		</resources>
 		<plugins>
@@ -103,8 +104,8 @@
 									<include>me.tehbeard:Vocalise</include>
 									<include>me.tehbeard:utils</include>
 								</includes>
-								
-								
+
+
 							</artifactSet>
 							<relocations>
 								<relocation>

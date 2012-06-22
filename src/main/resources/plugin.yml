@@ -1,7 +1,7 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
 version: ${project.plugin.version}
-authors: [Tehbeard,Lostwave]
+authors: [Tehbeard]
 commands:
     stats:
         description: Show stats about yourself or another player
@@ -23,10 +23,7 @@ commands:
         description: View the various stats pages
         usage: /laston [player]
         aliases: [blaston]
-    topPlayer:
-        description: View the top xx players on the server
-        usage: /topPlayer
-        aliases: [btopPlayer]
+
         
 permissions:
   stat.*:
@@ -39,7 +36,6 @@ permissions:
       stat.command.stat.get: true
       stat.command.stat.other: true
       stat.command.laston: true
-      stat.command.topplayer: true
   stat.players:
     description: Allows use of all stat commands
     default: true
@@ -63,7 +59,5 @@ permissions:
   stat.command.laston:
     description: View when a player was last online
     default: op
-  stat.command.topplayer: 
-    description: View top players on the server
-    default: op
+
     
