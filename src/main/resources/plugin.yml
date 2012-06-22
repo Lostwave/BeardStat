@@ -7,6 +7,7 @@ commands:
         description: Show stats about yourself or another player
         usage: /stats [stats]...
         aliases: [bstats]
+        permission: stat.command.stat
     played:
         description: Show play time for you or another player
         usage: /played [player]

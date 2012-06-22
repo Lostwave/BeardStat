@@ -14,6 +14,7 @@ import me.tehbeard.BeardStat.commands.interactive.ShowStatisticPrompt;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import me.tehbeard.utils.commands.ArgumentPack;
 import me.tehbeard.vocalise.parser.PromptBuilder;
 
 import org.bukkit.Bukkit;
@@ -31,7 +32,7 @@ public class StatCommand implements CommandExecutor {
 
 
     private PromptBuilder builder;
-    
+
     @SuppressWarnings("unchecked")
     public StatCommand(PlayerStatManager playerStatManager) {
         this.playerStatManager = playerStatManager;
@@ -42,178 +43,49 @@ public class StatCommand implements CommandExecutor {
                 ShowStatisticPrompt.class,
                 SetSelfPrompt.class,
                 FindPlayerPrompt.class);
-        
+
         builder.load(BeardStat.self().getResource("interactive.yml"));
-                                                   
     }
 
-    private enum CommandType {
-        help, defaultstats, interactive, category, specific, unknown
-    }
-
-    private enum SenderType {
-        console, player, unknown
-    }
 
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
-        String player;
-        CommandType cmdtype = CommandType.unknown;
-        SenderType usertype = SenderType.unknown;
+
+
         if (!BeardStat.hasPermission(sender, "command.stat")) {
             BeardStat.sendNoPermissionError(sender);
             return true;
         }
 
-        // set the sender type
-        if (sender instanceof ConsoleCommandSender) {
-            usertype = SenderType.console;
-        }
-        else if (sender instanceof Player) {
-            usertype = SenderType.player;
+        
+        ArgumentPack arguments = new ArgumentPack(new String[] {"i","h"}, new String[] {"p","c","s"}, args);
+        String player = arguments.getOption("p");
+
+        if(player == null && sender instanceof Player){
+            player = ((Player)sender).getName();
         }
 
-        if (args.length > 0) {
-            // set the command type
-            if (args[0].equalsIgnoreCase("-i")) {
-                cmdtype = CommandType.interactive;
-            }
-            else if (args[0].equalsIgnoreCase("-h") || args[0].equals("?")) {
-                cmdtype = CommandType.help;
-            }
-            else if (args[0].equalsIgnoreCase("-c")) {
-                cmdtype = CommandType.category;
-            }
-            else if (args[0].equalsIgnoreCase("-s")) {
-                cmdtype = CommandType.specific;
-            }
-        }
-        else { // no args
-            if (usertype == SenderType.player) {
-                cmdtype = CommandType.defaultstats;
-            }
-            else {
-                sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.  Use: stats <player>");
-                return false;
-            }
-        }
-
-        switch (cmdtype) {
-        case help:
-            SendHelpMessage(sender);
+        if(player == null){
+            sendHelpMessage(sender);
             return true;
-        case interactive:
-            if (usertype == SenderType.player) {
-                HashMap<Object, Object> map = new HashMap<Object,Object>();
-                map.put("player", sender);
-                builder.makeConversation((Conversable) sender,map);
-                return true;
-            }
-            else {
-                sender.sendMessage(ChatColor.RED + "You cannot run this command from the console.");
-                return false;
-            }
-        case category:
-            player = "";
-            String cat = "";
-            switch (usertype) {
-            case player:
-                if (args.length == 2) {
-                    player = ((Player) sender).getName();
-                    cat = args[1];
-                }
-                else if(args.length == 1){
-                    player = ((Player) sender).getName();
-                }                
-                break;
-            case console:
-                if (args.length == 3) {
-                    player = args[1];
-                    cat = args[2];
-                }
-                else if (args.length == 2) {
-                    player = args[1];
-                }
-                else {
-                    sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.  Use: stats -c <player>");
-                    return false;
-                }
-
-                Collection<PlayerStat> stats = playerStatManager.getPlayerBlob(player).getStats();
-                SendCategoryMessage(sender, stats, cat);
-
-                break;
-            }
-            break;
-        case specific:
-            if (args.length > 1 && args[1].indexOf(".") < 0) {
-                player = args[1];
-            }
-            else if (usertype == SenderType.player) {
-                player = ((Player) sender).getName();
-            }
-            else {
-                sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.  Use: stats -s <player> <stat> [<stat>]");
-                return false;
-            }
-
-            for (String arg : args) {
-                String[] part = arg.split("\\.");
-
-                for (String p : part) {
-                    BeardStat.printDebugCon(p);
-                }
-
-                if (part.length == 2) {
-                    BeardStat.printDebugCon("sending stat to player");
-
-                    if (playerStatManager.getPlayerBlob(player).hasStat(part[0], part[1])) {
-                        sender.sendMessage(ChatColor.GOLD + player + " " + ChatColor.LIGHT_PURPLE + arg + ": " + ChatColor.WHITE + playerStatManager.getPlayerBlob(player).getStat(part[0], part[1]).getValue());
-                    }
-                    else {
-                        sender.sendMessage("Stat not found");
-                    }
-                }
-            }
-            break;
-        default:
-            player = "";
-            switch (usertype) {
-            case console:
-                player = args[0]; // we already make sure there is at least one
-                break;
-            case player:
-                if (args.length == 0) {
-                    player = ((Player) sender).getName();
-                }
-                else if (BeardStat.hasPermission(sender, "command.stat.other")) {
-                    player = args[0];
-                }
-                else {
-                    BeardStat.sendNoPermissionError(sender);
-                    return false;
-                }
-                break;
-            }
-
-            PlayerStatBlob blob = null;
-            if (player.length() > 0) {
-                blob = playerStatManager.findPlayerBlob(player);
-
-                SendPlayerStats(sender, blob);
-            }
-            else {
-                sender.sendMessage(ChatColor.RED + "Player not found.");
-            }
-            break;
+        }
+        if(args.length == 0 ){
+            Bukkit.dispatchCommand(sender, "statpage default");
+            return true;
+        }
+        
+        if(arguments.getFlag("i")){
+            builder.makeConversation((Conversable) sender);
+            return true;
         }
 
-        if (args.length == 1 && args[0].indexOf('.') == -1) {}
-        else {}
-        sender.sendMessage(ChatColor.GREEN + "Use /stats -h to display the help page!");
+        //TODO: FINISH UP
+        
+
+
         return true;
     }
 
-    public static void SendHelpMessage(CommandSender sender) {
+    public static void sendHelpMessage(CommandSender sender) {
         sender.sendMessage(ChatColor.GREEN + "Stats Help page");
         sender.sendMessage(ChatColor.GREEN + "/stats [user]: Default display of your [or users] stats");
         sender.sendMessage(ChatColor.GREEN + "/stats -h : This page");
