@@ -58,16 +58,6 @@ public class BeardStat extends JavaPlugin {
         return playerStatManager;
     }
 
-    private int topPlayerCount = 0;
-    public int getTopPlayerCount(){
-        if(topPlayerCount == 0){
-            topPlayerCount = getConfig().getInt("stats.topplayedcount", 25); 
-        }
-        if(topPlayerCount > 100){
-            topPlayerCount = 100;
-        }
-        return topPlayerCount;
-    }
 
 
     public static boolean hasPermission(Permissible player,String node){
@@ -180,8 +170,8 @@ public class BeardStat extends JavaPlugin {
 
         //start Database flusher.
         printCon("Starting flush, defaulting to every 2 Minutes");
-        runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 2400L, 2400L);
-
+        //runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 2400L, 2400L);
+        runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 600L, 600L);
 
         //load the commands.
         printCon("Loading commands");
@@ -279,6 +269,7 @@ public class BeardStat extends JavaPlugin {
                 BeardStat.printCon("Flushing to database.");
             }
 
+            playerStatManager.saveCache();
             playerStatManager.flush();
             if(getConfig().getBoolean("general.verbose",false)){
                 BeardStat.printCon("flush completed");

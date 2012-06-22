@@ -55,7 +55,7 @@ public class StatPlayerListener implements Listener {
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
         }
 
-        BeardStat.self().setLoginTime(event.getPlayer().getName(), (new Date()).getTime());
+        BeardStat.self().getStatManager().setLoginTime(event.getPlayer().getName(), System.currentTimeMillis());
 
     }
 
@@ -305,10 +305,10 @@ public class StatPlayerListener implements Listener {
 
     private void calc_timeonline(String player){
 
-        long seconds = (System.currentTimeMillis() - BeardStat.self().getLoginTime(player))/1000L;
+        long seconds = (System.currentTimeMillis() - BeardStat.self().getStatManager().getLoginTime(player))/1000L;
         playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 
-        BeardStat.self().wipeLoginTime(player);		
+        BeardStat.self().getStatManager().wipeLoginTime(player);		
 
     }
 

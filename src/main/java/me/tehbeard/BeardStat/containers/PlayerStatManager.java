@@ -47,18 +47,12 @@ public class PlayerStatManager {
 				getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 				setLoginTime(player,System.currentTimeMillis());
 			
-			backendDatabase.pushPlayerStatBlob(entry.getValue());
+			backendDatabase.pushPlayerStatBlob(getPlayerBlob(player));
 			
 			
 		}
-		if(backendDatabase instanceof MysqlStatDataProvider){
-			MysqlStatDataProvider sq = (MysqlStatDataProvider)backendDatabase;
-			sq.flushNow();
-		}
-		else
-		{
-		backendDatabase.flush();
-		}
+
+
 	}
 
 

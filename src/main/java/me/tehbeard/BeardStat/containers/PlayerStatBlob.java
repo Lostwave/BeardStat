@@ -1,10 +1,12 @@
 package me.tehbeard.BeardStat.containers;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import me.tehbeard.utils.expressions.VariableProvider;
 
@@ -29,7 +31,7 @@ public class PlayerStatBlob implements VariableProvider{
         }
     }
     
-    private HashSet<PlayerStat> stats;
+    private Set<PlayerStat> stats;
     private String name;
 
     public String getName() {
