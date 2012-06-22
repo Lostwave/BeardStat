@@ -1,5 +1,6 @@
-Honey release
+0.4.7 - Honey release
 =============
+* Fix exclude list in web API
 * Composite stats allows for more advanced dynamic stats
 * type: is now case insensitive
 * Metadata tracked for specific blocks, used in certain events either 
@@ -8,7 +9,7 @@ as an addition (wood) or soley (dyes)
 * /playedother removed, functionality rolled into /played command
 * /fiston added
 * /laston added /firston to display
-* /topplayer added
+* --/topplayer added-- Removed,future release.
 * Deaths now respect blacklist
 * exp.lifetimelvl details total levels earned
 * Blacklist changed around blacklist: instead of worlds:
