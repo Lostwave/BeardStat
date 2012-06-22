@@ -77,6 +77,7 @@ public class PlayerStatBlob implements VariableProvider{
             }
         }
         PlayerStat psn = new StaticPlayerStat(cat,name,0);
+        psn.setValue(0);
         addStat(psn);
         return psn;
     }
@@ -84,7 +85,7 @@ public class PlayerStatBlob implements VariableProvider{
      * Return all the stats!
      * @return
      */
-    public Collection<PlayerStat> getStats(){
+    public Set<PlayerStat> getStats(){
         return stats;
     }
 

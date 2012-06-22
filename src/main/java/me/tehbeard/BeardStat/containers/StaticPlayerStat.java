@@ -17,7 +17,7 @@ public class StaticPlayerStat implements PlayerStat{
 	private int value;
 	private String cat="stats";
 
-	private boolean archive;
+	private boolean archive = false;
 	
 	public StaticPlayerStat(String cat,String name,int value){
 		this.name=name;

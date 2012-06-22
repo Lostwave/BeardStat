@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat.DataProviders;
 import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 
 import java.util.Properties;
@@ -11,6 +12,7 @@ import org.bukkit.Bukkit;
 
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.containers.BlockedSet;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
@@ -35,7 +37,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement prepSetPlayerStat;
     protected static PreparedStatement keepAlive;
 
-    private static HashMap<String,PlayerStatBlob> writeCache = new HashMap<String,PlayerStatBlob>();
+    private HashMap<String,BlockedSet<PlayerStat>> writeCache = new HashMap<String,BlockedSet<PlayerStat>>();
 
     public MysqlStatDataProvider(String host,String database,String table,String username,String password) throws SQLException{
 
@@ -81,6 +83,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
         try {
             conn = DriverManager.getConnection(conUrl,conStr);
+            //conn.setAutoCommit(false);
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
             conn = null;
@@ -170,48 +173,6 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         return pullPlayerStatBlob(player,true);
     }
 
-
-    public void pushPlayerStatBlob(PlayerStatBlob player) {
-
-        //create a copy of the player stat blob to write to the 
-        synchronized(writeCache){
-            PlayerStatBlob copy = null;
-            //grab it if it's still in the cache
-            if(writeCache.containsKey(player.getName())){
-                copy = writeCache.get(player.getName());
-            } else {
-                copy = new PlayerStatBlob(player.getName(),player.getPlayerID());
-            }
-            //copy playerstats that need changing
-            for(PlayerStat ps:player.getStats()){
-                //update or create
-                if(copy.hasStat(ps.getCat(),ps.getName())){
-                    copy.getStat(ps.getCat(),ps.getName()).setValue(ps.getValue());
-                }else{
-                    if(ps.isArchive()){
-                        BeardStat.printDebugCon("Caching stat " + ps.getName() + " as new");
-                        PlayerStat nps = new StaticPlayerStat(ps.getCat(),ps.getName(),ps.getValue());
-
-                        copy.addStat(nps);
-                        ps.clearArchive();
-                    }
-                }
-
-            }
-            //push to cache if it doesn't already exist there
-            if(!writeCache.containsKey(player.getName())){
-                writeCache.put(copy.getName(),copy);
-            }
-        }
-    }
-
-
-    public void flush() {
-        //run SQL in async thread
-        Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new sqlFlusher(pullCacheToThread()));
-
-    }
-
     public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
         try {
             if(!checkConnection()){
@@ -242,75 +203,60 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         return null;
     }
 
+    public void pushPlayerStatBlob(PlayerStatBlob player) {
+
+        synchronized (writeCache) {
 
 
-    private HashMap<String,PlayerStatBlob> pullCacheToThread(){
-        synchronized(writeCache){
-            HashMap<String,PlayerStatBlob> tmp = writeCache;
-            writeCache = new HashMap<String,PlayerStatBlob>();
-            return tmp;
-        }
-    }
+            BlockedSet<PlayerStat> copy = writeCache.containsKey(player.getName()) ? writeCache.get(player.getName()) : new BlockedSet<PlayerStat>();
 
-    class sqlFlusher implements Runnable {
+            for(PlayerStat ps : player.getStats()){
+                if(ps.isArchive()){
 
-        HashMap<String,PlayerStatBlob> toWrite = null;
-        sqlFlusher(HashMap<String,PlayerStatBlob> toWrite){
-            this.toWrite = toWrite;
-        }
-        public void run() {
-            synchronized(writeCache){
-                BeardStat.printDebugCon("[Writing to database]");
-                try {
-                    //KEEP ALIVE  
-                    keepAlive.clearBatch();
-                    keepAlive.executeQuery();
-
-                    Long t1 = (new Date()).getTime();
-                    int objects = 0;
-                    prepSetPlayerStat.clearBatch();
-                    for(PlayerStatBlob pb:toWrite.values()){
-                        BeardStat.printDebugCon("Packing stats for "+pb.getName());
-                        BeardStat.printDebugCon("[");
-                        for(PlayerStat ps:pb.getStats()){
-                            BeardStat.printDebugCon("stat: " + ps.getCat() + "->"+ ps.getName() + " = " + ps.getValue());
-                            prepSetPlayerStat.setString(1, pb.getName());
-                            prepSetPlayerStat.setString(2, ps.getCat());
-                            prepSetPlayerStat.setString(3, ps.getName());
-                            prepSetPlayerStat.setInt(4, ps.getValue());
-                            prepSetPlayerStat.setInt(5, ps.getValue());
-                            prepSetPlayerStat.addBatch();
-                            objects+=1;
-                        }
-                        BeardStat.printDebugCon("]");
-                    }
-
-                    int[] r = prepSetPlayerStat.executeBatch();
-                    for(int rr :r){
-                        BeardStat.printDebugCon(":: " +rr);
-                    }
-
-                    long t2 = (new Date()).getTime();
-                    BeardStat.printDebugCon("[Database write Completed]");
-                    BeardStat.printDebugCon("Objects written to database: " + objects);
-                    BeardStat.printDebugCon("Time taken to write to Database: " + (t2-t1) + "milliseconds");
-                    if(objects > 0){
-                        BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
-                    }
-
-                } catch (SQLException e) {
-                    BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
-                    createConnection();
-                    prepareStatements();
-
+                    PlayerStat ns = new  StaticPlayerStat(ps.getCat(),ps.getName(),ps.getValue());
+                    copy.add(ns);
                 }
+            }
+
+            if(!writeCache.containsKey(player.getName())){
+                writeCache.put(player.getName(), copy);
             }
         }
 
     }
 
-    public void flushNow(){
-        System.out.println("Saving in same thread");
-        (new sqlFlusher(pullCacheToThread())).run();
+    public void flush() {
+
+        synchronized (writeCache) {
+
+
+            for(Entry<String, BlockedSet<PlayerStat>> entry : writeCache.entrySet()){
+                try {
+                    BlockedSet<PlayerStat> pb = entry.getValue();
+                    pb.setBlocked(true);
+                    prepSetPlayerStat.clearBatch();
+                    for(PlayerStat ps : pb){
+
+                        prepSetPlayerStat.setString(1, entry.getKey());
+
+                        prepSetPlayerStat.setString(2, ps.getCat());
+                        prepSetPlayerStat.setString(3, ps.getName());
+                        prepSetPlayerStat.setInt(4, ps.getValue());
+                        prepSetPlayerStat.setInt(5, ps.getValue());
+                        prepSetPlayerStat.addBatch();
+                    }
+                    prepSetPlayerStat.executeBatch();
+                    BeardStat.printDebugCon("Saved.");
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            writeCache.clear();
+        }
     }
+
+
+
+
 }
