@@ -10,7 +10,7 @@
 	<properties>
 		<project.plugin.flavour>honey</project.plugin.flavour>
 		<project.plugin.version>${project.version}-${project.plugin.flavour}</project.plugin.version>
-		<project.config.version>1</project.config.version>
+		<project.config.version>2</project.config.version>
 	</properties>
 
 	<repositories>
@@ -80,13 +80,11 @@
 
 			<resource>
 				<filtering>true</filtering>
-				<targetPath>../src</targetPath>
+				<targetPath>../filtered-sources/java</targetPath>
 				<directory>${basedir}/src/main/java/</directory>
-				<includes>
-					<include>me/tehbeard/BeardStat/BeardStat.java</include>
-				</includes>
 			</resource>
 		</resources>
+		<sourceDirectory>target/filtered-sources/java</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -244,13 +244,13 @@ public class BeardStat extends JavaPlugin {
             getConfig().set("stats.configversion",null);
             getConfig().options().copyDefaults(true);
         }
-        /*if(getConfig().getInt("stats.configversion",0) < Integer.parseInt("${project.config.version}")){
+        if(getConfig().getInt("stats.configversion",0) < Integer.parseInt("${project.config.version}")){
 
             printCon("Updating config to include newest configuration options");
             getConfig().set("stats.configversion",null);
             getConfig().options().copyDefaults(true);
 
-        }*/
+        }
 
         saveConfig();
     }
