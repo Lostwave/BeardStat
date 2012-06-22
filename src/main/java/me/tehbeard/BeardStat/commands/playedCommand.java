@@ -57,7 +57,7 @@ public class playedCommand implements CommandExecutor {
             else
             {
                 blob = playerStatManager.findPlayerBlob(pp.getName());
-                seconds += BeardStat.self().getSessionTime(((Player)sender).getName());
+                seconds += BeardStat.self().getStatManager().getSessionTime(((Player)sender).getName());
             }
 
             if(blob != null && blob.getStat("stats", "playedfor").getValue() != 0){
@@ -74,7 +74,7 @@ public class playedCommand implements CommandExecutor {
                     BeardStat.sendNoPermissionError(sender);
                     return true;
                 }
-                seconds = playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() + BeardStat.self().getSessionTime(((Player)sender).getName());
+                seconds = playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() + BeardStat.self().getStatManager().getSessionTime(((Player)sender).getName());
               }
               else{
                  sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.");

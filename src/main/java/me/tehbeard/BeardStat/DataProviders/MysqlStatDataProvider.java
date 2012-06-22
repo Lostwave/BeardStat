@@ -1,20 +1,19 @@
 package me.tehbeard.BeardStat.DataProviders;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+
 
 import java.util.Properties;
 
 import org.bukkit.Bukkit;
 
+
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
-import me.tehbeard.BeardStat.containers.TopPlayer;
 
 /**
  * Provides backend storage to a mysql database
@@ -35,8 +34,6 @@ public class MysqlStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement prepGetAllPlayerStat;
     protected static PreparedStatement prepSetPlayerStat;
     protected static PreparedStatement keepAlive;
-    protected static PreparedStatement prepTopPlayersStat;
-    protected static PreparedStatement prepAllStatsInCategory;
 
     private static HashMap<String,PlayerStatBlob> writeCache = new HashMap<String,PlayerStatBlob>();
 
@@ -49,20 +46,27 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         this.password = password;
         try {
             Class.forName("com.mysql.jdbc.Driver");
+
             createConnection();
-            
+
             checkAndMakeTable();
             prepareStatements();
-
+            if(conn == null){
+                throw new SQLException("Failed to start");
+            }
         } catch (ClassNotFoundException e) {
             BeardStat.printCon("MySQL Library not found!");
         }
-        
-        
-        
+
+
+
     }
 
-    protected void createConnection() throws SQLException{
+    /**
+     * Connection to the database.
+     * @throws SQLException
+     */
+    private void createConnection() {
         String conUrl = String.format("jdbc:mysql://%s/%s",
                 host, 
                 database);
@@ -71,36 +75,55 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         Properties conStr = new Properties();
         conStr.put("user",username);
         conStr.put("password",password);
-        BeardStat.printCon("Connecting....");
-        
-            conn = DriverManager.getConnection(conUrl,conStr);
-        
-    }
+        conStr.put("autoReconnect", "true");
 
-    protected Connection getOrCreateConnection(){
-        try{
-            if(conn == null){
-                createConnection();
-                prepareStatements();//Rebuild statements
-            }
-            else if(conn.isClosed()){
-                createConnection();
-                prepareStatements();
-            }
+        BeardStat.printCon("Connecting....");
+
+        try {
+            conn = DriverManager.getConnection(conUrl,conStr);
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
-            return null;
+            conn = null;
         }
-        return conn;    
+
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private boolean checkConnection(){
+        BeardStat.printDebugCon("Checking connection");
+        try {
+            if(conn == null || !conn.isValid(0)){
+                BeardStat.printDebugCon("Something is derp, rebooting connection.");
+                createConnection();
+                if(conn!=null){
+                    BeardStat.printDebugCon("Rebuilding statements");
+                    prepareStatements();
+                }
+                else
+                {
+                    BeardStat.printDebugCon("Reboot failed!");
+                }
+
+            }
+        } catch (SQLException e) {
+            conn = null;
+            return false;
+        }
+        BeardStat.printDebugCon("Checking is " + conn != null ? "up" : "down");
+        return conn != null;
     }
 
     protected void checkAndMakeTable(){
         BeardStat.printCon("Checking for table");
+
         try{
-            ResultSet rs = getOrCreateConnection().getMetaData().getTables(null, null, table, null);
+            ResultSet rs = conn.getMetaData().getTables(null, null, table, null);
             if (!rs.next()) {
                 BeardStat.printCon("Stats table not found, creating table");
-                PreparedStatement ps = getOrCreateConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `" + table + "` ("+
+                PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `" + table + "` ("+
                         " `player` varchar(32) NOT NULL DEFAULT '-',"+
                         " `category` varchar(32) NOT NULL DEFAULT 'stats',"+
                         " `stat` varchar(32) NOT NULL DEFAULT '-',"+
@@ -126,29 +149,14 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         try{
             BeardStat.printDebugCon("Preparing statements");
 
-            keepAlive = getOrCreateConnection().prepareStatement("SELECT COUNT(*) from `" + table + "`");
-            prepGetAllPlayerStat = getOrCreateConnection().prepareStatement("SELECT * FROM " + table + " WHERE player=?");
+            keepAlive = conn.prepareStatement("SELECT COUNT(*) from `" + table + "`");
+            prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM " + table + " WHERE player=?");
             BeardStat.printDebugCon("Player stat statement created");
 
-            prepSetPlayerStat = getOrCreateConnection().prepareStatement("INSERT INTO `" + table + "`" +
+            prepSetPlayerStat = conn.prepareStatement("INSERT INTO `" + table + "`" +
                     "(`player`,`category`,`stat`,`value`) " +
                     "values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
 
-            prepTopPlayersStat = getOrCreateConnection().prepareStatement(
-                    "SELECT p.player as Player " +
-                            "    , CASE WHEN stat='playedfor' THEN Concat(LPAD(floor(p.value / 60 / 60 / 24), 2, '0'), 'd ', LPAD(floor(p.value / 60 / 60 % 24), 2, '0'), 'h ', LPAD(floor(p.value / 60 % 24 % 60), 2, '0'), 'm ', LPAD(floor(p.value / 60 % 24 % 60 * 60 % 60), 2, '0'), 's') " + 
-                            "       WHEN stat='firstlogin' THEN FROM_UNIXTIME(value) " + 
-                            "       WHEN stat='lastlogin' THEN FROM_UNIXTIME(value) " + 
-                            "       ELSE FORMAT(value, 0) " + 
-                            "      END as TimeOnServer " +
-                            "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='firstlogin') as FirstLogin " +
-                            "    , (SELECT FROM_UNIXTIME(value) FROM stats ll WHERE ll.player = p.player AND ll.stat='lastlogin') as LastLogin " +
-                            "FROM " + table + " p " +
-                            "WHERE p.stat=? " +
-                            "ORDER BY p.value DESC " +
-                            "LIMIT 0,?; "
-                    );
-            prepAllStatsInCategory = getOrCreateConnection().prepareStatement("SELECT DISTINCT " + table + " FROM stats WHERE category=?");
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised MySQL Data Provider.");
         } catch (SQLException e) {
@@ -206,6 +214,10 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
         try {
+            if(!checkConnection()){
+                BeardStat.printCon("ERROR");
+                return null;
+            }
             long t1 = (new Date()).getTime();
             PlayerStatBlob pb = null;
 
@@ -230,56 +242,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         return null;
     }
 
-    public List<TopPlayer> pullTopPlayers(String category){
-        long t1 = (new Date()).getTime();
-        List<TopPlayer> topPlayed = new ArrayList<TopPlayer>();
 
-        try {
-            //try to pull it from the db
-            prepTopPlayersStat.setString(1, category);
-            prepTopPlayersStat.setInt(2, BeardStat.self().getTopPlayerCount());
-            ResultSet rs = prepTopPlayersStat.executeQuery();
-            int count = 1;
-            while(rs.next()){
-                TopPlayer item = new TopPlayer(count++,rs.getString("Player"),rs.getString("TimeOnServer"), rs.getDate("FirstLogin"), rs.getDate("LastLogin"));
-                topPlayed.add(item);
-            }
-            rs.close();
-
-            BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-            if(topPlayed.size()==0){return null;}
-        } 
-        catch (SQLException e) {
-            BeardStat.mysqlError(e);
-            }
-        return topPlayed;
-    }
-
-    public List<String> pullAllStatsInCategory(String category){
-        long t1 = (new Date()).getTime();
-
-        if(category.length() == 0)
-        { return null; }
-
-        List<String> cats = new ArrayList<String>();
-        try{
-            prepAllStatsInCategory.setString(1, category);
-
-            ResultSet rs = prepAllStatsInCategory.executeQuery();
-            while(rs.next()){
-                cats.add(rs.getString(1));
-            }
-            rs.close();
-
-            BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-            if(cats.size()==0){return null;}
-        }
-        catch (SQLException e) {
-            BeardStat.mysqlError(e);
-        }
-
-        return cats;
-    }
 
     private HashMap<String,PlayerStatBlob> pullCacheToThread(){
         synchronized(writeCache){
@@ -296,54 +259,51 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             this.toWrite = toWrite;
         }
         public void run() {
-            BeardStat.printDebugCon("[Writing to database]");
-            try {
-                //KEEP ALIVE  
-                keepAlive.clearBatch();
-                keepAlive.executeQuery();
-
-                Long t1 = (new Date()).getTime();
-                int objects = 0;
-                prepSetPlayerStat.clearBatch();
-                for(PlayerStatBlob pb:toWrite.values()){
-                    BeardStat.printDebugCon("Packing stats for "+pb.getName());
-                    BeardStat.printDebugCon("[");
-                    for(PlayerStat ps:pb.getStats()){
-                        BeardStat.printDebugCon("stat: " + ps.getCat() + "->"+ ps.getName() + " = " + ps.getValue());
-                        prepSetPlayerStat.setString(1, pb.getName());
-                        prepSetPlayerStat.setString(2, ps.getCat());
-                        prepSetPlayerStat.setString(3, ps.getName());
-                        prepSetPlayerStat.setInt(4, ps.getValue());
-                        prepSetPlayerStat.setInt(5, ps.getValue());
-                        prepSetPlayerStat.addBatch();
-                        objects+=1;
-                    }
-                    BeardStat.printDebugCon("]");
-                }
-
-                int[] r = prepSetPlayerStat.executeBatch();
-                for(int rr :r){
-                    BeardStat.printDebugCon(":: " +rr);
-                }
-
-                long t2 = (new Date()).getTime();
-                BeardStat.printDebugCon("[Database write Completed]");
-                BeardStat.printDebugCon("Objects written to database: " + objects);
-                BeardStat.printDebugCon("Time taken to write to Database: " + (t2-t1) + "milliseconds");
-                if(objects > 0){
-                    BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
-                }
-
-            } catch (SQLException e) {
-                BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
+            synchronized(writeCache){
+                BeardStat.printDebugCon("[Writing to database]");
                 try {
+                    //KEEP ALIVE  
+                    keepAlive.clearBatch();
+                    keepAlive.executeQuery();
+
+                    Long t1 = (new Date()).getTime();
+                    int objects = 0;
+                    prepSetPlayerStat.clearBatch();
+                    for(PlayerStatBlob pb:toWrite.values()){
+                        BeardStat.printDebugCon("Packing stats for "+pb.getName());
+                        BeardStat.printDebugCon("[");
+                        for(PlayerStat ps:pb.getStats()){
+                            BeardStat.printDebugCon("stat: " + ps.getCat() + "->"+ ps.getName() + " = " + ps.getValue());
+                            prepSetPlayerStat.setString(1, pb.getName());
+                            prepSetPlayerStat.setString(2, ps.getCat());
+                            prepSetPlayerStat.setString(3, ps.getName());
+                            prepSetPlayerStat.setInt(4, ps.getValue());
+                            prepSetPlayerStat.setInt(5, ps.getValue());
+                            prepSetPlayerStat.addBatch();
+                            objects+=1;
+                        }
+                        BeardStat.printDebugCon("]");
+                    }
+
+                    int[] r = prepSetPlayerStat.executeBatch();
+                    for(int rr :r){
+                        BeardStat.printDebugCon(":: " +rr);
+                    }
+
+                    long t2 = (new Date()).getTime();
+                    BeardStat.printDebugCon("[Database write Completed]");
+                    BeardStat.printDebugCon("Objects written to database: " + objects);
+                    BeardStat.printDebugCon("Time taken to write to Database: " + (t2-t1) + "milliseconds");
+                    if(objects > 0){
+                        BeardStat.printDebugCon("Average time per object: " + (t2-t1)/objects + "milliseconds");
+                    }
+
+                } catch (SQLException e) {
+                    BeardStat.printCon("Connection Could not be established, attempting to reconnect...");
                     createConnection();
                     prepareStatements();
-                } catch (SQLException e1) {
-                   BeardStat.printCon("Reconnect failed");
-                   BeardStat.mysqlError(e1);
+
                 }
-                
             }
         }
 

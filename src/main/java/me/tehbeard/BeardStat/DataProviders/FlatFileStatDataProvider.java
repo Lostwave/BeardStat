@@ -13,7 +13,6 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
-import me.tehbeard.BeardStat.containers.TopPlayer;
 
 
 /**
@@ -93,14 +92,6 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 		//database.save();
 	}
 
-    public List<TopPlayer> pullTopPlayers(String category){
-        // not implemented for flat file.
-        return null;
-    }
     
-    public List<String> pullAllStatsInCategory(String category){
-        // not implemented for flat file.
-        return null;
-    }
 
 }

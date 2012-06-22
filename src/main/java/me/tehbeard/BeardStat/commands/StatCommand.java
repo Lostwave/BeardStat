@@ -306,7 +306,7 @@ public class StatCommand implements CommandExecutor {
 
             long seconds = blob.getStat("stats", "playedfor").getValue();
             if (sender instanceof Player) {
-                seconds += BeardStat.self().getSessionTime(((Player) sender).getName());
+                seconds += BeardStat.self().getStatManager().getSessionTime(((Player) sender).getName());
             }
             sender.sendMessage(playedCommand.GetPlayedString(seconds));
 

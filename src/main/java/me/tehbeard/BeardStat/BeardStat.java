@@ -46,7 +46,6 @@ public class BeardStat extends JavaPlugin {
     private static BeardStat self;
     private int runner;
     private PlayerStatManager playerStatManager;
-    private HashMap<String,Long> loginTimes;
     private static final String PERM_PREFIX = "stat";
 
     //public static boolean isVersionUpdated = false;
@@ -108,7 +107,6 @@ public class BeardStat extends JavaPlugin {
 
         //start initialisation
         self = this;
-        loginTimes = new HashMap<String,Long>();
         printCon("Starting BeardStat");
 
 
@@ -137,7 +135,6 @@ public class BeardStat extends JavaPlugin {
                         );
             } catch (SQLException e) {
                 db = null;
-                mysqlError(e);
             }
         }
         if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
@@ -193,11 +190,11 @@ public class BeardStat extends JavaPlugin {
         getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
         getCommand("statpage").setExecutor(new StatPageCommand(this));
         getCommand("laston").setExecutor(new LastOnCommand(playerStatManager));
-        getCommand("topplayer").setExecutor(new TopPlayerCommand(playerStatManager));
 
         //Incase of /reload, set all logged in player names.
         for(Player player: getServer().getOnlinePlayers()){
-            loginTimes.put(player.getName(), (new Date()).getTime());
+            
+            playerStatManager.setLoginTime(player.getName(),System.currentTimeMillis());
         }
 
 
@@ -281,46 +278,16 @@ public class BeardStat extends JavaPlugin {
             if(getConfig().getBoolean("general.verbose",false)){
                 BeardStat.printCon("Flushing to database.");
             }
-            List<String> players = new ArrayList<String>(Bukkit.getOnlinePlayers().length);
-            for(Player p: Bukkit.getOnlinePlayers()){
-                players.add(p.getName());
-            }
-            playerStatManager.clearCache(players,true);
+
+            playerStatManager.flush();
             if(getConfig().getBoolean("general.verbose",false)){
                 BeardStat.printCon("flush completed");
             }
         }
 
     }
-    /**
-     * Returns length of current session in memory
-     * @param player
-     * @return
-     */
-    public int getSessionTime(String player){
-        if(loginTimes.containsKey(player)){
-            return Integer.parseInt("" + ((System.currentTimeMillis()  - loginTimes.get(player))/1000L));
-
-        }
-        return 0;
-    }
-
-    public Long getLoginTime(String player){
-        if(!loginTimes.containsKey(player)){
-            setLoginTime(player,System.currentTimeMillis());
-        }
-        return loginTimes.get(player);
-
-    }
-
-    public void setLoginTime(String player,long time){
-        loginTimes.put(player,time);
-
-    }
-
-    public void wipeLoginTime(String player){
-        loginTimes.remove(player);
-    }
+    
+    
 
     public static void sendNoPermissionError(CommandSender sender){
         sendNoPermissionError(sender, "You don't have permission to use that command.");
