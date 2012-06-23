@@ -23,7 +23,6 @@ stats:
       - "Epirus bow shots:bow.infiniteshots"
   topplayedcount: 30
 general:
-  prefix: BeardStats
   debug: false
 customstats:
   - "comp.kd = $kills.total - $deaths.total"

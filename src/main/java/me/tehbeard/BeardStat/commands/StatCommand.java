@@ -72,11 +72,7 @@ public class StatCommand implements CommandExecutor {
             sendHelpMessage(sender);
             return true;
         }
-        if(args.length == 0 ){
-            Bukkit.dispatchCommand(sender, "statpage default");
-            return true;
-        }
-        
+
         if(arguments.getFlag("i")){
             builder.makeConversation((Conversable) sender);
             return true;
@@ -106,6 +102,8 @@ public class StatCommand implements CommandExecutor {
                 return true;
             }
         }
+        
+        Bukkit.dispatchCommand(sender, "statpage " + player + " default");
         
         
         //TODO: FINISH UP

@@ -1,5 +1,7 @@
 0.4.7 - Honey release
 =============
+* /statpage now can look at other players stats
+* /stat -p player shows there statpage
 * Rebuilt MySQL driver to improve functionality
 * Changed /stat functionality (Thanks to LostWave for design changes)
 * StatChangeEvent

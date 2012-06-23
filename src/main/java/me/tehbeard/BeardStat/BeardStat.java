@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+
 import java.util.List;
 
 import me.tehbeard.BeardStat.Metrics.Plotter;
@@ -20,11 +18,9 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.listeners.*;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -178,7 +174,6 @@ public class BeardStat extends JavaPlugin {
         printCon("Loading commands");
         getCommand("stats").setExecutor(new StatCommand(playerStatManager));
         getCommand("played").setExecutor(new playedCommand(playerStatManager));
-        getCommand("statsget").setExecutor(new StatGetCommand(playerStatManager));
         getCommand("statpage").setExecutor(new StatPageCommand(this));
         getCommand("laston").setExecutor(new LastOnCommand(playerStatManager));
 

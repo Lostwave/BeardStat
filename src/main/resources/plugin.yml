@@ -13,10 +13,6 @@ commands:
         usage: /played [player]
         aliases: [bplayed]
         permission: stat.command.played
-    statsget:
-        description: Show stats for an offline player
-        usage: /statsget [Player] [stats]...
-        aliases: [bstatsget]
     statpage:
         description: View the various stats pages
         usage: /statpage [page]
