@@ -8,6 +8,11 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * Called when a stat is about to be updated
+ * @author James
+ *
+ */
 public class StatChangeEvent extends Event implements Cancellable {
 
 	
@@ -40,6 +45,14 @@ public class StatChangeEvent extends Event implements Cancellable {
 	public void setNewValue(int newValue){
 		this.to = newValue;
 		
+	}
+	
+	public String getCat(){
+	    return stat.getCat();
+	}
+	
+	public String getStat(){
+	    return stat.getName();
 	}
 
 	
