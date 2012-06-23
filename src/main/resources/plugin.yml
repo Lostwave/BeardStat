@@ -22,7 +22,7 @@ commands:
         usage: /statpage [page]
         aliases: [bstatpage]
     laston:
-        description: View the various stats pages
+        description: View last time a player was on
         usage: /laston [player]
         aliases: [blaston]
 
