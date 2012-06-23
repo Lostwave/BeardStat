@@ -12,6 +12,7 @@ commands:
         description: Show play time for you or another player
         usage: /played [player]
         aliases: [bplayed]
+        permission: stat.command.played
     statsget:
         description: Show stats for an offline player
         usage: /statsget [Player] [stats]...
@@ -34,7 +35,6 @@ permissions:
       stat.command.stat: true
       stat.command.played: true
       stat.command.played.other: true
-      stat.command.stat.get: true
       stat.command.stat.other: true
       stat.command.laston: true
   stat.players:
@@ -53,9 +53,6 @@ permissions:
     description: Allows you to view your /played
   stat.command.played.other:
     description: See how much others have played
-    default: op
-  stat.command.stat.get:
-    description: Pull stats from db for offline player
     default: op
   stat.command.laston:
     description: View when a player was last online

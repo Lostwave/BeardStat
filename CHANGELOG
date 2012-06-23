@@ -1,10 +1,13 @@
 0.4.7 - Honey release
 =============
+* Rebuilt MySQL driver to improve functionality
+* Changed /stat functionality (Thanks to LostWave for design changes)
+* StatChangeEvent
 * Fix exclude list in web API
 * Composite stats allows for more advanced dynamic stats
 * type: is now case insensitive
 * Metadata tracked for specific blocks, used in certain events either 
-as an addition (wood) or soley (dyes)
+as an addition (wood) or solely (dyes)
 
 * /playedother removed, functionality rolled into /played command
 * /fiston added

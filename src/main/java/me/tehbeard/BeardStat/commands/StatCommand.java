@@ -1,11 +1,11 @@
 package me.tehbeard.BeardStat.commands;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import me.tehbeard.BeardStat.commands.interactive.FindPlayerPrompt;
 import me.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
 import me.tehbeard.BeardStat.commands.interactive.SelectStatisticPrompt;
@@ -22,7 +22,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.entity.Player;
 
@@ -57,14 +56,19 @@ public class StatCommand implements CommandExecutor {
         }
 
         
-        ArgumentPack arguments = new ArgumentPack(new String[] {"i","h"}, new String[] {"p","c","s"}, args);
-        String player = arguments.getOption("p");
-
+        ArgumentPack arguments = new ArgumentPack(new String[] {"i","h"}, new String[] {"p","s"}, args);
+        
+        String player = null;
+                
+        if(BeardStat.hasPermission(sender, "command.stat.other")) {
+                player = arguments.getOption("p");
+        }
+        
         if(player == null && sender instanceof Player){
             player = ((Player)sender).getName();
         }
 
-        if(player == null){
+        if(player == null ||arguments.getFlag("h")){
             sendHelpMessage(sender);
             return true;
         }
@@ -77,7 +81,33 @@ public class StatCommand implements CommandExecutor {
             builder.makeConversation((Conversable) sender);
             return true;
         }
-
+        
+        if(arguments.getOption("s")!=null){
+            String stat = arguments.getOption("s");
+            if(stat.split("\\.").length == 2){
+                PlayerStatBlob blob = playerStatManager.findPlayerBlob(player);
+                if(blob == null){
+                    sender.sendMessage(ChatColor.RED + "Could not find player");
+                    return true;
+                }
+                
+                if(blob.hasStat(stat.split("\\.")[0], stat.split("\\.")[1])){
+                    sender.sendMessage(ChatColor.GOLD + stat + " = " + ChatColor.WHITE + FormatFactory.formatStat( blob.getStat(stat.split("\\.")[0], stat.split("\\.")[1])));
+                }
+                else
+                {
+                    sender.sendMessage("Stat not found");
+                }
+                
+            }
+            else
+            {
+                sender.sendMessage(ChatColor.RED + "Invalid stat");
+                return true;
+            }
+        }
+        
+        
         //TODO: FINISH UP
         
 
@@ -87,12 +117,12 @@ public class StatCommand implements CommandExecutor {
 
     public static void sendHelpMessage(CommandSender sender) {
         sender.sendMessage(ChatColor.GREEN + "Stats Help page");
-        sender.sendMessage(ChatColor.GREEN + "/stats [user]: Default display of your [or users] stats");
-        sender.sendMessage(ChatColor.GREEN + "/stats -h : This page");
-        sender.sendMessage(ChatColor.GREEN + "/stats -i : Interactive stats menu");
-        sender.sendMessage(ChatColor.GREEN + "/stats -s [user] <category1> [<category2>] : value of those stats for you or [user]");
-        sender.sendMessage(ChatColor.GREEN + "/stats -c : list categories you have stats for");
-        sender.sendMessage(ChatColor.GREEN + "/stats -c blockcreate : List possible stats you have for that category");
+        sender.sendMessage(ChatColor.GREEN + "/stats: Default display of your stats");
+        sender.sendMessage(ChatColor.GREEN + "/stats [flags]:");
+        sender.sendMessage(ChatColor.GREEN + "-h : This page");
+        sender.sendMessage(ChatColor.GREEN + "-i : Interactive stats menu");
+        sender.sendMessage(ChatColor.GREEN + "-p [player]: view [player]'s stats");
+        sender.sendMessage(ChatColor.GREEN + "-s [stat] : view this stat (format category.statistic)");
         sender.sendMessage(ChatColor.GREEN + "/statpage : list available stat pages");
         sender.sendMessage(ChatColor.GREEN + "/statpage [user] page : show a specific stat page");
         if (BeardStat.hasPermission(sender, "command.laston")) {
@@ -104,9 +134,7 @@ public class StatCommand implements CommandExecutor {
         if (BeardStat.hasPermission(sender, "command.played")) {
             sender.sendMessage(ChatColor.GREEN + "/played [user] : shows how long you [or user] have played");
         }
-        if (BeardStat.hasPermission(sender, "command.topplayer")) {
-            sender.sendMessage(ChatColor.GREEN + "/topplayer : shows top players on the server");
-        }
+
     }
 
     public static void SendCategoryMessage(CommandSender sender, Collection<PlayerStat> playerstats, String cat) {

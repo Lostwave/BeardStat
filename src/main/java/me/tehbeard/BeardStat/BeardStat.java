@@ -169,9 +169,9 @@ public class BeardStat extends JavaPlugin {
 
 
         //start Database flusher.
-        printCon("Starting flush, defaulting to every 2 Minutes");
-        //runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 2400L, 2400L);
-        runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 600L, 600L);
+        
+        runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 2400L, 2400L);
+        //runner = getServer().getScheduler().scheduleSyncRepeatingTask(this, new dbFlusher(), 600L, 600L);
 
         //load the commands.
         printCon("Loading commands");
@@ -181,6 +181,7 @@ public class BeardStat extends JavaPlugin {
         getCommand("statpage").setExecutor(new StatPageCommand(this));
         getCommand("laston").setExecutor(new LastOnCommand(playerStatManager));
 
+        
         //Incase of /reload, set all logged in player names.
         for(Player player: getServer().getOnlinePlayers()){
             
