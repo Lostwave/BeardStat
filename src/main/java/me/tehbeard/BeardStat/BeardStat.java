@@ -15,6 +15,7 @@ import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 
 import me.tehbeard.BeardStat.commands.*;
+import me.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.listeners.*;
@@ -332,6 +333,7 @@ public class BeardStat extends JavaPlugin {
         for(String format : getConfig().getStringList("customformats")){
             String stat = format.split(":")[0];
             String formating = format.replace(stat + ":","");
+            FormatFactory.addStringFormat(stat.split("\\.")[0], stat.split("\\.")[1], formating);
         }
     }
 }
