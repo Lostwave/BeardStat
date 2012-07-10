@@ -114,15 +114,15 @@ public class StatCommand implements CommandExecutor {
     }
 
     public static void sendHelpMessage(CommandSender sender) {
-        sender.sendMessage(ChatColor.GREEN + "Stats Help page");
-        sender.sendMessage(ChatColor.GREEN + "/stats: Default display of your stats");
-        sender.sendMessage(ChatColor.GREEN + "/stats [flags]:");
-        sender.sendMessage(ChatColor.GREEN + "-h : This page");
-        sender.sendMessage(ChatColor.GREEN + "-i : Interactive stats menu");
-        sender.sendMessage(ChatColor.GREEN + "-p [player]: view [player]'s stats");
-        sender.sendMessage(ChatColor.GREEN + "-s [stat] : view this stat (format category.statistic)");
-        sender.sendMessage(ChatColor.GREEN + "/statpage : list available stat pages");
-        sender.sendMessage(ChatColor.GREEN + "/statpage [user] page : show a specific stat page");
+        sender.sendMessage(ChatColor.BLUE + "Stats Help page");
+        sender.sendMessage(ChatColor.BLUE + "/stats: Default display of your stats");
+        sender.sendMessage(ChatColor.BLUE + "/stats [flags]:");
+        sender.sendMessage(ChatColor.BLUE + "-h : This page");
+        sender.sendMessage(ChatColor.BLUE + "-i : Interactive stats menu");
+        sender.sendMessage(ChatColor.BLUE + "-p [player]: view [player]'s stats");
+        sender.sendMessage(ChatColor.BLUE + "-s [stat] : view this stat (format category.statistic)");
+        sender.sendMessage(ChatColor.BLUE + "/statpage : list available stat pages");
+        sender.sendMessage(ChatColor.BLUE + "/statpage [user] page : show a specific stat page");
         if (BeardStat.hasPermission(sender, "command.laston")) {
             sender.sendMessage(ChatColor.GREEN + "/laston [user] : show when you [or user] was last on");
         }
@@ -135,7 +135,7 @@ public class StatCommand implements CommandExecutor {
 
     }
 
-    public static void SendCategoryMessage(CommandSender sender, Collection<PlayerStat> playerstats, String cat) {
+    private static void SendCategoryMessage(CommandSender sender, Collection<PlayerStat> playerstats, String cat) {
         if (cat.length() == 0) {
             SendCategoryList(sender, playerstats);
             return;
