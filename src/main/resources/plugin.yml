@@ -1,35 +1,27 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
 version: ${project.plugin.version}
+authors: [Tehbeard]
 commands:
     stats:
-        description: Show stats about yourself
+        description: Show stats about yourself or another player
         usage: /stats [stats]...
         aliases: [bstats]
-    statsother:
-        description: Show stats about others
-        usage: /statsother [Player] [stats]...
-        aliases: [bstatsother]
+        permission: stat.command.stat
     played:
-        description: Show play time
-        usage: /played
+        description: Show play time for you or another player
+        usage: /played [player]
         aliases: [bplayed]
-    playedother:
-        description: Show play time of other
-        usage: /playedother [Player]
-        aliases: [bplayedother]
-    statsget:
-        description: Show stats for an offline player
-        usage: /statsget [Player] [stats]...
-        aliases: [bstatsget]
+        permission: stat.command.played
     statpage:
         description: View the various stats pages
         usage: /statpage [page]
         aliases: [bstatpage]
     laston:
-        description: View the various stats pages
+        description: View last time a player was on
         usage: /laston [player]
         aliases: [blaston]
+
         
 permissions:
   stat.*:
@@ -39,7 +31,6 @@ permissions:
       stat.command.stat: true
       stat.command.played: true
       stat.command.played.other: true
-      stat.command.stat.get: true
       stat.command.stat.other: true
       stat.command.laston: true
   stat.players:
@@ -51,18 +42,16 @@ permissions:
             
   stat.command.stat:
     description: View your own stats
+  stat.command.stat.other:
+    description: View other's stats
+    default: op
   stat.command.played:
     description: Allows you to view your /played
   stat.command.played.other:
     description: See how much others have played
     default: op
-  stat.command.stat.get:
-    description: Pull stats from db for offline player
-    default: op
-  stat.command.stat.other:
-    description: View other's stats
-    default: op
   stat.command.laston:
     description: View when a player was last online
     default: op
+
     

@@ -1,5 +1,6 @@
 package me.tehbeard.BeardStat.DataProviders;
 
+
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 
@@ -8,15 +9,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
  * @author James
  *
  */
-public abstract class IStatDataProvider {
-
-	/**
-	 * creates a new instance of the data provider
-	 * @return 
-	 */
-	public static IStatDataProvider newInstance(){
-		return null;
-	}
+public interface IStatDataProvider {
 
 
 	/**
@@ -24,7 +17,7 @@ public abstract class IStatDataProvider {
 	 * @param player Player to pull stats for. Creates a new object if non exists
 	 * @return a PlayerStatBlob containing all stats for a player
 	 */
-	public abstract PlayerStatBlob pullPlayerStatBlob(String player);
+	public PlayerStatBlob pullPlayerStatBlob(String player);
 
 
 	/**
@@ -33,15 +26,17 @@ public abstract class IStatDataProvider {
 	 * @param create wether to create the player object
 	 * @return a PlayerStatBlob containing all stats for a player
 	 */
-	public abstract PlayerStatBlob pullPlayerStatBlob(String player,boolean create);
+	public PlayerStatBlob pullPlayerStatBlob(String player,boolean create);
 	/**
 	 * Push all stats for this player to the database
 	 * @param player StatBlob to push to the database
 	 */
-	public abstract void pushPlayerStatBlob(PlayerStatBlob player);
+	public void pushPlayerStatBlob(PlayerStatBlob player);
 	
 	/**
 	 * Forces the DataProvider to flush data to the backend, in the case of a second level cache.
 	 */
-	public abstract void flush();
+	public void flush();
+	
+   
 }

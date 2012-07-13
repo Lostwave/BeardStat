@@ -65,7 +65,7 @@
  Copyright contained in this source code, it has been tampered with and you should not use
  this distribution of the BeardStat Web API.
 
- BeardStat Web API v0.1 r1
+ BeardStat Web API v0.1 r2
  by Richard Moyer.
 
 **********************************************************************************************/
@@ -86,7 +86,7 @@ if (!isset($database_host,$database_user,$database_pass,$database_name,$time_for
 // Define the version constants.
 define("BS_DEVVERSION","beta");
 define("BS_VERSION",0.1);
-define("BS_REVISION",1);
+define("BS_REVISION",2);
 define("BS_AUTHOR","Richard Moyer");
 define("BS_REVISIONAUTHOR","Richard Moyer");
 
@@ -800,7 +800,7 @@ function BS_load_top_list($catorid="",$top=0,$stat="",$format="%",$aord="desc") 
   // NOTE: In the case of specifying $catorid with an ID of a loaded top list, you should not specify
   //       any value for $stat, $format or $aord, as they will be filled in automatically.
 
-  global $BSListFormat,$BSLoaded;
+  global $BSListFormat,$BSLoaded,$BSExcluded_SQL;
 
   $tid = "";
   if (isset($BSListFormat[$catorid])) {
@@ -828,7 +828,7 @@ function BS_load_top_list($catorid="",$top=0,$stat="",$format="%",$aord="desc") 
     if ($value != "") $qins .= "stat = \"".$value."\"";
   }
   if ($qins == "") return false;
-  $que = "select *,sum(value) as total from ".BS_CFG_DBNAME.".".BS_CFG_TABLENAME." where category = \"".$catorid."\" && (".$qins.") group by player order by total ".$aord." limit ".$top;
+  $que = "select *,sum(value) as total from ".BS_CFG_DBNAME.".".BS_CFG_TABLENAME." where category = \"".$catorid."\" && (".$qins.")".$BSExcluded_SQL." group by player order by total ".$aord." limit ".$top;
   $sel = mysql_query($que) or die("[BSLTL-Q01] Error: <b>".mysql_error()."</b>");
   $BSLoaded['current_top_results'] = mysql_num_rows($sel);
   $BSLoaded['current_top_eresults'] = $top;

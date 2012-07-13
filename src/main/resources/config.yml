@@ -1,11 +1,13 @@
 stats:
+  configversion: ${project.config.version}
   database:
     type: "file"
     host: "localhost"
     username: "Beardstats"
     password: "changeme"
     database: "stats"
-  worlds:
+    table: "stats"
+  blacklist:
     - creative
     - tutorialIsland
   pages:
@@ -14,7 +16,16 @@ stats:
       - "blocks broken:stats.totalblockdestroy"
       - "kills:kills.total"
       - "deaths:deaths.total"
+      - "killdeath:comp.kd"
     archery:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
+  topplayedcount: 30
+general:
+  debug: false
+customstats:
+  - "comp.kd = $kills.total - $deaths.total"
+customformats:
+  - "stats.move:%1$s metres" 
+  

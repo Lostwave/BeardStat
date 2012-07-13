@@ -100,6 +100,11 @@ public class StatEntityListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event) {
 
+        //ignore the blacklisted worlds
+        if(worlds.contains(event.getEntity().getWorld().getName())){
+            return;
+        }
+
         EntityDamageEvent lastCause = event.getEntity().getLastDamageCause();
         DamageCause cause = null;
         if(lastCause!=null){
@@ -179,7 +184,7 @@ public class StatEntityListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
         if(event.isCancelled()==false && event.getOwner() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
-            playerStatManager.getPlayerBlob(((Player)event.getOwner()).getName()).getStat("stats","tame"+event.getEntity().getType().toString().replace("_", "")).incrementStat(1);
+            playerStatManager.getPlayerBlob(((Player)event.getOwner()).getName()).getStat("stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", "")).incrementStat(1);
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)

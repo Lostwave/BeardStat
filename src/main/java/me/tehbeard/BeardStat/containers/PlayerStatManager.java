@@ -11,6 +11,7 @@ import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 
 
+
 import java.util.Map.Entry;
 
 /**
@@ -22,39 +23,12 @@ public class PlayerStatManager {
 
 	private HashMap<String,PlayerStatBlob> cache = new HashMap<String,PlayerStatBlob>();
 	private IStatDataProvider backendDatabase = null;
+	
 
 	public PlayerStatManager(IStatDataProvider database){
 		backendDatabase = database;
 	}
-	/**
-	 * clears the cache of all offline players, and optionally flushes the data to the backend storage.
-	 * @param flush
-	 */
-	public void clearCache(List<String> onlinePlayers,boolean flush){
-		if(backendDatabase == null){return;}
-		Iterator<Entry<String, PlayerStatBlob>> i = cache.entrySet().iterator();
-		if(i==null){return;}
-		while(i.hasNext()){
-			Entry<String, PlayerStatBlob> entry = i.next();
-			if(flush){
-				String player = entry.getKey();
-					long seconds = BeardStat.self().getSessionTime(player);
 
-					BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
-				getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
-					BeardStat.self().setLoginTime(player,(new Date()).getTime());
-				
-				backendDatabase.pushPlayerStatBlob(entry.getValue());
-			}
-			//remove offline players
-			if(!onlinePlayers.contains(entry.getKey())){
-				i.remove();
-			}
-			
-		}
-		backendDatabase.flush();
-
-	}
 
 	/**
 	 * Force save of all cached stats to backend storage
@@ -67,24 +41,18 @@ public class PlayerStatManager {
 			Entry<String, PlayerStatBlob> entry = i.next();
 			String player = entry.getKey();
 			
-				long seconds = BeardStat.self().getSessionTime(player);
+				long seconds = getSessionTime(player);
 
 				BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
 				getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
-				BeardStat.self().setLoginTime(player,System.currentTimeMillis());
+				setLoginTime(player,System.currentTimeMillis());
 			
-			backendDatabase.pushPlayerStatBlob(entry.getValue());
+			backendDatabase.pushPlayerStatBlob(getPlayerBlob(player));
 			
 			
 		}
-		if(backendDatabase instanceof MysqlStatDataProvider){
-			MysqlStatDataProvider sq = (MysqlStatDataProvider)backendDatabase;
-			sq.flushNow();
-		}
-		else
-		{
-		backendDatabase.flush();
-		}
+
+
 	}
 
 
@@ -121,4 +89,39 @@ public class PlayerStatManager {
 		
 		backendDatabase.flush();
 	}
+
+	
+	
+	private HashMap<String,Long> loginTimes = new HashMap<String, Long>();
+
+    /**
+     * Returns length of current session in memory
+     * @param player
+     * @return
+     */
+    public int getSessionTime(String player){
+        if(loginTimes.containsKey(player)){
+            return Integer.parseInt("" + ((System.currentTimeMillis()  - loginTimes.get(player))/1000L));
+
+        }
+        return 0;
+    }
+
+    public Long getLoginTime(String player){
+        if(!loginTimes.containsKey(player)){
+            setLoginTime(player,System.currentTimeMillis());
+        }
+        return loginTimes.get(player);
+
+    }
+
+    public void setLoginTime(String player,long time){
+        loginTimes.put(player,time);
+
+    }
+
+    public void wipeLoginTime(String player){
+        loginTimes.remove(player);
+    }
+   
 }

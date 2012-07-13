@@ -1,9 +1,10 @@
 package me.tehbeard.BeardStat.commands;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 
-
+import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.BeardStat.BeardStat;
 
 import org.bukkit.Bukkit;
@@ -12,37 +13,96 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class LastOnCommand implements CommandExecutor {
 
+    private static final String PLAYEDCAT = "stats";
+    private static final String FIRSTPLAYEDSTAT = "firstlogin";
+    private static final String LASTPLAYEDSTAT = "lastlogin";
+    private PlayerStatManager playerStatManager;
 
+    public LastOnCommand(PlayerStatManager statmanager){
+        playerStatManager = statmanager;
+    }
+    
+    public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
 
-    public boolean onCommand(CommandSender sender, Command command, String cmdLabel,
-            String[] args) {
+        if(!BeardStat.hasPermission(sender, "command.laston")){
+            BeardStat.sendNoPermissionError(sender);
+            return true;
+        }
+        
+        String name = "";
+        PlayerStatBlob blob = null;
+        OfflinePlayer player = null;
         if(args.length==1){
-            if(!BeardStat.hasPermission(sender, "command.laston")){return true;}
-            
-            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-            if(player!=null){
-                Date d = new Date(player.getLastPlayed());
-                sender.sendMessage(ChatColor.DARK_RED + args[0] +" was last on "+ ChatColor.GOLD + (new SimpleDateFormat()).format(d));
+            player = Bukkit.getOfflinePlayer(args[0]);
+            name = args[0];
+
+            blob = playerStatManager.findPlayerBlob(args[0]);
+        }
+        else if(args.length == 0){
+            if(! (sender instanceof Player)){
+                sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.  Use: firston <player>");
                 return true;
             }
-            sender.sendMessage(ChatColor.GOLD + "Could not find record for player " + args[0] + ".");
-
-        }
-        if(args.length == 0){
-            if(BeardStat.self().getConfig().getBoolean("stats.lastonall",false)){
-                for(OfflinePlayer p:Bukkit.getOfflinePlayers()){
-                    Date d = new Date(p.getLastPlayed());
-                    
-                    sender.sendMessage(ChatColor.DARK_RED + p.getName() +" was last on "+ ChatColor.GOLD + (new SimpleDateFormat()).format(d));
-                }
+            
+            player = Bukkit.getOfflinePlayer(sender.getName()); 
+            if(player!=null){
+                name = player.getName();
+                blob = playerStatManager.findPlayerBlob(name);
             }
         }
+        
+        sender.sendMessage(GetLastOnString(name, blob, player));
+        return true;
+    }
+    
+    public static String[] GetLastOnString(String name, PlayerStatBlob blob, OfflinePlayer player){
+        ArrayList<String> output = new ArrayList<String>();
 
-        return false;
+        long bFirst = 0;
+        long bLast = 0;
+        long sFirst = 0;
+        long sLast = 0;
+        
+        if(player!=null){
+            bFirst = player.getFirstPlayed();
+            bLast = player.getLastPlayed();
+        }
 
+        
+        if(blob != null)
+        {
+            sFirst = (blob.getStat(PLAYEDCAT, FIRSTPLAYEDSTAT).getValue());
+            // multiply by 1000 to convert to milliseconds
+            sFirst *= 1000;
 
+            sLast = (blob.getStat(PLAYEDCAT, LASTPLAYEDSTAT).getValue());
+            // multiply by 1000 to convert to milliseconds
+            sLast *= 1000;
+        }
+
+        // this value from bukkit should be correct moving forward, but for players who joined before (I think) mid Dec. 2011 will show that date, not their actual first login
+        if(bFirst > 0)
+        { output.add(ChatColor.DARK_RED + "Bukkit thinks " + name +" was " + ChatColor.WHITE + "first" + ChatColor.DARK_RED + " on " + ChatColor.GOLD + (new SimpleDateFormat()).format(bFirst)); }
+
+        // including this because bukkit hasn't stored this value for long enough
+        if(sFirst > 0 && Math.abs(bFirst-sFirst) > 86400000)
+        { output.add(ChatColor.DARK_RED + "I heard that " + name + " was " + ChatColor.WHITE + "first" + ChatColor.DARK_RED + " on " + ChatColor.GOLD + (new SimpleDateFormat()).format(sFirst)); } 
+
+        if(bLast > 0)
+        { output.add(ChatColor.DARK_RED + "Bukkit thinks " + name +" was " + ChatColor.WHITE + "last" + ChatColor.DARK_RED + " on " + ChatColor.GOLD + (new SimpleDateFormat()).format(bLast)); }
+
+        // only showing this if the values differ by a day.
+        if(sLast > 0 && Math.abs(bLast-sLast) > 86400000)
+        { output.add(ChatColor.DARK_RED + "I heard that " + name + " was " + ChatColor.WHITE + "last" + ChatColor.DARK_RED + " on " + ChatColor.GOLD + (new SimpleDateFormat()).format(sLast)); } 
+
+        
+        if(output.isEmpty())
+        { output.add(ChatColor.GOLD + "Could not find record for player " + name + "."); }
+        
+        return output.toArray(new String[output.size()]);
     }
 }

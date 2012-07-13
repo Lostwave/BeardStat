@@ -1,3 +1,24 @@
+0.4.7 - Honey release
+=============
+* /statpage now can look at other players stats
+* /stat -p player shows there statpage
+* Rebuilt MySQL driver to improve functionality
+* Changed /stat functionality (Thanks to LostWave for design changes)
+* StatChangeEvent
+* Fix exclude list in web API
+* Composite stats allows for more advanced dynamic stats
+* type: is now case insensitive
+* Metadata tracked for specific blocks, used in certain events either 
+as an addition (wood) or solely (dyes)
+
+* /playedother removed, functionality rolled into /played command
+* /fiston added
+* /laston added /firston to display
+* --/topplayer added-- Removed,future release.
+* Deaths now respect blacklist
+* exp.lifetimelvl details total levels earned
+* Blacklist changed around blacklist: instead of worlds:
+
 Grapefruit release
 ==================
 * Latest RB Support

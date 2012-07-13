@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat.DataProviders;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,6 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import me.tehbeard.BeardStat.containers.StaticPlayerStat;
 
 
 /**
@@ -18,7 +20,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
  * @author James
  *
  */
-public class FlatFileStatDataProvider extends IStatDataProvider {
+public class FlatFileStatDataProvider implements IStatDataProvider {
 
 	YamlConfiguration database;
 
@@ -49,7 +51,7 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 					BeardStat.printDebugCon("loading stat " +key);
 					BeardStat.printDebugCon("parts " + key.split("\\-")[0] + " : "+
 							key.split("\\-")[1]);
-					blob.addStat(new PlayerStat(key.split("\\-")[0]
+					blob.addStat(new StaticPlayerStat(key.split("\\-")[0]
 							,key.split("\\-")[1], pl.getInt(key, 0)));
 				}
 				return blob;
@@ -86,9 +88,10 @@ public class FlatFileStatDataProvider extends IStatDataProvider {
 		}
 	}
 
-	@Override
 	public void flush() {
 		//database.save();
 	}
+
+    
 
 }

@@ -55,7 +55,7 @@ public class StatPlayerListener implements Listener {
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
         }
 
-        BeardStat.self().setLoginTime(event.getPlayer().getName(), (new Date()).getTime());
+        BeardStat.self().getStatManager().setLoginTime(event.getPlayer().getName(), System.currentTimeMillis());
 
     }
 
@@ -69,8 +69,20 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerDropItem(PlayerDropItemEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
+            String item = event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","");
+            /**
+             * if MetaDataable, make the item string correct
+             */
+            if(MetaDataCapture.hasMetaData(event.getItemDrop().getItemStack().getType())){
+                item = 
+                        event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","") + 
+                        "_" + event.getItemDrop().getItemStack().getDurability();
+
+            }
+
             playerStatManager.getPlayerBlob(
-                    event.getPlayer().getName()).getStat("itemdrop",event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","")).incrementStat(event.getItemDrop().getItemStack().getAmount()
+
+                    event.getPlayer().getName()).getStat("itemdrop",item).incrementStat(event.getItemDrop().getItemStack().getAmount()
                             );
         }
     }
@@ -118,7 +130,19 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("itempickup",event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","")).incrementStat(event.getItem().getItemStack().getAmount());
+
+            String item = event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") ;
+            /**
+             * if MetaDataable, make the item string correct
+             */
+            if(MetaDataCapture.hasMetaData(event.getItem().getItemStack().getType())){
+                item = 
+                        event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") + 
+                        "_" + event.getItem().getItemStack().getDurability();
+
+            }
+
+            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("itempickup",item).incrementStat(event.getItem().getItemStack().getAmount());
 
         }
     }
@@ -172,6 +196,17 @@ public class StatPlayerListener implements Listener {
 
             if(event.getPlayer().getItemInHand().getType() == Material.INK_SACK && event.getRightClicked() instanceof Sheep){
                 psb.getStat("dye", "total").incrementStat(1);
+
+                /**
+                 * if MetaDataable, make the item string correct
+                 */
+                if(MetaDataCapture.hasMetaData(event.getPlayer().getItemInHand().getType())){
+                    psb.getStat("dye",  
+                            event.getPlayer().getItemInHand().getType().toString().toLowerCase().replace("_","") + 
+                            "_" + event.getPlayer().getItemInHand().getDurability()).incrementStat(1);
+
+                }
+
             }
         }
     }
@@ -183,7 +218,7 @@ public class StatPlayerListener implements Listener {
             if(event.getEntity() instanceof Sheep){
                 psb.getStat("sheared", "sheep");
             }
-            
+
             if(event.getEntity() instanceof MushroomCow){
                 psb.getStat("sheared", "mushroomcow");
             }
@@ -250,6 +285,10 @@ public class StatPlayerListener implements Listener {
         if(!worlds.contains(event.getPlayer().getWorld().getName())){
             Player player = event.getPlayer();
             playerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentlvl").setValue(event.getNewLevel());
+            int change = event.getNewLevel() - event.getOldLevel();
+            if(change > 0){
+                playerStatManager.getPlayerBlob(player.getName()).getStat("exp","lifetimelvl").incrementStat(change);
+            }
         }
     }
 
@@ -266,10 +305,10 @@ public class StatPlayerListener implements Listener {
 
     private void calc_timeonline(String player){
 
-        long seconds = (System.currentTimeMillis() - BeardStat.self().getLoginTime(player))/1000L;
+        long seconds = (System.currentTimeMillis() - BeardStat.self().getStatManager().getLoginTime(player))/1000L;
         playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
 
-        BeardStat.self().wipeLoginTime(player);		
+        BeardStat.self().getStatManager().wipeLoginTime(player);		
 
     }
 

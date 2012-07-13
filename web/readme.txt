@@ -1,11 +1,11 @@
 +---------------------------------------------------------------------------------------------+
-¦ BeardStat Web API Beta v0.1 r1 for BeardStat v0.4 (grapefruit)                              ¦
+¦ BeardStat Web API Beta v0.1 r2 for BeardStat v0.4.7 (Honey)                                 ¦
 +---------------------------------------------------------------------------------------------+
 ¦ Coded by Richard "Furdabip" Moyer.                                                          ¦
-¦ Last Updated: March 20th, 2012                                                              ¦
+¦ Last Updated: June 22nd, 2012                                                               ¦
 ¦ BeardStat website: http://dev.bukkit.org/server-mods/beardstat/                             ¦
 +---------------------------------------------------------------------------------------------+
-¦ Documentation for Beta v0.1 r1                                                              ¦
+¦ Documentation for Beta v0.1 r2                                                              ¦
 +---------------------------------------------------------------------------------------------+
 ¦ Written by Richard "Furdabip" Moyer.                                                        ¦
 ¦ http://www.furdabip.com/                                                                    ¦
@@ -51,6 +51,12 @@
 +---------------------------------------------------------------------------------------------+
 ¦    I. Changelog & Version History                                                 [VERSION] ¦
 +---------------------------------------------------------------------------------------------+
+
+ v0.1 r2 Beta [June 22nd, 2012]
+ ==============================
+   - Fixed the Excluded Players List, so it actually works for Top Lists now. Missing bits of
+     code were the cause of it not working before.
+
 
  v0.1 r1 Beta [March 20th, 2012]
  ===============================
@@ -273,7 +279,7 @@
 
    The format for the statistics is as follows:
 
-     Stat Category ~ Stats + Separate + By + A + Plus + Sign = Description of Stat , Format
+     Stat Category ~ Stats + Separated + By + A + Plus + Sign = Description of Stat , Format
 
  - The Stat Category is the category that is set by BeardStat.
  - The Stats consist of "+"-separated stats, as set by BeardStat that will be added together
