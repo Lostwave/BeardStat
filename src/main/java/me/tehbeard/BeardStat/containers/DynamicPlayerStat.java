@@ -3,7 +3,9 @@ package me.tehbeard.BeardStat.containers;
 import me.tehbeard.utils.expressions.InFixExpression;
 
 /**
- * Dynamic player stats generated from composites of other player stats
+ * Dynamic player stats generated from composites of other player stats.
+ * A Dynamic player stat is never stored in the database, 
+ * it is computed at runtime using an expression bound to that stat.
  * @author James
  *
  */
