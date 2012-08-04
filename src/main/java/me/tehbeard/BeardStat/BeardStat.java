@@ -85,6 +85,7 @@ public class BeardStat extends JavaPlugin {
         if(playerStatManager != null){
             printCon("Flushing cache to database");
             playerStatManager.saveCache();
+            playerStatManager.flush();
             printCon("Cache flushed to database");
         }
         self = null;
