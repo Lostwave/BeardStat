@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.utils.expressions.VariableProvider;
 
 /**
@@ -17,19 +18,32 @@ import me.tehbeard.utils.expressions.VariableProvider;
 public class PlayerStatBlob implements VariableProvider{
 
     private static Map<String,String> dynamics = new HashMap<String, String>();
-    
+
+    private static Map<String,String> dynamicsSaved = new HashMap<String, String>();
+
     public static void addDynamicStat(String stat,String expr){
         dynamics.put(stat,expr);
     }
-    
+
+    public static void addDynamicSavedStat(String stat,String expr){
+        dynamicsSaved.put(stat,expr);
+    }
+
     private void addDynamics(){
         for(Entry<String, String> entry  : dynamics.entrySet()){
-            
-            System.out.println("Making " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
+
+            BeardStat.printDebugCon("Making temporary stat: " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
             addStat(new DynamicPlayerStat(entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue()));
         }
+
+        //dynamics that will be saved to database
+        for(Entry<String, String> entry  : dynamicsSaved.entrySet()){
+
+            BeardStat.printDebugCon("Making custom stat: " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
+            addStat(new DynamicPlayerStat(entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue(),true));
+        }
     }
-    
+
     private HashSet<PlayerStat> stats;
     private String name;
 
@@ -51,7 +65,7 @@ public class PlayerStatBlob implements VariableProvider{
         this.name = name;
         playerID=ID;
         stats = new HashSet<PlayerStat>();
-        
+
         addDynamics();
     }
 
@@ -85,7 +99,7 @@ public class PlayerStatBlob implements VariableProvider{
      * @return
      */
     public Set<PlayerStat> getStats(){
-        
+
         return  (Set<PlayerStat>) stats.clone();
     }
 

@@ -322,6 +322,15 @@ public class BeardStat extends JavaPlugin {
 
 
         }
+        
+        for(String cstat : getConfig().getStringList("savedcustomstats")){
+
+            String[] i = cstat.split("\\=");
+            PlayerStatBlob.addDynamicStat(i[0].trim(), i[1].trim());
+
+
+        }
+        
 
     }
     

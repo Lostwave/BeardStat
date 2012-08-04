@@ -17,10 +17,19 @@ public class DynamicPlayerStat implements PlayerStat {
     private PlayerStatBlob owner;
     private InFixExpression expression;
     
+    private boolean archive = false;
+    
     public DynamicPlayerStat(String cat,String stat,String expr){
+        this(cat,stat,expr,false);
+        
+
+    }
+    
+    public DynamicPlayerStat(String cat,String stat,String expr,boolean archive){
         this.cat = cat;
         this.stat = stat;
         this.expression = new InFixExpression(expr);
+        this.archive = archive;
         
 
     }
@@ -82,7 +91,7 @@ public class DynamicPlayerStat implements PlayerStat {
 
 
     public boolean isArchive() {
-        return false;
+        return archive;
     }
 
 
