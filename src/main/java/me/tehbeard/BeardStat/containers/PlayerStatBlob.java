@@ -51,10 +51,10 @@ public class PlayerStatBlob implements VariableProvider{
         return name;
     }
 
-    public int getPlayerID() {
+    public String getPlayerID() {
         return playerID;
     }
-    private int playerID;
+    private String playerID;
 
     /**
      * 

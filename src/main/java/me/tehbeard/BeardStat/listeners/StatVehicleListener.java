@@ -41,7 +41,6 @@ public class StatVehicleListener implements Listener {
             BeardStat.printDebugCon("Vehicle move fired!");
             if(from.getWorld().equals(to.getWorld())){
                 if(from.distance(to) < 10){
-                    BeardStat.printDebugCon("Vehicle move writing!");
                     playerStatManager.getPlayerBlob(player.getName()).getStat("vehicle",
                             event.getVehicle().getType().toString().toLowerCase()
                             ).incrementStat((int)Math.ceil(from.distance(to)));
