@@ -26,6 +26,8 @@ general:
   debug: false
 customstats:
   - "comp.kd = $kills.total - $deaths.total"
+savedcustomstats:
+  - "comp.pk = $kills.player - $deaths.player"
 customformats:
   - "stats.move:%1$s metres" 
   

@@ -10,7 +10,7 @@
 	<properties>
 		<project.plugin.flavour>Ice Cream</project.plugin.flavour>
 		<project.plugin.version>${project.version}-${project.plugin.flavour}</project.plugin.version>
-		<project.config.version>2</project.config.version>
+		<project.config.version>3</project.config.version>
 	</properties>
 
 	<repositories>
