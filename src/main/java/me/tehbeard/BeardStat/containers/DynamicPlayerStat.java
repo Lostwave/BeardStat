@@ -38,7 +38,7 @@ public class DynamicPlayerStat implements PlayerStat {
 
    
     public static void main(String[] a){
-        PlayerStatBlob blob  = new PlayerStatBlob("bob", 1);
+        PlayerStatBlob blob  = new PlayerStatBlob("bob", "PLY_0123456789ABCDEF");
 
         PlayerStat s = new DynamicPlayerStat("$kills.total - $deaths.total", "comp", "kd");
         PlayerStat k = new StaticPlayerStat("kills","total", 50);

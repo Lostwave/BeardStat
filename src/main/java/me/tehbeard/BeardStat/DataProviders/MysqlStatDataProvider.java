@@ -186,7 +186,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             //try to pull it from the db
             prepGetAllPlayerStat.setString(1, player);
             ResultSet rs = prepGetAllPlayerStat.executeQuery();
-            pb = new PlayerStatBlob(player,0);
+            pb = new PlayerStatBlob(player,"");
             while(rs.next()){
                 //`category`,`stat`,`value`
                 PlayerStat ps = new StaticPlayerStat(rs.getString(2),rs.getString(3),rs.getInt(4));

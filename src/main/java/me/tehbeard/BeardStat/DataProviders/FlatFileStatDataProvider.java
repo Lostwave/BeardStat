@@ -45,7 +45,7 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 		try{
 			ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
 
-			PlayerStatBlob blob = new PlayerStatBlob(player,0);
+			PlayerStatBlob blob = new PlayerStatBlob(player,"");
 			if(pl!=null){
 				for(String key : pl.getKeys(false)){
 					BeardStat.printDebugCon("loading stat " +key);

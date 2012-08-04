@@ -61,7 +61,7 @@ public class PlayerStatBlob implements VariableProvider{
      * @param name Players name
      * @param ID playerID in database
      */
-    public PlayerStatBlob(String name,int ID){
+    public PlayerStatBlob(String name,String ID){
         this.name = name;
         playerID=ID;
         stats = new HashSet<PlayerStat>();
