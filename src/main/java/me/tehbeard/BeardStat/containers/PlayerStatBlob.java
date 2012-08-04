@@ -1,7 +1,6 @@
 package me.tehbeard.BeardStat.containers;
 
-import java.util.Collection;
-import java.util.Collections;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class PlayerStatBlob implements VariableProvider{
         }
     }
     
-    private Set<PlayerStat> stats;
+    private HashSet<PlayerStat> stats;
     private String name;
 
     public String getName() {
@@ -86,7 +85,8 @@ public class PlayerStatBlob implements VariableProvider{
      * @return
      */
     public Set<PlayerStat> getStats(){
-        return stats;
+        
+        return  (Set<PlayerStat>) stats.clone();
     }
 
     public boolean hasStat(String cat,String stat){
