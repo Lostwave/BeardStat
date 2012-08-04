@@ -1,6 +1,6 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
-version: ${project.plugin.version}
+version: ${project.plugin.version}-${describe}
 authors: [Tehbeard]
 commands:
     stats:

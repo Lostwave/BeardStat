@@ -95,7 +95,7 @@ public class BeardStat extends JavaPlugin {
 
         //start initialisation
         self = this;
-        printCon("Starting BeardStat");
+        printCon("Starting BeardStat version ");
 
 
         //run config updater
