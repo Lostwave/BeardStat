@@ -75,9 +75,9 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 		HashMap<String,Integer> nodes = new HashMap<String, Integer>();
 
 		for(PlayerStat stat : player.getStats()){
-
-			nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
-
+		    if(stat.isArchive()){
+			  nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
+		    }
 		}
 		database.set("stats.players." + player.getName(), nodes);
 		try {
