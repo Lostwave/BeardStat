@@ -305,8 +305,8 @@ public class StatPlayerListener implements Listener {
 
     private void calc_timeonline(String player){
 
-        long seconds = (System.currentTimeMillis() - BeardStat.self().getStatManager().getLoginTime(player))/1000L;
-        playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+        int seconds = BeardStat.self().getStatManager().getSessionTime(player);
+        playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(seconds);
 
         BeardStat.self().getStatManager().wipeLoginTime(player);		
 

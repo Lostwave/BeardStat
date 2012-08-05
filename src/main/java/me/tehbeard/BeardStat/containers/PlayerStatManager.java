@@ -1,16 +1,10 @@
 package me.tehbeard.BeardStat.containers;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
-import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
-
-
 
 import java.util.Map.Entry;
 
@@ -19,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * Provides a cache between backend storage and the stats plugin
@@ -47,14 +42,14 @@ public class PlayerStatManager implements CommandExecutor {
             Entry<String, PlayerStatBlob> entry = i.next();
             String player = entry.getKey();
 
-            long seconds = getSessionTime(player);
+            int seconds = getSessionTime(player);
 
-            BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
-            getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+            BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +seconds);
+            entry.getValue().getStat("stats","playedfor").incrementStat(seconds);
 
             backendDatabase.pushPlayerStatBlob(getPlayerBlob(player));
 
-            if(Bukkit.getPlayerExact(player).isOnline()){
+            if(isPlayerOnline(player)){
                 setLoginTime(player,System.currentTimeMillis());
             }
             else
@@ -70,6 +65,16 @@ public class PlayerStatManager implements CommandExecutor {
 
     }
 
+
+
+    private boolean isPlayerOnline(String player) {
+        for(Player p : Bukkit.getOnlinePlayers()){
+            if(p.getName().equals(player)){
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     /**

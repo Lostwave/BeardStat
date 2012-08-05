@@ -99,8 +99,7 @@ public class PlayerStatBlob implements VariableProvider{
      * @return
      */
     public Set<PlayerStat> getStats(){
-
-        return  (Set<PlayerStat>) stats.clone();
+        return  new HashSet<PlayerStat>(stats);
     }
 
     public boolean hasStat(String cat,String stat){

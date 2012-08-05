@@ -23,7 +23,7 @@ commands:
         aliases: [blaston]
     beardstatdebug:
         description: Print debug information
-        usage:/<command>
+        usage: /<command>
         
 permissions:
   stat.*:
