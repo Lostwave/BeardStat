@@ -21,7 +21,9 @@ commands:
         description: View last time a player was on
         usage: /laston [player]
         aliases: [blaston]
-
+    beardstatdebug:
+        description: Print debug information
+        usage:/<command>
         
 permissions:
   stat.*:

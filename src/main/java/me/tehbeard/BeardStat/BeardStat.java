@@ -177,7 +177,7 @@ public class BeardStat extends JavaPlugin {
         getCommand("played").setExecutor(new playedCommand(playerStatManager));
         getCommand("statpage").setExecutor(new StatPageCommand(this));
         getCommand("laston").setExecutor(new LastOnCommand(playerStatManager));
-
+        getCommand("beardstatdebug").setExecutor(playerStatManager);
         
         //Incase of /reload, set all logged in player names.
         for(Player player: getServer().getOnlinePlayers()){

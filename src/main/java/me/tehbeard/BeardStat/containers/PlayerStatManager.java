@@ -15,13 +15,17 @@ import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
 /**
  * Provides a cache between backend storage and the stats plugin
  * @author James
  *
  */
-public class PlayerStatManager {
+public class PlayerStatManager implements CommandExecutor {
 
     private HashMap<String,PlayerStatBlob> cache = new HashMap<String,PlayerStatBlob>();
     private IStatDataProvider backendDatabase = null;
@@ -47,7 +51,7 @@ public class PlayerStatManager {
 
             BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +Integer.parseInt(""+seconds));
             getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
-            
+
             backendDatabase.pushPlayerStatBlob(getPlayerBlob(player));
 
             if(Bukkit.getPlayerExact(player).isOnline()){
@@ -58,8 +62,8 @@ public class PlayerStatManager {
                 wipeLoginTime(player);
                 i.remove();
             }
-            
-            
+
+
 
         }
 
@@ -133,6 +137,26 @@ public class PlayerStatManager {
 
     public void wipeLoginTime(String player){
         loginTimes.remove(player);
+    }
+
+
+    public boolean onCommand(CommandSender sender, Command cmd, String lbl,
+            String[] args) {
+        Iterator<Entry<String, PlayerStatBlob>> i = cache.entrySet().iterator();
+        sender.sendMessage("Players in Stat cache");
+        while(i.hasNext()){
+            Entry<String, PlayerStatBlob> entry = i.next();
+            String player = entry.getKey();
+            sender.sendMessage(ChatColor.GOLD + player);
+        }
+
+        Iterator<String> ii = loginTimes.keySet().iterator();
+        sender.sendMessage("Players in login cache");
+        while(ii.hasNext()){
+            String player = ii.next();
+            sender.sendMessage(ChatColor.GOLD + player);
+        }
+        return true;
     }
 
 }
