@@ -1,7 +1,7 @@
 stats:
   configversion: ${project.config.version}
   database:
-    type: "file"
+    type: "sqlite"
     host: "localhost"
     username: "Beardstats"
     password: "changeme"
