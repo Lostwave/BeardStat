@@ -1,3 +1,5 @@
+general:
+  debug: false
 stats:
   configversion: ${project.config.version}
   database:
@@ -21,9 +23,6 @@ stats:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
-  topplayedcount: 30
-general:
-  debug: false
 customstats:
   - "comp.kd = $kills.total - $deaths.total"
 savedcustomstats:
