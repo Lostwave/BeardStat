@@ -8,6 +8,7 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -62,8 +63,16 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chatletters").incrementStat(event.getMessage().length());
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chat").incrementStat(1);
+            final String player = event.getPlayer().getName();
+            final int len = event.getMessage().length();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(BeardStat.self(), new Runnable(){
+
+                public void run() {
+                    playerStatManager.getPlayerBlob(player).getStat("stats","chatletters").incrementStat(len);
+                    playerStatManager.getPlayerBlob(player).getStat("stats","chat").incrementStat(1);
+                    
+                }});
+            
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
