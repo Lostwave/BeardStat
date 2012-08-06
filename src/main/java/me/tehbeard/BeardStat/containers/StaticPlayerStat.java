@@ -64,7 +64,7 @@ public class StaticPlayerStat implements PlayerStat{
 	 * new value = old value + i
 	 */
 	public void incrementStat(int i){
-		if(i < 0 ){throw new IllegalArgumentException("Cannot increment by negative number!");}
+		//if(i < 0 ){throw new IllegalArgumentException("Cannot increment by negative number!");}
 		changeValue(value + i);
 	}
 
@@ -74,7 +74,7 @@ public class StaticPlayerStat implements PlayerStat{
      * new value = old value - i
 	 */
 	public void decrementStat(int i){
-		if(i < 0 ){throw new IllegalArgumentException("Cannot decrement by negative number!");}
+		//if(i < 0 ){throw new IllegalArgumentException("Cannot decrement by negative number!");}
 		changeValue(value - i);
 	}
 
