@@ -11,6 +11,7 @@ import me.tehbeard.BeardStat.Metrics.Plotter;
 import me.tehbeard.BeardStat.DataProviders.FlatFileStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
+import me.tehbeard.BeardStat.DataProviders.SQLiteStatDataProvider;
 
 import me.tehbeard.BeardStat.commands.*;
 import me.tehbeard.BeardStat.commands.formatters.FormatFactory;
@@ -124,6 +125,15 @@ public class BeardStat extends JavaPlugin {
             } catch (SQLException e) {
                 db = null;
             }
+        }
+        if(getConfig().getString("stats.database.type").equalsIgnoreCase("sqlite")){
+            try {
+                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString(), "stats");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                db =null;
+            }
+            
         }
         if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
             db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
