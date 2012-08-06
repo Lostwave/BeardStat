@@ -60,7 +60,7 @@ public class StatPlayerListener implements Listener {
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
-    public void onPlayerChat(PlayerChatEvent event){
+    public void onPlayerChat(AsyncPlayerChatEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chatletters").incrementStat(event.getMessage().length());
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chat").incrementStat(1);
