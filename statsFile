@@ -125,6 +125,18 @@ enderstone
 dragonegg
 redstonelampoff
 redstonelampon
+wooddoublestep
+woodstep
+cocoa
+sandstonestairs
+emeraldore
+enderchest
+tripwirehook
+tripwire
+emeraldblock
+sprucewoodstairs
+birchwoodstairs
+junglewoodstairs
 
 Dumping item data
 ===
@@ -269,6 +281,9 @@ record8
 record9
 record10
 record11
+bookandquill
+writtenbook
+emerald
 
 Dumping entity data
 ===
@@ -365,4 +380,3 @@ endercrystal
 magic
 magicregen
 custom
-
