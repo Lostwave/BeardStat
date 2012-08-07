@@ -29,13 +29,12 @@ public class StatBlockListener implements Listener{
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
-            if(MetaDataCapture.hasMetaData(event.getBlock().getType())){
-                playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockcreate",
-                        event.getBlock().getType().toString().toLowerCase().replace("_","") + 
-                        "_" +
-                        event.getBlock().getData()
-                        ).incrementStat(1);
-            }
+            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                    "blockcreate", 
+                    event.getBlock().getType(), 
+                    event.getBlock().getData(), 
+                    1);
+            
         }
     }
 
@@ -44,13 +43,11 @@ public class StatBlockListener implements Listener{
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",event.getBlock().getType().toString().toLowerCase().replace("_","")).incrementStat(1);
-            if(MetaDataCapture.hasMetaData(event.getBlock().getType())){
-                playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("blockdestroy",
-                        event.getBlock().getType().toString().toLowerCase().replace("_","") + 
-                        "_" +
-                        event.getBlock().getData()
-                        ).incrementStat(1);
-            }
+            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                    "blockdestroy", 
+                    event.getBlock().getType(), 
+                    event.getBlock().getData(), 
+                    1);
         }
     }
 

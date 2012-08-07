@@ -78,21 +78,13 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerDropItem(PlayerDropItemEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            String item = event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","");
-            /**
-             * if MetaDataable, make the item string correct
-             */
-            if(MetaDataCapture.hasMetaData(event.getItemDrop().getItemStack().getType())){
-                item = 
-                        event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","") + 
-                        "_" + event.getItemDrop().getItemStack().getDurability();
-
-            }
-
-            playerStatManager.getPlayerBlob(
-
-                    event.getPlayer().getName()).getStat("itemdrop",item).incrementStat(event.getItemDrop().getItemStack().getAmount()
-                            );
+            
+            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                    "itemdrop", 
+                    event.getItemDrop().getItemStack().getType(), 
+                    event.getItemDrop().getItemStack().getDurability(), 
+                    event.getItemDrop().getItemStack().getAmount());
+            
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
@@ -140,18 +132,12 @@ public class StatPlayerListener implements Listener {
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
-            String item = event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") ;
-            /**
-             * if MetaDataable, make the item string correct
-             */
-            if(MetaDataCapture.hasMetaData(event.getItem().getItemStack().getType())){
-                item = 
-                        event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") + 
-                        "_" + event.getItem().getItemStack().getDurability();
+            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                    "itempickup", 
+                    event.getItem().getItemStack().getType(), 
+                    event.getItem().getItemStack().getDurability(), 
+                    event.getItem().getItemStack().getAmount());
 
-            }
-
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("itempickup",item).incrementStat(event.getItem().getItemStack().getAmount());
 
         }
     }
@@ -209,13 +195,13 @@ public class StatPlayerListener implements Listener {
                 /**
                  * if MetaDataable, make the item string correct
                  */
-                if(MetaDataCapture.hasMetaData(event.getPlayer().getItemInHand().getType())){
-                    psb.getStat("dye",  
-                            event.getPlayer().getItemInHand().getType().toString().toLowerCase().replace("_","") + 
-                            "_" + event.getPlayer().getItemInHand().getDurability()).incrementStat(1);
-
-                }
-
+                
+                MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                        "dye", 
+                        event.getPlayer().getItemInHand().getType(), 
+                        event.getPlayer().getItemInHand().getDurability(), 
+                        1);
+                
             }
         }
     }

@@ -32,51 +32,46 @@ public class StatCraftListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onCraftItem(CraftItemEvent event){
         if(!worlds.contains(event.getWhoClicked().getWorld().getName())){
-            String item = event.getRecipe().getResult().getType().toString().toLowerCase().replace("_","");
             int amount = event.getRecipe().getResult().getAmount();
             final Player p = (Player)event.getWhoClicked();
             if(event.isShiftClick()){
-                
+
                 final Inventory inv = event.getWhoClicked().getInventory();
                 final ItemStack is = event.getRecipe().getResult();
                 final int preAmount = getItemCount(inv,is);
-               
+
                 Bukkit.getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new Runnable(){
 
                     public void run() {
                         int made = getItemCount(inv,is) - preAmount;
-                        String item = 
-                                is.getType().toString().toLowerCase().replace("_","");
-                        if(MetaDataCapture.hasMetaData(is.getType())){
-                            item += "_" + is.getDurability();
-
-                        }
-
-                        playerStatManager.getPlayerBlob(p.getName()).getStat("crafting", item).incrementStat(made);
+                        //String item = is.getType().toString().toLowerCase().replace("_","");
+                        MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(p.getName()), 
+                                "crafting", 
+                                is.getType(), 
+                                is.getDurability(), 
+                                made);
                     }
 
                 });
             }
             else
             {
-                
+
 
                 /**
                  * if MetaDataable, make the item string correct
                  */
-                if(MetaDataCapture.hasMetaData(event.getRecipe().getResult().getType())){
-                    item = 
-                            event.getRecipe().getResult().getType().toString().toLowerCase().replace("_","") + 
-                            "_" + event.getRecipe().getResult().getDurability();
+                MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(p.getName()), 
+                        "crafting", 
+                        event.getRecipe().getResult().getType(), 
+                        event.getRecipe().getResult().getDurability(), 
+                        amount);
 
-                }
-
-                playerStatManager.getPlayerBlob(p.getName()).getStat("crafting", item).incrementStat(amount);
             }
         }
     }
 
-    
+
     private int getItemCount(Inventory inv,ItemStack item){
         int i = 0;
         for(ItemStack is : inv.all(item.getType()).values()){
