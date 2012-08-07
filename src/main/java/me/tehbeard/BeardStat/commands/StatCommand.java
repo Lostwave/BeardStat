@@ -18,6 +18,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.conversations.ConversationAbandonedListener;
+import org.bukkit.conversations.ExactMatchConversationCanceller;
 import org.bukkit.entity.Player;
 
 public class StatCommand implements CommandExecutor {
@@ -26,6 +30,7 @@ public class StatCommand implements CommandExecutor {
 
 
     private PromptBuilder builder;
+    private ExactMatchConversationCanceller canceller = new ExactMatchConversationCanceller("/exit");
 
     @SuppressWarnings("unchecked")
     public StatCommand(PlayerStatManager playerStatManager) {
@@ -69,7 +74,20 @@ public class StatCommand implements CommandExecutor {
         }
 
         if(arguments.getFlag("i")){
-            builder.makeConversation((Conversable) sender);
+            sender.sendMessage(ChatColor.GOLD + "Entering interactive mode, type /exit to leave interactive mode");
+            Conversation c = builder.makeConversation((Conversable) sender);
+            canceller.clone().setConversation(c);
+            
+            c.addConversationAbandonedListener(new ConversationAbandonedListener(){
+
+                public void conversationAbandoned(
+                        ConversationAbandonedEvent event) {
+                    event.getContext().getForWhom().sendRawMessage(ChatColor.GOLD + "Leaving interactive stats mode");
+                    
+                }
+                
+            });
+            
             return true;
         }
         
