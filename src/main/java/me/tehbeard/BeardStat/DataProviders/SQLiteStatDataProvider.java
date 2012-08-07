@@ -7,11 +7,6 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 
-import java.util.Properties;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
