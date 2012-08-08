@@ -25,19 +25,25 @@ public class ScoreboardEntry {
         return custom;
     }
 
+    private int id;
     private int rank;
     private String player;
     private int score;
     private Configuration custom;
 
     public ScoreboardEntry(String player, int score) {
-        this(player,score,null);
+        this(0,player,score,null);
     }
     
-    public ScoreboardEntry(String player, int score, Configuration custom) {
+    public ScoreboardEntry(int id,String player, int score, Configuration custom) {
+        this.id = id;
         this.player = player;
         this.score = score;
         this.custom = custom;
+    }
+    
+    protected void setId(int id){
+        this.id = id;
     }
 
     

@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 
@@ -17,6 +18,8 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
+import me.tehbeard.BeardStat.scoreboards.Scoreboard;
+import me.tehbeard.BeardStat.scoreboards.ScoreboardEntry;
 
 /**
  * Provides backend storage to a mysql database
@@ -269,6 +272,21 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             }
         }).start();
     }
+
+	public List<Scoreboard> getScoreboards() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void registerScoreboard(Scoreboard scoreboard) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addScore(Scoreboard scoreboard, ScoreboardEntry entry) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 

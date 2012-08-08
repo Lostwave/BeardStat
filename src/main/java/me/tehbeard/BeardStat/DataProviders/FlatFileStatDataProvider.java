@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat.DataProviders;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -12,6 +13,8 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
+import me.tehbeard.BeardStat.scoreboards.Scoreboard;
+import me.tehbeard.BeardStat.scoreboards.ScoreboardEntry;
 
 
 /**
@@ -89,6 +92,24 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 
 	public void flush() {
 		//database.save();
+	}
+
+
+	public List<Scoreboard> getScoreboards() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public void registerScoreboard(Scoreboard scoreboard) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void addScore(Scoreboard scoreboard, ScoreboardEntry entry) {
+		// TODO Auto-generated method stub
+		
 	}
 
     
