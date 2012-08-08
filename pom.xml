@@ -51,7 +51,7 @@
     </dependency>
   </dependencies>
 
-  <distributionManagement>
+  <!-- <distributionManagement>
     <repository>
       <id>dev-repo</id>
       <name>dev.escapecraft.com Releases</name>
@@ -62,7 +62,7 @@
       <name>dev.escapecraft.com Snapshots</name>
       <url>scp://dev.escapecraft.com/var/www/maven</url>
     </snapshotRepository>
-  </distributionManagement>
+  </distributionManagement>-->
   <build>
     <extensions>
       <extension>
