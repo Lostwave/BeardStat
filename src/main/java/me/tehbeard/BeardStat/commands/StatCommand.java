@@ -76,7 +76,8 @@ public class StatCommand implements CommandExecutor {
         if(arguments.getFlag("i")){
             sender.sendMessage(ChatColor.GOLD + "Entering interactive mode, type /exit to leave interactive mode");
             Conversation c = builder.makeConversation((Conversable) sender);
-            canceller.clone().setConversation(c);
+            c.getCancellers().add(canceller.clone());
+            
             
             c.addConversationAbandonedListener(new ConversationAbandonedListener(){
 
