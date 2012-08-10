@@ -2,6 +2,7 @@
 =========================
 * Custom stats can now be saved to the datavase
 * /exit will leave interactive stats mode
+* stats are now colored better
 * Fixed chat for 1.3
 * Updated to 1.3 
 

@@ -41,16 +41,12 @@ public class SelectStatisticPrompt extends ValidatingPrompt implements Configura
 
         Iterator<String> it = stats.iterator();
         while(it.hasNext()){
-            for(int i=0;i<10;i++){
-                if(it.hasNext()){
-                    if(i>0){msg+=", ";}
-                    msg+=it.next();
-                }
-            }
-            context.getForWhom().sendRawMessage(ChatColor.AQUA + msg);
-            msg="";        
+            msg+=ChatColor.BLUE + it.next() + "\n";
+
         }
-        return "Select a statistic to view";
+    
+
+        return  msg + ChatColor.AQUA + "Select a statistic to view";
     }
 
     @Override

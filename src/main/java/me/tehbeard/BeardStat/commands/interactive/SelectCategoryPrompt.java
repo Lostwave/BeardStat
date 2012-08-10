@@ -30,7 +30,7 @@ public class SelectCategoryPrompt extends ValidatingPrompt implements Configurab
     public String getPromptText(ConversationContext context) {
         String player = (String) context.getSessionData("player");
 
-        
+
         //begin paste
         HashSet<String> cats = new HashSet<String>();
         for( PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
@@ -42,16 +42,9 @@ public class SelectCategoryPrompt extends ValidatingPrompt implements Configurab
 
         Iterator<String> it = cats.iterator();
         while(it.hasNext()){
-            for(int i=0;i<10;i++){
-                if(it.hasNext()){
-                    if(i>0){msg+=", ";}
-                    msg+=it.next();
-                }
-            }
-            context.getForWhom().sendRawMessage(ChatColor.AQUA + msg);
-            msg="";        
+            msg+=ChatColor.BLUE + it.next() + "\n";
         }
-        return "Select a category to view";
+        return msg + ChatColor.AQUA + "Select a category to view";
     }
 
     @Override
