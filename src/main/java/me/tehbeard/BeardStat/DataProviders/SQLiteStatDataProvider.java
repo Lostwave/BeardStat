@@ -51,7 +51,7 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
                 throw new SQLException("Failed to start");
             }
         } catch (ClassNotFoundException e) {
-            BeardStat.printCon("MySQL Library not found!");
+            BeardStat.printCon("SQLite Library not found!");
         }
 
 
@@ -121,7 +121,7 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
                     "values (?,?,?,?); ");
 
             BeardStat.printDebugCon("Set player stat statement created");
-            BeardStat.printCon("Initaised MySQL Data Provider.");
+            BeardStat.printCon("Initaised SQLite Data Provider.");
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
         }
