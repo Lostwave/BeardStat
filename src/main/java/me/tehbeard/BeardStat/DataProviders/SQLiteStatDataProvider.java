@@ -214,10 +214,11 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
 
                         } catch (SQLException e) {
                         }
-                        BeardStat.printDebugCon("Clearing write cache");
-                        BeardStat.printDebugCon("Time taken to write: " +((System.currentTimeMillis() - t)/1000L));
-                        writeCache.clear();
+                       
                     }
+                    BeardStat.printDebugCon("Clearing write cache");
+                    BeardStat.printDebugCon("Time taken to write: " +((System.currentTimeMillis() - t)/1000L));
+                    writeCache.clear();
                 }
 
             }
