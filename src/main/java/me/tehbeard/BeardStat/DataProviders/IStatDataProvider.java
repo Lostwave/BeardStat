@@ -38,5 +38,10 @@ public interface IStatDataProvider {
 	 */
 	public void flush();
 	
+	/**
+	 * Deletes all stats for a player as stored in the database
+	 * @param player Player to delete stats of
+	 */
+	public void deletePlayerStatBlob(String player);
   
 }

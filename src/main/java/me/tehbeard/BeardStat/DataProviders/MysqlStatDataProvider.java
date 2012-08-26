@@ -40,6 +40,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement prepGetAllPlayerStat;
     protected static PreparedStatement prepSetPlayerStat;
     protected static PreparedStatement keepAlive;
+    protected static PreparedStatement prepDeletePlayerStat;
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
@@ -164,6 +165,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                     "(`player`,`category`,`stat`,`value`) " +
                     "values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
 
+            prepDeletePlayerStat = conn.prepareStatement("DELETE FROM `" + table + "` WHERE player=?");
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised MySQL Data Provider.");
         } catch (SQLException e) {
@@ -259,7 +261,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                                     prepSetPlayerStat.addBatch();
                                 }
                                 prepSetPlayerStat.executeBatch();
-                               
+
                             } catch (SQLException e) {
                                 checkConnection();
                             }
@@ -271,6 +273,15 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
             }
         }).start();
+    }
+
+    public void deletePlayerStatBlob(String player) {
+        try {
+            prepDeletePlayerStat.clearParameters();
+            prepDeletePlayerStat.setString(1,player);
+        } catch (SQLException e) {
+            checkConnection();
+        }
     }
 
 

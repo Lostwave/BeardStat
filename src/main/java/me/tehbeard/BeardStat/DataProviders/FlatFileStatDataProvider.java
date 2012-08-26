@@ -100,4 +100,15 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 	}
 
 
+    public void deletePlayerStatBlob(String player) {
+        database.set("stats.players."+player, null);
+        try {
+            database.save(file);
+        } catch (IOException e) {
+            BeardStat.printCon("IO error occured when trying to clear player data");
+            e.printStackTrace();
+        }
+    }
+
+
 }

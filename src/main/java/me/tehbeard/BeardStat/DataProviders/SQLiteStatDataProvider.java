@@ -31,10 +31,12 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
     //protected static PreparedStatement prepGetPlayerStat;
     protected static PreparedStatement prepGetAllPlayerStat;
     protected static PreparedStatement prepSetPlayerStat;
-
     protected static PreparedStatement keepAlive;
-
+    protected static PreparedStatement prepDeletePlayerStat;
+    
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
+
+    
 
     public SQLiteStatDataProvider(String filename,String table) throws SQLException{
 
@@ -119,7 +121,8 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
             prepSetPlayerStat = conn.prepareStatement("INSERT OR REPLACE INTO `" + table + "`" +
                     "(`player`,`category`,`stat`,`value`) " +
                     "values (?,?,?,?); ");
-
+            
+            prepDeletePlayerStat = conn.prepareStatement("DELETE FROM `" + table + "` WHERE player=?");
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised SQLite Data Provider.");
         } catch (SQLException e) {
@@ -223,6 +226,15 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
 
             }
         }).start();
+    }
+
+    public void deletePlayerStatBlob(String player) {
+        try {
+            prepDeletePlayerStat.clearParameters();
+            prepDeletePlayerStat.setString(1,player);
+        } catch (SQLException e) {
+            BeardStat.mysqlError(e);
+        }
     }
 
 
