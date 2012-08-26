@@ -22,6 +22,7 @@ import me.tehbeard.BeardStat.listeners.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -112,7 +113,8 @@ public class BeardStat extends JavaPlugin {
             getPluginLoader().disablePlugin(this);
             return;
         }
-        IStatDataProvider db =null;
+        IStatDataProvider db =getProvider(getConfig().getConfigurationSection("stats.database"));
+        /*
         if(getConfig().getString("stats.database.type").equalsIgnoreCase("mysql")){
             try {
                 db = new MysqlStatDataProvider(
@@ -137,7 +139,7 @@ public class BeardStat extends JavaPlugin {
         }
         if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
             db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
-        }
+        }*/
 
 
         if(db==null){
@@ -350,6 +352,36 @@ public class BeardStat extends JavaPlugin {
             String formating = format.replace(stat + ":","");
             FormatFactory.addStringFormat(stat.split("\\.")[0], stat.split("\\.")[1], formating);
         }
+    }
+    
+    private IStatDataProvider getProvider(ConfigurationSection config){
+        IStatDataProvider db = null;
+        if(config.getString("type").equalsIgnoreCase("mysql")){
+            try {
+                db = new MysqlStatDataProvider(
+                        config.getString("host"),
+                        config.getString("database"),
+                        config.getString("table"),
+                        config.getString("username"),
+                        config.getString("password")
+                        );
+            } catch (SQLException e) {
+                db = null;
+            }
+        }
+        if(config.getString("type").equalsIgnoreCase("sqlite")){
+            try {
+                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString(), "stats");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                db =null;
+            }
+            
+        }
+        if(config.getString("type").equalsIgnoreCase("file")){
+            db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));   
+        }
+        return db;
     }
 }
 
