@@ -91,27 +91,13 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 	}
 
 	public void flush() {
-		//database.save();
+		try {
+            database.save(file);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
-
-	public List<Scoreboard> getScoreboards() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	public void registerScoreboard(Scoreboard scoreboard) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void addScore(Scoreboard scoreboard, ScoreboardEntry entry) {
-		// TODO Auto-generated method stub
-		
-	}
-
-    
 
 }

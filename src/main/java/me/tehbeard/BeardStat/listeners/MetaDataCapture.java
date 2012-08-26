@@ -62,7 +62,11 @@ public class MetaDataCapture {
         String matName = material.toString().toLowerCase().replace("_","");
         if(mats.containsKey(material)){
             String tag = "_" + (dataValue & mats.get(material));
-            blob.getStat(category, matName + tag);
+            blob.getStat(category, matName + tag).incrementStat(value);
+        }
+        if(material.isRecord()){
+            blob.getStat(category, "records").incrementStat(value);
+            
         }
     }
 

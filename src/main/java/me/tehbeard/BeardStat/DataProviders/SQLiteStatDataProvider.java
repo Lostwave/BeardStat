@@ -225,22 +225,5 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
         }).start();
     }
 
-	public List<Scoreboard> getScoreboards() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void registerScoreboard(Scoreboard scoreboard) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void addScore(Scoreboard scoreboard, ScoreboardEntry entry) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
 
 }
