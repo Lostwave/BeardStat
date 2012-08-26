@@ -1,6 +1,8 @@
 package me.tehbeard.BeardStat.DataProviders;
 
 
+import java.util.List;
+
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 
@@ -51,4 +53,9 @@ public interface IStatDataProvider {
 	 */
 	public boolean hasStatBlob(String player);
   
+	/**
+	 * List of players held by provider
+	 * @return
+	 */
+	public List<String> getStatBlobsHeld();
 }

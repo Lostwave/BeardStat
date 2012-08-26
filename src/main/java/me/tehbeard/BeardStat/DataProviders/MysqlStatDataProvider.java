@@ -1,6 +1,7 @@
 package me.tehbeard.BeardStat.DataProviders;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,8 +19,6 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
-import me.tehbeard.BeardStat.scoreboards.Scoreboard;
-import me.tehbeard.BeardStat.scoreboards.ScoreboardEntry;
 
 /**
  * Provides backend storage to a mysql database
@@ -42,6 +41,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement keepAlive;
     protected static PreparedStatement prepDeletePlayerStat;
     protected static PreparedStatement prepHasPlayerStat;
+    protected static PreparedStatement prepGetPlayerList;
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
@@ -170,6 +170,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             
             prepHasPlayerStat = conn.prepareStatement("SELECT COUNT(*) from `" + table + "` WHERE player=?");
             
+            prepGetPlayerList = conn.prepareStatement("SELECT DISTINCT(player) from `" + table + "`");
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised MySQL Data Provider.");
         } catch (SQLException e) {
@@ -306,6 +307,19 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         return false;
     }
 
-
-
+    public List<String> getStatBlobsHeld() {
+        List<String> list = new ArrayList<String>();
+        try {
+            prepGetPlayerList.clearParameters();
+            ResultSet rs = prepGetPlayerList.executeQuery();
+            while(rs.next()){
+                list.add(rs.getString(1));
+            }
+            rs.close();
+            
+        } catch (SQLException e) {
+            checkConnection();
+        }
+        return list;
+    }
 }

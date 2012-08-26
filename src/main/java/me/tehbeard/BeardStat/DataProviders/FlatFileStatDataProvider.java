@@ -2,6 +2,7 @@ package me.tehbeard.BeardStat.DataProviders;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -113,6 +114,12 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 
     public boolean hasStatBlob(String player) {
         return database.contains("stats.players."+player);
+    }
+
+
+    public List<String> getStatBlobsHeld() {
+        // TODO Auto-generated method stub
+        return new ArrayList<String>(database.getConfigurationSection("stats.players").getKeys(false));
     }
 
 
