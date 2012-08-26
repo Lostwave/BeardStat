@@ -66,7 +66,6 @@ public class DynamicPlayerStat implements PlayerStat {
 
 
     public String getName() {
-        // TODO Auto-generated method stub
         return stat;
     }
 
