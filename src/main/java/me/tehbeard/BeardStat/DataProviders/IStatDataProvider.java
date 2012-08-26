@@ -43,5 +43,12 @@ public interface IStatDataProvider {
 	 * @param player Player to delete stats of
 	 */
 	public void deletePlayerStatBlob(String player);
+	
+	/**
+	 * Has a stat blob for a player
+	 * @param player player name
+	 * @return blob exists
+	 */
+	public boolean hasStatBlob(String player);
   
 }

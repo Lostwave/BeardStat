@@ -111,4 +111,9 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
     }
 
 
+    public boolean hasStatBlob(String player) {
+        return database.contains("stats.players."+player);
+    }
+
+
 }
