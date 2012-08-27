@@ -2,6 +2,8 @@ package me.tehbeard.BeardStat.DataProviders;
 
 import java.util.List;
 
+import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 
@@ -31,6 +33,30 @@ public class TransferDataProvider implements IStatDataProvider{
             IStatDataProvider newProvider) {
         this.oldProvider = oldProvider;
         this.newProvider = newProvider;
+        
+        transfer();
+    }
+
+    private void transfer() {
+        BeardStat.printCon("Beginning data transfer");
+        List<String> theList = oldProvider.getStatBlobsHeld();
+        PlayerStatBlob b;
+        for(String player : theList){
+            b = oldProvider.pullPlayerStatBlob(player, false);
+            if(b==null){
+                BeardStat.printCon("[ERROR] " + player + " not found in old database");
+                continue;
+            }
+            for(PlayerStat s : b.getStats()){
+                s.archive();
+            }
+            BeardStat.printCon("Pushing " + player + " to new dataprovider");
+            newProvider.pushPlayerStatBlob(b);
+            
+        }
+        BeardStat.printCon("Flushing data");
+        newProvider.flush();
+        
     }
 
     public PlayerStatBlob pullPlayerStatBlob(String player) {
@@ -38,11 +64,7 @@ public class TransferDataProvider implements IStatDataProvider{
     }
 
     public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
-        PlayerStatBlob blob = oldProvider.pullPlayerStatBlob(player, false);
-        if(blob == null){
-            blob = newProvider.pullPlayerStatBlob(player,create);
-        }
-        return blob;
+        return newProvider.pullPlayerStatBlob(player,create);
     }
 
     public void pushPlayerStatBlob(PlayerStatBlob player) {
@@ -56,17 +78,16 @@ public class TransferDataProvider implements IStatDataProvider{
     }
 
     public void deletePlayerStatBlob(String player) {
+        newProvider.deletePlayerStatBlob(player);
         
     }
 
     public boolean hasStatBlob(String player) {
-        // TODO Auto-generated method stub
-        return false;
+        return newProvider.hasStatBlob(player);
     }
 
     public List<String> getStatBlobsHeld() {
-        // TODO Auto-generated method stub
-        return null;
+        return newProvider.getStatBlobsHeld();
     }
 
 }
