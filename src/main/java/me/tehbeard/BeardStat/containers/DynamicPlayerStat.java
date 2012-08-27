@@ -104,4 +104,7 @@ public class DynamicPlayerStat implements PlayerStat {
     public void setOwner(PlayerStatBlob playerStatBlob) {
         owner = playerStatBlob;
     }
+
+    public void archive() {
+    }
 }
