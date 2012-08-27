@@ -9,6 +9,7 @@
 * Some more fixes to attempt to fix ConcurrentModificationException
 * Added way to delete player stat blobs
 * Work on the database providers to make transfering between them eaiser at a future date.
+* Allow port selection for mysql
 
 0.4.7 - Honey release
 =============

@@ -34,14 +34,14 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement prepDeletePlayerStat;
     protected static PreparedStatement prepHasPlayerStat;
     protected static PreparedStatement prepGetPlayerList;
-    
+
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
-    
 
-    
 
-    
+
+
+
 
     public SQLiteStatDataProvider(String filename,String table) throws SQLException{
 
@@ -126,13 +126,13 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
             prepSetPlayerStat = conn.prepareStatement("INSERT OR REPLACE INTO `" + table + "`" +
                     "(`player`,`category`,`stat`,`value`) " +
                     "values (?,?,?,?); ");
-            
+
             prepDeletePlayerStat = conn.prepareStatement("DELETE FROM `" + table + "` WHERE player=?");
-            
+
             prepHasPlayerStat = conn.prepareStatement("SELECT COUNT(*) from `" + table + "` WHERE player=?");
-            
+
             prepGetPlayerList = conn.prepareStatement("SELECT DISTINCT(player) from `" + table + "`");
-            
+
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised SQLite Data Provider.");
         } catch (SQLException e) {
@@ -195,47 +195,59 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
 
     }
 
+    private Runnable flush = new Runnable() {
+
+        public void run() {
+            synchronized (writeCache) {
+
+
+
+                long t = System.currentTimeMillis();
+                BeardStat.printDebugCon("Saving to database");
+                try {
+                    prepSetPlayerStat.clearBatch();
+                    for(Entry<String, HashSet<PlayerStat>> entry : writeCache.entrySet()){
+
+                        HashSet<PlayerStat> pb = entry.getValue();
+
+                        BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
+                        
+                        for(PlayerStat ps : pb){
+
+                            prepSetPlayerStat.setString(1, entry.getKey());
+
+                            prepSetPlayerStat.setString(2, ps.getCat());
+                            prepSetPlayerStat.setString(3, ps.getName());
+                            prepSetPlayerStat.setInt(4, ps.getValue());
+
+
+                            prepSetPlayerStat.addBatch();
+                        }
+                        
+
+
+
+                    }
+                    prepSetPlayerStat.executeBatch();
+                } catch (SQLException e) {
+                }
+                BeardStat.printDebugCon("Clearing write cache");
+                BeardStat.printDebugCon("Time taken to write: " +((System.currentTimeMillis() - t)/1000L));
+                writeCache.clear();
+            }
+
+        }
+    };
+
     public void flush() {
 
-        new Thread(new Runnable() {
+        new Thread(flush).start();
+    }
 
-            public void run() {
-                synchronized (writeCache) {
-
-
-
-                    long t = System.currentTimeMillis();
-                    BeardStat.printDebugCon("Saving to database");
-                    for(Entry<String, HashSet<PlayerStat>> entry : writeCache.entrySet()){
-                        try {
-                            HashSet<PlayerStat> pb = entry.getValue();
-
-                            BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
-                            prepSetPlayerStat.clearBatch();
-                            for(PlayerStat ps : pb){
-
-                                prepSetPlayerStat.setString(1, entry.getKey());
-
-                                prepSetPlayerStat.setString(2, ps.getCat());
-                                prepSetPlayerStat.setString(3, ps.getName());
-                                prepSetPlayerStat.setInt(4, ps.getValue());
-
-
-                                prepSetPlayerStat.addBatch();
-                            }
-                            prepSetPlayerStat.executeBatch();
-
-                        } catch (SQLException e) {
-                        }
-                       
-                    }
-                    BeardStat.printDebugCon("Clearing write cache");
-                    BeardStat.printDebugCon("Time taken to write: " +((System.currentTimeMillis() - t)/1000L));
-                    writeCache.clear();
-                }
-
-            }
-        }).start();
+    public void flushSync(){
+        BeardStat.printCon("Flushing in main thread! Game will lag!");
+        flush.run();
+        BeardStat.printCon("Flushed!");
     }
 
     public void deletePlayerStatBlob(String player) {
@@ -258,7 +270,7 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
                 rs.close();
                 return b;
             }
-            
+
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
         }
@@ -274,7 +286,7 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
                 list.add(rs.getString(1));
             }
             rs.close();
-            
+
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
         }

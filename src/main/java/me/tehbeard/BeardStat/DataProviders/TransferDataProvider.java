@@ -55,7 +55,7 @@ public class TransferDataProvider implements IStatDataProvider{
             
         }
         BeardStat.printCon("Flushing data");
-        newProvider.flush();
+        newProvider.flushSync();
         
     }
 
@@ -88,6 +88,11 @@ public class TransferDataProvider implements IStatDataProvider{
 
     public List<String> getStatBlobsHeld() {
         return newProvider.getStatBlobsHeld();
+    }
+
+    public void flushSync() {
+        newProvider.flushSync();
+        
     }
 
 }

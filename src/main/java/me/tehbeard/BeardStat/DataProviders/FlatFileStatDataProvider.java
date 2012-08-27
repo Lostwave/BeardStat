@@ -25,80 +25,84 @@ import me.tehbeard.BeardStat.scoreboards.ScoreboardEntry;
  */
 public class FlatFileStatDataProvider implements IStatDataProvider {
 
-	YamlConfiguration database;
-
-	
-	File file;
-	public FlatFileStatDataProvider(File file) {
-		database = YamlConfiguration.loadConfiguration(file);
-		this.file = file;
-		BeardStat.printCon("Creating FlatFile DataProvider");
-		
-
-	}
+    YamlConfiguration database;
 
 
-	public PlayerStatBlob pullPlayerStatBlob(String player) {
-		return pullPlayerStatBlob(player,true);
-	}
-
-	public PlayerStatBlob pullPlayerStatBlob(String player,boolean create) {
-		BeardStat.printDebugCon("Loading stats for player " + player);
-
-		try{
-			ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
-
-			PlayerStatBlob blob = new PlayerStatBlob(player,"");
-			if(pl!=null){
-				for(String key : pl.getKeys(false)){
-					BeardStat.printDebugCon("loading stat " +key);
-					BeardStat.printDebugCon("parts " + key.split("\\-")[0] + " : "+
-							key.split("\\-")[1]);
-					blob.addStat(new StaticPlayerStat(key.split("\\-")[0]
-							,key.split("\\-")[1], pl.getInt(key, 0)));
-				}
-				return blob;
-			}
-			else if(pl==null && create)
-			{
-				return blob;
-			}
-			BeardStat.printDebugCon("FAILED TO LOAD KEY FROM DATABASE!" + player);
-			return null;
-		}
-		catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
-	}
+    File file;
+    public FlatFileStatDataProvider(File file) {
+        database = YamlConfiguration.loadConfiguration(file);
+        this.file = file;
+        BeardStat.printCon("Creating FlatFile DataProvider");
 
 
-	
-	public void pushPlayerStatBlob(PlayerStatBlob player) {
-		HashMap<String,Integer> nodes = new HashMap<String, Integer>();
+    }
 
-		for(PlayerStat stat : player.getStats()){
-		    if(stat.isArchive()){
-			  nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
-		    }
-		}
-		database.set("stats.players." + player.getName(), nodes);
-		try {
-			database.save(file);
-		} catch (IOException e) {
-		    BeardStat.printCon("IO error occured when trying to save player data");
-		    e.printStackTrace();
-		}
-	}
 
-	public void flush() {
-		try {
+    public PlayerStatBlob pullPlayerStatBlob(String player) {
+        return pullPlayerStatBlob(player,true);
+    }
+
+    public PlayerStatBlob pullPlayerStatBlob(String player,boolean create) {
+        BeardStat.printDebugCon("Loading stats for player " + player);
+
+        try{
+            ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
+
+            PlayerStatBlob blob = new PlayerStatBlob(player,"");
+            if(pl!=null){
+                for(String key : pl.getKeys(false)){
+                    BeardStat.printDebugCon("loading stat " +key);
+                    BeardStat.printDebugCon("parts " + key.split("\\-")[0] + " : "+
+                            key.split("\\-")[1]);
+                    blob.addStat(new StaticPlayerStat(key.split("\\-")[0]
+                            ,key.split("\\-")[1], pl.getInt(key, 0)));
+                }
+                return blob;
+            }
+            else if(pl==null && create)
+            {
+                return blob;
+            }
+            BeardStat.printDebugCon("FAILED TO LOAD KEY FROM DATABASE!" + player);
+            return null;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+    public void pushPlayerStatBlob(PlayerStatBlob player) {
+        HashMap<String,Integer> nodes = new HashMap<String, Integer>();
+
+        for(PlayerStat stat : player.getStats()){
+            if(stat.isArchive()){
+                nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
+            }
+        }
+        database.set("stats.players." + player.getName(), nodes);
+        try {
+            database.save(file);
+        } catch (IOException e) {
+            BeardStat.printCon("IO error occured when trying to save player data");
+            e.printStackTrace();
+        }
+    }
+
+    public void flush() {
+        try {
             database.save(file);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-	}
+    }
+
+    public void flushSync(){
+        flush();
+    }
 
 
     public void deletePlayerStatBlob(String player) {

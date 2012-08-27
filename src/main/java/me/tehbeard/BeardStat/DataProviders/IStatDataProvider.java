@@ -41,6 +41,12 @@ public interface IStatDataProvider {
 	public void flush();
 	
 	/**
+     * Forces the DataProvider to flush data to the backend, in the case of a second level cache.
+     * MUST BE IN THIS THREAD.
+     */
+    public void flushSync();
+	
+	/**
 	 * Deletes all stats for a player as stored in the database
 	 * @param player Player to delete stats of
 	 */

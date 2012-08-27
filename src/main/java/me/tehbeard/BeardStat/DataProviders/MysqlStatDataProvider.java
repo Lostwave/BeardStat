@@ -34,20 +34,24 @@ public class MysqlStatDataProvider implements IStatDataProvider {
     private String table;
     private String username;
     private String password;
+    private int port;
 
     //protected static PreparedStatement prepGetPlayerStat;
-    protected static PreparedStatement prepGetAllPlayerStat;
-    protected static PreparedStatement prepSetPlayerStat;
-    protected static PreparedStatement keepAlive;
-    protected static PreparedStatement prepDeletePlayerStat;
-    protected static PreparedStatement prepHasPlayerStat;
-    protected static PreparedStatement prepGetPlayerList;
+    private PreparedStatement prepGetAllPlayerStat;
+    private PreparedStatement prepSetPlayerStat;
+    private PreparedStatement keepAlive;
+    private PreparedStatement prepDeletePlayerStat;
+    private PreparedStatement prepHasPlayerStat;
+    private PreparedStatement prepGetPlayerList;
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
-    public MysqlStatDataProvider(String host,String database,String table,String username,String password) throws SQLException{
+    
+
+    public MysqlStatDataProvider(String host,int port,String database,String table,String username,String password) throws SQLException{
 
         this.host = host;
+        this.port = port;
         this.database = database;
         this.table = table;
         this.username = username;
@@ -75,8 +79,9 @@ public class MysqlStatDataProvider implements IStatDataProvider {
      * @throws SQLException
      */
     private void createConnection() {
-        String conUrl = String.format("jdbc:mysql://%s/%s",
-                host, 
+        String conUrl = String.format("jdbc:mysql://%s:%s/%s",
+                host,
+                port,
                 database);
 
         BeardStat.printCon("Configuring....");
@@ -236,48 +241,59 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     }
 
-    public void flush() {
+    private Runnable flush = new Runnable() {
 
-        new Thread(new Runnable() {
-
-            public void run() {
-                synchronized (writeCache) {
-
-
-                    if(!checkConnection()){
-                        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
-                    }
-                    else{
-                        BeardStat.printDebugCon("Saving to database");
-                        for(Entry<String, HashSet<PlayerStat>> entry : writeCache.entrySet()){
-                            try {
-                                HashSet<PlayerStat> pb = entry.getValue();
-
-                                BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
-                                prepSetPlayerStat.clearBatch();
-                                for(PlayerStat ps : pb){
-
-                                    prepSetPlayerStat.setString(1, entry.getKey());
-
-                                    prepSetPlayerStat.setString(2, ps.getCat());
-                                    prepSetPlayerStat.setString(3, ps.getName());
-                                    prepSetPlayerStat.setInt(4, ps.getValue());
-                                    prepSetPlayerStat.setInt(5, ps.getValue());
-                                    prepSetPlayerStat.addBatch();
-                                }
-                                prepSetPlayerStat.executeBatch();
-
-                            } catch (SQLException e) {
-                                checkConnection();
-                            }
-                        }
-                        BeardStat.printDebugCon("Clearing write cache");
-                        writeCache.clear();
-                    }
+        public void run() {
+            synchronized (writeCache) {
+                try {
+                    keepAlive.execute();
+                } catch (SQLException e1) {
                 }
 
+                if(!checkConnection()){
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
+                }
+                else{
+                    BeardStat.printDebugCon("Saving to database");
+                    for(Entry<String, HashSet<PlayerStat>> entry : writeCache.entrySet()){
+                        try {
+                            HashSet<PlayerStat> pb = entry.getValue();
+
+                            BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
+                            prepSetPlayerStat.clearBatch();
+                            for(PlayerStat ps : pb){
+
+                                prepSetPlayerStat.setString(1, entry.getKey());
+
+                                prepSetPlayerStat.setString(2, ps.getCat());
+                                prepSetPlayerStat.setString(3, ps.getName());
+                                prepSetPlayerStat.setInt(4, ps.getValue());
+                                prepSetPlayerStat.setInt(5, ps.getValue());
+                                prepSetPlayerStat.addBatch();
+                            }
+                            prepSetPlayerStat.executeBatch();
+
+                        } catch (SQLException e) {
+                            checkConnection();
+                        }
+                    }
+                    BeardStat.printDebugCon("Clearing write cache");
+                    writeCache.clear();
+                }
             }
-        }).start();
+
+        }
+    };
+    
+    public void flushSync(){
+        BeardStat.printCon("Flushing in main thread! Game will lag!");
+        flush.run();
+        BeardStat.printCon("Flushed!");
+    }
+    
+    public void flush() {
+
+        new Thread(flush).start();
     }
 
     public void deletePlayerStatBlob(String player) {

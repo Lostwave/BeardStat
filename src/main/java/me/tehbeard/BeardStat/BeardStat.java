@@ -385,6 +385,7 @@ public class BeardStat extends JavaPlugin {
             try {
                 db = new MysqlStatDataProvider(
                         config.getString("host"),
+                        config.getInt("port",3306),
                         config.getString("database"),
                         config.getString("table"),
                         config.getString("username"),

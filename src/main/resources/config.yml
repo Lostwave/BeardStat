@@ -9,6 +9,7 @@ stats:
     password: "changeme"
     database: "stats"
     table: "stats"
+    port: 3306
   blacklist:
     - creative
     - tutorialIsland
