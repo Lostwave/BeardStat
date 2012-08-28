@@ -1,6 +1,7 @@
 package me.tehbeard.BeardStat.commands;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import me.tehbeard.utils.commands.ArgumentPack;
 import me.tehbeard.vocalise.prompts.QuickConfirmationPrompt;
 
@@ -9,7 +10,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.Conversation;
-import org.bukkit.conversations.ConversationFactory;
 
 /**
  * Stat admin
@@ -20,6 +20,10 @@ import org.bukkit.conversations.ConversationFactory;
  */
 public class StatAdmin implements CommandExecutor {
 
+    private final PlayerStatManager manager;
+    
+    
+    
     public boolean onCommand(CommandSender sender, Command cmd, String lbl,
             String[] args) {
         ArgumentPack arguments = new ArgumentPack(new String[] {"a","s"}, new String[0], args);
@@ -36,7 +40,7 @@ public class StatAdmin implements CommandExecutor {
                     @Override
                     public void called(boolean result) {
                         if(result){
-                            BeardStat.self().getStatManager().deletePlayer(name);
+                            manager.deletePlayer(name);
                         }
 
                     }
@@ -51,6 +55,16 @@ public class StatAdmin implements CommandExecutor {
         }
         
         return false;
+    }
+
+
+
+    /**
+     * @param manager
+     */
+    public StatAdmin(PlayerStatManager manager) {
+        super();
+        this.manager = manager;
     }
 
 }

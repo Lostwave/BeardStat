@@ -24,8 +24,15 @@ commands:
     beardstatdebug:
         description: Print debug information
         usage: /<command>
+    statadmin:
+        description: Admin control
+        usage: /<command>    
+        permission: stat.command.admin
         
 permissions:
+  stat.command.admin:
+    description: Access to /statadmin that allows deletion/reset of stats
+    default: op
   stat.*:
     description: Allows use of all stat commands
     default: op
