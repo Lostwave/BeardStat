@@ -163,5 +163,14 @@ public class PlayerStatManager implements CommandExecutor {
         }
         return true;
     }
+    
+    public boolean deletePlayer(String player){
+        if(!backendDatabase.hasStatBlob(player)){
+            return false;
+        }
+        cache.remove(player);
+        backendDatabase.deletePlayerStatBlob(player);
+        return true;
+    }
 
 }

@@ -37,12 +37,6 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
-
-
-
-
-
-
     public SQLiteStatDataProvider(String filename,String table) throws SQLException{
 
         this.filename = filename;
