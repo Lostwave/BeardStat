@@ -13,10 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
-import me.tehbeard.BeardStat.containers.StaticPlayerStat;
-import me.tehbeard.BeardStat.scoreboards.Scoreboard;
-import me.tehbeard.BeardStat.scoreboards.ScoreboardEntry;
-
 
 /**
  * YAML data storage provider for stats
@@ -51,11 +47,9 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
             PlayerStatBlob blob = new PlayerStatBlob(player,"");
             if(pl!=null){
                 for(String key : pl.getKeys(false)){
-                    BeardStat.printDebugCon("loading stat " +key);
-                    BeardStat.printDebugCon("parts " + key.split("\\-")[0] + " : "+
-                            key.split("\\-")[1]);
-                    blob.addStat(new StaticPlayerStat(key.split("\\-")[0]
-                            ,key.split("\\-")[1], pl.getInt(key, 0)));
+                    PlayerStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
+                    ps.setValue(pl.getInt(key, 0));
+                    ps.clearArchive();
                 }
                 return blob;
             }
@@ -95,7 +89,6 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
         try {
             database.save(file);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -122,7 +115,6 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 
 
     public List<String> getStatBlobsHeld() {
-        // TODO Auto-generated method stub
         return new ArrayList<String>(database.getConfigurationSection("stats.players").getKeys(false));
     }
 

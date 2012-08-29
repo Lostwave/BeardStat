@@ -204,8 +204,9 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             pb = new PlayerStatBlob(player,"");
             while(rs.next()){
                 //`category`,`stat`,`value`
-                PlayerStat ps = new StaticPlayerStat(rs.getString(2),rs.getString(3),rs.getInt(4));
-                pb.addStat(ps);
+                PlayerStat ps = pb.getStat(rs.getString(2),rs.getString(3));
+                ps.setValue(rs.getInt(4));
+                ps.archive();
             }
             rs.close();
 
