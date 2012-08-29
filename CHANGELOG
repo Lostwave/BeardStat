@@ -1,6 +1,6 @@
 0.4.8 - Ice Cream release
 =========================
-* Custom stats can now be saved to the datavase
+* Custom stats can now be saved to the database
 * /exit will leave interactive stats mode early
 * stats are now colored better
 * Fixed chat for 1.3
