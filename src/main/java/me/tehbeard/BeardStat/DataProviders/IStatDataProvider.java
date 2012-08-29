@@ -1,6 +1,8 @@
 package me.tehbeard.BeardStat.DataProviders;
 
 
+import java.util.List;
+
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 
@@ -38,5 +40,28 @@ public interface IStatDataProvider {
 	 */
 	public void flush();
 	
-   
+	/**
+     * Forces the DataProvider to flush data to the backend, in the case of a second level cache.
+     * MUST BE IN THIS THREAD.
+     */
+    public void flushSync();
+	
+	/**
+	 * Deletes all stats for a player as stored in the database
+	 * @param player Player to delete stats of
+	 */
+	public void deletePlayerStatBlob(String player);
+	
+	/**
+	 * Has a stat blob for a player
+	 * @param player player name
+	 * @return blob exists
+	 */
+	public boolean hasStatBlob(String player);
+  
+	/**
+	 * List of players held by provider
+	 * @return
+	 */
+	public List<String> getStatBlobsHeld();
 }

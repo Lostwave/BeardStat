@@ -1,6 +1,5 @@
 package me.tehbeard.BeardStat.listeners;
 
-
 public class CraftUtils {
 /*
     //determine if grid houses valid recipe

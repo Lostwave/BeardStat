@@ -1,12 +1,15 @@
+general:
+  debug: false
 stats:
   configversion: ${project.config.version}
   database:
-    type: "file"
+    type: "sqlite"
     host: "localhost"
     username: "Beardstats"
     password: "changeme"
     database: "stats"
     table: "stats"
+    port: 3306
   blacklist:
     - creative
     - tutorialIsland
@@ -21,11 +24,10 @@ stats:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
-  topplayedcount: 30
-general:
-  debug: false
 customstats:
   - "comp.kd = $kills.total - $deaths.total"
+savedcustomstats:
+  - "comp.pk = $kills.player - $deaths.player"
 customformats:
   - "stats.move:%1$s metres" 
   

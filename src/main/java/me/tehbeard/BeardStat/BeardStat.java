@@ -11,6 +11,8 @@ import me.tehbeard.BeardStat.Metrics.Plotter;
 import me.tehbeard.BeardStat.DataProviders.FlatFileStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import me.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
+import me.tehbeard.BeardStat.DataProviders.SQLiteStatDataProvider;
+import me.tehbeard.BeardStat.DataProviders.TransferDataProvider;
 
 import me.tehbeard.BeardStat.commands.*;
 import me.tehbeard.BeardStat.commands.formatters.FormatFactory;
@@ -21,6 +23,7 @@ import me.tehbeard.BeardStat.listeners.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -37,16 +40,19 @@ public class BeardStat extends JavaPlugin {
 
 
 
-    public static  BeardStat self(){
-        return self;
-    }
+    
     private static BeardStat self;
     private int runner;
     private PlayerStatManager playerStatManager;
     private static final String PERM_PREFIX = "stat";
 
-    //public static boolean isVersionUpdated = false;
-
+    /**
+     * Return the instance of this plugin
+     * @return
+     */
+    public static  BeardStat self(){
+        return self;
+    }
     /**
      * Returns the stat manager for use by other plugins
      * @return
@@ -57,17 +63,32 @@ public class BeardStat extends JavaPlugin {
 
 
 
+    /**
+     * Check for permission
+     * @param player player to check
+     * @param node permission node to check
+     * @return
+     */
     public static boolean hasPermission(Permissible player,String node){
 
         return player.hasPermission(PERM_PREFIX + "." + node);
 
 
     }
+    
+    /**
+     * Print to console
+     * @param line
+     */
     public static void printCon(String line){
         self.getLogger().info(line);
         //System.out.println("[BeardStat] " + line);
     }
 
+    /**
+     * Print to console if debug mode is active
+     * @param line
+     */
     public static void printDebugCon(String line){
 
         if(self != null && self.getConfig().getBoolean("general.debug", false)){
@@ -85,6 +106,7 @@ public class BeardStat extends JavaPlugin {
         if(playerStatManager != null){
             printCon("Flushing cache to database");
             playerStatManager.saveCache();
+            playerStatManager.flush();
             printCon("Cache flushed to database");
         }
         self = null;
@@ -110,7 +132,8 @@ public class BeardStat extends JavaPlugin {
             getPluginLoader().disablePlugin(this);
             return;
         }
-        IStatDataProvider db =null;
+        IStatDataProvider db =getProvider(getConfig().getConfigurationSection("stats.database"));
+        /*
         if(getConfig().getString("stats.database.type").equalsIgnoreCase("mysql")){
             try {
                 db = new MysqlStatDataProvider(
@@ -124,9 +147,18 @@ public class BeardStat extends JavaPlugin {
                 db = null;
             }
         }
+        if(getConfig().getString("stats.database.type").equalsIgnoreCase("sqlite")){
+            try {
+                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString(), "stats");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                db =null;
+            }
+            
+        }
         if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
             db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
-        }
+        }*/
 
 
         if(db==null){
@@ -176,7 +208,8 @@ public class BeardStat extends JavaPlugin {
         getCommand("played").setExecutor(new playedCommand(playerStatManager));
         getCommand("statpage").setExecutor(new StatPageCommand(this));
         getCommand("laston").setExecutor(new LastOnCommand(playerStatManager));
-
+        getCommand("beardstatdebug").setExecutor(playerStatManager);
+        getCommand("statadmin").setExecutor(new StatAdmin(playerStatManager));
         
         //Incase of /reload, set all logged in player names.
         for(Player player: getServer().getOnlinePlayers()){
@@ -284,7 +317,13 @@ public class BeardStat extends JavaPlugin {
     public static void sendNoPermissionError(CommandSender sender, String message){
         sender.sendMessage(ChatColor.RED + message);
     }
+    
+    
 
+    /**
+     * Show nicer error messages for mysql errors
+     * @param e
+     */
     public static void mysqlError(SQLException e){
         self.getLogger().severe("=========================================");
         self.getLogger().severe("              DATABASE ERROR             ");
@@ -321,6 +360,15 @@ public class BeardStat extends JavaPlugin {
 
 
         }
+        
+        for(String cstat : getConfig().getStringList("savedcustomstats")){
+
+            String[] i = cstat.split("\\=");
+            PlayerStatBlob.addDynamicSavedStat(i[0].trim(), i[1].trim());
+
+
+        }
+        
 
     }
     
@@ -330,6 +378,45 @@ public class BeardStat extends JavaPlugin {
             String formating = format.replace(stat + ":","");
             FormatFactory.addStringFormat(stat.split("\\.")[0], stat.split("\\.")[1], formating);
         }
+    }
+    
+    private IStatDataProvider getProvider(ConfigurationSection config){
+        IStatDataProvider db = null;
+        if(config.getString("type").equalsIgnoreCase("mysql")){
+            try {
+                db = new MysqlStatDataProvider(
+                        config.getString("host"),
+                        config.getInt("port",3306),
+                        config.getString("database"),
+                        config.getString("table"),
+                        config.getString("username"),
+                        config.getString("password")
+                        );
+            } catch (SQLException e) {
+                db = null;
+            }
+        }
+        if(config.getString("type").equalsIgnoreCase("sqlite")){
+            try {
+                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString(), "stats");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                db =null;
+            }
+            
+        }
+        if(config.getString("type").equalsIgnoreCase("file")){
+            db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));   
+        }
+        //TRANSFER TYPE
+        
+        if(config.getString("type").equalsIgnoreCase("transfer")){
+            IStatDataProvider _old = getProvider(getConfig().getConfigurationSection("stats.transfer.old"));
+            IStatDataProvider _new = getProvider(getConfig().getConfigurationSection("stats.transfer.new"));
+            new TransferDataProvider(_old, _new);
+            db = _new;
+        }
+        return db;
     }
 }
 

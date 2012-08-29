@@ -46,6 +46,8 @@ public interface PlayerStat{
 	public void clearArchive();
 
 	public boolean isArchive();
+	
+	public void archive();
 
 	public PlayerStatBlob getOwner();
 

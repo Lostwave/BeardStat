@@ -1,6 +1,6 @@
 name: BeardStat
 main: me.tehbeard.BeardStat.BeardStat
-version: ${project.plugin.version}
+version: ${project.plugin.version}-${describe}
 authors: [Tehbeard]
 commands:
     stats:
@@ -21,9 +21,18 @@ commands:
         description: View last time a player was on
         usage: /laston [player]
         aliases: [blaston]
-
+    beardstatdebug:
+        description: Print debug information
+        usage: /<command>
+    statadmin:
+        description: Admin control
+        usage: /<command>    
+        permission: stat.command.admin
         
 permissions:
+  stat.command.admin:
+    description: Access to /statadmin that allows deletion/reset of stats
+    default: op
   stat.*:
     description: Allows use of all stat commands
     default: op

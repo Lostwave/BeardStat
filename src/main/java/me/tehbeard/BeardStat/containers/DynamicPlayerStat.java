@@ -3,7 +3,9 @@ package me.tehbeard.BeardStat.containers;
 import me.tehbeard.utils.expressions.InFixExpression;
 
 /**
- * Dynamic player stats generated from composites of other player stats
+ * Dynamic player stats generated from composites of other player stats.
+ * A Dynamic player stat is never stored in the database, 
+ * it is computed at runtime using an expression bound to that stat.
  * @author James
  *
  */
@@ -15,10 +17,19 @@ public class DynamicPlayerStat implements PlayerStat {
     private PlayerStatBlob owner;
     private InFixExpression expression;
     
+    private boolean archive = false;
+    
     public DynamicPlayerStat(String cat,String stat,String expr){
+        this(cat,stat,expr,false);
+        
+
+    }
+    
+    public DynamicPlayerStat(String cat,String stat,String expr,boolean archive){
         this.cat = cat;
         this.stat = stat;
         this.expression = new InFixExpression(expr);
+        this.archive = archive;
         
 
     }
@@ -27,7 +38,7 @@ public class DynamicPlayerStat implements PlayerStat {
 
    
     public static void main(String[] a){
-        PlayerStatBlob blob  = new PlayerStatBlob("bob", 1);
+        PlayerStatBlob blob  = new PlayerStatBlob("bob", "PLY_0123456789ABCDEF");
 
         PlayerStat s = new DynamicPlayerStat("$kills.total - $deaths.total", "comp", "kd");
         PlayerStat k = new StaticPlayerStat("kills","total", 50);
@@ -55,7 +66,6 @@ public class DynamicPlayerStat implements PlayerStat {
 
 
     public String getName() {
-        // TODO Auto-generated method stub
         return stat;
     }
 
@@ -80,7 +90,7 @@ public class DynamicPlayerStat implements PlayerStat {
 
 
     public boolean isArchive() {
-        return false;
+        return archive;
     }
 
 
@@ -93,5 +103,8 @@ public class DynamicPlayerStat implements PlayerStat {
 
     public void setOwner(PlayerStatBlob playerStatBlob) {
         owner = playerStatBlob;
+    }
+
+    public void archive() {
     }
 }

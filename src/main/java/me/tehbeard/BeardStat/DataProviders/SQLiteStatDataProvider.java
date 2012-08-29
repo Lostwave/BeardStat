@@ -9,11 +9,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 
-import java.util.Properties;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
@@ -25,39 +20,29 @@ import me.tehbeard.BeardStat.containers.StaticPlayerStat;
  * @author James
  *
  */
-public class MysqlStatDataProvider implements IStatDataProvider {
+public class SQLiteStatDataProvider implements IStatDataProvider {
 
     protected Connection conn;
 
-    private String host;
-    private String database;
+    private String filename;
     private String table;
-    private String username;
-    private String password;
-    private int port;
 
     //protected static PreparedStatement prepGetPlayerStat;
-    private PreparedStatement prepGetAllPlayerStat;
-    private PreparedStatement prepSetPlayerStat;
-    private PreparedStatement keepAlive;
-    private PreparedStatement prepDeletePlayerStat;
-    private PreparedStatement prepHasPlayerStat;
-    private PreparedStatement prepGetPlayerList;
+    protected static PreparedStatement prepGetAllPlayerStat;
+    protected static PreparedStatement prepSetPlayerStat;
+    protected static PreparedStatement keepAlive;
+    protected static PreparedStatement prepDeletePlayerStat;
+    protected static PreparedStatement prepHasPlayerStat;
+    protected static PreparedStatement prepGetPlayerList;
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
-    
+    public SQLiteStatDataProvider(String filename,String table) throws SQLException{
 
-    public MysqlStatDataProvider(String host,int port,String database,String table,String username,String password) throws SQLException{
-
-        this.host = host;
-        this.port = port;
-        this.database = database;
+        this.filename = filename;
         this.table = table;
-        this.username = username;
-        this.password = password;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.sqlite.JDBC");
 
             createConnection();
 
@@ -67,7 +52,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                 throw new SQLException("Failed to start");
             }
         } catch (ClassNotFoundException e) {
-            BeardStat.printCon("MySQL Library not found!");
+            BeardStat.printCon("SQLite Library not found!");
         }
 
 
@@ -79,21 +64,12 @@ public class MysqlStatDataProvider implements IStatDataProvider {
      * @throws SQLException
      */
     private void createConnection() {
-        String conUrl = String.format("jdbc:mysql://%s:%s/%s",
-                host,
-                port,
-                database);
-
-        BeardStat.printCon("Configuring....");
-        Properties conStr = new Properties();
-        conStr.put("user",username);
-        conStr.put("password",password);
-        conStr.put("autoReconnect", "true");
+        String conUrl = String.format("jdbc:sqlite:%s",filename);
 
         BeardStat.printCon("Connecting....");
 
         try {
-            conn = DriverManager.getConnection(conUrl,conStr);
+            conn = DriverManager.getConnection(conUrl);
             //conn.setAutoCommit(false);
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
@@ -102,33 +78,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     }
 
-    /**
-     * 
-     * @return
-     */
-    private synchronized boolean checkConnection(){
-        BeardStat.printDebugCon("Checking connection");
-        try {
-            if(conn == null || !conn.isValid(0)){
-                BeardStat.printDebugCon("Something is derp, rebooting connection.");
-                createConnection();
-                if(conn!=null){
-                    BeardStat.printDebugCon("Rebuilding statements");
-                    prepareStatements();
-                }
-                else
-                {
-                    BeardStat.printDebugCon("Reboot failed!");
-                }
 
-            }
-        } catch (SQLException e) {
-            conn = null;
-            return false;
-        }
-        BeardStat.printDebugCon("Checking is " + conn != null ? "up" : "down");
-        return conn != null;
-    }
 
     protected void checkAndMakeTable(){
         BeardStat.printCon("Checking for table");
@@ -143,7 +93,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                         " `stat` varchar(32) NOT NULL DEFAULT '-',"+
                         " `value` int(11) NOT NULL DEFAULT '0',"+
                         " PRIMARY KEY (`player`,`category`,`stat`)"+
-                        ") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+                        ");");
 
                 ps.executeUpdate();
                 ps.close();
@@ -167,17 +117,18 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM " + table + " WHERE player=?");
             BeardStat.printDebugCon("Player stat statement created");
 
-            prepSetPlayerStat = conn.prepareStatement("INSERT INTO `" + table + "`" +
+            prepSetPlayerStat = conn.prepareStatement("INSERT OR REPLACE INTO `" + table + "`" +
                     "(`player`,`category`,`stat`,`value`) " +
-                    "values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
+                    "values (?,?,?,?); ");
 
             prepDeletePlayerStat = conn.prepareStatement("DELETE FROM `" + table + "` WHERE player=?");
-            
+
             prepHasPlayerStat = conn.prepareStatement("SELECT COUNT(*) from `" + table + "` WHERE player=?");
-            
+
             prepGetPlayerList = conn.prepareStatement("SELECT DISTINCT(player) from `" + table + "`");
+
             BeardStat.printDebugCon("Set player stat statement created");
-            BeardStat.printCon("Initaised MySQL Data Provider.");
+            BeardStat.printCon("Initaised SQLite Data Provider.");
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
         }
@@ -191,10 +142,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
         try {
-            if(!checkConnection()){
-                BeardStat.printCon("ERROR");
-                return null;
-            }
+
             long t1 = (new Date()).getTime();
             PlayerStatBlob pb = null;
 
@@ -246,55 +194,55 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
         public void run() {
             synchronized (writeCache) {
+
+
+
+                long t = System.currentTimeMillis();
+                BeardStat.printDebugCon("Saving to database");
                 try {
-                    keepAlive.execute();
-                } catch (SQLException e1) {
-                }
-
-                if(!checkConnection()){
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
-                }
-                else{
-                    BeardStat.printDebugCon("Saving to database");
+                    prepSetPlayerStat.clearBatch();
                     for(Entry<String, HashSet<PlayerStat>> entry : writeCache.entrySet()){
-                        try {
-                            HashSet<PlayerStat> pb = entry.getValue();
 
-                            BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
-                            prepSetPlayerStat.clearBatch();
-                            for(PlayerStat ps : pb){
+                        HashSet<PlayerStat> pb = entry.getValue();
 
-                                prepSetPlayerStat.setString(1, entry.getKey());
+                        BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
+                        
+                        for(PlayerStat ps : pb){
 
-                                prepSetPlayerStat.setString(2, ps.getCat());
-                                prepSetPlayerStat.setString(3, ps.getName());
-                                prepSetPlayerStat.setInt(4, ps.getValue());
-                                prepSetPlayerStat.setInt(5, ps.getValue());
-                                prepSetPlayerStat.addBatch();
-                            }
-                            prepSetPlayerStat.executeBatch();
+                            prepSetPlayerStat.setString(1, entry.getKey());
 
-                        } catch (SQLException e) {
-                            checkConnection();
+                            prepSetPlayerStat.setString(2, ps.getCat());
+                            prepSetPlayerStat.setString(3, ps.getName());
+                            prepSetPlayerStat.setInt(4, ps.getValue());
+
+
+                            prepSetPlayerStat.addBatch();
                         }
+                        
+
+
+
                     }
-                    BeardStat.printDebugCon("Clearing write cache");
-                    writeCache.clear();
+                    prepSetPlayerStat.executeBatch();
+                } catch (SQLException e) {
                 }
+                BeardStat.printDebugCon("Clearing write cache");
+                BeardStat.printDebugCon("Time taken to write: " +((System.currentTimeMillis() - t)/1000L));
+                writeCache.clear();
             }
 
         }
     };
-    
+
+    public void flush() {
+
+        new Thread(flush).start();
+    }
+
     public void flushSync(){
         BeardStat.printCon("Flushing in main thread! Game will lag!");
         flush.run();
         BeardStat.printCon("Flushed!");
-    }
-    
-    public void flush() {
-
-        new Thread(flush).start();
     }
 
     public void deletePlayerStatBlob(String player) {
@@ -303,7 +251,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             prepDeletePlayerStat.setString(1,player);
             prepDeletePlayerStat.execute();
         } catch (SQLException e) {
-            checkConnection();
+            BeardStat.mysqlError(e);
         }
     }
 
@@ -317,9 +265,9 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                 rs.close();
                 return b;
             }
-            
+
         } catch (SQLException e) {
-            checkConnection();
+            BeardStat.mysqlError(e);
         }
         return false;
     }
@@ -333,9 +281,9 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                 list.add(rs.getString(1));
             }
             rs.close();
-            
+
         } catch (SQLException e) {
-            checkConnection();
+            BeardStat.mysqlError(e);
         }
         return list;
     }

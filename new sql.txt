@@ -1,0 +1,55 @@
+NEW SQL FOR UUID-STATBLOBS
+==========================
+
+Formats
+=======
+Each blob is identified by a 36 byte UUID, this UUID is a 32 byte Java generated UUID, 
+prefixed with 3 byte type id and _
+
+The following type codes are reserved for use by BeardStat in the roles defined to them. It is required that plugins that extend BeardStat follow these guidelines when using stat blobs of these types.
+
+name   - type name - UUID prefix
+Player - PLAYER    - PLY_
+Group  - GROUP     - GRP_
+Plugin - PLUGIN    - PLG_
+World  - WORLD     - WRD_
+Global - GLOBAL    - GBL_
+
+Player :: The same stats as used in 0.4.8, Any statistics that relate specifically to a player (games won, x's killed)
+
+Group :: Stats related to a group (territory owned, wars waged)
+
+Plugin :: Plugin related stats (warzones played, total kills in an area, IC's created)
+
+World :: Stats about a world (creepers alive, enderbro's slayed)
+
+Global :: Server specfic stats (players online etc)
+
+
+
+SQL
+===
+
+blob ID exists.
+---------------
+  SELECT count(*) FROM stats_blobs WHERE blob_id=%1;
+
+Get blob ID.
+------------
+  SELECT blob_id FROM stats_blobs WHERE blob_name=%1 AND blob_type=%2;
+
+get list of blobs of specific type.
+-----------------------------------
+  SELECT blob_id,blob_name FROM stats_blobs  WHERE blob_type=%1
+
+get stats for a blob.
+---------------------
+  SELECT category,stat,value FROM stats_stats WHERE blob_id=%1;
+
+create statblob
+---------------
+  INSERT INTO stat_blobs VALUES (%1, %2,%3);
+  
+set stat for a blob.
+--------------------
+  INSERT INTO stats_stats (`blob_id`,`category`,`stat`,`value`) VALUES (%1,%2,%3,%4) ON DUPLICATE KEY UPDATE `value`=%4;

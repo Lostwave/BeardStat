@@ -1,13 +1,13 @@
 package me.tehbeard.BeardStat.containers;
 
-import java.util.Collection;
-import java.util.Collections;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.utils.expressions.VariableProvider;
 
 /**
@@ -18,41 +18,54 @@ import me.tehbeard.utils.expressions.VariableProvider;
 public class PlayerStatBlob implements VariableProvider{
 
     private static Map<String,String> dynamics = new HashMap<String, String>();
-    
+
+    private static Map<String,String> dynamicsSaved = new HashMap<String, String>();
+
     public static void addDynamicStat(String stat,String expr){
         dynamics.put(stat,expr);
     }
-    
+
+    public static void addDynamicSavedStat(String stat,String expr){
+        dynamicsSaved.put(stat,expr);
+    }
+
     private void addDynamics(){
         for(Entry<String, String> entry  : dynamics.entrySet()){
-            
-            System.out.println("Making " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
+
+            BeardStat.printDebugCon("Making temporary stat: " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
             addStat(new DynamicPlayerStat(entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue()));
         }
+
+        //dynamics that will be saved to database
+        for(Entry<String, String> entry  : dynamicsSaved.entrySet()){
+
+            BeardStat.printDebugCon("Making custom stat: " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
+            addStat(new DynamicPlayerStat(entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue(),true));
+        }
     }
-    
-    private Set<PlayerStat> stats;
+
+    private HashSet<PlayerStat> stats;
     private String name;
 
     public String getName() {
         return name;
     }
 
-    public int getPlayerID() {
+    public String getPlayerID() {
         return playerID;
     }
-    private int playerID;
+    private String playerID;
 
     /**
      * 
      * @param name Players name
      * @param ID playerID in database
      */
-    public PlayerStatBlob(String name,int ID){
+    public PlayerStatBlob(String name,String ID){
         this.name = name;
         playerID=ID;
         stats = new HashSet<PlayerStat>();
-        
+
         addDynamics();
     }
 
@@ -86,7 +99,7 @@ public class PlayerStatBlob implements VariableProvider{
      * @return
      */
     public Set<PlayerStat> getStats(){
-        return stats;
+        return  new HashSet<PlayerStat>(stats);
     }
 
     public boolean hasStat(String cat,String stat){

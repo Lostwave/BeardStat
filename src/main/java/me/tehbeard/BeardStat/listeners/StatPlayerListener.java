@@ -8,6 +8,7 @@ import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -60,30 +61,30 @@ public class StatPlayerListener implements Listener {
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
-    public void onPlayerChat(PlayerChatEvent event){
+    public void onPlayerChat(AsyncPlayerChatEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chatletters").incrementStat(event.getMessage().length());
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","chat").incrementStat(1);
+            final String player = event.getPlayer().getName();
+            final int len = event.getMessage().length();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(BeardStat.self(), new Runnable(){
+
+                public void run() {
+                    playerStatManager.getPlayerBlob(player).getStat("stats","chatletters").incrementStat(len);
+                    playerStatManager.getPlayerBlob(player).getStat("stats","chat").incrementStat(1);
+                    
+                }});
+            
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerDropItem(PlayerDropItemEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            String item = event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","");
-            /**
-             * if MetaDataable, make the item string correct
-             */
-            if(MetaDataCapture.hasMetaData(event.getItemDrop().getItemStack().getType())){
-                item = 
-                        event.getItemDrop().getItemStack().getType().toString().toLowerCase().replace("_","") + 
-                        "_" + event.getItemDrop().getItemStack().getDurability();
-
-            }
-
-            playerStatManager.getPlayerBlob(
-
-                    event.getPlayer().getName()).getStat("itemdrop",item).incrementStat(event.getItemDrop().getItemStack().getAmount()
-                            );
+            
+            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                    "itemdrop", 
+                    event.getItemDrop().getItemStack().getType(), 
+                    event.getItemDrop().getItemStack().getDurability(), 
+                    event.getItemDrop().getItemStack().getAmount());
+            
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
@@ -131,18 +132,12 @@ public class StatPlayerListener implements Listener {
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
-            String item = event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") ;
-            /**
-             * if MetaDataable, make the item string correct
-             */
-            if(MetaDataCapture.hasMetaData(event.getItem().getItemStack().getType())){
-                item = 
-                        event.getItem().getItemStack().getType().toString().toLowerCase().replace("_","") + 
-                        "_" + event.getItem().getItemStack().getDurability();
+            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                    "itempickup", 
+                    event.getItem().getItemStack().getType(), 
+                    event.getItem().getItemStack().getDurability(), 
+                    event.getItem().getItemStack().getAmount());
 
-            }
-
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("itempickup",item).incrementStat(event.getItem().getItemStack().getAmount());
 
         }
     }
@@ -200,13 +195,13 @@ public class StatPlayerListener implements Listener {
                 /**
                  * if MetaDataable, make the item string correct
                  */
-                if(MetaDataCapture.hasMetaData(event.getPlayer().getItemInHand().getType())){
-                    psb.getStat("dye",  
-                            event.getPlayer().getItemInHand().getType().toString().toLowerCase().replace("_","") + 
-                            "_" + event.getPlayer().getItemInHand().getDurability()).incrementStat(1);
-
-                }
-
+                
+                MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                        "dye", 
+                        event.getPlayer().getItemInHand().getType(), 
+                        event.getPlayer().getItemInHand().getDurability(), 
+                        1);
+                
             }
         }
     }
@@ -305,8 +300,8 @@ public class StatPlayerListener implements Listener {
 
     private void calc_timeonline(String player){
 
-        long seconds = (System.currentTimeMillis() - BeardStat.self().getStatManager().getLoginTime(player))/1000L;
-        playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(Integer.parseInt(""+seconds));
+        int seconds = BeardStat.self().getStatManager().getSessionTime(player);
+        playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(seconds);
 
         BeardStat.self().getStatManager().wipeLoginTime(player);		
 
