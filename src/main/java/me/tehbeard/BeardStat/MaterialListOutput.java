@@ -1,5 +1,7 @@
 package me.tehbeard.BeardStat;
 
+import me.tehbeard.BeardStat.listeners.MetaDataCapture;
+
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -53,6 +55,11 @@ public class MaterialListOutput {
 			System.out.println(m.toString().replace("_", "").toLowerCase());
 		}
 
+		
+		System.out.println();
+        System.out.println("Dumping meta data");
+        System.out.println("===");
+		MetaDataCapture.dumpData();
 
 	}
 }
