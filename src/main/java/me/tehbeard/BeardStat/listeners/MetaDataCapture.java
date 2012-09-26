@@ -88,15 +88,11 @@ public class MetaDataCapture {
         }
         
     }
-    /*public static boolean hasMetaData(Material mat){
-        for(Material i : mats){
-            if(i == mat){
-                return true;
-            }
-        }
-        return false;
+    public static boolean hasMetaData(Material mat){
+        return mats.containsKey(mat);
+        
 
-    }*/
+    }
     
 
 }
