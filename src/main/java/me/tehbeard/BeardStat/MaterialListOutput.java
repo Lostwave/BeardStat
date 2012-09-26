@@ -10,56 +10,59 @@ import org.bukkit.potion.PotionType;
 
 public class MaterialListOutput {
 
-	public static void main(String[] args){
+    public static void main(String[] args){
 
-		System.out.println("Dumping block data");
-		System.out.println("===");
-		for(Material m : Material.values()){
-			if(m.isBlock()){
-				System.out.println(m.toString().replace("_", "").toLowerCase());
-			}
-		}
-		System.out.println();
-		System.out.println("Dumping item data");
-		System.out.println("===");
-		for(Material m : Material.values()){
-			if(!m.isBlock())
-			System.out.println(m.toString().replace("_", "").toLowerCase());
-		}
-
-		System.out.println();
-		System.out.println("Dumping entity data");
-		System.out.println("===");
-		for(EntityType m : EntityType.values()){
-			System.out.println(m.toString().replace("_", "").toLowerCase());
-		}
-		
-		System.out.println();
-		System.out.println("Dumping potion data");
-		System.out.println("===");
-		for(PotionType m : PotionType.values()){
-			System.out.println("splash" + m.toString().replace("_", "").toLowerCase());
-		}
-		
-		System.out.println();
-		System.out.println("Dumping damage cause data");
-		System.out.println("===");
-		for(DamageCause m : DamageCause.values()){
-			System.out.println(m.toString().replace("_", "").toLowerCase());
-		}
-		
-		System.out.println();
-		System.out.println("Dumping regen data");
-		System.out.println("===");
-		for(RegainReason m : RegainReason.values()){
-			System.out.println(m.toString().replace("_", "").toLowerCase());
-		}
-
-		
-		System.out.println();
-        System.out.println("Dumping meta data");
+        System.out.println("<html><head><title>BeardStat Type list</title></head><body>");
+        System.out.println("<h1>Block Types</h1>");
+        System.out.println("<hr><ul>");
+        for(Material m : Material.values()){
+            if(m.isBlock()){
+                System.out.println("<li>" + m.toString().replace("_", "").toLowerCase() + "</li>");
+            }
+        }
+        System.out.println("</ul>");
+        System.out.println("<h1>Dumping item data</h1>");
         System.out.println("===");
-		MetaDataCapture.dumpData();
+        for(Material m : Material.values()){
+            if(!m.isBlock())
+                System.out.println("<li>" + m.toString().replace("_", "").toLowerCase() + "</li>");
+        }
 
-	}
+        System.out.println("</ul>");
+        System.out.println("<h1>Dumping entity data</h1>");
+        System.out.println("<hr><ul>");
+        for(EntityType m : EntityType.values()){
+            System.out.println("<li>" + m.toString().replace("_", "").toLowerCase() + "</li>");
+        }
+
+        System.out.println("</ul>");
+        System.out.println("<h1>Dumping potion data</h1>");
+        System.out.println("<hr><ul>");
+        for(PotionType m : PotionType.values()){
+            System.out.println("<li>" + "splash" + m.toString().replace("_", "").toLowerCase() + "</li>");
+        }
+
+        System.out.println("</ul>");
+        System.out.println("<h1>Dumping damage cause data</h1>");
+        System.out.println("<hr><ul>");
+        for(DamageCause m : DamageCause.values()){
+            System.out.println("<li>" + m.toString().replace("_", "").toLowerCase() + "</li>");
+        }
+
+        System.out.println("</ul>");
+        System.out.println("<h1>Dumping regen data</h1>");
+        System.out.println("<hr><ul>");
+        for(RegainReason m : RegainReason.values()){
+            System.out.println("<li>" + m.toString().replace("_", "").toLowerCase() + "</li>");
+        }
+
+
+        System.out.println("</ul>");
+        System.out.println("Dumping meta data");
+        System.out.println("<hr><ul>");
+        MetaDataCapture.dumpData();
+
+        System.out.println("</ul>");
+        System.out.println("</body></html>");
+    }
 }

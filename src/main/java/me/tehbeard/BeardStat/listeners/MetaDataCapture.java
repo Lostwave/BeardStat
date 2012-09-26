@@ -82,7 +82,7 @@ public class MetaDataCapture {
                 String s = m.toString().toLowerCase().replace("_","") + "_" + (i & k);
                 if(!lines.contains(s)){
                 lines.add(s);
-                System.out.println(s);
+                System.out.println("<ul>" + s + "</ul>");
                 }
             }
         }
