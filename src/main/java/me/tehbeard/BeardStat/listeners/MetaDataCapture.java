@@ -62,6 +62,7 @@ public class MetaDataCapture {
 
     public static void saveMetaDataStat(PlayerStatBlob blob,String category,Material material,int dataValue,int value){
         String matName = material.toString().toLowerCase().replace("_","");
+        blob.getStat(category, matName).incrementStat(value);
         if(mats.containsKey(material)){
             String tag = "_" + (dataValue & mats.get(material));
             blob.getStat(category, matName + tag).incrementStat(value);
