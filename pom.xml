@@ -21,7 +21,7 @@
     </repository>
     <repository>
       <id>escapecraft-repo</id>
-      <url>http://dev.escapecraft.com/maven</url>
+      <url>http://dev.escapecraft.com/maven/</url>
     </repository>
 
   </repositories>
