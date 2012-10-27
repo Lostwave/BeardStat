@@ -132,35 +132,9 @@ public class BeardStat extends JavaPlugin {
             getPluginLoader().disablePlugin(this);
             return;
         }
+        
         IStatDataProvider db =getProvider(getConfig().getConfigurationSection("stats.database"));
-        /*
-        if(getConfig().getString("stats.database.type").equalsIgnoreCase("mysql")){
-            try {
-                db = new MysqlStatDataProvider(
-                        getConfig().getString("stats.database.host"),
-                        getConfig().getString("stats.database.database"),
-                        getConfig().getString("stats.database.table"),
-                        getConfig().getString("stats.database.username"),
-                        getConfig().getString("stats.database.password")
-                        );
-            } catch (SQLException e) {
-                db = null;
-            }
-        }
-        if(getConfig().getString("stats.database.type").equalsIgnoreCase("sqlite")){
-            try {
-                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString(), "stats");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                db =null;
-            }
-            
-        }
-        if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
-            db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
-        }*/
-
-
+        
         if(db==null){
             printCon(" Error loading database, disabling plugin");
             getPluginLoader().disablePlugin(this);
