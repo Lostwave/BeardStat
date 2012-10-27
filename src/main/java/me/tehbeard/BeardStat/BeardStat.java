@@ -151,6 +151,8 @@ public class BeardStat extends JavaPlugin {
         loadCompositeStats();
         loadFormats();
 
+        loadIdTracks();
+        
         printCon("Registering events and collectors");
 
 
@@ -324,6 +326,15 @@ public class BeardStat extends JavaPlugin {
 
     }
 
+    
+    private void loadIdTracks(){
+        List<String> l = getConfig().getStringList("trackids");
+        for(String ll : l){
+            int typeid = Integer.parseInt(ll.split(":")[0]);
+            int mask = Integer.parseInt(ll.split(":")[1]);
+            MetaDataCapture.addData(typeid, mask);
+        }
+    }
 
     private void loadCompositeStats(){
 

@@ -58,6 +58,13 @@ public class MetaDataCapture {
         //EYPGT
         mats.put(Material.SANDSTONE       ,0x3);
     }
+    
+    public static void addData(int typeid, int mask){
+        Material m = Material.getMaterial(typeid);
+        if(m!=null){
+            mats.put(m, mask);
+        }
+    }
 
 
     public static void saveMetaDataStat(PlayerStatBlob blob,String category,Material material,int dataValue,int value){

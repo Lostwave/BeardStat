@@ -30,4 +30,3 @@ savedcustomstats:
   - "comp.pk = $kills.player - $deaths.player"
 customformats:
   - "stats.move:%1$s metres" 
-  
