@@ -46,7 +46,7 @@ public class StatEntityListener implements Listener{
 
         if(event.isCancelled()==false && !worlds.contains(event.getEntity().getWorld().getName())){
 
-            processEntityDamage(event, DAMAGELBLS);
+            processEntityDamage(event, DAMAGELBLS,false);
 
         }
     }
@@ -61,7 +61,7 @@ public class StatEntityListener implements Listener{
 
         EntityDamageEvent lastCause = event.getEntity().getLastDamageCause();
         if(lastCause != null){
-            processEntityDamage(lastCause, KDLBLS);
+            processEntityDamage(lastCause, KDLBLS,true);
         }
 
     }
@@ -71,14 +71,13 @@ public class StatEntityListener implements Listener{
      * @param event
      * @param category
      */
-    private void processEntityDamage(EntityDamageEvent event,String[] category){
+    private void processEntityDamage(EntityDamageEvent event,String[] category,boolean forceOne){
         //Initialise base stats
         Entity attacked = event.getEntity();
         DamageCause cause = event.getCause();
-        int amount = event.getDamage();
+        int amount = forceOne ? 1 : event.getDamage();
         Entity attacker = null;
         Projectile projectile = null;
-
         //grab the attacker if one exists.
         if(event instanceof EntityDamageByEntityEvent){
             attacker = ((EntityDamageByEntityEvent) event).getDamager();
