@@ -40,7 +40,7 @@ public class StatCraftListener implements Listener {
                 final ItemStack is = event.getRecipe().getResult();
                 final int preAmount = getItemCount(inv,is);
 
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new Runnable(){
+                Bukkit.getScheduler().runTaskAsynchronously(BeardStat.self(), new Runnable(){
 
                     public void run() {
                         int made = getItemCount(inv,is) - preAmount;
