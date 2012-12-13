@@ -62,7 +62,7 @@ public class MetaDataCapture {
         //EYPGT
         mats.put(Material.SANDSTONE       ,0x3);
     }
-    
+
     public static void addData(int typeid, int mask){
         Material m = Material.getMaterial(typeid);
         if(m!=null){
@@ -80,27 +80,25 @@ public class MetaDataCapture {
         }
         if(material.isRecord()){
             blob.getStat(category, "records").incrementStat(value);
-            
+
         }
     }
-    
-    public static void saveMetaDataEntityStat(PlayerStatBlob blob,String category,Entity entity,int dataValue,int value){
+
+    public static void saveMetaDataEntityStat(PlayerStatBlob blob,String category,Entity entity,int value){
         String entityName = entity.getType().toString().toLowerCase().replace("_","");
         blob.getStat(category, entityName).incrementStat(value);
-        
+
         if(entity instanceof Skeleton){
-            if(((Skeleton)entity).getSkeletonType() == SkeletonType.WITHER){
-                blob.getStat(category, "wither_skeleton").incrementStat(value);
-            }
+            blob.getStat(category, ((Skeleton)entity).getSkeletonType().toString().toLowerCase() + "_" + entityName).incrementStat(value);
         }
-        
+
         if(entity instanceof Zombie){
             if(((Zombie)entity).isVillager()){
                 blob.getStat(category, "villager_zombie").incrementStat(value);
             }
         }
     }
-    
+
 
 
     public static void dumpData(){
@@ -111,18 +109,18 @@ public class MetaDataCapture {
             for(int i = 0;i<16;i++){
                 String s = m.toString().toLowerCase().replace("_","") + "_" + (i & k);
                 if(!lines.contains(s)){
-                lines.add(s);
-                System.out.println("<ul>" + s + "</ul>");
+                    lines.add(s);
+                    System.out.println("<ul>" + s + "</ul>");
                 }
             }
         }
-        
+
     }
     public static boolean hasMetaData(Material mat){
         return mats.containsKey(mat);
-        
+
 
     }
-    
+
 
 }

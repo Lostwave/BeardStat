@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat.listeners;
 import java.util.List;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
 import org.bukkit.enchantments.Enchantment;
@@ -49,7 +50,7 @@ public class StatEntityListener implements Listener{
                 EntityDamageByEntityEvent ed = (EntityDamageByEntityEvent)event;
                 attacker = ed.getDamager();
 
-                
+
                 //handle arrow attacks
                 if(ed.getDamager() instanceof Projectile){
                     projectile  = ((Projectile)attacker);
@@ -63,6 +64,7 @@ public class StatEntityListener implements Listener{
             }
             int damage = event.getDamage();
             DamageCause cause = event.getCause();
+
             //if the player gets attacked
             if(entity instanceof Player){
                 //global damage count
@@ -169,7 +171,74 @@ public class StatEntityListener implements Listener{
 
 
     }
+
+    /**
+     * ATTACKER NAME, ATTACKED NAME
+     * @param event
+     * @param category
+     */
+    private void processEntityDamage(EntityDamageEvent event,String[] category){
+        //Initialise base stats
+        Entity attacked = event.getEntity();
+        DamageCause cause = event.getCause();
+        int amount = event.getDamage();
+        Entity attacker = null;
+        Projectile projectile = null;
+
+        //grab the attacker if one exists.
+        if(event instanceof EntityDamageByEntityEvent){
+            attacker = ((EntityDamageByEntityEvent) event).getDamager();
+        }
+        //Projectile -> projectile + attacker
+        if(attacker instanceof Projectile){
+            projectile = (Projectile)attacker;
+            attacker = projectile.getShooter();
+        }
+
+        //dragon fixer
+        if(attacker instanceof ComplexEntityPart){
+            attacker = ((ComplexEntityPart)attacker).getParent();
+        }
+        if(attacked instanceof ComplexEntityPart){
+            attacked = ((ComplexEntityPart)attacked).getParent();
+        }
+
+        //get the player
+        Player player = attacked instanceof Player ? (Player)attacked : attacker instanceof Player ? (Player)attacker : null;
+        Entity other = attacked instanceof Player ? attacker : attacker instanceof Player ? attacked : null;
+        int idx = attacker instanceof Player ? 0 : 1;
+
+        if(player == null){return;}//kill if no player involved
+
+        PlayerStatBlob blob = playerStatManager.getPlayerBlob(player.getName());
+
+        //Total damage
+        blob.getStat(category[idx], "total").incrementStat(amount);
+
+        //Damage cause
+        blob.getStat(category[idx], cause.toString().toLowerCase().replace("_","")).incrementStat(amount);
+
+        //Entity damage
+        if(other !=null){
+            MetaDataCapture.saveMetaDataEntityStat(blob, category[idx], other, amount);
+        }
+        //Projectile damage
+        if(projectile!=null){
+            blob.getStat(category[idx], projectile.getType().toString().toLowerCase().replace("_","")).incrementStat(amount);
+        }
+
+        //TODO: pvp Damage
+        if(attacker instanceof Player  && attacked instanceof Player){
+            PlayerStatBlob attackerBlob = playerStatManager.getPlayerBlob(((Player)attacker).getName());
+            PlayerStatBlob attackedBlob = playerStatManager.getPlayerBlob(((Player)attacked).getName());
+            
+            attackerBlob.getStat(category[0],"pvp").incrementStat(amount);
+            attackedBlob.getStat(category[1],"pvp").incrementStat(amount);
+        }
+    }
+
     @EventHandler(priority=EventPriority.MONITOR)
+
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
 
         if(event.isCancelled()==false && event.getEntity() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
@@ -181,12 +250,14 @@ public class StatEntityListener implements Listener{
             }
         }
     }
+
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
         if(event.isCancelled()==false && event.getOwner() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
             playerStatManager.getPlayerBlob(((Player)event.getOwner()).getName()).getStat("stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", "")).incrementStat(1);
         }
     }
+
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPotionSplash(PotionSplashEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPotion().getWorld().getName())){
