@@ -8,6 +8,10 @@ import java.util.Map.Entry;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Skeleton.SkeletonType;
+import org.bukkit.entity.Zombie;
 
 /**
  * translates a material to the metadata to capture.
@@ -80,6 +84,22 @@ public class MetaDataCapture {
         }
     }
     
+    public static void saveMetaDataEntityStat(PlayerStatBlob blob,String category,Entity entity,int dataValue,int value){
+        String entityName = entity.getType().toString().toLowerCase().replace("_","");
+        blob.getStat(category, entityName).incrementStat(value);
+        
+        if(entity instanceof Skeleton){
+            if(((Skeleton)entity).getSkeletonType() == SkeletonType.WITHER){
+                blob.getStat(category, "wither_skeleton").incrementStat(value);
+            }
+        }
+        
+        if(entity instanceof Zombie){
+            if(((Zombie)entity).isVillager()){
+                blob.getStat(category, "villager_zombie").incrementStat(value);
+            }
+        }
+    }
     
 
 
