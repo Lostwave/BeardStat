@@ -79,7 +79,7 @@ public class StatPlayerListener implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             
-            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+            MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
                     "itemdrop", 
                     event.getItemDrop().getItemStack().getType(), 
                     event.getItemDrop().getItemStack().getDurability(), 
@@ -132,7 +132,7 @@ public class StatPlayerListener implements Listener {
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
-            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+            MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
                     "itempickup", 
                     event.getItem().getItemStack().getType(), 
                     event.getItem().getItemStack().getDurability(), 
@@ -196,7 +196,7 @@ public class StatPlayerListener implements Listener {
                  * if MetaDataable, make the item string correct
                  */
                 
-                MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+                MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
                         "dye", 
                         event.getPlayer().getItemInHand().getType(), 
                         event.getPlayer().getItemInHand().getDurability(), 

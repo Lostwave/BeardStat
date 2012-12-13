@@ -67,7 +67,7 @@ public class MetaDataCapture {
     }
 
 
-    public static void saveMetaDataStat(PlayerStatBlob blob,String category,Material material,int dataValue,int value){
+    public static void saveMetaDataMaterialStat(PlayerStatBlob blob,String category,Material material,int dataValue,int value){
         String matName = material.toString().toLowerCase().replace("_","");
         blob.getStat(category, matName).incrementStat(value);
         if(mats.containsKey(material)){
@@ -79,6 +79,8 @@ public class MetaDataCapture {
             
         }
     }
+    
+    
 
 
     public static void dumpData(){

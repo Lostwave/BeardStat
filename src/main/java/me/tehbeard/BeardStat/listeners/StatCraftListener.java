@@ -45,7 +45,7 @@ public class StatCraftListener implements Listener {
                     public void run() {
                         int made = getItemCount(inv,is) - preAmount;
                         //String item = is.getType().toString().toLowerCase().replace("_","");
-                        MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(p.getName()), 
+                        MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlob(p.getName()), 
                                 "crafting", 
                                 is.getType(), 
                                 is.getDurability(), 
@@ -61,7 +61,7 @@ public class StatCraftListener implements Listener {
                 /**
                  * if MetaDataable, make the item string correct
                  */
-                MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(p.getName()), 
+                MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlob(p.getName()), 
                         "crafting", 
                         event.getRecipe().getResult().getType(), 
                         event.getRecipe().getResult().getDurability(), 

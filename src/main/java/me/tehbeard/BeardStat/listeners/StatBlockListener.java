@@ -28,7 +28,7 @@ public class StatBlockListener implements Listener{
     public void onBlockPlace(BlockPlaceEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
-            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+            MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
                     "blockcreate", 
                     event.getBlock().getType(), 
                     event.getBlock().getData(), 
@@ -41,7 +41,7 @@ public class StatBlockListener implements Listener{
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
-            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+            MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
                     "blockdestroy", 
                     event.getBlock().getType(), 
                     event.getBlock().getData(), 
