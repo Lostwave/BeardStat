@@ -109,11 +109,13 @@ public class StatEntityListener implements Listener{
         //Total damage
         blob.getStat(category[idx], "total").incrementStat(amount);
 
-        //Damage cause
-        blob.getStat(category[idx], cause.toString().toLowerCase().replace("_","")).incrementStat(amount);
 
+        //Damage cause
+        if(cause != DamageCause.PROJECTILE){
+            blob.getStat(category[idx], cause.toString().toLowerCase().replace("_","")).incrementStat(amount);
+        }
         //Entity damage
-        if(other !=null){
+        if(other !=null && !(other instanceof Player)){
             MetaDataCapture.saveMetaDataEntityStat(blob, category[idx], other, amount);
         }
         //Projectile damage
@@ -125,9 +127,9 @@ public class StatEntityListener implements Listener{
         if(attacker instanceof Player  && attacked instanceof Player){
             PlayerStatBlob attackerBlob = playerStatManager.getPlayerBlob(((Player)attacker).getName());
             PlayerStatBlob attackedBlob = playerStatManager.getPlayerBlob(((Player)attacked).getName());
-            
-            attackerBlob.getStat(category[0],"pvp").incrementStat(amount);
-            attackedBlob.getStat(category[1],"pvp").incrementStat(amount);
+
+            attackerBlob.getStat(category[0],"pvp").incrementStat(1);
+            attackedBlob.getStat(category[1],"pvp").incrementStat(1);
         }
     }
 
