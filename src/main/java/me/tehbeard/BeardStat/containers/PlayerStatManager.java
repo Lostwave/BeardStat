@@ -88,19 +88,23 @@ public class PlayerStatManager implements CommandExecutor {
      * @param name
      * @return
      */
-    public Promise<PlayerStatBlob> getPlayerBlob(String name){
+    public Promise<PlayerStatBlob> getPlayerBlobASync(String name){
         if(backendDatabase == null){return null;}
         if(!cache.containsKey(name)){
             cache.put(name,backendDatabase.pullPlayerStatBlob(name));
         }
         return cache.get(name);
     }
+    
+    public PlayerStatBlob getPlayerBlob(String name){
+        return getPlayerBlobASync(name).getValue();
+    }
     /**
      * Finds a player's stat blob, but does not try to make it
      * @param name player to find
      * @return The player's stat blob or a null if not found
      */
-    public Promise<PlayerStatBlob> findPlayerBlob(final String name){
+    public Promise<PlayerStatBlob> findPlayerBlobASync(final String name){
         if(backendDatabase == null){return null;}
         if(!cache.containsKey(name)){
             Promise<PlayerStatBlob> pbs = backendDatabase.pullPlayerStatBlob(name,false);
@@ -115,6 +119,11 @@ public class PlayerStatManager implements CommandExecutor {
         }
         return cache.get(name);
     }
+    
+    public PlayerStatBlob findPlayerBlob(String name){
+        return findPlayerBlobASync(name).getValue();
+    }
+    
     public void flush(){
 
         backendDatabase.flush();
