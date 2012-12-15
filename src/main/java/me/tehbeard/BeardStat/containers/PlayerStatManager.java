@@ -99,6 +99,7 @@ public class PlayerStatManager implements CommandExecutor {
     public PlayerStatBlob getPlayerBlob(String name){
         return getPlayerBlobASync(name).getValue();
     }
+    
     /**
      * Finds a player's stat blob, but does not try to make it
      * @param name player to find

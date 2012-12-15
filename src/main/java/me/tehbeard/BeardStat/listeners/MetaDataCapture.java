@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import net.dragonzone.promise.Promise;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -71,30 +72,31 @@ public class MetaDataCapture {
     }
 
 
-    public static void saveMetaDataMaterialStat(PlayerStatBlob blob,String category,Material material,int dataValue,int value){
+    public static void saveMetaDataMaterialStat(Promise<PlayerStatBlob> blob,String category,Material material,int dataValue,int value){
         String matName = material.toString().toLowerCase().replace("_","");
-        blob.getStat(category, matName).incrementStat(value);
+        
+        blob.onResolve(new DelegateIncrement(category, matName,value));
         if(mats.containsKey(material)){
             String tag = "_" + (dataValue & mats.get(material));
-            blob.getStat(category, matName + tag).incrementStat(value);
+            blob.onResolve(new DelegateIncrement(category, matName + tag,value));
         }
         if(material.isRecord()){
-            blob.getStat(category, "records").incrementStat(value);
+            blob.onResolve(new DelegateIncrement(category, "records",value));
 
         }
     }
 
-    public static void saveMetaDataEntityStat(PlayerStatBlob blob,String category,Entity entity,int value){
+    public static void saveMetaDataEntityStat(Promise<PlayerStatBlob> blob,String category,Entity entity,int value){
         String entityName = entity.getType().toString().toLowerCase().replace("_","");
-        blob.getStat(category, entityName).incrementStat(value);
+        blob.onResolve(new DelegateIncrement(category, entityName,value));
 
         if(entity instanceof Skeleton){
-            blob.getStat(category, ((Skeleton)entity).getSkeletonType().toString().toLowerCase() + "_" + entityName).incrementStat(value);
+            blob.onResolve(new DelegateIncrement(category, ((Skeleton)entity).getSkeletonType().toString().toLowerCase() + "_" + entityName,value));
         }
 
         if(entity instanceof Zombie){
             if(((Zombie)entity).isVillager()){
-                blob.getStat(category, "villager_zombie").incrementStat(value);
+                blob.onResolve(new DelegateIncrement(category, "villager_zombie",value));
             }
         }
     }

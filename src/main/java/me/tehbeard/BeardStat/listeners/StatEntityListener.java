@@ -5,6 +5,7 @@ import java.util.List;
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import net.dragonzone.promise.Promise;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ComplexEntityPart;
@@ -103,32 +104,32 @@ public class StatEntityListener implements Listener{
 
         if(player == null){return;}//kill if no player involved
 
-        PlayerStatBlob blob = playerStatManager.getPlayerBlob(player.getName());
+        Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
 
         //Total damage
-        blob.getStat(category[idx], "total").incrementStat(amount);
+        promiseblob.onResolve(new DelegateIncrement(category[idx], "total",amount));
 
 
         //Damage cause
         if(cause != DamageCause.PROJECTILE){
-            blob.getStat(category[idx], cause.toString().toLowerCase().replace("_","")).incrementStat(amount);
+            promiseblob.onResolve(new DelegateIncrement(category[idx], cause.toString().toLowerCase().replace("_",""),amount));
         }
         //Entity damage
         if(other !=null && !(other instanceof Player)){
-            MetaDataCapture.saveMetaDataEntityStat(blob, category[idx], other, amount);
+            MetaDataCapture.saveMetaDataEntityStat(promiseblob, category[idx], other, amount);
         }
         //Projectile damage
         if(projectile!=null){
-            blob.getStat(category[idx], projectile.getType().toString().toLowerCase().replace("_","")).incrementStat(amount);
+            promiseblob.onResolve(new DelegateIncrement(category[idx], projectile.getType().toString().toLowerCase().replace("_",""),amount));
         }
 
         //TODO: pvp Damage
         if(attacker instanceof Player  && attacked instanceof Player){
-            PlayerStatBlob attackerBlob = playerStatManager.getPlayerBlob(((Player)attacker).getName());
-            PlayerStatBlob attackedBlob = playerStatManager.getPlayerBlob(((Player)attacked).getName());
+            Promise<PlayerStatBlob> attackerBlob = playerStatManager.getPlayerBlobASync(((Player)attacker).getName());
+            Promise<PlayerStatBlob> attackedBlob = playerStatManager.getPlayerBlobASync(((Player)attacked).getName());
 
-            attackerBlob.getStat(category[0],"pvp").incrementStat(1);
-            attackedBlob.getStat(category[1],"pvp").incrementStat(1);
+            attackerBlob.onResolve(new DelegateIncrement(category[0],"pvp",1));
+            attackedBlob.onResolve(new DelegateIncrement(category[1],"pvp",1));
         }
     }
 
@@ -139,9 +140,10 @@ public class StatEntityListener implements Listener{
         if(event.isCancelled()==false && event.getEntity() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
             int amount = event.getAmount();
             RegainReason reason = event.getRegainReason();
-            playerStatManager.getPlayerBlob(((Player)event.getEntity()).getName()).getStat("stats","damagehealed").incrementStat(amount);
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(((Player)event.getEntity()).getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","damagehealed",amount));
             if(reason != RegainReason.CUSTOM){
-                playerStatManager.getPlayerBlob(((Player)event.getEntity()).getName()).getStat("stats","heal" + reason.toString().replace("_", "").toLowerCase()).incrementStat(amount);	
+                promiseblob.onResolve(new DelegateIncrement("stats","heal" + reason.toString().replace("_", "").toLowerCase(),amount));	
             }
         }
     }
@@ -149,7 +151,9 @@ public class StatEntityListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
         if(event.isCancelled()==false && event.getOwner() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
-            playerStatManager.getPlayerBlob(((Player)event.getOwner()).getName()).getStat("stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", "")).incrementStat(1);
+            
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getOwner().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", ""),1));
         }
     }
 
@@ -161,11 +165,12 @@ public class StatEntityListener implements Listener{
             for(Entity e :event.getAffectedEntities()){
                 if(e instanceof Player){
                     Player p = (Player) e;
-                    playerStatManager.getPlayerBlob(p.getName()).getStat("potions","splashhit").incrementStat(1);
+                    Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
+                    promiseblob.onResolve(new DelegateIncrement("potions","splashhit",1));
                     //added per potion details
                     for(PotionEffect potionEffect : potion.getEffects()){
                         String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
-                        playerStatManager.getPlayerBlob(p.getName()).getStat("potions","splash" + effect).incrementStat(1);
+                        promiseblob.onResolve(new DelegateIncrement("potions","splash" + effect,1));
                     }
                 }
             }
@@ -179,15 +184,16 @@ public class StatEntityListener implements Listener{
             if(event.getEntity() instanceof Player){
                 Player p = (Player) event.getEntity();
 
+                Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
                 //total shots fired
-                playerStatManager.getPlayerBlob(p.getName()).getStat("bow","shots").incrementStat(1);
+                promiseblob.onResolve(new DelegateIncrement("bow","shots",1));
 
                 if(event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)){
-                    playerStatManager.getPlayerBlob(p.getName()).getStat("bow","fireshots").incrementStat(1);
+                    promiseblob.onResolve(new DelegateIncrement("bow","fireshots",1));
                 }
 
                 if(event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)){
-                    playerStatManager.getPlayerBlob(p.getName()).getStat("bow","infiniteshots").incrementStat(1);
+                    promiseblob.onResolve(new DelegateIncrement("bow","infiniteshots",1));
                 }
 
             }

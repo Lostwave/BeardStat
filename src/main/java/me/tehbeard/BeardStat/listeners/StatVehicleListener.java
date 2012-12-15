@@ -3,7 +3,9 @@ package me.tehbeard.BeardStat.listeners;
 import java.util.List;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import net.dragonzone.promise.Promise;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -41,9 +43,11 @@ public class StatVehicleListener implements Listener {
             BeardStat.printDebugCon("Vehicle move fired!");
             if(from.getWorld().equals(to.getWorld())){
                 if(from.distance(to) < 10){
-                    playerStatManager.getPlayerBlob(player.getName()).getStat("vehicle",
-                            event.getVehicle().getType().toString().toLowerCase()
-                            ).incrementStat((int)Math.ceil(from.distance(to)));
+                    Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
+                    promiseblob.onResolve(new DelegateIncrement(
+                            "vehicle",
+                            event.getVehicle().getType().toString().toLowerCase(),
+                            (int)Math.ceil(from.distance(to))));
                     
                     
                 }
