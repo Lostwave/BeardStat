@@ -3,6 +3,8 @@ package me.tehbeard.BeardStat.DataProviders;
 
 import java.util.List;
 
+import net.dragonzone.promise.Promise;
+
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 
 
@@ -19,7 +21,7 @@ public interface IStatDataProvider {
 	 * @param player Player to pull stats for. Creates a new object if non exists
 	 * @return a PlayerStatBlob containing all stats for a player
 	 */
-	public PlayerStatBlob pullPlayerStatBlob(String player);
+	public Promise<PlayerStatBlob> pullPlayerStatBlob(String player);
 
 
 	/**
@@ -28,7 +30,7 @@ public interface IStatDataProvider {
 	 * @param create wether to create the player object
 	 * @return a PlayerStatBlob containing all stats for a player
 	 */
-	public PlayerStatBlob pullPlayerStatBlob(String player,boolean create);
+	public Promise<PlayerStatBlob> pullPlayerStatBlob(String player,boolean create);
 	/**
 	 * Push all stats for this player to the database
 	 * @param player StatBlob to push to the database
