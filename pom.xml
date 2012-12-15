@@ -129,6 +129,7 @@
                 <includes>
                   <include>me.tehbeard:Vocalise</include>
                   <include>me.tehbeard:utils</include>
+                  <include>net.dragonzone:Deferred</include>
                 </includes>
 
 
@@ -141,6 +142,10 @@
                 <relocation>
                   <pattern>me.tehbeard.utils</pattern>
                   <shadedPattern>me.tehbeard.BeardStat.utils</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>net.dragonzone:Deferred</pattern>
+                  <shadedPattern>me.tehbeard.BeardStat.utils.deferred</shadedPattern>
                 </relocation>
               </relocations>
               <minimizeJar>true</minimizeJar>
