@@ -7,6 +7,8 @@ import me.tehbeard.BeardStat.BeardStat;
 
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import net.dragonzone.promise.Delegate;
+import net.dragonzone.promise.Promise;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -48,13 +50,22 @@ public class StatPlayerListener implements Listener {
 
     }
     @EventHandler(priority=EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        playerStatManager.getPlayerBlob(event.getPlayer().getName());
-        playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","login").incrementStat(1);
-        playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogin").setValue( (int)(System.currentTimeMillis()/1000L));
-        if(!playerStatManager.getPlayerBlob(event.getPlayer().getName()).hasStat("stats", "firstlogin")){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
-        }
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+        promiseblob.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
+            
+            public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
+                
+                
+                params.getValue().getStat("stats","login").incrementStat(1);
+                params.getValue().getStat("stats","lastlogin").setValue( (int)(System.currentTimeMillis()/1000L));
+                if(!params.getValue().hasStat("stats", "firstlogin")){
+                    params.getValue().getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
+                }
+                return null;
+            }
+        });
+        
 
         BeardStat.self().getStatManager().setLoginTime(event.getPlayer().getName(), System.currentTimeMillis());
 
@@ -117,13 +128,25 @@ public class StatPlayerListener implements Listener {
                 event.getTo().getBlockZ() != event.getFrom().getBlockZ() )&& 
                 !worlds.contains(event.getPlayer().getWorld().getName())){
 
-            Location from,to;
+            Location from;
+            Location to;
+            
             Player player = event.getPlayer();
             from = event.getFrom();
             to = event.getTo();
+            
             if(from.getWorld().equals(to.getWorld())){
-                if(from.distance(to) < 8){
-                    playerStatManager.getPlayerBlob(player.getName()).getStat("stats","move").incrementStat((int)Math.ceil(from.distance(to)));
+                final double distance = from.distance(to);
+                if(distance < 8){
+                    Promise<PlayerStatBlob> promise = playerStatManager.getPlayerBlobASync(player.getName());
+                    promise.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
+                        
+                        public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
+                            params.getValue().getStat("stats","move").incrementStat((int)Math.ceil(distance));
+                            return null;
+                        }
+                    });
+                            
                 }
             }
         }
@@ -150,15 +173,25 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerTeleport(PlayerTeleportEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            TeleportCause teleportCause = event.getCause();
+            final TeleportCause teleportCause = event.getCause();
             Player player = event.getPlayer();
-            if(teleportCause == TeleportCause.ENDER_PEARL){
-                playerStatManager.getPlayerBlob(player.getName()).getStat("itemuse","enderpearl").incrementStat(1);
-            }
-            else
-            {
-                playerStatManager.getPlayerBlob(player.getName()).getStat("stats","teleport").incrementStat(1);
-            }
+            
+            Promise<PlayerStatBlob> promise = playerStatManager.getPlayerBlobASync(player.getName());
+            promise.onDone(new Delegate<Void, Promise<PlayerStatBlob>>() {
+                
+                public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
+                    
+                    if(teleportCause == TeleportCause.ENDER_PEARL){
+                        params.getValue().getStat("itemuse","enderpearl").incrementStat(1);
+                    }
+                    else
+                    {
+                        params.getValue().getStat("stats","teleport").incrementStat(1);
+                    }
+                    return null;
+                }
+            });
+           
 
         }
     }
