@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Cow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
@@ -45,20 +46,20 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerAnimation(PlayerAnimationEvent event) {
         if(event.getAnimationType()==PlayerAnimationType.ARM_SWING){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","armswing").incrementStat(1);
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","armswing",1));
+            
         }
 
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+        promiseblob.onResolve(new DelegateIncrement("stats","login",1));
+        promiseblob.onResolve(new DelegateSet("stats","login",(int)(System.currentTimeMillis()/1000L)));
         promiseblob.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
             
             public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
-                
-                
-                params.getValue().getStat("stats","login").incrementStat(1);
-                params.getValue().getStat("stats","lastlogin").setValue( (int)(System.currentTimeMillis()/1000L));
                 if(!params.getValue().hasStat("stats", "firstlogin")){
                     params.getValue().getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
                 }
@@ -74,15 +75,12 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            final String player = event.getPlayer().getName();
-            final int len = event.getMessage().length();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(BeardStat.self(), new Runnable(){
-
-                public void run() {
-                    playerStatManager.getPlayerBlob(player).getStat("stats","chatletters").incrementStat(len);
-                    playerStatManager.getPlayerBlob(player).getStat("stats","chat").incrementStat(1);
+            int len = event.getMessage().length();
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","chatletters",len));
+            promiseblob.onResolve(new DelegateIncrement("stats","chat",1));
                     
-                }});
+                
             
         }
     }
@@ -101,23 +99,26 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerFish(PlayerFishEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","fishcaught").incrementStat(1);
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","fishcaught",1));
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event){
         if(event.isCancelled()==false){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","kicks").incrementStat(1);
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogout").setValue( (int)((new Date()).getTime()/1000L));
-            calc_timeonline(event.getPlayer().getName());
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","kicks",1));
+            promiseblob.onResolve(new DelegateSet("stats","lastlogout",(int)((new Date()).getTime()/1000L)));
+            
+            calc_timeonline_and_wipe(event.getPlayer().getName());
         }
 
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-
-        playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","lastlogout").setValue( (int)((new Date()).getTime()/1000L));
-        calc_timeonline(event.getPlayer().getName());
+        Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+        promiseblob.onResolve(new DelegateSet("stats","lastlogout",(int)((new Date()).getTime()/1000L)));
+        calc_timeonline_and_wipe(event.getPlayer().getName());
 
     }
     @EventHandler(priority=EventPriority.MONITOR)
@@ -138,14 +139,9 @@ public class StatPlayerListener implements Listener {
             if(from.getWorld().equals(to.getWorld())){
                 final double distance = from.distance(to);
                 if(distance < 8){
-                    Promise<PlayerStatBlob> promise = playerStatManager.getPlayerBlobASync(player.getName());
-                    promise.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
-                        
-                        public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
-                            params.getValue().getStat("stats","move").incrementStat((int)Math.ceil(distance));
-                            return null;
-                        }
-                    });
+                    Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+                    promiseblob.onResolve(new DelegateIncrement("stats","move",(int)Math.ceil(distance)));
+                    
                             
                 }
             }
@@ -167,7 +163,8 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerPortal(PlayerPortalEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","portal").incrementStat(1);
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","portal",1));
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
@@ -176,36 +173,25 @@ public class StatPlayerListener implements Listener {
             final TeleportCause teleportCause = event.getCause();
             Player player = event.getPlayer();
             
-            Promise<PlayerStatBlob> promise = playerStatManager.getPlayerBlobASync(player.getName());
-            promise.onDone(new Delegate<Void, Promise<PlayerStatBlob>>() {
-                
-                public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
-                    
-                    if(teleportCause == TeleportCause.ENDER_PEARL){
-                        params.getValue().getStat("itemuse","enderpearl").incrementStat(1);
-                    }
-                    else
-                    {
-                        params.getValue().getStat("stats","teleport").incrementStat(1);
-                    }
-                    return null;
-                }
-            });
-           
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("itemuse","enderpearl",1));
+            promiseblob.onResolve(new DelegateIncrement("stats","teleport",1));
 
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerBucketFill(PlayerBucketFillEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","fill"+ event.getBucket().toString().toLowerCase().replace("_","")).incrementStat(1);
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","fill"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
 
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","empty"+ event.getBucket().toString().toLowerCase().replace("_","")).incrementStat(1);
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","empty"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
 
         }
     }
@@ -213,17 +199,24 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            PlayerStatBlob psb = playerStatManager.getPlayerBlob(event.getPlayer().getName());
-            if(event.getPlayer().getItemInHand().getType() == Material.BUCKET && event.getRightClicked() instanceof Cow){
-                psb.getStat("interact", "milkcow").incrementStat(1);
+            
+            
+            Material material = event.getPlayer().getItemInHand().getType();
+            Entity rightClicked = event.getRightClicked();
+            
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            
+            
+            if(material == Material.BUCKET && rightClicked instanceof Cow){
+                promiseblob.onResolve(new DelegateIncrement("interact", "milkcow",1));
             }
 
-            if(event.getPlayer().getItemInHand().getType() == Material.BOWL && event.getRightClicked() instanceof MushroomCow){
-                psb.getStat("interact", "milkmushroomcow").incrementStat(1);
+            if(material == Material.BOWL && rightClicked instanceof MushroomCow){
+                promiseblob.onResolve(new DelegateIncrement("interact", "milkmushroomcow",1));
             }
 
-            if(event.getPlayer().getItemInHand().getType() == Material.INK_SACK && event.getRightClicked() instanceof Sheep){
-                psb.getStat("dye", "total").incrementStat(1);
+            if(material == Material.INK_SACK && rightClicked instanceof Sheep){
+                promiseblob.onResolve(new DelegateIncrement("dye", "total",1));
 
                 /**
                  * if MetaDataable, make the item string correct
@@ -242,13 +235,14 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void shearEvent(PlayerShearEntityEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            PlayerStatBlob psb = playerStatManager.getPlayerBlob(event.getPlayer().getName());
+            
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             if(event.getEntity() instanceof Sheep){
-                psb.getStat("sheared", "sheep");
+                promiseblob.onResolve(new DelegateIncrement("sheared", "sheep",1));
             }
 
             if(event.getEntity() instanceof MushroomCow){
-                psb.getStat("sheared", "mushroomcow");
+                promiseblob.onResolve(new DelegateIncrement("sheared", "mushroomcow",1));
             }
         }
     }
@@ -263,6 +257,9 @@ public class StatPlayerListener implements Listener {
                 ItemStack item = event.getItem();
                 Block clickedBlock = event.getClickedBlock();
                 Result result = event.useItemInHand();
+                
+                Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+                
                 if(item !=null &&
                         action!=null &&
                         clickedBlock!=null){
@@ -279,15 +276,15 @@ public class StatPlayerListener implements Listener {
                                 item.getType()==Material.FLINT_AND_STEEL ||
                                 item.getType()==Material.SIGN 
                                 ){
-                            playerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",item.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+                            promiseblob.onResolve(new DelegateIncrement("itemuse",item.getType().toString().toLowerCase().replace("_",""),1));
                         }
                     }
                     if(clickedBlock.getType() == Material.CAKE_BLOCK||
                             (clickedBlock.getType() == Material.TNT && item.getType()==Material.FLINT_AND_STEEL)){
-                        playerStatManager.getPlayerBlob(player.getName()).getStat("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_","")).incrementStat(1);
+                        promiseblob.onResolve(new DelegateIncrement("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_",""),1));
                     }
                     if(clickedBlock.getType().equals(Material.CHEST)){
-                        playerStatManager.getPlayerBlob(player.getName()).getStat("stats","openchest").incrementStat(1);
+                        promiseblob.onResolve(new DelegateIncrement("stats","openchest",1));
                     }
 
 
@@ -303,19 +300,20 @@ public class StatPlayerListener implements Listener {
     public void onPlayerExp(PlayerExpChangeEvent event){
         if(!worlds.contains(event.getPlayer().getWorld().getName())){
             Player player = event.getPlayer();
-            playerStatManager.getPlayerBlob(player.getName()).getStat("exp","lifetimexp").incrementStat(event.getAmount());
-            playerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentexp").setValue(player.getTotalExperience() + event.getAmount());
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("exp","lifetimexp",event.getAmount()));
+            promiseblob.onResolve(new DelegateSet("exp","currentexp",player.getTotalExperience() + event.getAmount()));
         }
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerExpLevel(PlayerLevelChangeEvent event){
         if(!worlds.contains(event.getPlayer().getWorld().getName())){
-            Player player = event.getPlayer();
-            playerStatManager.getPlayerBlob(player.getName()).getStat("exp","currentlvl").setValue(event.getNewLevel());
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateSet("exp","currentlvl",event.getNewLevel()));
             int change = event.getNewLevel() - event.getOldLevel();
             if(change > 0){
-                playerStatManager.getPlayerBlob(player.getName()).getStat("exp","lifetimelvl").incrementStat(change);
+                promiseblob.onResolve(new DelegateIncrement("exp","lifetimelvl",change));
             }
         }
     }
@@ -326,16 +324,17 @@ public class StatPlayerListener implements Listener {
         Player player = event.getEnchanter();
 
         if(event.isCancelled()==false && !worlds.contains(player.getWorld().getName())){
-            playerStatManager.getPlayerBlob(player.getName()).getStat("enchant","total").incrementStat(1);
-            playerStatManager.getPlayerBlob(player.getName()).getStat("enchant","totallvlspent").incrementStat(event.getExpLevelCost());
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
+            promiseblob.onResolve(new DelegateIncrement("enchant","total",1));
+            promiseblob.onResolve(new DelegateIncrement("enchant","totallvlspent",event.getExpLevelCost()));
         }
     }
 
-    private void calc_timeonline(String player){
+    private void calc_timeonline_and_wipe(String player){
 
         int seconds = BeardStat.self().getStatManager().getSessionTime(player);
-        playerStatManager.getPlayerBlob(player).getStat("stats","playedfor").incrementStat(seconds);
-
+        Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player);
+        promiseblob.onResolve(new DelegateIncrement("stats","playedfor",seconds));
         BeardStat.self().getStatManager().wipeLoginTime(player);		
 
     }
