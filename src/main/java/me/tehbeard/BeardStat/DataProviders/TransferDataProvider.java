@@ -2,6 +2,8 @@ package me.tehbeard.BeardStat.DataProviders;
 
 import java.util.List;
 
+import net.dragonzone.promise.Promise;
+
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
@@ -42,7 +44,7 @@ public class TransferDataProvider implements IStatDataProvider{
         List<String> theList = oldProvider.getStatBlobsHeld();
         PlayerStatBlob b;
         for(String player : theList){
-            b = oldProvider.pullPlayerStatBlob(player, false);
+            b = oldProvider.pullPlayerStatBlob(player, false).getValue();
             if(b==null){
                 BeardStat.printCon("[ERROR] " + player + " not found in old database");
                 continue;
@@ -59,11 +61,11 @@ public class TransferDataProvider implements IStatDataProvider{
         
     }
 
-    public PlayerStatBlob pullPlayerStatBlob(String player) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
         return pullPlayerStatBlob(player,true);
     }
 
-    public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player, boolean create) {
         return newProvider.pullPlayerStatBlob(player,create);
     }
 

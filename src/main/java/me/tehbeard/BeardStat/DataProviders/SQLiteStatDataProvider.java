@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.dragonzone.promise.Deferred;
+import net.dragonzone.promise.Promise;
+
 
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -136,11 +139,11 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
 
 
 
-    public PlayerStatBlob pullPlayerStatBlob(String player) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
         return pullPlayerStatBlob(player,true);
     }
 
-    public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player, boolean create) {
         try {
 
             long t1 = (new Date()).getTime();
@@ -161,7 +164,7 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
             BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
             if(pb.getStats().size()==0 && create==false){return null;}
 
-            return pb;
+            return new Deferred<PlayerStatBlob>(pb);
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
         }

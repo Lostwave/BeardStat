@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 
 import java.util.Properties;
 
+import net.dragonzone.promise.Deferred;
+import net.dragonzone.promise.Promise;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -185,11 +188,11 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
 
 
-    public PlayerStatBlob pullPlayerStatBlob(String player) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
         return pullPlayerStatBlob(player,true);
     }
 
-    public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player, boolean create) {
         try {
             if(!checkConnection()){
                 BeardStat.printCon("ERROR");
@@ -213,7 +216,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
             BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
             if(pb.getStats().size()==0 && create==false){return null;}
 
-            return pb;
+            return new Deferred<PlayerStatBlob>(pb);
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
         }

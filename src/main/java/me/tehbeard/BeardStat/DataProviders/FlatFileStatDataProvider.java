@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 
 
+import net.dragonzone.promise.Deferred;
+import net.dragonzone.promise.Promise;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -34,11 +37,11 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
     }
 
 
-    public PlayerStatBlob pullPlayerStatBlob(String player) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
         return pullPlayerStatBlob(player,true);
     }
 
-    public PlayerStatBlob pullPlayerStatBlob(String player,boolean create) {
+    public  Promise<PlayerStatBlob> pullPlayerStatBlob(String player,boolean create) {
         BeardStat.printDebugCon("Loading stats for player " + player);
 
         try{
@@ -51,18 +54,18 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
                     ps.setValue(pl.getInt(key, 0));
                     ps.clearArchive();
                 }
-                return blob;
+                return new Deferred<PlayerStatBlob>(blob);
             }
             else if(pl==null && create)
             {
-                return blob;
+                return new Deferred<PlayerStatBlob>(blob);
             }
             BeardStat.printDebugCon("FAILED TO LOAD KEY FROM DATABASE!" + player);
-            return null;
+            return new Deferred<PlayerStatBlob>(null);
         }
         catch(Exception e){
             e.printStackTrace();
-            return null;
+            return new Deferred<PlayerStatBlob>(null);
         }
     }
 
