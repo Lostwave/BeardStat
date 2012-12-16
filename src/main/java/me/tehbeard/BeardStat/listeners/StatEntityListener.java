@@ -2,7 +2,6 @@ package me.tehbeard.BeardStat.listeners;
 
 import java.util.List;
 
-import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import net.dragonzone.promise.Promise;

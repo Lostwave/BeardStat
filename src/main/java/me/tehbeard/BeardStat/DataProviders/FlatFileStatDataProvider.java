@@ -52,7 +52,7 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 
                 public void run() {
                     try {
-                        Thread.currentThread().sleep(5000);
+                        Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

@@ -11,7 +11,6 @@ import net.dragonzone.promise.Promise;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.Zombie;
 
 /**

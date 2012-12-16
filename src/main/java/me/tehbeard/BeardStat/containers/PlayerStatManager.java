@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
-import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
