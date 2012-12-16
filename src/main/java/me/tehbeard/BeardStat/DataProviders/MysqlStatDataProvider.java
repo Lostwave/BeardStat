@@ -49,7 +49,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
-    
+
 
     public MysqlStatDataProvider(String host,int port,String database,String table,String username,String password) throws SQLException{
 
@@ -175,9 +175,9 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                     "values (?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;",Statement.RETURN_GENERATED_KEYS);
 
             prepDeletePlayerStat = conn.prepareStatement("DELETE FROM `" + table + "` WHERE player=?");
-            
+
             prepHasPlayerStat = conn.prepareStatement("SELECT COUNT(*) from `" + table + "` WHERE player=?");
-            
+
             prepGetPlayerList = conn.prepareStatement("SELECT DISTINCT(player) from `" + table + "`");
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised MySQL Data Provider.");
@@ -192,35 +192,49 @@ public class MysqlStatDataProvider implements IStatDataProvider {
         return pullPlayerStatBlob(player,true);
     }
 
-    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player, boolean create) {
-        try {
-            if(!checkConnection()){
-                BeardStat.printCon("ERROR");
-                return null;
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(final String player, final boolean create) {
+
+        final Deferred<PlayerStatBlob> promise = new Deferred<PlayerStatBlob>();
+
+        Runnable run = new Runnable() {
+            
+            public void run() {
+                try {
+                    if(!checkConnection()){
+                        BeardStat.printCon("ERROR");
+                        promise.resolve(null);
+                    }
+                    long t1 = (new Date()).getTime();
+                    PlayerStatBlob pb = null;
+
+                    //try to pull it from the db
+                    prepGetAllPlayerStat.setString(1, player);
+                    ResultSet rs = prepGetAllPlayerStat.executeQuery();
+                    pb = new PlayerStatBlob(player,"");
+                    while(rs.next()){
+                        //`category`,`stat`,`value`
+                        PlayerStat ps = pb.getStat(rs.getString(2),rs.getString(3));
+                        ps.setValue(rs.getInt(4));
+                        ps.archive();
+                    }
+                    rs.close();
+
+                    BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
+                    if(pb.getStats().size()==0 && create==false){promise.resolve(null);}
+
+                    promise.resolve(pb);
+                } catch (SQLException e) {
+                    BeardStat.mysqlError(e);
+                }
+                promise.resolve(null);
+                
             }
-            long t1 = (new Date()).getTime();
-            PlayerStatBlob pb = null;
+        };
+        
+        new Thread(run).start();
+        
+        return promise;
 
-            //try to pull it from the db
-            prepGetAllPlayerStat.setString(1, player);
-            ResultSet rs = prepGetAllPlayerStat.executeQuery();
-            pb = new PlayerStatBlob(player,"");
-            while(rs.next()){
-                //`category`,`stat`,`value`
-                PlayerStat ps = pb.getStat(rs.getString(2),rs.getString(3));
-                ps.setValue(rs.getInt(4));
-                ps.archive();
-            }
-            rs.close();
-
-            BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-            if(pb.getStats().size()==0 && create==false){return null;}
-
-            return new Deferred<PlayerStatBlob>(pb);
-        } catch (SQLException e) {
-            BeardStat.mysqlError(e);
-        }
-        return null;
     }
 
     public void pushPlayerStatBlob(PlayerStatBlob player) {
@@ -288,13 +302,13 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
         }
     };
-    
+
     public void flushSync(){
         BeardStat.printCon("Flushing in main thread! Game will lag!");
         flush.run();
         BeardStat.printCon("Flushed!");
     }
-    
+
     public void flush() {
 
         new Thread(flush).start();
@@ -320,7 +334,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                 rs.close();
                 return b;
             }
-            
+
         } catch (SQLException e) {
             checkConnection();
         }
@@ -336,7 +350,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                 list.add(rs.getString(1));
             }
             rs.close();
-            
+
         } catch (SQLException e) {
             checkConnection();
         }
