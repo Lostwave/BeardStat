@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -223,6 +224,27 @@ public class StatPlayerListener implements Listener {
 
                 MetaDataCapture.saveMetaDataMaterialStat(promiseblob, 
                         "dye", 
+                        event.getPlayer().getItemInHand().getType(), 
+                        event.getPlayer().getItemInHand().getDurability(), 
+                        1);
+
+            }
+            
+            if(material == Material.INK_SACK && rightClicked instanceof Wolf){
+            	
+            	//Check it's our wolf
+            	Wolf wolf = (Wolf)rightClicked;
+            	if(!wolf.isTamed()){return;}
+            	if(wolf.getOwner() != event.getPlayer()){return;}
+            	
+                promiseblob.onResolve(new DelegateIncrement("wolfdye", "total",1));
+
+                /**
+                 * if MetaDataable, make the item string correct
+                 */
+
+                MetaDataCapture.saveMetaDataMaterialStat(promiseblob, 
+                        "wolfdye", 
                         event.getPlayer().getItemInHand().getType(), 
                         event.getPlayer().getItemInHand().getDurability(), 
                         1);
