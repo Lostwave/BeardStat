@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -170,7 +171,7 @@ public class MaterialListOutput {
 			}
 		}
 
-		materialOutputList.store(System.out, "BeardStat data mapping");
+		materialOutputList.store(new FileWriter(new File("out.properties")), "BeardStat data mapping");
 
 
 	}
