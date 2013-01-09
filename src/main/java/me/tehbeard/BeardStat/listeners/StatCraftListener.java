@@ -4,6 +4,7 @@ import java.util.List;
 
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,6 +32,9 @@ public class StatCraftListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onCraftItem(CraftItemEvent event){
+    	if(event.getWhoClicked().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(!worlds.contains(event.getWhoClicked().getWorld().getName())){
             int amount = event.getRecipe().getResult().getAmount();
             final Player p = (Player)event.getWhoClicked();

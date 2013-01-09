@@ -2,6 +2,7 @@ general:
   debug: false
 stats:
   configversion: ${project.config.version}
+  trackcreativemode: false
   database:
     type: "sqlite"
     host: "localhost"

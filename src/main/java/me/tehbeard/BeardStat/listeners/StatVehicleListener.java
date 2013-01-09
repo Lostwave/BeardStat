@@ -7,6 +7,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import net.dragonzone.promise.Promise;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,6 +39,11 @@ public class StatVehicleListener implements Listener {
             Location from,to;
             Player player = (event.getVehicle().getPassenger() instanceof Player ? (Player)event.getVehicle().getPassenger() : null);
             if(player==null){return;}
+            
+            if(player.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+        		return;
+        	}
+            
             from = event.getFrom();
             to = event.getTo();
             BeardStat.printDebugCon("Vehicle move fired!");
