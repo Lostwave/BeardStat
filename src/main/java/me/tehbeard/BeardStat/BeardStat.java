@@ -132,35 +132,9 @@ public class BeardStat extends JavaPlugin {
             getPluginLoader().disablePlugin(this);
             return;
         }
+        
         IStatDataProvider db =getProvider(getConfig().getConfigurationSection("stats.database"));
-        /*
-        if(getConfig().getString("stats.database.type").equalsIgnoreCase("mysql")){
-            try {
-                db = new MysqlStatDataProvider(
-                        getConfig().getString("stats.database.host"),
-                        getConfig().getString("stats.database.database"),
-                        getConfig().getString("stats.database.table"),
-                        getConfig().getString("stats.database.username"),
-                        getConfig().getString("stats.database.password")
-                        );
-            } catch (SQLException e) {
-                db = null;
-            }
-        }
-        if(getConfig().getString("stats.database.type").equalsIgnoreCase("sqlite")){
-            try {
-                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString(), "stats");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                db =null;
-            }
-            
-        }
-        if(getConfig().getString("stats.database.type").equalsIgnoreCase("file")){
-            db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));	
-        }*/
-
-
+        
         if(db==null){
             printCon(" Error loading database, disabling plugin");
             getPluginLoader().disablePlugin(this);
@@ -177,6 +151,8 @@ public class BeardStat extends JavaPlugin {
         loadCompositeStats();
         loadFormats();
 
+        loadIdTracks();
+        
         printCon("Registering events and collectors");
 
 
@@ -350,6 +326,15 @@ public class BeardStat extends JavaPlugin {
 
     }
 
+    
+    private void loadIdTracks(){
+        List<String> l = getConfig().getStringList("trackids");
+        for(String ll : l){
+            int typeid = Integer.parseInt(ll.split(":")[0]);
+            int mask = Integer.parseInt(ll.split(":")[1]);
+            MetaDataCapture.addData(typeid, mask);
+        }
+    }
 
     private void loadCompositeStats(){
 

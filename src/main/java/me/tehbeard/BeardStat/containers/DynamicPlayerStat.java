@@ -4,7 +4,7 @@ import me.tehbeard.utils.expressions.InFixExpression;
 
 /**
  * Dynamic player stats generated from composites of other player stats.
- * A Dynamic player stat is never stored in the database, 
+ * A Dynamic player stat is only stored if expressly set to be stored.
  * it is computed at runtime using an expression bound to that stat.
  * @author James
  *
@@ -33,26 +33,6 @@ public class DynamicPlayerStat implements PlayerStat {
         
 
     }
-
-
-
-   
-    public static void main(String[] a){
-        PlayerStatBlob blob  = new PlayerStatBlob("bob", "PLY_0123456789ABCDEF");
-
-        PlayerStat s = new DynamicPlayerStat("$kills.total - $deaths.total", "comp", "kd");
-        PlayerStat k = new StaticPlayerStat("kills","total", 50);
-        PlayerStat d = new StaticPlayerStat("deaths","total", 25);
-        
-        
-        blob.addStat(s);
-        blob.addStat(k);
-        blob.addStat(d);
-        System.out.println(blob.getStat("comp", "kd").getValue());
-        
-        
-    }
-
 
 
     public int getValue() {

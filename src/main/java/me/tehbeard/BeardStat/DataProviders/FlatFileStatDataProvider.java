@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 
 
+import net.dragonzone.promise.Deferred;
+import net.dragonzone.promise.Promise;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -34,35 +37,52 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
     }
 
 
-    public PlayerStatBlob pullPlayerStatBlob(String player) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
         return pullPlayerStatBlob(player,true);
     }
 
-    public PlayerStatBlob pullPlayerStatBlob(String player,boolean create) {
+    public  Promise<PlayerStatBlob> pullPlayerStatBlob(final String player,final boolean create) {
         BeardStat.printDebugCon("Loading stats for player " + player);
 
         try{
-            ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
 
-            PlayerStatBlob blob = new PlayerStatBlob(player,"");
-            if(pl!=null){
-                for(String key : pl.getKeys(false)){
-                    PlayerStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
-                    ps.setValue(pl.getInt(key, 0));
-                    ps.clearArchive();
+            final Deferred<PlayerStatBlob> promise = new Deferred<PlayerStatBlob>();
+            
+            Runnable r = new Runnable(){
+
+                public void run() {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    PlayerStatBlob blob = new PlayerStatBlob(player,"");
+                    ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
+                    if(pl!=null){
+                        for(String key : pl.getKeys(false)){
+                            PlayerStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
+                            ps.setValue(pl.getInt(key, 0));
+                            ps.clearArchive();
+                        }
+                        promise.resolve(blob);
+                        return;
+                    }
+                    else if(pl==null && create)
+                    {
+                        promise.resolve(blob);
+                        return;
+                    }
+                    promise.resolve(null);
                 }
-                return blob;
-            }
-            else if(pl==null && create)
-            {
-                return blob;
-            }
-            BeardStat.printDebugCon("FAILED TO LOAD KEY FROM DATABASE!" + player);
-            return null;
+                
+            };
+            new Thread(r).start();
+            
+            return promise;
         }
         catch(Exception e){
             e.printStackTrace();
-            return null;
+            return new Deferred<PlayerStatBlob>(null);
         }
     }
 

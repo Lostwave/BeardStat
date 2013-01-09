@@ -40,12 +40,12 @@ public class StatCraftListener implements Listener {
                 final ItemStack is = event.getRecipe().getResult();
                 final int preAmount = getItemCount(inv,is);
 
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(BeardStat.self(), new Runnable(){
+                Bukkit.getScheduler().runTaskAsynchronously(BeardStat.self(), new Runnable(){
 
                     public void run() {
                         int made = getItemCount(inv,is) - preAmount;
                         //String item = is.getType().toString().toLowerCase().replace("_","");
-                        MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(p.getName()), 
+                        MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlobASync(p.getName()), 
                                 "crafting", 
                                 is.getType(), 
                                 is.getDurability(), 
@@ -61,7 +61,7 @@ public class StatCraftListener implements Listener {
                 /**
                  * if MetaDataable, make the item string correct
                  */
-                MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(p.getName()), 
+                MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlobASync(p.getName()), 
                         "crafting", 
                         event.getRecipe().getResult().getType(), 
                         event.getRecipe().getResult().getDurability(), 

@@ -2,7 +2,9 @@ package me.tehbeard.BeardStat.listeners;
 
 import java.util.List;
 
+import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
+import net.dragonzone.promise.Promise;
 
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.EventHandler;
@@ -27,8 +29,9 @@ public class StatBlockListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockcreate").incrementStat(1);
-            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","totalblockcreate",1));
+            MetaDataCapture.saveMetaDataMaterialStat(promiseblob, 
                     "blockcreate", 
                     event.getBlock().getType(), 
                     event.getBlock().getData(), 
@@ -40,8 +43,9 @@ public class StatBlockListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
-            playerStatManager.getPlayerBlob(event.getPlayer().getName()).getStat("stats","totalblockdestroy").incrementStat(1);
-            MetaDataCapture.saveMetaDataStat(playerStatManager.getPlayerBlob(event.getPlayer().getName()), 
+            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
+            promiseblob.onResolve(new DelegateIncrement("stats","totalblockdestroy",1));
+            MetaDataCapture.saveMetaDataMaterialStat(promiseblob, 
                     "blockdestroy", 
                     event.getBlock().getType(), 
                     event.getBlock().getData(), 

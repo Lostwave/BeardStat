@@ -1,9 +1,5 @@
 package me.tehbeard.BeardStat.containers;
 
-import org.bukkit.Bukkit;
-
-import me.tehbeard.BeardStat.StatChangeEvent;
-
 /**
  * Concrete implmentation of a player stat.
  * This is the default type for stats, they are saved to the database
@@ -38,7 +34,7 @@ public class StaticPlayerStat implements PlayerStat{
 	 * Get the stats value
 	 * @return
 	 */
-	public int getValue(){
+	public synchronized int getValue(){
 		return value;
 	}
 
@@ -46,7 +42,7 @@ public class StaticPlayerStat implements PlayerStat{
 	 * Set the stats value
 	 * @param value value to set stat to
 	 */
-	public void setValue(int value){
+	public synchronized void setValue(int value){
 		changeValue(value);
 	}
 
@@ -63,7 +59,7 @@ public class StaticPlayerStat implements PlayerStat{
 	 * @param i amount to increment stat by
 	 * new value = old value + i
 	 */
-	public void incrementStat(int i){
+	public synchronized void incrementStat(int i){
 		//if(i < 0 ){throw new IllegalArgumentException("Cannot increment by negative number!");}
 		changeValue(value + i);
 	}
@@ -73,7 +69,7 @@ public class StaticPlayerStat implements PlayerStat{
 	 * @param i amount to dencrement stat by
      * new value = old value - i
 	 */
-	public void decrementStat(int i){
+	public synchronized void decrementStat(int i){
 		//if(i < 0 ){throw new IllegalArgumentException("Cannot decrement by negative number!");}
 		changeValue(value - i);
 	}
@@ -89,7 +85,7 @@ public class StaticPlayerStat implements PlayerStat{
 	/**
 	 * Clear the archive flag
 	 */
-	public void clearArchive() {
+	public synchronized void clearArchive() {
 		this.archive = false;
 	}
 
@@ -97,7 +93,7 @@ public class StaticPlayerStat implements PlayerStat{
 	 * Is archive flag set?
 	 * if the flag is set, the stat will be stored in the database, and the flag cleared on the next save.
 	 */
-	public boolean isArchive() {
+	public synchronized boolean isArchive() {
 		return archive;
 	}
 
@@ -108,13 +104,9 @@ public class StaticPlayerStat implements PlayerStat{
 		return owner;
 	}
 	
-	private void changeValue(int to){
-		StatChangeEvent event = new StatChangeEvent(this, to);
-		Bukkit.getPluginManager().callEvent(event);
-		if(!event.isCancelled()){
-			value = event.getNewValue();
+	private synchronized void changeValue(int to){
+			value = to;
 			archive = true;
-		}
 	}
 
 
@@ -134,7 +126,7 @@ public class StaticPlayerStat implements PlayerStat{
 
 
 
-    public void archive() {
+    public synchronized void archive() {
         archive=true;
         
     }

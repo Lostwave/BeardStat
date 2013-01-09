@@ -6,8 +6,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
+import net.dragonzone.promise.Promise;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Zombie;
 
 /**
  * translates a material to the metadata to capture.
@@ -37,7 +41,8 @@ public class MetaDataCapture {
         mats.put(Material.LEAVES          ,0x3);
         mats.put(Material.SAPLING         ,0x3);
         mats.put(Material.DEAD_BUSH       ,0x3);
-
+        mats.put(Material.FLOWER_POT, 0xF);
+        
         //ART
         mats.put(Material.INK_SACK        ,0xF);
         mats.put(Material.WOOL            ,0xF);
@@ -59,19 +64,43 @@ public class MetaDataCapture {
         mats.put(Material.SANDSTONE       ,0x3);
     }
 
-
-    public static void saveMetaDataStat(PlayerStatBlob blob,String category,Material material,int dataValue,int value){
-        String matName = material.toString().toLowerCase().replace("_","");
-        blob.getStat(category, matName).incrementStat(value);
-        if(mats.containsKey(material)){
-            String tag = "_" + (dataValue & mats.get(material));
-            blob.getStat(category, matName + tag).incrementStat(value);
-        }
-        if(material.isRecord()){
-            blob.getStat(category, "records").incrementStat(value);
-            
+    public static void addData(int typeid, int mask){
+        Material m = Material.getMaterial(typeid);
+        if(m!=null){
+            mats.put(m, mask);
         }
     }
+
+
+    public static void saveMetaDataMaterialStat(Promise<PlayerStatBlob> blob,String category,Material material,int dataValue,int value){
+        String matName = material.toString().toLowerCase().replace("_","");
+        
+        blob.onResolve(new DelegateIncrement(category, matName,value));
+        if(mats.containsKey(material)){
+            String tag = "_" + (dataValue & mats.get(material));
+            blob.onResolve(new DelegateIncrement(category, matName + tag,value));
+        }
+        if(material.isRecord()){
+            blob.onResolve(new DelegateIncrement(category, "records",value));
+
+        }
+    }
+
+    public static void saveMetaDataEntityStat(Promise<PlayerStatBlob> blob,String category,Entity entity,int value){
+        String entityName = entity.getType().toString().toLowerCase().replace("_","");
+        blob.onResolve(new DelegateIncrement(category, entityName,value));
+
+        if(entity instanceof Skeleton){
+            blob.onResolve(new DelegateIncrement(category, ((Skeleton)entity).getSkeletonType().toString().toLowerCase() + "_" + entityName,value));
+        }
+
+        if(entity instanceof Zombie){
+            if(((Zombie)entity).isVillager()){
+                blob.onResolve(new DelegateIncrement(category, "villager_zombie",value));
+            }
+        }
+    }
+
 
 
     public static void dumpData(){
@@ -82,18 +111,18 @@ public class MetaDataCapture {
             for(int i = 0;i<16;i++){
                 String s = m.toString().toLowerCase().replace("_","") + "_" + (i & k);
                 if(!lines.contains(s)){
-                lines.add(s);
-                System.out.println("<ul>" + s + "</ul>");
+                    lines.add(s);
+                    System.out.println("<ul>" + s + "</ul>");
                 }
             }
         }
-        
+
     }
     public static boolean hasMetaData(Material mat){
         return mats.containsKey(mat);
-        
+
 
     }
-    
+
 
 }

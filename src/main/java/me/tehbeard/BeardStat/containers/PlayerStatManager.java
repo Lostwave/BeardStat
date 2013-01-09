@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.DataProviders.IStatDataProvider;
+import net.dragonzone.promise.Delegate;
+import net.dragonzone.promise.Promise;
 
 import java.util.Map.Entry;
 
@@ -22,7 +24,7 @@ import org.bukkit.entity.Player;
  */
 public class PlayerStatManager implements CommandExecutor {
 
-    private HashMap<String,PlayerStatBlob> cache = new HashMap<String,PlayerStatBlob>();
+    private HashMap<String,Promise<PlayerStatBlob>> cache = new HashMap<String,Promise<PlayerStatBlob>>();
     private IStatDataProvider backendDatabase = null;
 
 
@@ -36,18 +38,21 @@ public class PlayerStatManager implements CommandExecutor {
      */
     public void saveCache(){
         if(backendDatabase == null){return;}
-        Iterator<Entry<String, PlayerStatBlob>> i = cache.entrySet().iterator();
+        Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
 
         while(i.hasNext()){
-            Entry<String, PlayerStatBlob> entry = i.next();
+            Entry<String, Promise<PlayerStatBlob>> entry = i.next();
             String player = entry.getKey();
+            if(!entry.getValue().isResolved()){
+                continue;
+            }
 
             int seconds = getSessionTime(player);
 
             BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +seconds);
-            entry.getValue().getStat("stats","playedfor").incrementStat(seconds);
+            entry.getValue().getValue().getStat("stats","playedfor").incrementStat(seconds);
 
-            backendDatabase.pushPlayerStatBlob(getPlayerBlob(player));
+            backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
 
             if(isPlayerOnline(player)){
                 setLoginTime(player,System.currentTimeMillis());
@@ -82,29 +87,43 @@ public class PlayerStatManager implements CommandExecutor {
      * @param name
      * @return
      */
-    public PlayerStatBlob getPlayerBlob(String name){
+    public Promise<PlayerStatBlob> getPlayerBlobASync(String name){
         if(backendDatabase == null){return null;}
         if(!cache.containsKey(name)){
             cache.put(name,backendDatabase.pullPlayerStatBlob(name));
         }
         return cache.get(name);
     }
+    
+    public PlayerStatBlob getPlayerBlob(String name){
+        return getPlayerBlobASync(name).getValue();
+    }
+    
     /**
      * Finds a player's stat blob, but does not try to make it
      * @param name player to find
      * @return The player's stat blob or a null if not found
      */
-    public PlayerStatBlob findPlayerBlob(String name){
+    public Promise<PlayerStatBlob> findPlayerBlobASync(final String name){
         if(backendDatabase == null){return null;}
         if(!cache.containsKey(name)){
-            PlayerStatBlob pbs = backendDatabase.pullPlayerStatBlob(name,false);
-            if(pbs==null){
-                return null;
-            }
-            cache.put(name,pbs);
+            Promise<PlayerStatBlob> pbs = backendDatabase.pullPlayerStatBlob(name,false);
+            pbs.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
+                
+                public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
+                    cache.put(name, params);
+                    return null;
+                }
+            });
+            return pbs;
         }
         return cache.get(name);
     }
+    
+    public PlayerStatBlob findPlayerBlob(String name){
+        return findPlayerBlobASync(name).getValue();
+    }
+    
     public void flush(){
 
         backendDatabase.flush();
@@ -147,10 +166,10 @@ public class PlayerStatManager implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String lbl,
             String[] args) {
-        Iterator<Entry<String, PlayerStatBlob>> i = cache.entrySet().iterator();
+        Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
         sender.sendMessage("Players in Stat cache");
         while(i.hasNext()){
-            Entry<String, PlayerStatBlob> entry = i.next();
+            Entry<String, Promise<PlayerStatBlob>> entry = i.next();
             String player = entry.getKey();
             sender.sendMessage(ChatColor.GOLD + player);
         }

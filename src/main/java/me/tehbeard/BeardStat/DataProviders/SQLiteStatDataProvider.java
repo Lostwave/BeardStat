@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.dragonzone.promise.Deferred;
+import net.dragonzone.promise.Promise;
+
 
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -136,12 +139,12 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
 
 
 
-    public PlayerStatBlob pullPlayerStatBlob(String player) {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
         return pullPlayerStatBlob(player,true);
     }
 
-    public PlayerStatBlob pullPlayerStatBlob(String player, boolean create) {
-        try {
+    public Promise<PlayerStatBlob> pullPlayerStatBlob(final String player, final boolean create) {
+        /*try {
 
             long t1 = (new Date()).getTime();
             PlayerStatBlob pb = null;
@@ -161,11 +164,48 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
             BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
             if(pb.getStats().size()==0 && create==false){return null;}
 
-            return pb;
+            return new Deferred<PlayerStatBlob>(pb);
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
         }
-        return null;
+        return null;*/
+        
+        final Deferred<PlayerStatBlob> promise = new Deferred<PlayerStatBlob>();
+
+        Runnable run = new Runnable() {
+            
+            public void run() {
+                try {
+                    long t1 = (new Date()).getTime();
+                    PlayerStatBlob pb = null;
+
+                    //try to pull it from the db
+                    prepGetAllPlayerStat.setString(1, player);
+                    ResultSet rs = prepGetAllPlayerStat.executeQuery();
+                    pb = new PlayerStatBlob(player,"");
+                    while(rs.next()){
+                        //`category`,`stat`,`value`
+                        PlayerStat ps = pb.getStat(rs.getString(2),rs.getString(3));
+                        ps.setValue(rs.getInt(4));
+                        ps.archive();
+                    }
+                    rs.close();
+
+                    BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
+                    if(pb.getStats().size()==0 && create==false){promise.resolve(null);}
+
+                    promise.resolve(pb);
+                } catch (SQLException e) {
+                    BeardStat.mysqlError(e);
+                }
+                promise.resolve(null);
+                
+            }
+        };
+        
+        new Thread(run).start();
+        
+        return promise;
     }
 
     public void pushPlayerStatBlob(PlayerStatBlob player) {
