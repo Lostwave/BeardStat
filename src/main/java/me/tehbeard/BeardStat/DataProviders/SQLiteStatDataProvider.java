@@ -192,13 +192,13 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
                     rs.close();
 
                     BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-                    if(pb.getStats().size()==0 && create==false){promise.resolve(null);}
+                    if(pb.getStats().size()==0 && create==false){promise.resolve(null);return;}
 
-                    promise.resolve(pb);
+                    promise.resolve(pb);return;
                 } catch (SQLException e) {
                     BeardStat.mysqlError(e);
                 }
-                promise.resolve(null);
+                promise.resolve(null);return;
                 
             }
         };

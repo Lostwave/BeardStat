@@ -203,6 +203,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                     if(!checkConnection()){
                         BeardStat.printCon("ERROR");
                         promise.resolve(null);
+                        return;
                     }
                     long t1 = (new Date()).getTime();
                     PlayerStatBlob pb = null;
@@ -220,13 +221,13 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                     rs.close();
 
                     BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-                    if(pb.getStats().size()==0 && create==false){promise.resolve(null);}
+                    if(pb.getStats().size()==0 && create==false){promise.resolve(null);return;}
 
-                    promise.resolve(pb);
+                    promise.resolve(pb);return;
                 } catch (SQLException e) {
                     BeardStat.mysqlError(e);
                 }
-                promise.resolve(null);
+                promise.resolve(null);return;
                 
             }
         };
