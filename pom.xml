@@ -11,6 +11,7 @@
 		<project.plugin.flavour>ASync Ambrosia</project.plugin.flavour>
 		<project.plugin.version>${project.version}-${project.plugin.flavour}</project.plugin.version>
 		<project.config.version>3</project.config.version>
+		<project.database.version>1.0.0</project.database.version>
 	</properties>
 
 	<repositories>
