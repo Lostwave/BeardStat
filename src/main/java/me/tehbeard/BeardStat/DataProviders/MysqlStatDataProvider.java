@@ -150,7 +150,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
                         " `stat` varchar(32) NOT NULL DEFAULT '-',"+
                         " `value` int(11) NOT NULL DEFAULT '0',"+
                         " PRIMARY KEY (`player`,`category`,`stat`)"+
-                        ") ENGINE=InnoDB DEFAULT COMMENT = 'version:${project.database.version}' CHARSET=latin1;");
+                        ") ENGINE=InnoDB COMMENT='version:${project.database.version}' DEFAULT CHARSET=latin1;");
 
                 ps.executeUpdate();
                 ps.close();
