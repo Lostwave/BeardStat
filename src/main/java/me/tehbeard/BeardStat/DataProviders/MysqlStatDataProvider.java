@@ -1,5 +1,6 @@
 package me.tehbeard.BeardStat.DataProviders;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +17,8 @@ import net.dragonzone.promise.Promise;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -97,12 +100,17 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
 		try {
 			conn = DriverManager.getConnection(conUrl,conStr);
-
-			DatabaseMetaData metadata = conn.getMetaData();
-			ResultSet tableData = metadata.getTables(null, null, table, null);
-			if(tableData.next()){
-				BeardStat.printCon("Database version: " + tableData.getString("REMARKS"));
+			
+			String getVersion = "SELECT table_comment FROM INFORMATION_SCHEMA.TABLES WHERE table_schema =  '" + database + "' AND table_name =  '" + table + "'";
+			PreparedStatement getVersionCall = conn.prepareStatement(getVersion);
+			ResultSet rs = getVersionCall.executeQuery();
+			
+			if(rs.next()){
+				String ver = rs.getString(1);
+				ver = ver.replace("version:", "");
+				BeardStat.printCon("Database version: " + ver);
 			}
+			rs.close();
 
 			//conn.setAutoCommit(false);
 		} catch (SQLException e) {
