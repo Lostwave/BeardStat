@@ -60,13 +60,15 @@ public class StatPlayerListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement("stats","login",1));
-        //promiseblob.onResolve(new DelegateSet("stats","login",(int)(System.currentTimeMillis()/1000L)));
+        promiseblob.onResolve(new DelegateSet("stats","lastlogin",(int)(System.currentTimeMillis()/1000L)));
         promiseblob.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
 
             public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
                 if(!params.getValue().hasStat("stats", "firstlogin")){
-                    params.getValue().getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
+                    params.getValue().getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));
+                    
                 }
+                
                 return null;
             }
         });

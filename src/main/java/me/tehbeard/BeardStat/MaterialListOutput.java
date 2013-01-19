@@ -24,7 +24,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.material.Dye;
+import org.bukkit.material.FlowerPot;
 import org.bukkit.material.Leaves;
+import org.bukkit.material.LongGrass;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Sandstone;
 import org.bukkit.material.SmoothBrick;
@@ -61,34 +63,39 @@ public class MaterialListOutput {
 	}
 
 
-	private static Map<Class<? extends MaterialData>,Method> readers = new HashMap<Class<? extends MaterialData>, Method>();
+	private static Map<Class<? extends MaterialData>,String> readers = new HashMap<Class<? extends MaterialData>, String>();
 
 	static{
-		try {
-			readers.put(Dye.class, Dye.class.getMethod("getColor"));
-			readers.put(Wool.class, Wool.class.getMethod("getColor"));
-			readers.put(Leaves.class, Leaves.class.getMethod("getSpecies"));
-			readers.put(Tree.class, Tree.class.getMethod("getSpecies"));
-			readers.put(WoodenStep.class, WoodenStep.class.getMethod("getSpecies"));
-			readers.put(Step.class, Step.class.getMethod("getMaterial"));
-			readers.put(SmoothBrick.class, SmoothBrick.class.getMethod("getMaterial"));
-			readers.put(Sandstone.class,Sandstone.class.getMethod("getType"));
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+			readers.put(Dye.class, "getColor");
+			readers.put(Wool.class, "getColor");
+			readers.put(Leaves.class,"getSpecies");
+			readers.put(Tree.class,"getSpecies");
+			readers.put(WoodenStep.class,"getSpecies");
+			readers.put(LongGrass.class,"getSpecies");
+			readers.put(Step.class,"getMaterial");
+			readers.put(SmoothBrick.class, "getMaterial");
+			readers.put(Sandstone.class,"getType");
+			readers.put(FlowerPot.class,"getContents");
+			
+		
 	}
 	private static String getDataBasedName(Material m,byte data){
 		MaterialData md = m.getNewData(data);
 		try {
-			Method method = readers.get(md.getClass());
+			Method method = md.getClass().getMethod(readers.get(md.getClass()));
+			
 			if(method == null){return "";}
 
 			//System.out.println(m + "" + data);
-			return method.invoke(md,null).toString();
+			Object o =method.invoke(md,null);
+			if(o instanceof MaterialData){
+				return ((MaterialData)o).getItemType().toString().toLowerCase();
+			}
+			else
+			{
+				return o.toString();
+			}
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,6 +103,12 @@ public class MaterialListOutput {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}catch(NullPointerException e){
@@ -171,7 +184,8 @@ public class MaterialListOutput {
 			}
 		}
 
-		materialOutputList.store(new FileWriter(new File("out.properties")), "BeardStat data mapping");
+		//materialOutputList.store(new FileWriter(new File("out.properties")), "BeardStat data mapping");
+		materialOutputList.store(System.out, "BeardStat data mapping");
 
 
 	}

@@ -40,7 +40,7 @@ public class MetaDataCapture {
         mats.put(Material.LOG             ,0x3);
         mats.put(Material.LEAVES          ,0x3);
         mats.put(Material.SAPLING         ,0x3);
-        mats.put(Material.DEAD_BUSH       ,0x3);
+        mats.put(Material.LONG_GRASS       ,0x3);
         mats.put(Material.FLOWER_POT, 0xF);
         
         //ART
