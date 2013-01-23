@@ -104,7 +104,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			String getVersion = "SELECT table_comment FROM INFORMATION_SCHEMA.TABLES WHERE table_schema =  '" + database + "' AND table_name =  '" + table + "'";
 			PreparedStatement getVersionCall = conn.prepareStatement(getVersion);
 			
-			String setVersion = "ALTER " + table + " COMMENT = ?";
+			String setVersion = "ALTER TABLE " + table + " COMMENT = ?";
 			PreparedStatement setVersionCall = conn.prepareStatement(setVersion);
 			
 			ResultSet rs = getVersionCall.executeQuery();
