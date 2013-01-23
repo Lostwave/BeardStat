@@ -103,11 +103,21 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			
 			String getVersion = "SELECT table_comment FROM INFORMATION_SCHEMA.TABLES WHERE table_schema =  '" + database + "' AND table_name =  '" + table + "'";
 			PreparedStatement getVersionCall = conn.prepareStatement(getVersion);
+			
+			String setVersion = "ALTER " + table + " COMMENT = ?";
+			PreparedStatement setVersionCall = conn.prepareStatement(setVersion);
+			
 			ResultSet rs = getVersionCall.executeQuery();
 			
 			if(rs.next()){
 				String ver = rs.getString(1);
 				ver = ver.replace("version:", "");
+				ver = ver.replace(" ", "");
+				if(ver.length() == 0){
+					setVersionCall.setString(1, "version:1.0.0");
+					setVersionCall.execute();
+					ver = "1.0.0";
+				}
 				BeardStat.printCon("Database version: " + ver);
 				
 				String[] v = ver.split("\\.");
