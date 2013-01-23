@@ -114,7 +114,8 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 				ver = ver.replace("version:", "");
 				ver = ver.replace(" ", "");
 				if(ver.length() == 0){
-					setVersionCall.setString(1, "version:1.0.0");
+					BeardStat.printCon("No version information found!, defaulting to current database version number.");
+					setVersionCall.setString(1, "version:${project.database.version}");
 					setVersionCall.execute();
 					ver = "1.0.0";
 				}
