@@ -3,7 +3,6 @@ package com.tehbeard.lang;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 
@@ -16,12 +15,15 @@ public class LanguagePack {
 		db.load(in);
 	}
 	
-	public static String getMsg(String code){
+	private static String _getMsg(String code){
 		return db.getProperty(code);
+	}
+	public static String getMsg(String code){
+		return colorFormat(_getMsg(code));
 	}
 	
 	public static String getMsg(String code,Object... args){
-		return colorFormat(String.format(getMsg(code),args));
+		return colorFormat(String.format(_getMsg(code),args));
 	}
 	
 	
@@ -33,7 +35,8 @@ public class LanguagePack {
 	}
 	
 	public static void main(String[] main){
-		System.out.println(colorFormat("[A]hello"));
+		String s = String.format("[A]hello%1s"," foobar");
+		System.out.println(colorFormat(s));
 	}
 
 }

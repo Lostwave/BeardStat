@@ -1,7 +1,5 @@
 package me.tehbeard.BeardStat.commands;
 
-
-
 import java.util.List;
 
 import me.tehbeard.BeardStat.BeardStat;
@@ -14,6 +12,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.tehbeard.lang.LanguagePack;
 
 public class playedCommand implements CommandExecutor {
 
@@ -32,8 +32,8 @@ public class playedCommand implements CommandExecutor {
 			BeardStat.sendNoPermissionError(sender);
 			return true;
 		}
-		
-		
+
+
 		// they put a player name, try and find out who it is.
 		if(args.length == 1){
 			if(!BeardStat.hasPermission(sender, "command.played.other")){
@@ -64,7 +64,7 @@ public class playedCommand implements CommandExecutor {
 			}
 			else
 			{
-				sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.");
+				sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noconsole.noargs"));
 				return true;
 			}
 		}
@@ -88,36 +88,33 @@ public class playedCommand implements CommandExecutor {
 		if(blob != null && blob.getStat("stats", "playedfor").getValue() != 0){
 			sender.sendMessage(ChatColor.GOLD + blob.getName());
 			seconds += blob.getStat("stats","playedfor").getValue() + BeardStat.self().getStatManager().getSessionTime(pp.getName());
-	     	sender.sendMessage(GetPlayedString(seconds));
-	     	return true;
+			sender.sendMessage(GetPlayedString(seconds));
+			return true;
 		}                   
 		else
 		{
-			sender.sendMessage(ChatColor.RED + "Cannot find a player named " + args[0]);
+			sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer",args[0]));
 			return true;
 		}
 
-	
-}
 
-public static String GetPlayedString(long seconds){
-	String output = "";
-	if(seconds > 0){
-		int weeks   = (int) seconds / 604800;
-		int days = (int)Math.ceil((seconds -604800*weeks) / 86400);
-		int hours = (int)Math.ceil((seconds - (86400 * days + 604800*weeks)) / 3600);
-		int minutes = (int)Math.ceil((seconds - (604800*weeks + 86400 * days + 3600 * hours)) / 60);
-
-		output = ChatColor.LIGHT_PURPLE + "playtime: " + ChatColor.WHITE+ 
-				weeks + ChatColor.LIGHT_PURPLE +  " wks " + ChatColor.WHITE +
-				days + ChatColor.LIGHT_PURPLE + " days " + ChatColor.WHITE+
-				hours + ChatColor.LIGHT_PURPLE + " hours " + ChatColor.WHITE+
-				minutes + ChatColor.LIGHT_PURPLE + " mins ";
-	}
-	else{
-		BeardStat.printDebugCon("Play time returned 0");
 	}
 
-	return output;
-}
+	public static String GetPlayedString(long seconds){
+		String output = LanguagePack.getMsg("command.played.zero");
+		if(seconds > 0){
+			int weeks   = (int) seconds / 604800;
+			int days = (int)Math.ceil((seconds -604800*weeks) / 86400);
+			int hours = (int)Math.ceil((seconds - (86400 * days + 604800*weeks)) / 3600);
+			int minutes = (int)Math.ceil((seconds - (604800*weeks + 86400 * days + 3600 * hours)) / 60);
+
+			output = LanguagePack.getMsg("command.played.output",  
+					weeks ,
+					days  ,
+					hours ,
+					minutes);
+		}
+
+		return output;
+	}
 }
