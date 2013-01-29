@@ -76,9 +76,6 @@ public class playedCommand implements CommandExecutor {
                 }
                 seconds = playerStatManager.getPlayerBlob(((Player)sender).getName()).getStat("stats","playedfor").getValue() + BeardStat.self().getStatManager().getSessionTime(((Player)sender).getName());
               }
-              else{
-                 sender.sendMessage(ChatColor.RED + "You cannot run this command from the console with no arguments, you must specify a player name.");
-              }
         }
 
         sender.sendMessage(GetPlayedString(seconds));
@@ -99,9 +96,6 @@ public class playedCommand implements CommandExecutor {
                     days + ChatColor.LIGHT_PURPLE + " days " + ChatColor.WHITE+
                     hours + ChatColor.LIGHT_PURPLE + " hours " + ChatColor.WHITE+
                     minutes + ChatColor.LIGHT_PURPLE + " mins ";
-        }
-        else{
-            BeardStat.printDebugCon("Play time returned 0");
         }
         
         return output;

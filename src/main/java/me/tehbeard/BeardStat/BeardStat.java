@@ -30,6 +30,8 @@ import org.bukkit.permissions.Permissible;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.tehbeard.lang.LanguagePack;
+
 
 /**
  * BeardStat Statistic's tracking for the gentleman server
@@ -287,7 +289,7 @@ public class BeardStat extends JavaPlugin {
     
 
     public static void sendNoPermissionError(CommandSender sender){
-        sendNoPermissionError(sender, "You don't have permission to use that command.");
+        sendNoPermissionError(sender, LanguagePack.getMsg("error.permission"));
     }
 
     public static void sendNoPermissionError(CommandSender sender, String message){
@@ -311,7 +313,7 @@ public class BeardStat extends JavaPlugin {
         case 1042:self.getLogger().severe("Cannot find hostname provided");break;
         case 1044:
         case 1045:self.getLogger().severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this remote machine");break;
-        case 1049:self.getLogger().severe("Cannot locate datavase, check you spelt it correctly and username has access rights.");break;
+        case 1049:self.getLogger().severe("Cannot locate database, check you spelt it correctly and username has access rights.");break;
 
         default:self.getLogger().severe("Error code not found, either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");break; 
         }

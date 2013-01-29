@@ -103,6 +103,7 @@ public class StatCommand implements CommandExecutor {
                 
                 if(blob.hasStat(stat.split("\\.")[0], stat.split("\\.")[1])){
                     sender.sendMessage(ChatColor.GOLD + stat + " = " + ChatColor.WHITE + FormatFactory.formatStat( blob.getStat(stat.split("\\.")[0], stat.split("\\.")[1])));
+                    return true;
                 }
                 else
                 {

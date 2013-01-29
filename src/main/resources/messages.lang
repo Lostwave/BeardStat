@@ -1,0 +1,10 @@
+#permission error
+error.permission = You don't have permission to use that command.
+#Database error messages
+db.error.hostname = Cannot find/connect to hostname provided
+db.error.connect = Cannot connect to database, check user credentials, database exists and that user is able to log in from this remote machine
+db.error.database = Cannot locate database, check you spelt it correctly and username has access rights.
+db.error.other = Error code not found, either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page
+#
+command.error.noplayer = player %1 not found
+command.played.output = [d]playtime:[f] $1 [d]wks[f] $2 [d]days[f] $3 [d]hours[f] $4 [d]mins[f]
