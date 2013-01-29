@@ -338,6 +338,25 @@ public class StatPlayerListener implements Listener {
                     if(clickedBlock.getType().equals(Material.CHEST)){
                         promiseblob.onResolve(new DelegateIncrement("stats","openchest",1));
                     }
+                    if(clickedBlock.getType().equals(Material.FLOWER_POT) && action == Action.RIGHT_CLICK_BLOCK && clickedBlock.getData() == 0){
+                    	Material[] m = {
+                    			Material.RED_ROSE,
+                    			Material.YELLOW_FLOWER,
+                    			Material.SAPLING,
+                    			Material.RED_MUSHROOM,
+                    			Material.BROWN_MUSHROOM,
+                    			Material.CACTUS,
+                    			Material.DEAD_BUSH};
+                    	if(item == null){return;}
+                    	for(Material mm : m){
+                    		
+                    		if(mm.equals(item.getType())){
+                    			MetaDataCapture.saveMetaDataMaterialStat(promiseblob, "plant", mm, item.getDurability(), 1);
+                    		}
+                    	}
+                    	
+                        
+                    }
 
 
                 }
