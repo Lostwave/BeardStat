@@ -247,16 +247,18 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 					prepGetAllPlayerStat.setString(1, player);
 					ResultSet rs = prepGetAllPlayerStat.executeQuery();
 					pb = new PlayerStatBlob(player,"");
+					boolean foundStats = false;
 					while(rs.next()){
 						//`category`,`stat`,`value`
 						PlayerStat ps = pb.getStat(rs.getString(2),rs.getString(3));
 						ps.setValue(rs.getInt(4));
 						ps.archive();
+						foundStats = true;
 					}
 					rs.close();
 
 					BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-					if(pb.getStats().size()==0 && create==false){promise.resolve(null);return;}
+					if(!foundStats && create==false){promise.resolve(null);return;}
 
 					promise.resolve(pb);return;
 				} catch (SQLException e) {
