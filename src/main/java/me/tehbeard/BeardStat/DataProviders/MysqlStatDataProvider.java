@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
@@ -49,10 +51,10 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 	private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
 
-	private WorkQueue loadQueue = new WorkQueue(1);
+	//private WorkQueue loadQueue = new WorkQueue(1);
+	private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
 
 	public MysqlStatDataProvider(String host,int port,String database,String table,String username,String password) throws SQLException{
-
 		this.host = host;
 		this.port = port;
 		this.database = database;

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
@@ -40,7 +42,8 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
     
-    private WorkQueue loadQueue = new WorkQueue(1);
+    //private WorkQueue loadQueue = new WorkQueue(1);
+	private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
 
     public SQLiteStatDataProvider(String filename,String table) throws SQLException{
 
