@@ -90,6 +90,7 @@
 					<include>plugin.yml</include>
 					<include>config.yml</include>
 					<include>interactive.yml</include>
+					<include>messages.lang</include>
 				</includes>
 			</resource>
 
