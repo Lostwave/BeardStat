@@ -25,12 +25,12 @@
 			<url>http://dev.escapecraft.com/maven/</url>
 		</repository>
 
-		<repository>
+		<!--<repository>
 			<snapshots />
 			<id>snapshots</id>
 			<name>deferred-snapshot</name>
 			<url>https://maven.dragonzone.net/artifactory/libs-snapshot</url>
-		</repository>
+		</repository>-->
 
 	</repositories>
 
