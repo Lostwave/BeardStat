@@ -26,6 +26,19 @@ public class playedCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
 		long seconds = 0;
 		Player pp = null;
+		
+		if (args.length == 0){
+			//check if we are a player, and use them instead
+			if(sender instanceof Player){
+				pp = (Player)sender;
+			}
+			else
+			{
+				sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noconsole.noargs"));
+				return true;
+			}
+		}
+		
 
 		//if they don't have permission, BAD PERSON GO AWAY
 		if(!BeardStat.hasPermission((Player)sender, "command.played")){
@@ -57,17 +70,7 @@ public class playedCommand implements CommandExecutor {
 
 			}
 		}
-		else if (args.length == 0){
-			//check if we are a player, and use them instead
-			if(sender instanceof Player){
-				pp = (Player)sender;
-			}
-			else
-			{
-				sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noconsole.noargs"));
-				return true;
-			}
-		}
+
 		else//Funky number of arguments, return false
 		{
 			return false;
