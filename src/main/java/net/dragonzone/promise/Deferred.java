@@ -149,7 +149,7 @@ public class Deferred<T> implements Promise<T>, Runnable {
         // Counter, for tracking how many promises have resolved
         final AtomicInteger numResolved = new AtomicInteger();
         // The multi-promise, which will only be resolved when all the other promises have been resolved
-        final Deferred<Promise<?>[]> promise = new Deferred<>();
+        final Deferred<Promise<?>[]> promise = new Deferred<Promise<?>[]>();
         Delegate<Void, Promise<Object>> handler = new Delegate<Void, Promise<Object>>() {
             @Override
             public <P extends Promise<Object>> Void invoke(P params) {
@@ -180,15 +180,15 @@ public class Deferred<T> implements Promise<T>, Runnable {
         return promise;
     }
 
-    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> progressCallbacks = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> resolveCallbacks  = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> rejectCallbacks   = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> alwaysCallbacks   = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> progressCallbacks = new ConcurrentLinkedQueue<Delegate<Void, Promise<T>>>();
+    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> resolveCallbacks  = new ConcurrentLinkedQueue<Delegate<Void, Promise<T>>>();
+    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> rejectCallbacks   = new ConcurrentLinkedQueue<Delegate<Void, Promise<T>>>();
+    private ConcurrentLinkedQueue<Delegate<Void, Promise<T>>> alwaysCallbacks   = new ConcurrentLinkedQueue<Delegate<Void, Promise<T>>>();
     /**
      * The current state of this <code>Deferred</code>. It starts as {@link State#DEFERRED DEFERRED} and will change
      * only once into either {@link State#REJECTED REJECTED} or {@link State#RESOVLED RESOVLED}.
      */
-    private AtomicReference<Promise.State>                    state             = new AtomicReference<>(Promise.State.DEFERRED);
+    private AtomicReference<Promise.State>                    state             = new AtomicReference<Promise.State>(Promise.State.DEFERRED);
     /**
      * The value that this <code>Deferred</code> was resolved with, if the promise was resolved. If the promise was
      * rejected or has not completed yet, then this value is undefined.
