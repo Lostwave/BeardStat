@@ -10,5 +10,5 @@ command.error.noplayer = player %1s not found
 command.error.noconsole = This command cannot be run from console
 command.error.noconsole.noargs = This command cannot be run from console with no arguments
 #command output
-command.played.output = [d]playtime:[f] %1s [d]wks[f] %2s [d]days[f] %3s [d]hours[f] %4s [d]mins[f]
-command.played.zero = [d]Playtime:[f] No playtime recorded 
+command.played.output = [D]playtime:[F] %1s [D]wks[F] %2s [D]days[F] %3s [D]hours[F] %4s [D]mins[F]
+command.played.zero = [D]Playtime:[F] No playtime recorded 
