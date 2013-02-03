@@ -347,7 +347,6 @@ public class StatPlayerListener implements Listener {
                     			Material.BROWN_MUSHROOM,
                     			Material.CACTUS,
                     			Material.DEAD_BUSH};
-                    	if(item == null){return;}
                     	for(Material mm : m){
                     		
                     		if(mm.equals(item.getType())){

@@ -3,7 +3,6 @@ package me.tehbeard.BeardStat;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,6 +38,9 @@ import org.bukkit.potion.PotionType;
 public class MaterialListOutput {
 
 	private static Properties materialOutputList = new Properties() {
+
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Set<Object> keySet(){
 			return Collections.unmodifiableSet(new TreeSet<Object>(super.keySet()));
@@ -88,7 +90,7 @@ public class MaterialListOutput {
 			if(method == null){return "";}
 
 			//System.out.println(m + "" + data);
-			Object o =method.invoke(md,null);
+			Object o =method.invoke(md);
 			if(o instanceof MaterialData){
 				return ((MaterialData)o).getItemType().toString().toLowerCase();
 			}

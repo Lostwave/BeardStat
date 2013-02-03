@@ -122,9 +122,9 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 				BeardStat.printCon("Database version: " + ver);
 				
 				String[] v = ver.split("\\.");
-				int major = Integer.parseInt(v[0]);
-				int minor = Integer.parseInt(v[1]);
-				int patch = Integer.parseInt(v[2]);
+				int dbMajor = Integer.parseInt(v[0]);
+				int dbMinor = Integer.parseInt(v[1]);
+				int dbPatch = Integer.parseInt(v[2]);
 				if(v.length!=3){
 					BeardStat.printCon("VERSION NOT FOUND");
 				}
