@@ -236,8 +236,8 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			public void run() {
 				try {
 					if(!checkConnection()){
-						BeardStat.printCon("ERROR");
-						promise.resolve(null);
+						BeardStat.printCon("Database connection error!");
+						promise.reject(new SQLException("Error connecting to database"));
 						return;
 					}
 					long t1 = (new Date()).getTime();

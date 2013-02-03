@@ -43,6 +43,16 @@ public class PlayerStatManager implements CommandExecutor {
 		while(i.hasNext()){
 			Entry<String, Promise<PlayerStatBlob>> entry = i.next();
 			String player = entry.getKey();
+			
+			//check if rejected promise, remove from cache silently
+			if(entry.getValue().isRejected()){
+				BeardStat.printDebugCon("Promise[" + player + "] rejected, removing from cache");//alert debug dump
+				i.remove();//clear it out
+				continue;//Skip now
+			}
+			
+			
+			//skip if not resolved
 			if(!entry.getValue().isResolved()){
 				continue;
 			}
