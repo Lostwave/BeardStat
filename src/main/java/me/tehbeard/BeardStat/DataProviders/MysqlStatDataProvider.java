@@ -20,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.NoRecordFoundException;
 import me.tehbeard.BeardStat.containers.PlayerStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.StaticPlayerStat;
@@ -240,12 +241,14 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 						return;
 					}
 					long t1 = (new Date()).getTime();
-					PlayerStatBlob pb = null;
+					
 
 					//try to pull it from the db
 					prepGetAllPlayerStat.setString(1, player);
 					ResultSet rs = prepGetAllPlayerStat.executeQuery();
-					pb = new PlayerStatBlob(player,"");
+					
+					PlayerStatBlob pb = new PlayerStatBlob(player,"");
+					
 					boolean foundStats = false;
 					while(rs.next()){
 						//`category`,`stat`,`value`
@@ -257,13 +260,16 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 					rs.close();
 
 					BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-					if(!foundStats && create==false){promise.resolve(null);return;}
+					if(!foundStats && create==false){
+						promise.reject(new NoRecordFoundException());
+						return;}
 
 					promise.resolve(pb);return;
 				} catch (SQLException e) {
 					BeardStat.mysqlError(e);
+					promise.reject(e);
 				}
-				promise.resolve(null);return;
+				
 
 			}
 		};
