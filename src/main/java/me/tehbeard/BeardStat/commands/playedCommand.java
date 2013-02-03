@@ -3,6 +3,7 @@ package me.tehbeard.BeardStat.commands;
 import java.util.List;
 
 import me.tehbeard.BeardStat.BeardStat;
+import me.tehbeard.BeardStat.LanguagePack;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 
@@ -13,7 +14,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.lang.LanguagePack;
 
 public class playedCommand implements CommandExecutor {
 

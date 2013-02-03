@@ -1,6 +1,7 @@
 package me.tehbeard.BeardStat;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.sql.SQLException;
@@ -30,7 +31,6 @@ import org.bukkit.permissions.Permissible;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.tehbeard.lang.LanguagePack;
 
 
 /**
@@ -115,7 +115,20 @@ public class BeardStat extends JavaPlugin {
     }
 
     public void onEnable() {
-
+    	
+    	try {
+    		printCon("Loading default language pack");
+			LanguagePack.load(getResource("messages.lang"));
+			File extLangPack = new File(getDataFolder(),"messages.lang");
+	    	if(extLangPack.exists()){
+	    		printCon("External language pack detected! Loading...");
+	    		LanguagePack.overlay(new FileInputStream(extLangPack));
+	    	}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    	
         //start initialisation
         self = this;
         printCon("Starting BeardStat");
