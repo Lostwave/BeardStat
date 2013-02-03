@@ -1,9 +1,7 @@
 package me.tehbeard.BeardStat.listeners;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import net.dragonzone.promise.Promise;

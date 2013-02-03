@@ -46,7 +46,7 @@ public class PlayerStatManager implements CommandExecutor {
 			
 			//check if rejected promise, remove from cache silently
 			if(entry.getValue().isRejected()){
-				BeardStat.printDebugCon("Promise[" + player + "] rejected, removing from cache");//alert debug dump
+				BeardStat.printCon("Promise[" + player + "] was rejected (error?), removing from cache.");//alert debug dump
 				i.remove();//clear it out
 				continue;//Skip now
 			}
@@ -77,7 +77,7 @@ public class PlayerStatManager implements CommandExecutor {
 			else
 			{
 				//Nulled player data
-				BeardStat.printCon("ALERT! NULL RECORD FOR " + player);
+				BeardStat.printCon("Promise[" + player + "] had a null value! Removed from cache.");
 				i.remove();
 			}
 
