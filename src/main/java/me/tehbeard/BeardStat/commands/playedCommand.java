@@ -41,7 +41,7 @@ public class playedCommand implements CommandExecutor {
 		
 
 		//if they don't have permission, BAD PERSON GO AWAY
-		if(!BeardStat.hasPermission((Player)sender, "command.played")){
+		if(!BeardStat.hasPermission(sender, "command.played")){
 			BeardStat.sendNoPermissionError(sender);
 			return true;
 		}
