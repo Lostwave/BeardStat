@@ -116,7 +116,13 @@ public class BeardStat extends JavaPlugin {
 
     public void onEnable() {
     	
-    	try {
+    	
+    	
+        //start initialisation
+        self = this;
+        printCon("Starting BeardStat");
+
+        try {
     		printCon("Loading default language pack");
 			LanguagePack.load(getResource("messages.lang"));
 			File extLangPack = new File(getDataFolder(),"messages.lang");
@@ -128,11 +134,6 @@ public class BeardStat extends JavaPlugin {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-    	
-        //start initialisation
-        self = this;
-        printCon("Starting BeardStat");
-
 
         //run config updater
         updateConfig();
