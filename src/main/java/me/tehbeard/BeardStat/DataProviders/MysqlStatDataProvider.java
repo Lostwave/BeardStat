@@ -1,6 +1,5 @@
 package me.tehbeard.BeardStat.DataProviders;
 
-import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,9 +16,6 @@ import net.dragonzone.promise.Promise;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 
 import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStat;
@@ -53,6 +49,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 	private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
 
 
+	private WorkQueue loadQueue = new WorkQueue(1);
 
 	public MysqlStatDataProvider(String host,int port,String database,String table,String username,String password) throws SQLException{
 
@@ -269,7 +266,8 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			}
 		};
 
-		new Thread(run).start();
+		
+		loadQueue.execute(run);
 
 		return promise;
 

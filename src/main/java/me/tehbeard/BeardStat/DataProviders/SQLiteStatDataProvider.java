@@ -39,6 +39,8 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement prepGetPlayerList;
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
+    
+    private WorkQueue loadQueue = new WorkQueue(1);
 
     public SQLiteStatDataProvider(String filename,String table) throws SQLException{
 
@@ -205,7 +207,7 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
             }
         };
         
-        new Thread(run).start();
+        loadQueue.execute(run);
         
         return promise;
     }
