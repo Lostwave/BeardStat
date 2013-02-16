@@ -38,13 +38,6 @@ public class playedCommand implements CommandExecutor {
 				return true;
 			}
 		}
-		
-
-		//if they don't have permission, BAD PERSON GO AWAY
-		if(!BeardStat.hasPermission(sender, "command.played")){
-			BeardStat.sendNoPermissionError(sender);
-			return true;
-		}
 
 
 		// they put a player name, try and find out who it is.
@@ -90,7 +83,10 @@ public class playedCommand implements CommandExecutor {
 
 		if(blob != null && blob.getStat("stats", "playedfor").getValue() != 0){
 			sender.sendMessage(ChatColor.GOLD + blob.getName());
-			seconds += blob.getStat("stats","playedfor").getValue() + BeardStat.self().getStatManager().getSessionTime(pp.getName());
+			seconds += blob.getStat("stats","playedfor").getValue();
+			if(pp.isOnline()){
+				 seconds += BeardStat.self().getStatManager().getSessionTime(pp.getName());
+			}
 			sender.sendMessage(GetPlayedString(seconds));
 			return true;
 		}                   
