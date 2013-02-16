@@ -12,3 +12,9 @@ command.error.noconsole.noargs = This command cannot be run from console with no
 #command output
 command.played.output = [D]playtime:[F] %1s [D]wks[F] %2s [D]days[F] %3s [D]hours[F] %4s [D]mins[F]
 command.played.zero = [D]Playtime:[F] No playtime recorded 
+#Interactive mode
+interactive.enter = Entering interactive mode, type /exit to leave interactive mode
+interactive.exit = Leaving interactive stats mode
+interactive.findplayer = Enter a player to lookup
+interactive.select.category = Select a category to view
+interactive.select.stat = Select a statistic to view 
