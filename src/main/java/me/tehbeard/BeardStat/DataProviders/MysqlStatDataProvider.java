@@ -101,36 +101,6 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 		try {
 			conn = DriverManager.getConnection(conUrl,conStr);
 			
-			String getVersion = "SELECT table_comment FROM INFORMATION_SCHEMA.TABLES WHERE table_schema =  '" + database + "' AND table_name =  '" + table + "'";
-			PreparedStatement getVersionCall = conn.prepareStatement(getVersion);
-			
-			String setVersion = "ALTER TABLE " + table + " COMMENT = ?";
-			PreparedStatement setVersionCall = conn.prepareStatement(setVersion);
-			
-			ResultSet rs = getVersionCall.executeQuery();
-			
-			if(rs.next()){
-				String ver = rs.getString(1);
-				ver = ver.replace("version:", "");
-				ver = ver.replace(" ", "");
-				if(ver.length() == 0){
-					BeardStat.printCon("No version information found!, defaulting to current database version number.");
-					setVersionCall.setString(1, "version:${project.database.version}");
-					setVersionCall.execute();
-					ver = "1.0.0";
-				}
-				BeardStat.printCon("Database version: " + ver);
-				
-				String[] v = ver.split("\\.");
-				int dbMajor = Integer.parseInt(v[0]);
-				int dbMinor = Integer.parseInt(v[1]);
-				int dbPatch = Integer.parseInt(v[2]);
-				if(v.length!=3){
-					BeardStat.printCon("VERSION NOT FOUND");
-				}
-			}
-			rs.close();
-
 			//conn.setAutoCommit(false);
 		} catch (SQLException e) {
 			BeardStat.mysqlError(e);
