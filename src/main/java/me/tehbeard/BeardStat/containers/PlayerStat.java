@@ -26,7 +26,27 @@ public interface PlayerStat{
 	 * Get the stats name
 	 * @return
 	 */
-	public String getName();
+	public String getStatistic();
+
+	
+	public String getCat() ;
+
+	public void clearArchive();
+
+	public void archive();
+	
+	public boolean isArchive();
+		
+	public void setOwner(PlayerStatBlob playerStatBlob);
+
+	public PlayerStatBlob getOwner();
+
+	
+	public void setDomain(String domain);
+	public String getDomain();
+	
+	public void setWorld(String world);
+	public String getWorld();
 
 	/**
 	 * Increment the stat by i 
@@ -39,19 +59,5 @@ public interface PlayerStat{
 	 * @param i
 	 */
 	public void decrementStat(int i);
-
-
-	public String getCat() ;
-
-	public void clearArchive();
-
-	public boolean isArchive();
-	
-	public void archive();
-
-	public PlayerStatBlob getOwner();
-
-	public void setOwner(PlayerStatBlob playerStatBlob);
-	
 	
 }

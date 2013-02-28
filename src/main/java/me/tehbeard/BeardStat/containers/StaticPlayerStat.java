@@ -10,7 +10,9 @@ package me.tehbeard.BeardStat.containers;
 public class StaticPlayerStat implements PlayerStat{
 
 	PlayerStatBlob owner = null;
-	private String name;
+	private String domain;
+	private String world;
+	private String statistic;
 	private int value;
 	private String cat="stats";
 
@@ -23,7 +25,7 @@ public class StaticPlayerStat implements PlayerStat{
 	 * @param value inital value
 	 */
 	public StaticPlayerStat(String cat,String name,int value){
-		this.name=name;
+		this.statistic=name;
 		this.value=value;
 		this.cat=cat;
 	}
@@ -50,8 +52,8 @@ public class StaticPlayerStat implements PlayerStat{
 	 * Get the stats name
 	 * @return name of tstat
 	 */
-	public String getName(){
-		return name;
+	public String getStatistic(){
+		return statistic;
 	}
 
 	/**
@@ -121,7 +123,7 @@ public class StaticPlayerStat implements PlayerStat{
 	
 
 	public String toString(){
-	    return cat + "." + name + "=" + value;
+	    return cat + "." + statistic + "=" + value;
 	}
 
 
@@ -130,4 +132,33 @@ public class StaticPlayerStat implements PlayerStat{
         archive=true;
         
     }
+
+
+
+	@Override
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+
+
+	@Override
+	public String getDomain() {
+		// TODO Auto-generated method stub
+		return domain;
+	}
+
+
+
+	@Override
+	public void setWorld(String world) {
+		this.world = world;
+	}
+
+
+
+	@Override
+	public String getWorld() {
+		return world;
+	}
 }

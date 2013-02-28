@@ -12,8 +12,10 @@ import me.tehbeard.utils.expressions.InFixExpression;
 public class DynamicPlayerStat implements PlayerStat {
 
 
-    String cat;
-    String stat;
+	private String domain;
+	private String world;
+    private String cat;
+    private String stat;
     private PlayerStatBlob owner;
     private InFixExpression expression;
     
@@ -45,7 +47,7 @@ public class DynamicPlayerStat implements PlayerStat {
 
 
 
-    public String getName() {
+    public String getStatistic() {
         return stat;
     }
 
@@ -87,4 +89,32 @@ public class DynamicPlayerStat implements PlayerStat {
 
     public void archive() {
     }
+    
+    
+    @Override
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+
+
+	@Override
+	public String getDomain() {
+		// TODO Auto-generated method stub
+		return domain;
+	}
+
+
+
+	@Override
+	public void setWorld(String world) {
+		this.world = world;
+	}
+
+
+
+	@Override
+	public String getWorld() {
+		return world;
+	}
 }

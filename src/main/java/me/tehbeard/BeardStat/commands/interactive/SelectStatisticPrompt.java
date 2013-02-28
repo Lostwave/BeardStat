@@ -34,7 +34,7 @@ public class SelectStatisticPrompt extends ValidatingPrompt implements Configura
         HashSet<String> stats = new HashSet<String>();
         for( PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
             if(ps.getCat().equalsIgnoreCase((String)context.getSessionData("c"))){
-                stats.add(ps.getName());
+                stats.add(ps.getStatistic());
             }
         }
         String msg = "";
@@ -54,7 +54,7 @@ public class SelectStatisticPrompt extends ValidatingPrompt implements Configura
         String player = (String) context.getSessionData("player");
         for(PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
             if(ps.getCat().equalsIgnoreCase((String)context.getSessionData("c"))){
-                if(ps.getName().equalsIgnoreCase(input)){
+                if(ps.getStatistic().equalsIgnoreCase(input)){
                     return true;
                 }
             }

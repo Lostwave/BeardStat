@@ -81,7 +81,7 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 
 		for(PlayerStat stat : player.getStats()){
 			if(stat.isArchive()){
-				nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
+				nodes.put(stat.getCat() + "-" + stat.getStatistic(),stat.getValue());
 			}
 		}
 		database.set("stats.players." + player.getName(), nodes);

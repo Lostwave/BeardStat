@@ -39,7 +39,7 @@ public class FormatFactory{
 
 
     public static String formatStat(PlayerStat stat){
-        String tag = stat.getCat() + "." + stat.getName();
+        String tag = stat.getCat() + "." + stat.getStatistic();
         StatFormatter f = instance.mapping.get(tag);
         if(f!=null){
             return f.format(stat.getValue());

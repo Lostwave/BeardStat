@@ -85,7 +85,7 @@ public class PlayerStatBlob implements VariableProvider{
      */
     public PlayerStat getStat(String cat,String name){
         for(PlayerStat ps: stats){
-            if(ps.getName().equals(name) && ps.getCat().equals(cat)){
+            if(ps.getStatistic().equals(name) && ps.getCat().equals(cat)){
                 return ps;
             }
         }
@@ -104,7 +104,7 @@ public class PlayerStatBlob implements VariableProvider{
 
     public boolean hasStat(String cat,String stat){
         for(PlayerStat ps: stats){
-            if(ps.getName().equals(stat) && ps.getCat().equals(cat)){
+            if(ps.getStatistic().equals(stat) && ps.getCat().equals(cat)){
                 return true;
             }
         }

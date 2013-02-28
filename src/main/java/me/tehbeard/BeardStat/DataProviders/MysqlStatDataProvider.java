@@ -261,7 +261,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			for(PlayerStat ps : player.getStats()){
 				if(ps.isArchive()){
 
-					PlayerStat ns = new  StaticPlayerStat(ps.getCat(),ps.getName(),ps.getValue());
+					PlayerStat ns = new  StaticPlayerStat(ps.getCat(),ps.getStatistic(),ps.getValue());
 					copy.add(ns);
 				}
 			}
@@ -298,7 +298,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 								prepSetPlayerStat.setString(1, entry.getKey());
 
 								prepSetPlayerStat.setString(2, ps.getCat());
-								prepSetPlayerStat.setString(3, ps.getName());
+								prepSetPlayerStat.setString(3, ps.getStatistic());
 								prepSetPlayerStat.setInt(4, ps.getValue());
 								prepSetPlayerStat.setInt(5, ps.getValue());
 								prepSetPlayerStat.addBatch();
