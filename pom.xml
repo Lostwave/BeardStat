@@ -3,14 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.tehbeard</groupId>
 	<artifactId>BeardStat</artifactId>
-	<version>0.5.0-SNAPSHOT</version>
+	<version>0.5.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>BeardStat</name>
 
 	<properties>
-		<project.plugin.flavour>ASync Ambrosia</project.plugin.flavour>
+		<project.plugin.flavour>Ambrosia</project.plugin.flavour>
 		<project.plugin.version>${project.version}-${project.plugin.flavour}</project.plugin.version>
 		<project.config.version>3</project.config.version>
+		<project.database.version>1.0.0</project.database.version>
 	</properties>
 
 	<repositories>
@@ -24,12 +25,12 @@
 			<url>http://dev.escapecraft.com/maven/</url>
 		</repository>
 
-		<repository>
+		<!--<repository>
 			<snapshots />
 			<id>snapshots</id>
 			<name>deferred-snapshot</name>
 			<url>https://maven.dragonzone.net/artifactory/libs-snapshot</url>
-		</repository>
+		</repository>-->
 
 	</repositories>
 
@@ -44,7 +45,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.4.6-R0.1</version>
+			<version>1.4.7-R1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>me.tehbeard</groupId>
@@ -56,11 +57,8 @@
 			<artifactId>utils</artifactId>
 			<version>1.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>net.dragonzone</groupId>
-			<artifactId>Deferred</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
+		
+        
 	</dependencies>
 
 	<distributionManagement>
@@ -92,6 +90,7 @@
 					<include>plugin.yml</include>
 					<include>config.yml</include>
 					<include>interactive.yml</include>
+					<include>messages.lang</include>
 				</includes>
 			</resource>
 
@@ -103,6 +102,16 @@
 		</resources>
 		<sourceDirectory>target/filtered-sources/java</sourceDirectory>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>com.lukegb.mojo</groupId>
@@ -136,7 +145,7 @@
 								<includes>
 									<include>me.tehbeard:Vocalise</include>
 									<include>me.tehbeard:utils</include>
-									<include>net.dragonzone:Deferred</include>
+									<!-- <include>net.dragonzone:Deferred</include> -->
 								</includes>
 
 

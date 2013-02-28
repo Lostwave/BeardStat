@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
@@ -39,6 +41,9 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
     protected static PreparedStatement prepGetPlayerList;
 
     private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
+    
+    //private WorkQueue loadQueue = new WorkQueue(1);
+	private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
 
     public SQLiteStatDataProvider(String filename,String table) throws SQLException{
 
@@ -183,27 +188,29 @@ public class SQLiteStatDataProvider implements IStatDataProvider {
                     prepGetAllPlayerStat.setString(1, player);
                     ResultSet rs = prepGetAllPlayerStat.executeQuery();
                     pb = new PlayerStatBlob(player,"");
+                    boolean foundStats = false;
                     while(rs.next()){
                         //`category`,`stat`,`value`
                         PlayerStat ps = pb.getStat(rs.getString(2),rs.getString(3));
                         ps.setValue(rs.getInt(4));
                         ps.archive();
+                        foundStats = true;
                     }
                     rs.close();
 
                     BeardStat.printDebugCon("time taken to retrieve: "+((new Date()).getTime() - t1) +" Milliseconds");
-                    if(pb.getStats().size()==0 && create==false){promise.resolve(null);}
+                    if(!foundStats && create==false){promise.resolve(null);return;}
 
-                    promise.resolve(pb);
+                    promise.resolve(pb);return;
                 } catch (SQLException e) {
                     BeardStat.mysqlError(e);
                 }
-                promise.resolve(null);
+                promise.resolve(null);return;
                 
             }
         };
         
-        new Thread(run).start();
+        loadQueue.execute(run);
         
         return promise;
     }

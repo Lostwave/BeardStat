@@ -10,6 +10,7 @@ import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -45,6 +46,9 @@ public class StatPlayerListener implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerAnimation(PlayerAnimationEvent event) {
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.getAnimationType()==PlayerAnimationType.ARM_SWING){
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             promiseblob.onResolve(new DelegateIncrement("stats","armswing",1));
@@ -56,13 +60,15 @@ public class StatPlayerListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement("stats","login",1));
-        //promiseblob.onResolve(new DelegateSet("stats","login",(int)(System.currentTimeMillis()/1000L)));
+        promiseblob.onResolve(new DelegateSet("stats","lastlogin",(int)(System.currentTimeMillis()/1000L)));
         promiseblob.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
 
             public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
                 if(!params.getValue().hasStat("stats", "firstlogin")){
-                    params.getValue().getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));    
+                    params.getValue().getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));
+                    
                 }
+                
                 return null;
             }
         });
@@ -86,6 +92,9 @@ public class StatPlayerListener implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerDropItem(PlayerDropItemEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
             MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlobASync(event.getPlayer().getName()), 
@@ -98,6 +107,9 @@ public class StatPlayerListener implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerFish(PlayerFishEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             promiseblob.onResolve(new DelegateIncrement("stats","fishcaught",1));
@@ -123,6 +135,9 @@ public class StatPlayerListener implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false &&
                 (event.getTo().getBlockX() != event.getFrom().getBlockX() || 
                 event.getTo().getBlockY() != event.getFrom().getBlockY() || 
@@ -148,6 +163,9 @@ public class StatPlayerListener implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
             MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlobASync(event.getPlayer().getName()), 
@@ -181,6 +199,9 @@ public class StatPlayerListener implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerBucketFill(PlayerBucketFillEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             promiseblob.onResolve(new DelegateIncrement("stats","fill"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
@@ -189,6 +210,9 @@ public class StatPlayerListener implements Listener {
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             promiseblob.onResolve(new DelegateIncrement("stats","empty"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
@@ -198,6 +222,9 @@ public class StatPlayerListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
 
@@ -255,6 +282,9 @@ public class StatPlayerListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void shearEvent(PlayerShearEntityEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
@@ -270,7 +300,9 @@ public class StatPlayerListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event){
-
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(event.getClickedBlock()!=null){
             if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
                 Action action = event.getAction();
@@ -306,6 +338,24 @@ public class StatPlayerListener implements Listener {
                     if(clickedBlock.getType().equals(Material.CHEST)){
                         promiseblob.onResolve(new DelegateIncrement("stats","openchest",1));
                     }
+                    if(clickedBlock.getType().equals(Material.FLOWER_POT) && action == Action.RIGHT_CLICK_BLOCK && clickedBlock.getData() == 0){
+                    	Material[] m = {
+                    			Material.RED_ROSE,
+                    			Material.YELLOW_FLOWER,
+                    			Material.SAPLING,
+                    			Material.RED_MUSHROOM,
+                    			Material.BROWN_MUSHROOM,
+                    			Material.CACTUS,
+                    			Material.DEAD_BUSH};
+                    	for(Material mm : m){
+                    		
+                    		if(mm.equals(item.getType())){
+                    			MetaDataCapture.saveMetaDataMaterialStat(promiseblob, "plant", mm, item.getDurability(), 1);
+                    		}
+                    	}
+                    	
+                        
+                    }
 
 
                 }
@@ -318,6 +368,9 @@ public class StatPlayerListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerExp(PlayerExpChangeEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(!worlds.contains(event.getPlayer().getWorld().getName())){
             Player player = event.getPlayer();
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
@@ -328,6 +381,9 @@ public class StatPlayerListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerExpLevel(PlayerLevelChangeEvent event){
+    	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
         if(!worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             promiseblob.onResolve(new DelegateSet("exp","currentlvl",event.getNewLevel()));
@@ -340,9 +396,12 @@ public class StatPlayerListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEnchant(EnchantItemEvent event){
-
         Player player = event.getEnchanter();
 
+        if(player.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
+        
         if(event.isCancelled()==false && !worlds.contains(player.getWorld().getName())){
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
             promiseblob.onResolve(new DelegateIncrement("enchant","total",1));

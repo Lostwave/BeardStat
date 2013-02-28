@@ -2,10 +2,12 @@ package me.tehbeard.BeardStat.listeners;
 
 import java.util.List;
 
+import me.tehbeard.BeardStat.BeardStat;
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import me.tehbeard.BeardStat.containers.PlayerStatManager;
 import net.dragonzone.promise.Promise;
 
+import org.bukkit.GameMode;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ComplexEntityPart;
 import org.bukkit.entity.Entity;
@@ -102,6 +104,10 @@ public class StatEntityListener implements Listener{
         int idx = attacker instanceof Player ? 0 : 1;
 
         if(player == null){return;}//kill if no player involved
+        
+        if(player.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+    		return;
+    	}
 
         Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
 
@@ -139,6 +145,11 @@ public class StatEntityListener implements Listener{
         if(event.isCancelled()==false && event.getEntity() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
             int amount = event.getAmount();
             RegainReason reason = event.getRegainReason();
+            
+            if(((Player)event.getEntity()).getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+        		return;
+        	}
+            
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(((Player)event.getEntity()).getName());
             promiseblob.onResolve(new DelegateIncrement("stats","damagehealed",amount));
             if(reason != RegainReason.CUSTOM){
@@ -150,7 +161,9 @@ public class StatEntityListener implements Listener{
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
         if(event.isCancelled()==false && event.getOwner() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
-            
+        	if(((Player)event.getOwner()).getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+        		return;
+        	}
             Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getOwner().getName());
             promiseblob.onResolve(new DelegateIncrement("stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", ""),1));
         }
@@ -164,6 +177,10 @@ public class StatEntityListener implements Listener{
             for(Entity e :event.getAffectedEntities()){
                 if(e instanceof Player){
                     Player p = (Player) e;
+                    
+                    if(p.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+                		return;
+                	}
                     Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
                     promiseblob.onResolve(new DelegateIncrement("potions","splashhit",1));
                     //added per potion details
@@ -182,6 +199,10 @@ public class StatEntityListener implements Listener{
         if(event.isCancelled()==false && !worlds.contains(event.getEntity().getWorld().getName())){
             if(event.getEntity() instanceof Player){
                 Player p = (Player) event.getEntity();
+                
+                if(p.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
+            		return;
+            	}
 
                 Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
                 //total shots fired

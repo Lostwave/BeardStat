@@ -1,9 +1,7 @@
 package me.tehbeard.BeardStat.listeners;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import me.tehbeard.BeardStat.containers.PlayerStatBlob;
 import net.dragonzone.promise.Promise;
@@ -32,7 +30,7 @@ public class MetaDataCapture {
 
     //private static Material[] mats = {Material.WOOD,Material.LOG,Material.SAPLING,Material.INK_SACK,Material.COAL,Material.STEP,Material.WOOL,Material.SMOOTH_BRICK};
 
-    private static Map<Material,Integer> mats = new HashMap<Material, Integer>();
+    public static final Map<Material,Integer> mats = new HashMap<Material, Integer>();
 
     static{
         //nature
@@ -40,7 +38,7 @@ public class MetaDataCapture {
         mats.put(Material.LOG             ,0x3);
         mats.put(Material.LEAVES          ,0x3);
         mats.put(Material.SAPLING         ,0x3);
-        mats.put(Material.DEAD_BUSH       ,0x3);
+        mats.put(Material.LONG_GRASS       ,0x3);
         mats.put(Material.FLOWER_POT, 0xF);
         
         //ART
@@ -103,21 +101,6 @@ public class MetaDataCapture {
 
 
 
-    public static void dumpData(){
-        HashSet<String> lines = new HashSet<String>();
-        for(Entry<Material, Integer> entry  : mats.entrySet()){
-            Material m = entry.getKey();
-            int k = entry.getValue();
-            for(int i = 0;i<16;i++){
-                String s = m.toString().toLowerCase().replace("_","") + "_" + (i & k);
-                if(!lines.contains(s)){
-                    lines.add(s);
-                    System.out.println("<ul>" + s + "</ul>");
-                }
-            }
-        }
-
-    }
     public static boolean hasMetaData(Material mat){
         return mats.containsKey(mat);
 

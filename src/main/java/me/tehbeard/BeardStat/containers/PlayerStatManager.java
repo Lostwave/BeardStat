@@ -24,172 +24,190 @@ import org.bukkit.entity.Player;
  */
 public class PlayerStatManager implements CommandExecutor {
 
-    private HashMap<String,Promise<PlayerStatBlob>> cache = new HashMap<String,Promise<PlayerStatBlob>>();
-    private IStatDataProvider backendDatabase = null;
+	private HashMap<String,Promise<PlayerStatBlob>> cache = new HashMap<String,Promise<PlayerStatBlob>>();
+	private IStatDataProvider backendDatabase = null;
 
 
-    public PlayerStatManager(IStatDataProvider database){
-        backendDatabase = database;
-    }
+	public PlayerStatManager(IStatDataProvider database){
+		backendDatabase = database;
+	}
 
 
-    /**
-     * Force save of all cached stats to backend storage
-     */
-    public void saveCache(){
-        if(backendDatabase == null){return;}
-        Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
+	/**
+	 * Force save of all cached stats to backend storage
+	 */
+	public void saveCache(){
+		if(backendDatabase == null){return;}
+		Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
 
-        while(i.hasNext()){
-            Entry<String, Promise<PlayerStatBlob>> entry = i.next();
-            String player = entry.getKey();
-            if(!entry.getValue().isResolved()){
-                continue;
-            }
+		while(i.hasNext()){
+			Entry<String, Promise<PlayerStatBlob>> entry = i.next();
+			String player = entry.getKey();
+			
+			//check if rejected promise, remove from cache silently
+			if(entry.getValue().isRejected()){
+				BeardStat.printCon("Promise[" + player + "] was rejected (error?), removing from cache.");//alert debug dump
+				i.remove();//clear it out
+				continue;//Skip now
+			}
+			
+			
+			//skip if not resolved
+			if(!entry.getValue().isResolved()){
+				continue;
+			}
 
-            int seconds = getSessionTime(player);
+			int seconds = getSessionTime(player);
 
-            BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +seconds);
-            entry.getValue().getValue().getStat("stats","playedfor").incrementStat(seconds);
+			BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +seconds);
+			if(entry.getValue().getValue() != null){
+				entry.getValue().getValue().getStat("stats","playedfor").incrementStat(seconds);
 
-            backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
+				backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
 
-            if(isPlayerOnline(player)){
-                setLoginTime(player,System.currentTimeMillis());
-            }
-            else
-            {
-                wipeLoginTime(player);
-                i.remove();
-            }
-
-
-
-        }
-
-
-    }
-
-
-
-    private boolean isPlayerOnline(String player) {
-        for(Player p : Bukkit.getOnlinePlayers()){
-            if(p.getName().equals(player)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * Retrieve a players Stat Blob, or create one if it doesn't exist
-     * @param name
-     * @return
-     */
-    public Promise<PlayerStatBlob> getPlayerBlobASync(String name){
-        if(backendDatabase == null){return null;}
-        if(!cache.containsKey(name)){
-            cache.put(name,backendDatabase.pullPlayerStatBlob(name));
-        }
-        return cache.get(name);
-    }
-    
-    public PlayerStatBlob getPlayerBlob(String name){
-        return getPlayerBlobASync(name).getValue();
-    }
-    
-    /**
-     * Finds a player's stat blob, but does not try to make it
-     * @param name player to find
-     * @return The player's stat blob or a null if not found
-     */
-    public Promise<PlayerStatBlob> findPlayerBlobASync(final String name){
-        if(backendDatabase == null){return null;}
-        if(!cache.containsKey(name)){
-            Promise<PlayerStatBlob> pbs = backendDatabase.pullPlayerStatBlob(name,false);
-            pbs.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
-                
-                public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
-                    cache.put(name, params);
-                    return null;
-                }
-            });
-            return pbs;
-        }
-        return cache.get(name);
-    }
-    
-    public PlayerStatBlob findPlayerBlob(String name){
-        return findPlayerBlobASync(name).getValue();
-    }
-    
-    public void flush(){
-
-        backendDatabase.flush();
-    }
+				if(isPlayerOnline(player)){
+					setLoginTime(player,System.currentTimeMillis());
+				}
+				else
+				{
+					wipeLoginTime(player);
+					i.remove();
+				}
+			}
+			else
+			{
+				//Nulled player data
+				BeardStat.printCon("Promise[" + player + "] had a null value! Removed from cache.");
+				i.remove();
+			}
 
 
 
-    private HashMap<String,Long> loginTimes = new HashMap<String, Long>();
-
-    /**
-     * Returns length of current session in memory
-     * @param player
-     * @return
-     */
-    public int getSessionTime(String player){
-        if(loginTimes.containsKey(player)){
-            return Integer.parseInt("" + ((System.currentTimeMillis()  - loginTimes.get(player))/1000L));
-
-        }
-        return 0;
-    }
-
-    public Long getLoginTime(String player){
-        if(!loginTimes.containsKey(player)){
-            setLoginTime(player,System.currentTimeMillis());
-        }
-        return loginTimes.get(player);
-
-    }
-
-    public void setLoginTime(String player,long time){
-        loginTimes.put(player,time);
-
-    }
-
-    public void wipeLoginTime(String player){
-        loginTimes.remove(player);
-    }
+		}
 
 
-    public boolean onCommand(CommandSender sender, Command cmd, String lbl,
-            String[] args) {
-        Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
-        sender.sendMessage("Players in Stat cache");
-        while(i.hasNext()){
-            Entry<String, Promise<PlayerStatBlob>> entry = i.next();
-            String player = entry.getKey();
-            sender.sendMessage(ChatColor.GOLD + player);
-        }
+	}
 
-        Iterator<String> ii = loginTimes.keySet().iterator();
-        sender.sendMessage("Players in login cache");
-        while(ii.hasNext()){
-            String player = ii.next();
-            sender.sendMessage(ChatColor.GOLD + player);
-        }
-        return true;
-    }
-    
-    public boolean deletePlayer(String player){
-        if(!backendDatabase.hasStatBlob(player)){
-            return false;
-        }
-        cache.remove(player);
-        backendDatabase.deletePlayerStatBlob(player);
-        return true;
-    }
+
+
+	private boolean isPlayerOnline(String player) {
+		for(Player p : Bukkit.getOnlinePlayers()){
+			if(p.getName().equals(player)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * Retrieve a players Stat Blob, or create one if it doesn't exist
+	 * @param name
+	 * @return
+	 */
+	public Promise<PlayerStatBlob> getPlayerBlobASync(String name){
+		if(backendDatabase == null){return null;}
+		if(!cache.containsKey(name)){
+			cache.put(name,backendDatabase.pullPlayerStatBlob(name));
+		}
+		return cache.get(name);
+	}
+
+	public PlayerStatBlob getPlayerBlob(String name){
+		return getPlayerBlobASync(name).getValue();
+	}
+
+	/**
+	 * Finds a player's stat blob, but does not try to make it
+	 * @param name player to find
+	 * @return The player's stat blob or a null if not found
+	 */
+	public Promise<PlayerStatBlob> findPlayerBlobASync(final String name){
+		if(backendDatabase == null){return null;}
+		if(!cache.containsKey(name)){
+			Promise<PlayerStatBlob> pbs = backendDatabase.pullPlayerStatBlob(name,false);
+			pbs.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
+
+				public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
+					cache.put(name, params);
+					return null;
+				}
+			});
+			return pbs;
+		}
+		return cache.get(name);
+	}
+
+	public PlayerStatBlob findPlayerBlob(String name){
+		return findPlayerBlobASync(name).getValue();
+	}
+
+	public void flush(){
+
+		backendDatabase.flush();
+	}
+
+
+
+	private HashMap<String,Long> loginTimes = new HashMap<String, Long>();
+
+	/**
+	 * Returns length of current session in memory
+	 * @param player
+	 * @return
+	 */
+	public int getSessionTime(String player){
+		if(loginTimes.containsKey(player)){
+			return Integer.parseInt("" + ((System.currentTimeMillis()  - loginTimes.get(player))/1000L));
+
+		}
+		return 0;
+	}
+
+	public Long getLoginTime(String player){
+		if(!loginTimes.containsKey(player)){
+			setLoginTime(player,System.currentTimeMillis());
+		}
+		return loginTimes.get(player);
+
+	}
+
+	public void setLoginTime(String player,long time){
+		loginTimes.put(player,time);
+
+	}
+
+	public void wipeLoginTime(String player){
+		loginTimes.remove(player);
+	}
+
+
+	public boolean onCommand(CommandSender sender, Command cmd, String lbl,
+			String[] args) {
+		Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
+		sender.sendMessage("Players in Stat cache");
+		while(i.hasNext()){
+			Entry<String, Promise<PlayerStatBlob>> entry = i.next();
+			String player = entry.getKey();
+			sender.sendMessage(ChatColor.GOLD + player);
+		}
+
+		Iterator<String> ii = loginTimes.keySet().iterator();
+		sender.sendMessage("Players in login cache");
+		while(ii.hasNext()){
+			String player = ii.next();
+			sender.sendMessage(ChatColor.GOLD + player);
+		}
+		return true;
+	}
+
+	public boolean deletePlayer(String player){
+		if(!backendDatabase.hasStatBlob(player)){
+			return false;
+		}
+		cache.remove(player);
+		backendDatabase.deletePlayerStatBlob(player);
+		return true;
+	}
 
 }

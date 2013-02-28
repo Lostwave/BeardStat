@@ -24,119 +24,107 @@ import me.tehbeard.BeardStat.containers.PlayerStatBlob;
  */
 public class FlatFileStatDataProvider implements IStatDataProvider {
 
-    YamlConfiguration database;
+	YamlConfiguration database;
 
 
-    File file;
-    public FlatFileStatDataProvider(File file) {
-        database = YamlConfiguration.loadConfiguration(file);
-        this.file = file;
-        BeardStat.printCon("Creating FlatFile DataProvider");
+	File file;
+	public FlatFileStatDataProvider(File file) {
+		database = YamlConfiguration.loadConfiguration(file);
+		this.file = file;
+		BeardStat.printCon("Creating FlatFile DataProvider");
 
 
-    }
+	}
 
 
-    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
-        return pullPlayerStatBlob(player,true);
-    }
+	public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
+		return pullPlayerStatBlob(player,true);
+	}
 
-    public  Promise<PlayerStatBlob> pullPlayerStatBlob(final String player,final boolean create) {
-        BeardStat.printDebugCon("Loading stats for player " + player);
+	public  Promise<PlayerStatBlob> pullPlayerStatBlob(final String player,final boolean create) {
+		BeardStat.printDebugCon("Loading stats for player " + player);
 
-        try{
+		try{
 
-            final Deferred<PlayerStatBlob> promise = new Deferred<PlayerStatBlob>();
-            
-            Runnable r = new Runnable(){
+			final Deferred<PlayerStatBlob> promise = new Deferred<PlayerStatBlob>();
 
-                public void run() {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    PlayerStatBlob blob = new PlayerStatBlob(player,"");
-                    ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
-                    if(pl!=null){
-                        for(String key : pl.getKeys(false)){
-                            PlayerStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
-                            ps.setValue(pl.getInt(key, 0));
-                            ps.clearArchive();
-                        }
-                        promise.resolve(blob);
-                        return;
-                    }
-                    else if(pl==null && create)
-                    {
-                        promise.resolve(blob);
-                        return;
-                    }
-                    promise.resolve(null);
-                }
-                
-            };
-            new Thread(r).start();
-            
-            return promise;
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return new Deferred<PlayerStatBlob>(null);
-        }
-    }
+
+			PlayerStatBlob blob = new PlayerStatBlob(player,"");
+			ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
+			if(pl!=null){
+				for(String key : pl.getKeys(false)){
+					PlayerStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
+					ps.setValue(pl.getInt(key, 0));
+					ps.clearArchive();
+				}
+				promise.resolve(blob);
+			}
+			else if(pl==null && create)
+			{
+				promise.resolve(blob);
+			}
+			promise.resolve(null);
+
+
+			return promise;
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new Deferred<PlayerStatBlob>(null);
+		}
+	}
 
 
 
-    public void pushPlayerStatBlob(PlayerStatBlob player) {
-        HashMap<String,Integer> nodes = new HashMap<String, Integer>();
+	public void pushPlayerStatBlob(PlayerStatBlob player) {
+		HashMap<String,Integer> nodes = new HashMap<String, Integer>();
 
-        for(PlayerStat stat : player.getStats()){
-            if(stat.isArchive()){
-                nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
-            }
-        }
-        database.set("stats.players." + player.getName(), nodes);
-        try {
-            database.save(file);
-        } catch (IOException e) {
-            BeardStat.printCon("IO error occured when trying to save player data");
-            e.printStackTrace();
-        }
-    }
+		for(PlayerStat stat : player.getStats()){
+			if(stat.isArchive()){
+				nodes.put(stat.getCat() + "-" + stat.getName(),stat.getValue());
+			}
+		}
+		database.set("stats.players." + player.getName(), nodes);
+		try {
+			database.save(file);
+		} catch (IOException e) {
+			BeardStat.printCon("IO error occured when trying to save player data");
+			e.printStackTrace();
+		}
+	}
 
-    public void flush() {
-        try {
-            database.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	public void flush() {
+		try {
+			database.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public void flushSync(){
-        flush();
-    }
-
-
-    public void deletePlayerStatBlob(String player) {
-        database.set("stats.players."+player, null);
-        try {
-            database.save(file);
-        } catch (IOException e) {
-            BeardStat.printCon("IO error occured when trying to clear player data");
-            e.printStackTrace();
-        }
-    }
+	public void flushSync(){
+		flush();
+	}
 
 
-    public boolean hasStatBlob(String player) {
-        return database.contains("stats.players."+player);
-    }
+	public void deletePlayerStatBlob(String player) {
+		database.set("stats.players."+player, null);
+		try {
+			database.save(file);
+		} catch (IOException e) {
+			BeardStat.printCon("IO error occured when trying to clear player data");
+			e.printStackTrace();
+		}
+	}
 
 
-    public List<String> getStatBlobsHeld() {
-        return new ArrayList<String>(database.getConfigurationSection("stats.players").getKeys(false));
-    }
+	public boolean hasStatBlob(String player) {
+		return database.contains("stats.players."+player);
+	}
+
+
+	public List<String> getStatBlobsHeld() {
+		return new ArrayList<String>(database.getConfigurationSection("stats.players").getKeys(false));
+	}
 
 
 }
