@@ -149,15 +149,15 @@
 							<relocations>
 								<relocation>
 									<pattern>me.tehbeard.vocalise</pattern>
-									<shadedPattern>me.tehbeard.BeardStat.vocalise</shadedPattern>
+									<shadedPattern>com.tehbeard.BeardStat.vocalise</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>me.tehbeard.utils</pattern>
-									<shadedPattern>me.tehbeard.BeardStat.utils</shadedPattern>
+									<shadedPattern>com.tehbeard.BeardStat.utils</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>net.dragonzone:Deferred</pattern>
-									<shadedPattern>me.tehbeard.BeardStat.utils.deferred</shadedPattern>
+									<shadedPattern>com.tehbeard.BeardStat.utils.deferred</shadedPattern>
 								</relocation>
 							</relocations>
 							<minimizeJar>true</minimizeJar>
