@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.tehbeard</groupId>
 	<artifactId>BeardStat</artifactId>
-	<version>0.5.2-SNAPSHOT</version>
+	<version>0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>BeardStat</name>
 
@@ -25,12 +25,8 @@
 			<url>http://dev.escapecraft.com/maven/</url>
 		</repository>
 
-		<!--<repository>
-			<snapshots />
-			<id>snapshots</id>
-			<name>deferred-snapshot</name>
-			<url>https://maven.dragonzone.net/artifactory/libs-snapshot</url>
-		</repository>-->
+		<!--<repository> <snapshots /> <id>snapshots</id> <name>deferred-snapshot</name> 
+			<url>https://maven.dragonzone.net/artifactory/libs-snapshot</url> </repository> -->
 
 	</repositories>
 
@@ -57,8 +53,8 @@
 			<artifactId>utils</artifactId>
 			<version>1.1-SNAPSHOT</version>
 		</dependency>
-		
-        
+
+
 	</dependencies>
 
 	<distributionManagement>
