@@ -139,11 +139,12 @@ public class EntityStatBlob implements VariableProvider{
 
 	public EntityStatBlob cloneForArchive(){
 		EntityStatBlob blob = new EntityStatBlob(name, entityId, type);
+		blob.stats.clear();
 		for(IStat stat : stats){
 			if(stat.isArchive()){
 				IStat is = stat.clone();
 				if(is!=null){
-					blob.stats.add(is);
+					blob.addStat(is);
 					stat.clearArchive();
 				}
 			}
