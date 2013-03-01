@@ -8,7 +8,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
 	public SQLiteStatDataProvider(String filename) throws SQLException {
 		
-		super("com.mysql.jdbc.Driver");
+		super("org.sqlite.JDBC");
 		
 		tblConfig.put("TBL_ENTITY", "entity");
 		tblConfig.put("TBL_KEYSTORE","keystore");
