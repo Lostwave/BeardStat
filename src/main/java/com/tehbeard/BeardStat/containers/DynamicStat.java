@@ -22,13 +22,15 @@ public class DynamicStat implements IStat {
     
     private boolean archive = false;
     
-    public DynamicStat(String cat,String stat,String expr){
-        this(cat,stat,expr,false);
+    public DynamicStat(String domain,String world,String cat,String stat,String expr){
+        this(domain,world,cat,stat,expr,false);
         
 
     }
     
-    public DynamicStat(String cat,String stat,String expr,boolean archive){
+    public DynamicStat(String domain,String world,String cat,String stat,String expr,boolean archive){
+    	this.domain = domain;
+    	this.world = world;
         this.category = cat;
         this.statistic = stat;
         this.expression = new InFixExpression(expr);

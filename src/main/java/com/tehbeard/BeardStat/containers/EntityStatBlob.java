@@ -34,14 +34,14 @@ public class EntityStatBlob implements VariableProvider{
 		for(Entry<String, String> entry  : dynamics.entrySet()){
 
 			BeardStat.printDebugCon("Making temporary stat: " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
-			addStat(new DynamicStat(entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue()));
+			addStat(new DynamicStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue()));
 		}
 
 		//dynamics that will be saved to database
 		for(Entry<String, String> entry  : dynamicsSaved.entrySet()){
 
 			BeardStat.printDebugCon("Making custom stat: " + (entry.getKey().split("\\.")[0] + " " +  entry.getKey().split("\\.")[1] + " = " + entry.getValue()));
-			addStat(new DynamicStat(entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue(),true));
+			addStat(new DynamicStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,entry.getKey().split("\\.")[0], entry.getKey().split("\\.")[1],entry.getValue(),true));
 		}
 	}
 

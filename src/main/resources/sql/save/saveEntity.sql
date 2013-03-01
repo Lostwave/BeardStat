@@ -1,1 +1,1 @@
-INSERT INTO TABLE `${TBL_ENTITY}` (`name`,`type`) VALUES(?,?);
+INSERT INTO `${TBL_ENTITY}` (`name`,`type`) VALUES(?,?);
