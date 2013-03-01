@@ -50,11 +50,26 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 			final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
 
-			EntityStatBlob blob = new EntityStatBlob(player,"");
+			EntityStatBlob blob = new EntityStatBlob(player,0,"player");
 			ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
 			if(pl!=null){
 				for(String key : pl.getKeys(false)){
-					IStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
+					String[] bits = key.split("\\-");
+
+					String domain = "default";
+					String world = "__global__";
+					String category = bits[0];
+					String statistic = bits[1];
+
+					if(bits.length == 4){
+						domain = bits[0];
+						world = bits[1];
+						category = bits[2];
+						statistic = bits[3];
+					}
+
+
+					IStat ps = blob.getStat(domain,world,category,statistic);
 					ps.setValue(pl.getInt(key, 0));
 					ps.clearArchive();
 				}
@@ -82,7 +97,7 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 
 		for(IStat stat : player.getStats()){
 			if(stat.isArchive()){
-				nodes.put(stat.getCategory() + "-" + stat.getStatistic(),stat.getValue());
+				nodes.put(stat.getDomain() + "-" + stat.getWorld() + "-" +  stat.getCategory() + "-" + stat.getStatistic(),stat.getValue());
 			}
 		}
 		database.set("stats.players." + player.getName(), nodes);
