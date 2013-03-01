@@ -14,7 +14,7 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.ValidatingPrompt;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStat;
+import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 @PromptTag(tag="getcat")
@@ -34,9 +34,9 @@ public class SelectCategoryPrompt extends ValidatingPrompt implements Configurab
 
         //begin paste
         HashSet<String> cats = new HashSet<String>();
-        for( PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(!cats.contains(ps.getCat())){
-                cats.add(ps.getCat());
+        for( IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
+            if(!cats.contains(ps.getCategory())){
+                cats.add(ps.getCategory());
             }
         }
         String msg = "";
@@ -51,8 +51,8 @@ public class SelectCategoryPrompt extends ValidatingPrompt implements Configurab
     @Override
     protected boolean isInputValid(ConversationContext context, String input) {
         String player = (String) context.getSessionData("player");
-        for(PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(ps.getCat().equalsIgnoreCase(input)){
+        for(IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
+            if(ps.getCategory().equalsIgnoreCase(input)){
                 return true;
             }
         }

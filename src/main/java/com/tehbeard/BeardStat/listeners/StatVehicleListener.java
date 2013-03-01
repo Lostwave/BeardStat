@@ -13,7 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 
@@ -50,7 +50,7 @@ public class StatVehicleListener implements Listener {
             BeardStat.printDebugCon("Vehicle move fired!");
             if(from.getWorld().equals(to.getWorld())){
                 if(from.distance(to) < 10){
-                    Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
+                    Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
                     promiseblob.onResolve(new DelegateIncrement(
                             "vehicle",
                             event.getVehicle().getType().toString().toLowerCase(),

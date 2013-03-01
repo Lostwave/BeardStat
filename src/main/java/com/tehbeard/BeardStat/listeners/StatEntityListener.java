@@ -27,7 +27,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.*;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 public class StatEntityListener implements Listener{
@@ -110,7 +110,7 @@ public class StatEntityListener implements Listener{
     		return;
     	}
 
-        Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
+        Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
 
         //Total damage
         promiseblob.onResolve(new DelegateIncrement(category[idx], "total",amount));
@@ -131,8 +131,8 @@ public class StatEntityListener implements Listener{
 
         //TODO: pvp Damage
         if(attacker instanceof Player  && attacked instanceof Player){
-            Promise<PlayerStatBlob> attackerBlob = playerStatManager.getPlayerBlobASync(((Player)attacker).getName());
-            Promise<PlayerStatBlob> attackedBlob = playerStatManager.getPlayerBlobASync(((Player)attacked).getName());
+            Promise<EntityStatBlob> attackerBlob = playerStatManager.getPlayerBlobASync(((Player)attacker).getName());
+            Promise<EntityStatBlob> attackedBlob = playerStatManager.getPlayerBlobASync(((Player)attacked).getName());
 
             attackerBlob.onResolve(new DelegateIncrement(category[0],"pvp",1));
             attackedBlob.onResolve(new DelegateIncrement(category[1],"pvp",1));
@@ -151,7 +151,7 @@ public class StatEntityListener implements Listener{
         		return;
         	}
             
-            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(((Player)event.getEntity()).getName());
+            Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(((Player)event.getEntity()).getName());
             promiseblob.onResolve(new DelegateIncrement("stats","damagehealed",amount));
             if(reason != RegainReason.CUSTOM){
                 promiseblob.onResolve(new DelegateIncrement("stats","heal" + reason.toString().replace("_", "").toLowerCase(),amount));	
@@ -165,7 +165,7 @@ public class StatEntityListener implements Listener{
         	if(((Player)event.getOwner()).getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
         		return;
         	}
-            Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getOwner().getName());
+            Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getOwner().getName());
             promiseblob.onResolve(new DelegateIncrement("stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", ""),1));
         }
     }
@@ -182,7 +182,7 @@ public class StatEntityListener implements Listener{
                     if(p.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
                 		return;
                 	}
-                    Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
+                    Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
                     promiseblob.onResolve(new DelegateIncrement("potions","splashhit",1));
                     //added per potion details
                     for(PotionEffect potionEffect : potion.getEffects()){
@@ -205,7 +205,7 @@ public class StatEntityListener implements Listener{
             		return;
             	}
 
-                Promise<PlayerStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
+                Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
                 //total shots fired
                 promiseblob.onResolve(new DelegateIncrement("bow","shots",1));
 

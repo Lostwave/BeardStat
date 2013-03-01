@@ -28,7 +28,7 @@ import com.tehbeard.BeardStat.DataProviders.TransferDataProvider;
 import com.tehbeard.BeardStat.Metrics.Plotter;
 import com.tehbeard.BeardStat.commands.*;
 import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.*;
 
@@ -42,7 +42,8 @@ import com.tehbeard.BeardStat.listeners.*;
 public class BeardStat extends JavaPlugin {
 
 
-
+	public static final String DEFAULT_DOMAIN = "default";
+	public static final String GLOBAL_WORLD = "__global__";
     
     private static BeardStat self;
     private int runner;
@@ -358,7 +359,7 @@ public class BeardStat extends JavaPlugin {
         for(String cstat : getConfig().getStringList("customstats")){
 
             String[] i = cstat.split("\\=");
-            PlayerStatBlob.addDynamicStat(i[0].trim(), i[1].trim());
+            EntityStatBlob.addDynamicStat(i[0].trim(), i[1].trim());
 
 
         }
@@ -366,7 +367,7 @@ public class BeardStat extends JavaPlugin {
         for(String cstat : getConfig().getStringList("savedcustomstats")){
 
             String[] i = cstat.split("\\=");
-            PlayerStatBlob.addDynamicSavedStat(i[0].trim(), i[1].trim());
+            EntityStatBlob.addDynamicSavedStat(i[0].trim(), i[1].trim());
 
 
         }

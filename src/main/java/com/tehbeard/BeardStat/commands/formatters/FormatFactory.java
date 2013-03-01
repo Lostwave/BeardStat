@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tehbeard.BeardStat.containers.PlayerStat;
+import com.tehbeard.BeardStat.containers.IStat;
 
 
 public class FormatFactory{
@@ -39,8 +39,8 @@ public class FormatFactory{
     }
 
 
-    public static String formatStat(PlayerStat stat){
-        String tag = stat.getCat() + "." + stat.getStatistic();
+    public static String formatStat(IStat stat){
+        String tag = stat.getCategory() + "." + stat.getStatistic();
         StatFormatter f = instance.mapping.get(tag);
         if(f!=null){
             return f.format(stat.getValue());

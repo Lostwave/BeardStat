@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.LanguagePack;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 
@@ -70,7 +70,7 @@ public class playedCommand implements CommandExecutor {
 			return false;
 		}
 
-		PlayerStatBlob blob;
+		EntityStatBlob blob;
 
 		//no player match found, attempt to poll DB directly
 		if(pp==null){

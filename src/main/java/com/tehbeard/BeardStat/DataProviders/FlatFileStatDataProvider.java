@@ -14,8 +14,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStat;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.IStat;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 
 /**
@@ -38,23 +38,23 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 	}
 
 
-	public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
+	public Promise<EntityStatBlob> pullPlayerStatBlob(String player) {
 		return pullPlayerStatBlob(player,true);
 	}
 
-	public  Promise<PlayerStatBlob> pullPlayerStatBlob(final String player,final boolean create) {
+	public  Promise<EntityStatBlob> pullPlayerStatBlob(final String player,final boolean create) {
 		BeardStat.printDebugCon("Loading stats for player " + player);
 
 		try{
 
-			final Deferred<PlayerStatBlob> promise = new Deferred<PlayerStatBlob>();
+			final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
 
-			PlayerStatBlob blob = new PlayerStatBlob(player,"");
+			EntityStatBlob blob = new EntityStatBlob(player,"");
 			ConfigurationSection pl = database.getConfigurationSection("stats.players." + player);
 			if(pl!=null){
 				for(String key : pl.getKeys(false)){
-					PlayerStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
+					IStat ps = blob.getStat(key.split("\\-")[0],key.split("\\-")[1]);
 					ps.setValue(pl.getInt(key, 0));
 					ps.clearArchive();
 				}
@@ -71,18 +71,18 @@ public class FlatFileStatDataProvider implements IStatDataProvider {
 		}
 		catch(Exception e){
 			e.printStackTrace();
-			return new Deferred<PlayerStatBlob>(null);
+			return new Deferred<EntityStatBlob>(null);
 		}
 	}
 
 
 
-	public void pushPlayerStatBlob(PlayerStatBlob player) {
+	public void pushPlayerStatBlob(EntityStatBlob player) {
 		HashMap<String,Integer> nodes = new HashMap<String, Integer>();
 
-		for(PlayerStat stat : player.getStats()){
+		for(IStat stat : player.getStats()){
 			if(stat.isArchive()){
-				nodes.put(stat.getCat() + "-" + stat.getStatistic(),stat.getValue());
+				nodes.put(stat.getCategory() + "-" + stat.getStatistic(),stat.getValue());
 			}
 		}
 		database.set("stats.players." + player.getName(), nodes);

@@ -14,7 +14,7 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.ValidatingPrompt;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStat;
+import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 @PromptTag(tag="getstat")
@@ -33,8 +33,8 @@ public class SelectStatisticPrompt extends ValidatingPrompt implements Configura
 
         //begin paste
         HashSet<String> stats = new HashSet<String>();
-        for( PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(ps.getCat().equalsIgnoreCase((String)context.getSessionData("c"))){
+        for( IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
+            if(ps.getCategory().equalsIgnoreCase((String)context.getSessionData("c"))){
                 stats.add(ps.getStatistic());
             }
         }
@@ -53,8 +53,8 @@ public class SelectStatisticPrompt extends ValidatingPrompt implements Configura
     @Override
     protected boolean isInputValid(ConversationContext context, String input) {
         String player = (String) context.getSessionData("player");
-        for(PlayerStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(ps.getCat().equalsIgnoreCase((String)context.getSessionData("c"))){
+        for(IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
+            if(ps.getCategory().equalsIgnoreCase((String)context.getSessionData("c"))){
                 if(ps.getStatistic().equalsIgnoreCase(input)){
                     return true;
                 }

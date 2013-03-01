@@ -22,7 +22,7 @@ import com.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectStatisticPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SetSelfPrompt;
 import com.tehbeard.BeardStat.commands.interactive.ShowStatisticPrompt;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 public class StatCommand implements CommandExecutor {
@@ -96,7 +96,7 @@ public class StatCommand implements CommandExecutor {
         if(arguments.getOption("s")!=null){
             String stat = arguments.getOption("s");
             if(stat.split("\\.").length == 2){
-                PlayerStatBlob blob = playerStatManager.findPlayerBlob(player);
+                EntityStatBlob blob = playerStatManager.findPlayerBlob(player);
                 if(blob == null){
                     sender.sendMessage(ChatColor.RED + "Could not find player");
                     return true;
@@ -153,7 +153,7 @@ public class StatCommand implements CommandExecutor {
 
    
 
-    public static void SendPlayerStats(CommandSender sender, PlayerStatBlob blob) {
+    public static void SendPlayerStats(CommandSender sender, EntityStatBlob blob) {
         if (blob != null && blob.getStat("stats", "playedfor").getValue() != 0) {
             sender.sendMessage(ChatColor.GOLD + "-= " + blob.getName() + "'s Stats =-");
 

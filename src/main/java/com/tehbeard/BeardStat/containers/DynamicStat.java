@@ -9,25 +9,25 @@ import me.tehbeard.utils.expressions.InFixExpression;
  * @author James
  *
  */
-public class DynamicPlayerStat implements PlayerStat {
+public class DynamicStat implements IStat {
 
 
 	private String domain;
 	private String world;
     private String cat;
     private String stat;
-    private PlayerStatBlob owner;
+    private EntityStatBlob owner;
     private InFixExpression expression;
     
     private boolean archive = false;
     
-    public DynamicPlayerStat(String cat,String stat,String expr){
+    public DynamicStat(String cat,String stat,String expr){
         this(cat,stat,expr,false);
         
 
     }
     
-    public DynamicPlayerStat(String cat,String stat,String expr,boolean archive){
+    public DynamicStat(String cat,String stat,String expr,boolean archive){
         this.cat = cat;
         this.stat = stat;
         this.expression = new InFixExpression(expr);
@@ -61,7 +61,7 @@ public class DynamicPlayerStat implements PlayerStat {
 
 
 
-    public String getCat() {
+    public String getCategory() {
         return cat;
     }
 
@@ -77,13 +77,13 @@ public class DynamicPlayerStat implements PlayerStat {
 
 
 
-    public PlayerStatBlob getOwner() {
+    public EntityStatBlob getOwner() {
         return owner;
     }
 
 
 
-    public void setOwner(PlayerStatBlob playerStatBlob) {
+    public void setOwner(EntityStatBlob playerStatBlob) {
         owner = playerStatBlob;
     }
 

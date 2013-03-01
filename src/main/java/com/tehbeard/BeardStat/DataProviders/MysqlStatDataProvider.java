@@ -21,9 +21,9 @@ import org.bukkit.ChatColor;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.NoRecordFoundException;
-import com.tehbeard.BeardStat.containers.PlayerStat;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
-import com.tehbeard.BeardStat.containers.StaticPlayerStat;
+import com.tehbeard.BeardStat.containers.IStat;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.BeardStat.containers.StaticStat;
 
 
 /**
@@ -50,7 +50,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 	private PreparedStatement prepHasPlayerStat;
 	private PreparedStatement prepGetPlayerList;
 
-	private HashMap<String,HashSet<PlayerStat>> writeCache = new HashMap<String,HashSet<PlayerStat>>();
+	private HashMap<String,HashSet<IStat>> writeCache = new HashMap<String,HashSet<IStat>>();
 
 
 	//private WorkQueue loadQueue = new WorkQueue(1);
@@ -194,13 +194,13 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
 
 
-	public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
+	public Promise<EntityStatBlob> pullPlayerStatBlob(String player) {
 		return pullPlayerStatBlob(player,true);
 	}
 
-	public Promise<PlayerStatBlob> pullPlayerStatBlob(final String player, final boolean create) {
+	public Promise<EntityStatBlob> pullPlayerStatBlob(final String player, final boolean create) {
 
-		final Deferred<PlayerStatBlob> promise = new Deferred<PlayerStatBlob>();
+		final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
 		Runnable run = new Runnable() {
 
@@ -218,12 +218,12 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 					prepGetAllPlayerStat.setString(1, player);
 					ResultSet rs = prepGetAllPlayerStat.executeQuery();
 					
-					PlayerStatBlob pb = new PlayerStatBlob(player,"");
+					EntityStatBlob pb = new EntityStatBlob(player,"");
 					
 					boolean foundStats = false;
 					while(rs.next()){
 						//`category`,`stat`,`value`
-						PlayerStat ps = pb.getStat(rs.getString(2),rs.getString(3));
+						IStat ps = pb.getStat(rs.getString(2),rs.getString(3));
 						ps.setValue(rs.getInt(4));
 						ps.archive();
 						foundStats = true;
@@ -252,17 +252,17 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 
 	}
 
-	public void pushPlayerStatBlob(PlayerStatBlob player) {
+	public void pushPlayerStatBlob(EntityStatBlob player) {
 
 		synchronized (writeCache) {
 
 
-			HashSet<PlayerStat> copy = writeCache.containsKey(player.getName()) ? writeCache.get(player.getName()) : new HashSet<PlayerStat>();
+			HashSet<IStat> copy = writeCache.containsKey(player.getName()) ? writeCache.get(player.getName()) : new HashSet<IStat>();
 
-			for(PlayerStat ps : player.getStats()){
+			for(IStat ps : player.getStats()){
 				if(ps.isArchive()){
 
-					PlayerStat ns = new  StaticPlayerStat(ps.getCat(),ps.getStatistic(),ps.getValue());
+					IStat ns = new  StaticStat(ps.getCategory(),ps.getStatistic(),ps.getValue());
 					copy.add(ns);
 				}
 			}
@@ -288,17 +288,17 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 				}
 				else{
 					BeardStat.printDebugCon("Saving to database");
-					for(Entry<String, HashSet<PlayerStat>> entry : writeCache.entrySet()){
+					for(Entry<String, HashSet<IStat>> entry : writeCache.entrySet()){
 						try {
-							HashSet<PlayerStat> pb = entry.getValue();
+							HashSet<IStat> pb = entry.getValue();
 
 							BeardStat.printDebugCon(entry.getKey() + " " + entry.getValue() +  " [" + pb.size() + "]");
 							prepSetPlayerStat.clearBatch();
-							for(PlayerStat ps : pb){
+							for(IStat ps : pb){
 
 								prepSetPlayerStat.setString(1, entry.getKey());
 
-								prepSetPlayerStat.setString(2, ps.getCat());
+								prepSetPlayerStat.setString(2, ps.getCategory());
 								prepSetPlayerStat.setString(3, ps.getStatistic());
 								prepSetPlayerStat.setInt(4, ps.getValue());
 								prepSetPlayerStat.setInt(5, ps.getValue());

@@ -7,7 +7,7 @@ package com.tehbeard.BeardStat.containers;
  *
  */
 
-public interface PlayerStat{
+public interface IStat{
 
 	
 		/**
@@ -29,7 +29,7 @@ public interface PlayerStat{
 	public String getStatistic();
 
 	
-	public String getCat() ;
+	public String getCategory() ;
 
 	public void clearArchive();
 
@@ -37,9 +37,9 @@ public interface PlayerStat{
 	
 	public boolean isArchive();
 		
-	public void setOwner(PlayerStatBlob playerStatBlob);
+	public void setOwner(EntityStatBlob playerStatBlob);
 
-	public PlayerStatBlob getOwner();
+	public EntityStatBlob getOwner();
 
 	
 	public void setDomain(String domain);

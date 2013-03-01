@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 public class LastOnCommand implements CommandExecutor {
@@ -35,7 +35,7 @@ public class LastOnCommand implements CommandExecutor {
         }
         
         String name = "";
-        PlayerStatBlob blob = null;
+        EntityStatBlob blob = null;
         OfflinePlayer player = null;
         if(args.length==1){
             player = Bukkit.getOfflinePlayer(args[0]);
@@ -60,7 +60,7 @@ public class LastOnCommand implements CommandExecutor {
         return true;
     }
     
-    public static String[] GetLastOnString(String name, PlayerStatBlob blob, OfflinePlayer player){
+    public static String[] GetLastOnString(String name, EntityStatBlob blob, OfflinePlayer player){
         ArrayList<String> output = new ArrayList<String>();
 
         long bFirst = 0;

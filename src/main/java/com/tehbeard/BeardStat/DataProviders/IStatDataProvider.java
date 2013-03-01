@@ -3,7 +3,7 @@ package com.tehbeard.BeardStat.DataProviders;
 
 import java.util.List;
 
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 import net.dragonzone.promise.Promise;
 
@@ -22,7 +22,7 @@ public interface IStatDataProvider {
 	 * @param player Player to pull stats for. Creates a new object if non exists
 	 * @return a PlayerStatBlob containing all stats for a player
 	 */
-	public Promise<PlayerStatBlob> pullPlayerStatBlob(String player);
+	public Promise<EntityStatBlob> pullPlayerStatBlob(String player);
 
 
 	/**
@@ -31,12 +31,12 @@ public interface IStatDataProvider {
 	 * @param create wether to create the player object
 	 * @return a PlayerStatBlob containing all stats for a player
 	 */
-	public Promise<PlayerStatBlob> pullPlayerStatBlob(String player,boolean create);
+	public Promise<EntityStatBlob> pullPlayerStatBlob(String player,boolean create);
 	/**
 	 * Push all stats for this player to the database
 	 * @param player StatBlob to push to the database
 	 */
-	public void pushPlayerStatBlob(PlayerStatBlob player);
+	public void pushPlayerStatBlob(EntityStatBlob player);
 	
 	/**
 	 * Forces the DataProvider to flush data to the backend, in the case of a second level cache.

@@ -3,8 +3,8 @@ package com.tehbeard.BeardStat.DataProviders;
 import java.util.List;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStat;
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.IStat;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 import net.dragonzone.promise.Promise;
 
@@ -43,14 +43,14 @@ public class TransferDataProvider implements IStatDataProvider{
     private void transfer() {
         BeardStat.printCon("Beginning data transfer");
         List<String> theList = oldProvider.getStatBlobsHeld();
-        PlayerStatBlob b;
+        EntityStatBlob b;
         for(String player : theList){
             b = oldProvider.pullPlayerStatBlob(player, false).getValue();
             if(b==null){
                 BeardStat.printCon("[ERROR] " + player + " not found in old database");
                 continue;
             }
-            for(PlayerStat s : b.getStats()){
+            for(IStat s : b.getStats()){
                 s.archive();
             }
             BeardStat.printCon("Pushing " + player + " to new dataprovider");
@@ -62,15 +62,15 @@ public class TransferDataProvider implements IStatDataProvider{
         
     }
 
-    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player) {
+    public Promise<EntityStatBlob> pullPlayerStatBlob(String player) {
         return pullPlayerStatBlob(player,true);
     }
 
-    public Promise<PlayerStatBlob> pullPlayerStatBlob(String player, boolean create) {
+    public Promise<EntityStatBlob> pullPlayerStatBlob(String player, boolean create) {
         return newProvider.pullPlayerStatBlob(player,create);
     }
 
-    public void pushPlayerStatBlob(PlayerStatBlob player) {
+    public void pushPlayerStatBlob(EntityStatBlob player) {
         newProvider.pushPlayerStatBlob(player);
         
     }

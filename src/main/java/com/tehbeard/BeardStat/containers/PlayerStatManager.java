@@ -25,8 +25,9 @@ import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
  */
 public class PlayerStatManager implements CommandExecutor {
 
-	private HashMap<String,Promise<PlayerStatBlob>> cache = new HashMap<String,Promise<PlayerStatBlob>>();
+	private HashMap<String,Promise<EntityStatBlob>> cache = new HashMap<String,Promise<EntityStatBlob>>();
 	private IStatDataProvider backendDatabase = null;
+
 
 
 	public PlayerStatManager(IStatDataProvider database){
@@ -39,10 +40,10 @@ public class PlayerStatManager implements CommandExecutor {
 	 */
 	public void saveCache(){
 		if(backendDatabase == null){return;}
-		Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
+		Iterator<Entry<String, Promise<EntityStatBlob>>> i = cache.entrySet().iterator();
 
 		while(i.hasNext()){
-			Entry<String, Promise<PlayerStatBlob>> entry = i.next();
+			Entry<String, Promise<EntityStatBlob>> entry = i.next();
 			String player = entry.getKey();
 			
 			//check if rejected promise, remove from cache silently
@@ -62,7 +63,7 @@ public class PlayerStatManager implements CommandExecutor {
 
 			BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +seconds);
 			if(entry.getValue().getValue() != null){
-				entry.getValue().getValue().getStat("stats","playedfor").incrementStat(seconds);
+				entry.getValue().getValue().getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","playedfor").incrementStat(seconds);
 
 				backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
 
@@ -106,7 +107,7 @@ public class PlayerStatManager implements CommandExecutor {
 	 * @param name
 	 * @return
 	 */
-	public Promise<PlayerStatBlob> getPlayerBlobASync(String name){
+	public Promise<EntityStatBlob> getPlayerBlobASync(String name){
 		if(backendDatabase == null){return null;}
 		if(!cache.containsKey(name)){
 			cache.put(name,backendDatabase.pullPlayerStatBlob(name));
@@ -114,7 +115,7 @@ public class PlayerStatManager implements CommandExecutor {
 		return cache.get(name);
 	}
 
-	public PlayerStatBlob getPlayerBlob(String name){
+	public EntityStatBlob getPlayerBlob(String name){
 		return getPlayerBlobASync(name).getValue();
 	}
 
@@ -123,13 +124,13 @@ public class PlayerStatManager implements CommandExecutor {
 	 * @param name player to find
 	 * @return The player's stat blob or a null if not found
 	 */
-	public Promise<PlayerStatBlob> findPlayerBlobASync(final String name){
+	public Promise<EntityStatBlob> findPlayerBlobASync(final String name){
 		if(backendDatabase == null){return null;}
 		if(!cache.containsKey(name)){
-			Promise<PlayerStatBlob> pbs = backendDatabase.pullPlayerStatBlob(name,false);
-			pbs.onResolve(new Delegate<Void, Promise<PlayerStatBlob>>() {
+			Promise<EntityStatBlob> pbs = backendDatabase.pullPlayerStatBlob(name,false);
+			pbs.onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
 
-				public <P extends Promise<PlayerStatBlob>> Void invoke(P params) {
+				public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
 					cache.put(name, params);
 					return null;
 				}
@@ -139,7 +140,7 @@ public class PlayerStatManager implements CommandExecutor {
 		return cache.get(name);
 	}
 
-	public PlayerStatBlob findPlayerBlob(String name){
+	public EntityStatBlob findPlayerBlob(String name){
 		return findPlayerBlobASync(name).getValue();
 	}
 
@@ -185,10 +186,10 @@ public class PlayerStatManager implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String lbl,
 			String[] args) {
-		Iterator<Entry<String, Promise<PlayerStatBlob>>> i = cache.entrySet().iterator();
+		Iterator<Entry<String, Promise<EntityStatBlob>>> i = cache.entrySet().iterator();
 		sender.sendMessage("Players in Stat cache");
 		while(i.hasNext()){
-			Entry<String, Promise<PlayerStatBlob>> entry = i.next();
+			Entry<String, Promise<EntityStatBlob>> entry = i.next();
 			String player = entry.getKey();
 			sender.sendMessage(ChatColor.GOLD + player);
 		}

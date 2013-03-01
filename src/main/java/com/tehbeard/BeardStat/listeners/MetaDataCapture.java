@@ -10,7 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
 
-import com.tehbeard.BeardStat.containers.PlayerStatBlob;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 /**
  * translates a material to the metadata to capture.
@@ -71,7 +71,7 @@ public class MetaDataCapture {
     }
 
 
-    public static void saveMetaDataMaterialStat(Promise<PlayerStatBlob> blob,String category,Material material,int dataValue,int value){
+    public static void saveMetaDataMaterialStat(Promise<EntityStatBlob> blob,String category,Material material,int dataValue,int value){
         String matName = material.toString().toLowerCase().replace("_","");
         
         blob.onResolve(new DelegateIncrement(category, matName,value));
@@ -85,7 +85,7 @@ public class MetaDataCapture {
         }
     }
 
-    public static void saveMetaDataEntityStat(Promise<PlayerStatBlob> blob,String category,Entity entity,int value){
+    public static void saveMetaDataEntityStat(Promise<EntityStatBlob> blob,String category,Entity entity,int value){
         String entityName = entity.getType().toString().toLowerCase().replace("_","");
         blob.onResolve(new DelegateIncrement(category, entityName,value));
 

@@ -7,30 +7,31 @@ package com.tehbeard.BeardStat.containers;
  *
  */
 
-public class StaticPlayerStat implements PlayerStat{
+public class StaticStat implements IStat{
 
-	PlayerStatBlob owner = null;
+	EntityStatBlob owner = null;
 	private String domain;
 	private String world;
+	private String category="stats";
 	private String statistic;
 	private int value;
-	private String cat="stats";
+	
 
 	private boolean archive = false;
 	
-	/**
-	 * Constructs a new stat
-	 * @param cat Category
-	 * @param name name of stat
-	 * @param value inital value
-	 */
-	public StaticPlayerStat(String cat,String name,int value){
-		this.statistic=name;
-		this.value=value;
-		this.cat=cat;
+
+
+
+
+	public StaticStat(String domain, String world, String cat,
+			String statistic, int value) {
+		super();
+		this.domain = domain;
+		this.world = world;
+		this.statistic = statistic;
+		this.value = value;
+		this.category = cat;
 	}
-
-
 
 	/**
 	 * Get the stats value
@@ -80,8 +81,8 @@ public class StaticPlayerStat implements PlayerStat{
 	/**
 	 * @return name of category stat is in
 	 */
-	public String getCat() {	
-		return cat;
+	public String getCategory() {	
+		return category;
 	}
 
 	/**
@@ -102,7 +103,7 @@ public class StaticPlayerStat implements PlayerStat{
 	/**
 	 * get the blob of stats this stat belongs to.
 	 */
-	public PlayerStatBlob getOwner(){
+	public EntityStatBlob getOwner(){
 		return owner;
 	}
 	
@@ -116,14 +117,14 @@ public class StaticPlayerStat implements PlayerStat{
 	/**
 	 * Set owner of this stat
 	 */
-	public void setOwner(PlayerStatBlob playerStatBlob) {
+	public void setOwner(EntityStatBlob playerStatBlob) {
 		owner = playerStatBlob;
 	}
 	
 	
 
 	public String toString(){
-	    return cat + "." + statistic + "=" + value;
+	    return category + "." + statistic + "=" + value;
 	}
 
 
