@@ -76,11 +76,11 @@ public class LastOnCommand implements CommandExecutor {
         
         if(blob != null)
         {
-            sFirst = (blob.getStat(PLAYEDCAT, FIRSTPLAYEDSTAT).getValue());
+            sFirst = (blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,PLAYEDCAT, FIRSTPLAYEDSTAT).getValue());
             // multiply by 1000 to convert to milliseconds
             sFirst *= 1000;
 
-            sLast = (blob.getStat(PLAYEDCAT, LASTPLAYEDSTAT).getValue());
+            sLast = (blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,PLAYEDCAT, LASTPLAYEDSTAT).getValue());
             // multiply by 1000 to convert to milliseconds
             sLast *= 1000;
         }

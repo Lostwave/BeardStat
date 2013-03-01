@@ -405,7 +405,7 @@ public class BeardStat extends JavaPlugin {
         }
         if(config.getString("type").equalsIgnoreCase("sqlite")){
             try {
-                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString(), "stats");
+                db = new SQLiteStatDataProvider(new File(getDataFolder(),"stats.db").toString());
             } catch (SQLException e) {
                 e.printStackTrace();
                 db =null;

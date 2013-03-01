@@ -82,9 +82,9 @@ public class playedCommand implements CommandExecutor {
 			seconds += BeardStat.self().getStatManager().getSessionTime(pp.getName());
 		}
 
-		if(blob != null && blob.getStat("stats", "playedfor").getValue() != 0){
+		if(blob != null && blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats", "playedfor").getValue() != 0){
 			sender.sendMessage(ChatColor.GOLD + blob.getName());
-			seconds += blob.getStat("stats","playedfor").getValue();
+			seconds += blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","playedfor").getValue();
 			if(pp.isOnline()){
 				 seconds += BeardStat.self().getStatManager().getSessionTime(pp.getName());
 			}

@@ -38,17 +38,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	//protected static PreparedStatement prepGetPlayerStat;
 	
 	//Load data from db
-	private PreparedStatement loadEntity;
-	private PreparedStatement loadEntityData;
+	protected PreparedStatement loadEntity;
+	protected PreparedStatement loadEntityData;
 	
 	//save to db
-	private PreparedStatement saveEntity;
-	private PreparedStatement saveEntityData;
+	protected PreparedStatement saveEntity;
+	protected PreparedStatement saveEntityData;
 	
 	//Maintenance
-	private PreparedStatement keepAlive;
-	private PreparedStatement listEntities;
-	private PreparedStatement deleteEntity;
+	protected PreparedStatement keepAlive;
+	protected PreparedStatement listEntities;
+	protected PreparedStatement deleteEntity;
 	
 	
 	private HashMap<String,EntityStatBlob> writeCache = new HashMap<String,EntityStatBlob>();
@@ -65,20 +65,19 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 		try {
 			Class.forName(driverClass);
-
-			createConnection();
-
-			checkAndMakeTable();
-			prepareStatements();
 			if(conn == null){
 				throw new SQLException("Failed to start");
 			}
 		} catch (ClassNotFoundException e) {
 			BeardStat.printCon("JDBC "+ driverClass + "Library not found!");
 		}
+	}
+	
+	protected void initialise(){
+		createConnection();
 
-
-
+		checkAndMakeTable();
+		prepareStatements();
 	}
 
 	/**

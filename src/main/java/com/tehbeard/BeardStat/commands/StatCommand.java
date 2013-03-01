@@ -102,8 +102,8 @@ public class StatCommand implements CommandExecutor {
                     return true;
                 }
                 
-                if(blob.hasStat(stat.split("\\.")[0], stat.split("\\.")[1])){
-                    sender.sendMessage(ChatColor.GOLD + stat + " = " + ChatColor.WHITE + FormatFactory.formatStat( blob.getStat(stat.split("\\.")[0], stat.split("\\.")[1])));
+                if(blob.hasStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,stat.split("\\.")[0], stat.split("\\.")[1])){
+                    sender.sendMessage(ChatColor.GOLD + stat + " = " + ChatColor.WHITE + FormatFactory.formatStat( blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,stat.split("\\.")[0], stat.split("\\.")[1])));
                     return true;
                 }
                 else
@@ -154,10 +154,10 @@ public class StatCommand implements CommandExecutor {
    
 
     public static void SendPlayerStats(CommandSender sender, EntityStatBlob blob) {
-        if (blob != null && blob.getStat("stats", "playedfor").getValue() != 0) {
+        if (blob != null && blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats", "playedfor").getValue() != 0) {
             sender.sendMessage(ChatColor.GOLD + "-= " + blob.getName() + "'s Stats =-");
 
-            long seconds = blob.getStat("stats", "playedfor").getValue();
+            long seconds = blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats", "playedfor").getValue();
             if (sender instanceof Player) {
                 seconds += BeardStat.self().getStatManager().getSessionTime(((Player) sender).getName());
             }
