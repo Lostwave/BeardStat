@@ -4,13 +4,7 @@ CREATE TABLE IF NOT EXISTS `${TBL_ENTITY}` (
   `type` enum('player','plugin','group') NOT NULL,
   PRIMARY KEY (`entityId`),
   UNIQUE KEY `name` (`name`,`type`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=65536 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `stats_keystore`
---
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `${TBL_KEYSTORE}` (
   `entityId` int(11) NOT NULL,

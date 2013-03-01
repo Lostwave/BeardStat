@@ -399,6 +399,7 @@ public class BeardStat extends JavaPlugin {
                         config.getString("password")
                         );
             } catch (SQLException e) {
+            	mysqlError(e);
                 db = null;
             }
         }

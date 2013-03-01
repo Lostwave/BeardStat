@@ -61,13 +61,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	//private WorkQueue loadQueue = new WorkQueue(1);
 	private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
 
-	public JDBCStatDataProvider(String driverClass) throws SQLException{
+	public JDBCStatDataProvider(String driverClass){
 
 		try {
 			Class.forName(driverClass);
-			if(conn == null){
-				throw new SQLException("Failed to start");
-			}
 		} catch (ClassNotFoundException e) {
 			BeardStat.printCon("JDBC "+ driverClass + "Library not found!");
 		}
@@ -132,6 +129,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 		BeardStat.printCon("Constructing table as needed.");
 
 		try{
+			
 			conn.prepareStatement(BeardStat.self().readSQL("sql/maintenence/create.tables.sql", tblConfig)).execute();
 		
 		} catch (SQLException e) {

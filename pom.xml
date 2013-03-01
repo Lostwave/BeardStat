@@ -78,6 +78,12 @@
 			</extension>
 		</extensions>
 		<resources>
+
+			<resource>
+				<targetPath>./sql</targetPath>
+				<directory>${basedir}/src/main/resources/sql</directory>
+			</resource>
+
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
@@ -88,7 +94,7 @@
 					<include>interactive.yml</include>
 					<include>messages.lang</include>
 					<include>metadata.txt</include>
-					<include>sql/*</include>
+					
 				</includes>
 			</resource>
 
