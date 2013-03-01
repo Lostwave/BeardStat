@@ -153,7 +153,7 @@ public class StatCommand implements CommandExecutor {
 
    
 
-    public static void SendPlayerStats(CommandSender sender, EntityStatBlob blob) {
+    /*public static void SendPlayerStats(CommandSender sender, EntityStatBlob blob) {
         if (blob != null && blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats", "playedfor").getValue() != 0) {
             sender.sendMessage(ChatColor.GOLD + "-= " + blob.getName() + "'s Stats =-");
 
@@ -168,5 +168,5 @@ public class StatCommand implements CommandExecutor {
         else {
             sender.sendMessage(ChatColor.RED + "Player not found.");
         }
-    }
+    }*/
 }

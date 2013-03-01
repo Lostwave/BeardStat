@@ -145,7 +145,6 @@ public class StaticStat implements IStat{
 
 	@Override
 	public String getDomain() {
-		// TODO Auto-generated method stub
 		return domain;
 	}
 

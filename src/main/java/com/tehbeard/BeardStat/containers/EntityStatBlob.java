@@ -1,11 +1,13 @@
 package com.tehbeard.BeardStat.containers;
 
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.tehbeard.BeardStat.BeardStat;
 
@@ -45,7 +47,7 @@ public class EntityStatBlob implements VariableProvider{
 		}
 	}
 
-	private HashSet<IStat> stats;
+	private Map<String,IStat> stats = new HashMap<String, IStat>();
 
 	private int entityId;
 	private String name;
@@ -69,8 +71,6 @@ public class EntityStatBlob implements VariableProvider{
 		this.name = name;
 		this.entityId=entityId;
 		this.type = type;
-		stats = new HashSet<IStat>();
-
 		addDynamics();
 	}
 
@@ -79,47 +79,50 @@ public class EntityStatBlob implements VariableProvider{
 	 * @param stat
 	 */
 	public void addStat(IStat stat){
-		stats.add(stat);
+		stats.put(stat.getDomain() + "." + stat.getWorld() + "." + stat.getCategory() + "." + stat.getStatistic(),stat);
 		stat.setOwner(this);
 	}
 
 	/**
 	 * Get a players stat, creates new object if not found.
-	 * @param name
+	 * @param statistic
 	 * @return
 	 */
-	public IStat getStat(String domain,String world,String cat,String name){
-		for(IStat ps: stats){
-			if(     ps.getDomain().equals(domain) &&
-					ps.getWorld().equals(domain) && 
-					ps.getCategory().equals(cat) &&
-					ps.getStatistic().equals(name)){
-				return ps;
-			}
+	public IStat getStat(String domain,String world,String category,String statistic){
+		IStat psn = stats.get(domain + "." +world + "." + category + "." + statistic);
+		if(psn!= null){
+			return psn;
 		}
-		IStat psn = new StaticStat(domain,world,cat,name,0);
-		psn.setValue(0);
+		psn = new StaticStat(domain,world,category,statistic,0);
 		addStat(psn);
 		return psn;
+	}
+	
+	public StatVector getStats(String domain,String world,String category,String statistic){
+		String pattern = domain;
+		pattern += "\\." + world;
+		pattern += "\\." + category;
+		pattern += "\\." + statistic;
+		
+		StatVector vector = new StatVector(domain, world, category, statistic);
+		for( Entry<String, IStat> e : stats.entrySet()){
+			if(Pattern.matches(pattern, e.getKey())){
+				vector.add(e.getValue());
+			}
+		}
+		return vector;
 	}
 	/**
 	 * Return all the stats!
 	 * @return
 	 */
-	public Set<IStat> getStats(){
-		return  new HashSet<IStat>(stats);
+	public Collection<IStat> getStats(){
+		return  stats.values();
 	}
 
-	public boolean hasStat(String domain,String world,String cat,String name){
-		for(IStat ps: stats){
-			if(     ps.getDomain().equals(domain) &&
-					ps.getWorld().equals(domain) && 
-					ps.getCategory().equals(cat) &&
-					ps.getStatistic().equals(name)){
-				return true;
-			}
-		}
-		return false;
+	public boolean hasStat(String domain,String world,String category,String statistic){
+		return stats.containsKey(domain + "." +world + "." + category + "." + statistic);
+		
 	}
 
 	public int resolveVariable(String var) {
@@ -140,9 +143,9 @@ public class EntityStatBlob implements VariableProvider{
 	public EntityStatBlob cloneForArchive(){
 		EntityStatBlob blob = new EntityStatBlob(name, entityId, type);
 		blob.stats.clear();
-		for(IStat stat : stats){
+		for(IStat stat : stats.values()){
 			if(stat.isArchive()){
-				BeardStat.printDebugCon("Archiving stat " + stat.getCategory() + "." + stat.getStatistic());
+				BeardStat.printDebugCon("Archiving stat " + stat.getDomain() + "." + stat.getWorld() + "." + stat.getCategory() + "." + stat.getStatistic() + " = " + stat.getValue());
 				IStat is = stat.clone();
 				if(is!=null){
 					BeardStat.printDebugCon("Stat added");
@@ -151,7 +154,7 @@ public class EntityStatBlob implements VariableProvider{
 				}
 			}
 		}
-
+		BeardStat.printDebugCon("End cloning");
 		return blob;
 	}
 

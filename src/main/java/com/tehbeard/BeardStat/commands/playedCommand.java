@@ -65,10 +65,6 @@ public class playedCommand implements CommandExecutor {
 			}
 		}
 
-		else//Funky number of arguments, return false
-		{
-			return false;
-		}
 
 		EntityStatBlob blob;
 

@@ -69,7 +69,7 @@ public class StatPageCommand implements CommandExecutor {
 							String cat,stat;
 							cat = p[1].split("\\.")[0];
 							stat = p[1].split("\\.")[1];
-							sender.sendMessage(ChatColor.LIGHT_PURPLE + p[0] + ": " + ChatColor.WHITE + playerStatManager.getPlayerBlob(playername).getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,cat,stat).getValue());
+							sender.sendMessage(ChatColor.LIGHT_PURPLE + p[0] + ": " + ChatColor.WHITE + playerStatManager.getPlayerBlob(playername).getStats(BeardStat.DEFAULT_DOMAIN,"[a-zA-Z0-9_]*",cat,stat).getValue());
 						}
 					}
 				}
