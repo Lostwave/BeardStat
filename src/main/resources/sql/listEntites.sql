@@ -1,1 +1,0 @@
-SELECT DISTINCT(player) from `${TABLE}`

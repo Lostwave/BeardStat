@@ -1,1 +1,0 @@
-INSERT OR REPLACE INTO `${TABLE` (`player`,`category`,`stat`,`value`) values (?,?,?,?);

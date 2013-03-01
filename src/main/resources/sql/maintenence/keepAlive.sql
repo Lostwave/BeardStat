@@ -1,0 +1,1 @@
+SELECT COUNT(*) from `${TBL_ENTITY}`;

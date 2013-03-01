@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.sql.SQLException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 
@@ -424,8 +426,14 @@ public class BeardStat extends JavaPlugin {
         return db;
     }
     
-    public String readSQL(String filename){
-    	return new Scanner(getResource(filename)).useDelimiter("\\Z").next(); 
+    public String readSQL(String filename,Map<String,String> vars){
+    	String sql = new Scanner(getResource(filename)).useDelimiter("\\Z").next();
+    	
+    	for(Entry<String, String> entry : vars.entrySet()){
+    		sql = sql.replace("${" + entry.getKey() + "}",entry.getValue());
+    	}
+    	
+    	return sql;
     }
 }
 

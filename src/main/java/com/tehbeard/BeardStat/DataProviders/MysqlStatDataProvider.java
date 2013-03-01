@@ -146,13 +146,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 			ResultSet rs = conn.getMetaData().getTables(null, null, table, null);
 			if (!rs.next()) {
 				BeardStat.printCon("Stats table not found, creating table");
-				PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `" + table + "` ("+
-						" `player` varchar(32) NOT NULL DEFAULT '-',"+
-						" `category` varchar(32) NOT NULL DEFAULT 'stats',"+
-						" `stat` varchar(32) NOT NULL DEFAULT '-',"+
-						" `value` int(11) NOT NULL DEFAULT '0',"+
-						" PRIMARY KEY (`player`,`category`,`stat`)"+
-						") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+				PreparedStatement ps = conn.prepareStatement(BeardStat.self().readSQL("sql/create.sql"));
 
 				ps.executeUpdate();
 				ps.close();

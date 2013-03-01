@@ -1,0 +1,1 @@
+INSERT OR REPLACE INTO `${TBL_KEYSTORE}` values (?,?,?,?,?,?);

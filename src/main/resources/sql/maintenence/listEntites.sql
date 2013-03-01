@@ -1,0 +1,1 @@
+SELECT `name` from `${TBL_ENTITY}` WHERE `type`=?;
