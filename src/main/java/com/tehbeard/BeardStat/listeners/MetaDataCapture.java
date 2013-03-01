@@ -1,7 +1,9 @@
 package com.tehbeard.BeardStat.listeners;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import net.dragonzone.promise.Promise;
 
@@ -31,7 +33,7 @@ public class MetaDataCapture {
 
     //private static Material[] mats = {Material.WOOD,Material.LOG,Material.SAPLING,Material.INK_SACK,Material.COAL,Material.STEP,Material.WOOL,Material.SMOOTH_BRICK};
 
-    public static final Map<Material,Integer> mats = new HashMap<Material, Integer>();
+    public static final Map<Material,entryInfo> mats = new HashMap<Material, entryInfo>();
 
     static{
         //nature
@@ -63,39 +65,57 @@ public class MetaDataCapture {
         mats.put(Material.SANDSTONE       ,0x3);
     }
 
-    public static void addData(int typeid, int mask){
+    /*public static void addData(int typeid, int mask){
         Material m = Material.getMaterial(typeid);
         if(m!=null){
             mats.put(m, mask);
         }
+    }*/
+    
+    public static void readData(InputStream is){
+    	Scanner s = new Scanner(is);
+    	
+    	while(s.hasNext()){
+    		String line = s.nextLine();
+    		String[] entry = line.split(",");
+    		
+    		entryInfo ei = new entryInfo();
+    		Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]","")));
+    		ei.mask      = Integer.parseInt(entry[1].replaceAll("[^0-9]",""));
+    		ei.min       = Integer.parseInt(entry[2].replaceAll("[^0-9]",""));
+    		ei.max       = Integer.parseInt(entry[3].replaceAll("[^0-9]",""));
+    		
+    	}
+    	
+    	s.close();
     }
 
 
-    public static void saveMetaDataMaterialStat(Promise<EntityStatBlob> blob,String category,Material material,int dataValue,int value){
+    public static void saveMetaDataMaterialStat(Promise<EntityStatBlob> blob,String domain,String world,String category,Material material,int dataValue,int value){
         String matName = material.toString().toLowerCase().replace("_","");
         
-        blob.onResolve(new DelegateIncrement(category, matName,value));
+        blob.onResolve(new DelegateIncrement(domain,world,category, matName,value));
         if(mats.containsKey(material)){
-            String tag = "_" + (dataValue & mats.get(material));
-            blob.onResolve(new DelegateIncrement(category, matName + tag,value));
+            String tag = "_" + (dataValue & mats.get(material).mask);
+            blob.onResolve(new DelegateIncrement(domain,world,category, matName + tag,value));
         }
         if(material.isRecord()){
-            blob.onResolve(new DelegateIncrement(category, "records",value));
+            blob.onResolve(new DelegateIncrement(domain,world,category, "records",value));
 
         }
     }
 
-    public static void saveMetaDataEntityStat(Promise<EntityStatBlob> blob,String category,Entity entity,int value){
+    public static void saveMetaDataEntityStat(Promise<EntityStatBlob> blob,String domain,String world,String category,Entity entity,int value){
         String entityName = entity.getType().toString().toLowerCase().replace("_","");
-        blob.onResolve(new DelegateIncrement(category, entityName,value));
+        blob.onResolve(new DelegateIncrement(domain,world,category, entityName,value));
 
         if(entity instanceof Skeleton){
-            blob.onResolve(new DelegateIncrement(category, ((Skeleton)entity).getSkeletonType().toString().toLowerCase() + "_" + entityName,value));
+            blob.onResolve(new DelegateIncrement(domain,world,category, ((Skeleton)entity).getSkeletonType().toString().toLowerCase() + "_" + entityName,value));
         }
 
         if(entity instanceof Zombie){
             if(((Zombie)entity).isVillager()){
-                blob.onResolve(new DelegateIncrement(category, "villager_zombie",value));
+                blob.onResolve(new DelegateIncrement(domain,world,category, "villager_zombie",value));
             }
         }
     }
@@ -107,6 +127,12 @@ public class MetaDataCapture {
 
 
     }
+    
+    
 
-
+    public class entryInfo{
+    	public int mask;
+    	public int min;
+    	public int max;
+    }
 }
