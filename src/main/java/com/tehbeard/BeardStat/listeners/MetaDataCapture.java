@@ -33,44 +33,8 @@ public class MetaDataCapture {
 
     //private static Material[] mats = {Material.WOOD,Material.LOG,Material.SAPLING,Material.INK_SACK,Material.COAL,Material.STEP,Material.WOOL,Material.SMOOTH_BRICK};
 
-    public static final Map<Material,entryInfo> mats = new HashMap<Material, entryInfo>();
+    public static final Map<Material,EntryInfo> mats = new HashMap<Material, EntryInfo>();
 
-    static{
-        //nature
-        mats.put(Material.WOOD            ,0x3);
-        mats.put(Material.LOG             ,0x3);
-        mats.put(Material.LEAVES          ,0x3);
-        mats.put(Material.SAPLING         ,0x3);
-        mats.put(Material.LONG_GRASS       ,0x3);
-        mats.put(Material.FLOWER_POT, 0xF);
-        
-        //ART
-        mats.put(Material.INK_SACK        ,0xF);
-        mats.put(Material.WOOL            ,0xF);
-
-        //INDUSTRY
-        mats.put(Material.COAL            ,0x1);
-
-        //CONSTRUCTION
-        mats.put(Material.STEP            ,0x7);
-        mats.put(Material.DOUBLE_STEP     ,0x7);
-        mats.put(Material.WOOD_STEP       ,0x3);
-        mats.put(Material.WOOD_DOUBLE_STEP,0x3);
-
-        //STRONGBADS STRONGHOLD
-        mats.put(Material.SMOOTH_BRICK    ,0x3);
-        mats.put(Material.MONSTER_EGGS    ,0x3);
-
-        //EYPGT
-        mats.put(Material.SANDSTONE       ,0x3);
-    }
-
-    /*public static void addData(int typeid, int mask){
-        Material m = Material.getMaterial(typeid);
-        if(m!=null){
-            mats.put(m, mask);
-        }
-    }*/
     
     public static void readData(InputStream is){
     	Scanner s = new Scanner(is);
@@ -79,7 +43,7 @@ public class MetaDataCapture {
     		String line = s.nextLine();
     		String[] entry = line.split(",");
     		
-    		entryInfo ei = new entryInfo();
+    		EntryInfo ei = new EntryInfo();
     		Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]","")));
     		ei.mask      = Integer.parseInt(entry[1].replaceAll("[^0-9]",""));
     		ei.min       = Integer.parseInt(entry[2].replaceAll("[^0-9]",""));
@@ -130,7 +94,7 @@ public class MetaDataCapture {
     
     
 
-    public class entryInfo{
+    public static class EntryInfo{
     	public int mask;
     	public int min;
     	public int max;

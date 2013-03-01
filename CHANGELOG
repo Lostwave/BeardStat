@@ -1,3 +1,14 @@
+0.6 - 
+=============
+* Now track stats by domain (plugin) and world
+* Add ability for other entities that can hold stats (currently player,plugin or group) 
+
+
+0.5 - Ambrosia
+==============
+* Asyncronize data access
+* bug fixes
+
 0.4.8 - Ice Cream release
 =========================
 * Custom stats can now be saved to the database
