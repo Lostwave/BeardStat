@@ -18,6 +18,7 @@ public class DynamicStat implements IStat {
     private String stat;
     private EntityStatBlob owner;
     private InFixExpression expression;
+    String expr;
     
     private boolean archive = false;
     
@@ -32,7 +33,7 @@ public class DynamicStat implements IStat {
         this.stat = stat;
         this.expression = new InFixExpression(expr);
         this.archive = archive;
-        
+        this.expr = expr;
 
     }
 
@@ -116,5 +117,10 @@ public class DynamicStat implements IStat {
 	@Override
 	public String getWorld() {
 		return world;
+	}
+	
+	public IStat clone(){
+			return new DynamicStat(cat, stat, expr,archive);
+		
 	}
 }

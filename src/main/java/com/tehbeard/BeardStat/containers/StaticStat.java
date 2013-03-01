@@ -162,4 +162,8 @@ public class StaticStat implements IStat{
 	public String getWorld() {
 		return world;
 	}
+	
+	public IStat clone(){
+		return new StaticStat(domain, world, category, statistic, value);
+	}
 }

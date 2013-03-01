@@ -47,7 +47,7 @@ public class EntityStatBlob implements VariableProvider{
 
 	private HashSet<IStat> stats;
 
-	private int entityID;
+	private int entityId;
 	private String name;
 	private String type;
 
@@ -56,7 +56,7 @@ public class EntityStatBlob implements VariableProvider{
 	}
 
 	public int getEntityID() {
-		return entityID;
+		return entityId;
 	}
 
 
@@ -67,7 +67,7 @@ public class EntityStatBlob implements VariableProvider{
 	 */
 	public EntityStatBlob(String name,int entityId,String type){
 		this.name = name;
-		this.entityID=entityId;
+		this.entityId=entityId;
 		this.type = type;
 		stats = new HashSet<IStat>();
 
@@ -111,14 +111,14 @@ public class EntityStatBlob implements VariableProvider{
 	}
 
 	public boolean hasStat(String domain,String world,String cat,String name){
-			for(IStat ps: stats){
-				if(     ps.getDomain().equals(domain) &&
-						ps.getWorld().equals(domain) && 
-						ps.getCategory().equals(cat) &&
-						ps.getStatistic().equals(name)){
-					return true;
-				}
+		for(IStat ps: stats){
+			if(     ps.getDomain().equals(domain) &&
+					ps.getWorld().equals(domain) && 
+					ps.getCategory().equals(cat) &&
+					ps.getStatistic().equals(name)){
+				return true;
 			}
+		}
 		return false;
 	}
 
@@ -136,8 +136,20 @@ public class EntityStatBlob implements VariableProvider{
 		return type;
 	}
 
-	/**
-	 * Expose create tag
-	 */
+
+	public EntityStatBlob cloneForArchive(){
+		EntityStatBlob blob = new EntityStatBlob(name, entityId, type);
+		for(IStat stat : stats){
+			if(stat.isArchive()){
+				IStat is = stat.clone();
+				if(is!=null){
+					blob.stats.add(is);
+					stat.clearArchive();
+				}
+			}
+		}
+
+		return blob;
+	}
 
 }
