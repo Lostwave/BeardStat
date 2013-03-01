@@ -3,10 +3,12 @@ package com.tehbeard.BeardStat;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.sql.SQLException;
 
 import java.util.List;
+import java.util.Scanner;
 
 
 
@@ -420,6 +422,10 @@ public class BeardStat extends JavaPlugin {
             db = _new;
         }
         return db;
+    }
+    
+    public String readSQL(String filename){
+    	return new Scanner(getResource(filename)).useDelimiter("\\Z").next(); 
     }
 }
 

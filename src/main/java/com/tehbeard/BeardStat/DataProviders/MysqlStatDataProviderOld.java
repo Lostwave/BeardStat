@@ -31,7 +31,7 @@ import com.tehbeard.BeardStat.containers.StaticStat;
  * @author James
  *
  */
-public class MysqlStatDataProvider implements IStatDataProvider {
+public class MysqlStatDataProviderOld implements IStatDataProvider {
 
 	protected Connection conn;
 
@@ -56,7 +56,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 	//private WorkQueue loadQueue = new WorkQueue(1);
 	private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
 
-	public MysqlStatDataProvider(String host,int port,String database,String table,String username,String password) throws SQLException{
+	public MysqlStatDataProviderOld(String host,int port,String database,String table,String username,String password) throws SQLException{
 		this.host = host;
 		this.port = port;
 		this.database = database;
