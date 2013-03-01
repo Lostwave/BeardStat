@@ -25,7 +25,6 @@ import org.bukkit.permissions.Permissible;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.tehbeard.BeardStat.DataProviders.FlatFileStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.SQLiteStatDataProvider;
@@ -413,7 +412,7 @@ public class BeardStat extends JavaPlugin {
             
         }
         if(config.getString("type").equalsIgnoreCase("file")){
-            db = new FlatFileStatDataProvider(new File(getDataFolder(),"stats.yml"));   
+            BeardStat.printCon("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
         }
         //TRANSFER TYPE
         
