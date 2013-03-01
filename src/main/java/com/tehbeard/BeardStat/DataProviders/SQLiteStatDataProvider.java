@@ -15,7 +15,8 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 		
 		connectionUrl = String.format("jdbc:sqlite:%s",filename);
 		
-		initialise();
+		initialise("sql/maintenence/create.tables.sqlite.sql");
+		
 		
 		saveEntityData = conn.prepareStatement(BeardStat.self().readSQL("sql/load/saveStat.sqlite.sql", tblConfig));
 	}

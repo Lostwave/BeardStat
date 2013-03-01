@@ -49,6 +49,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	protected PreparedStatement keepAlive;
 	protected PreparedStatement listEntities;
 	protected PreparedStatement deleteEntity;
+	protected PreparedStatement createTable;
 
 
 	private HashMap<String,EntityStatBlob> writeCache = new HashMap<String,EntityStatBlob>();
@@ -70,10 +71,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 		}
 	}
 
-	protected void initialise(){
+	protected void initialise(String file){
 		createConnection();
 
-		checkAndMakeTable();
+		checkAndMakeTable(file);
 		prepareStatements();
 	}
 
@@ -125,12 +126,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 		return conn != null;
 	}
 
-	protected void checkAndMakeTable(){
+	protected void checkAndMakeTable(String file){
 		BeardStat.printCon("Constructing table as needed.");
 
 		try{
 
-			String[] creates = BeardStat.self().readSQL("sql/maintenence/create.tables.sql", tblConfig).replaceAll("\n|\r", "").split(";");
+			String[] creates = BeardStat.self().readSQL(file, tblConfig).replaceAll("\n|\r", "").split(";");
 			for(String sql : creates){
 				conn.prepareStatement(sql).execute();
 			}
@@ -223,6 +224,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 								rs.getString(3),
 								rs.getString(4)
 								);
+						ps.setValue(rs.getInt(5));
 						ps.clearArchive();
 						foundStats = true;
 					}

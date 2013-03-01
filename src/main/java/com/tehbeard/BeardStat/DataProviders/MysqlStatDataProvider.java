@@ -18,7 +18,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 		connectionProperties.put("password",password);
 		connectionProperties.put("autoReconnect", "true");
 		
-		initialise();
+		initialise("sql/maintenence/create.tables.sql");
 	}
 
 }
