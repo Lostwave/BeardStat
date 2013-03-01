@@ -104,6 +104,8 @@ public class StatPlayerListener implements Listener {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
             MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlobASync(event.getPlayer().getName()), 
+            		BeardStat.DEFAULT_DOMAIN,
+            		event.getPlayer().getWorld().getName(),
                     "itemdrop", 
                     event.getItemDrop().getItemStack().getType(), 
                     event.getItemDrop().getItemStack().getDurability(), 
@@ -176,6 +178,8 @@ public class StatPlayerListener implements Listener {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
 
             MetaDataCapture.saveMetaDataMaterialStat(playerStatManager.getPlayerBlobASync(event.getPlayer().getName()), 
+            		BeardStat.DEFAULT_DOMAIN,
+            		event.getPlayer().getWorld().getName(),
                     "itempickup", 
                     event.getItem().getItemStack().getType(), 
                     event.getItem().getItemStack().getDurability(), 
@@ -257,6 +261,8 @@ public class StatPlayerListener implements Listener {
                  */
 
                 MetaDataCapture.saveMetaDataMaterialStat(promiseblob, 
+                		BeardStat.DEFAULT_DOMAIN,
+                		event.getPlayer().getWorld().getName(),
                         "dye", 
                         event.getPlayer().getItemInHand().getType(), 
                         event.getPlayer().getItemInHand().getDurability(), 
@@ -278,6 +284,8 @@ public class StatPlayerListener implements Listener {
                  */
 
                 MetaDataCapture.saveMetaDataMaterialStat(promiseblob, 
+                		BeardStat.DEFAULT_DOMAIN,
+                		event.getPlayer().getWorld().getName(),
                         "wolfdye", 
                         event.getPlayer().getItemInHand().getType(), 
                         event.getPlayer().getItemInHand().getDurability(), 
@@ -357,7 +365,13 @@ public class StatPlayerListener implements Listener {
                     	for(Material mm : m){
                     		
                     		if(mm.equals(item.getType())){
-                    			MetaDataCapture.saveMetaDataMaterialStat(promiseblob, "plant", mm, item.getDurability(), 1);
+                    			MetaDataCapture.saveMetaDataMaterialStat(
+                    					promiseblob, 
+                    					BeardStat.DEFAULT_DOMAIN,
+                                		event.getPlayer().getWorld().getName(),
+                    					"plant", 
+                    					mm, 
+                    					item.getDurability(), 1);
                     		}
                     	}
                     	

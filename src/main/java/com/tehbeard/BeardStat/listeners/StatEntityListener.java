@@ -123,7 +123,10 @@ public class StatEntityListener implements Listener{
         }
         //Entity damage
         if(other !=null && !(other instanceof Player)){
-            MetaDataCapture.saveMetaDataEntityStat(promiseblob, category[idx], other, amount);
+            MetaDataCapture.saveMetaDataEntityStat(promiseblob,
+            		BeardStat.DEFAULT_DOMAIN,
+            		world,
+            		category[idx], other, amount);
         }
         //Projectile damage
         if(projectile!=null){
