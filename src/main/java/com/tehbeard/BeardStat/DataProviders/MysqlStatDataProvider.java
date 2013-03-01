@@ -6,7 +6,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
 	public MysqlStatDataProvider(String host,int port,String database,String tablePrefix,String username,String password) throws SQLException {
 		
-		super("com.mysql.jdbc.Driver");
+		super("sql","com.mysql.jdbc.Driver");
 		tblConfig.put("TBL_ENTITY", tablePrefix + "_entity");
 		tblConfig.put("TBL_KEYSTORE", tablePrefix + "_keystore");
 		
@@ -18,7 +18,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 		connectionProperties.put("password",password);
 		connectionProperties.put("autoReconnect", "true");
 		
-		initialise("sql/maintenence/create.tables.sql");
+		initialise();
 	}
 
 }

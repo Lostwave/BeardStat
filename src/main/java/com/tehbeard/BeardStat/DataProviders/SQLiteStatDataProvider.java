@@ -8,17 +8,16 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
 	public SQLiteStatDataProvider(String filename) throws SQLException {
 		
-		super("org.sqlite.JDBC");
+		super("sqlite","org.sqlite.JDBC");
 		
 		tblConfig.put("TBL_ENTITY", "entity");
 		tblConfig.put("TBL_KEYSTORE","keystore");
 		
 		connectionUrl = String.format("jdbc:sqlite:%s",filename);
 		
-		initialise("sql/maintenence/create.tables.sqlite.sql");
+		initialise();
 		
 		
-		saveEntityData = conn.prepareStatement(BeardStat.self().readSQL("sql/load/saveStat.sqlite.sql", tblConfig));
 	}
 
 }

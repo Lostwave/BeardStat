@@ -425,8 +425,13 @@ public class BeardStat extends JavaPlugin {
         return db;
     }
     
-    public String readSQL(String filename,Map<String,String> vars){
-    	String sql = new Scanner(getResource(filename)).useDelimiter("\\Z").next();
+    public String readSQL(String type,String filename,Map<String,String> vars){
+    	BeardStat.printDebugCon("Loading SQL: " + filename);
+    	InputStream is = getResource(filename + "." + type);
+    	if(is == null){
+    		is = getResource(filename + ".sql");
+    	}
+    	String sql = new Scanner(is).useDelimiter("\\Z").next();
     	
     	for(Entry<String, String> entry : vars.entrySet()){
     		sql = sql.replace("${" + entry.getKey() + "}",entry.getValue());
