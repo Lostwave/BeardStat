@@ -172,7 +172,7 @@ public class MysqlStatDataProvider implements IStatDataProvider {
 		try{
 			BeardStat.printDebugCon("Preparing statements");
 
-			keepAlive = conn.prepareStatement("SELECT COUNT(*) from `" + table + "`");
+			keepAlive = conn.prepareStatement("");
 			prepGetAllPlayerStat = conn.prepareStatement("SELECT * FROM " + table + " WHERE player=?");
 			BeardStat.printDebugCon("Player stat statement created");
 
