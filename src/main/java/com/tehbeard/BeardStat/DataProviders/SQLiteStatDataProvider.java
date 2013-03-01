@@ -10,6 +10,9 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 		
 		super("com.mysql.jdbc.Driver");
 		
+		tblConfig.put("TBL_ENTITY", "entity");
+		tblConfig.put("TBL_KEYSTORE","keystore");
+		
 		connectionUrl = String.format("jdbc:sqlite:%s",filename);
 		
 		initialise();

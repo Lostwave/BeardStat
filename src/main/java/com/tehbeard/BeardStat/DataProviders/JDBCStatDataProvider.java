@@ -132,7 +132,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 		BeardStat.printCon("Constructing table as needed.");
 
 		try{
-			conn.prepareStatement("").execute();
+			conn.prepareStatement(BeardStat.self().readSQL("sql/maintenence/create.tables.sql", tblConfig)).execute();
 		
 		} catch (SQLException e) {
 			BeardStat.mysqlError(e);
