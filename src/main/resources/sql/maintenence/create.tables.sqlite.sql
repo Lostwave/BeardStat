@@ -1,17 +1,17 @@
-CREATE TABLE IF NOT EXISTS `${TBL_ENTITY}` (  
+CREATE TABLE IF NOT EXISTS `entity` (  
   `entityId` INTEGER PRIMARY KEY AUTOINCREMENT, 
    `name` CHARACTER(16) NOT NULL,  
-   `type` CHARACTER(16) NOT NULL
+   `type` CHARACTER(16) NOT NULL,
+   UNIQUE (`name`,`type`)
    );
-CREATE UNIQUE INDEX `name` (`name`,`type`);
 
-CREATE TABLE IF NOT EXISTS `${TBL_KEYSTORE}` (  
-  `entityId` INTEGER, 
+
+CREATE TABLE IF NOT EXISTS `keystore` (  
+  `entityId` INTEGER PRIMARY KEY, 
    `domain` CHARACTER(32) NOT NULL,  
   `world` CHARACTER(32) NOT NULL,  
   `category` CHARACTER(32) NOT NULL,  
   `statistic` CHARACTER(32) NOT NULL,  
-  `value` INTEGER
+  `value` INTEGER,
+   UNIQUE (`entityId`,`domain`,`world`,`category`,`statistic`).
   );
-CREATE UNIQUE INDEX  `chkUni` (`entityId`,`domain`,`world`,`category`,`statistic`);
-CREATE INDEX `entityId` (`entityId`);
