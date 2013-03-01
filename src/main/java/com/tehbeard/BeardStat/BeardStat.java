@@ -179,8 +179,8 @@ public class BeardStat extends JavaPlugin {
 
         printCon("initializing composite stats");
         //parse the composite stats
-        loadCompositeStats();
-        loadFormats();
+        //loadCompositeStats();
+        //loadFormats();
 
         printCon("Registering events and collectors");
 

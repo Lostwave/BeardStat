@@ -142,8 +142,10 @@ public class EntityStatBlob implements VariableProvider{
 		blob.stats.clear();
 		for(IStat stat : stats){
 			if(stat.isArchive()){
+				BeardStat.printDebugCon("Archiving stat " + stat.getCategory() + "." + stat.getStatistic());
 				IStat is = stat.clone();
 				if(is!=null){
+					BeardStat.printDebugCon("Stat added");
 					blob.addStat(is);
 					stat.clearArchive();
 				}

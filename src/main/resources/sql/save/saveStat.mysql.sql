@@ -1,1 +1,1 @@
-INSERT INTO `${TBL_KEYSTORE}` values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?
+INSERT INTO `${TBL_KEYSTORE}` values (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `value`=?;

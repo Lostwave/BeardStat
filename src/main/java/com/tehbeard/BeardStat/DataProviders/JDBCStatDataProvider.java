@@ -292,6 +292,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 								saveEntityData.setString(4,stat.getCategory());
 								saveEntityData.setString(5,stat.getStatistic());
 								saveEntityData.setInt(6,stat.getValue());
+								saveEntityData.setInt(7,stat.getValue());
 								saveEntityData.addBatch();
 							}
 							saveEntityData.executeBatch();
