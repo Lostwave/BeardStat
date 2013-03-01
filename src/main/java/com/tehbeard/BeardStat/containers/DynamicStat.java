@@ -14,8 +14,8 @@ public class DynamicStat implements IStat {
 
 	private String domain;
 	private String world;
-    private String cat;
-    private String stat;
+    private String category;
+    private String statistic;
     private EntityStatBlob owner;
     private InFixExpression expression;
     String expr;
@@ -29,8 +29,8 @@ public class DynamicStat implements IStat {
     }
     
     public DynamicStat(String cat,String stat,String expr,boolean archive){
-        this.cat = cat;
-        this.stat = stat;
+        this.category = cat;
+        this.statistic = stat;
         this.expression = new InFixExpression(expr);
         this.archive = archive;
         this.expr = expr;
@@ -49,7 +49,7 @@ public class DynamicStat implements IStat {
 
 
     public String getStatistic() {
-        return stat;
+        return statistic;
     }
 
 
@@ -63,7 +63,7 @@ public class DynamicStat implements IStat {
 
 
     public String getCategory() {
-        return cat;
+        return category;
     }
 
 
@@ -120,7 +120,7 @@ public class DynamicStat implements IStat {
 	}
 	
 	public IStat clone(){
-			return new DynamicStat(cat, stat, expr,archive);
+			return new StaticStat(domain,world,category,statistic,getValue());
 		
 	}
 }
