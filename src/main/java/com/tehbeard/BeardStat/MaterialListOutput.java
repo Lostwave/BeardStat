@@ -35,6 +35,7 @@ import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionType;
 
 import com.tehbeard.BeardStat.listeners.MetaDataCapture;
+import com.tehbeard.BeardStat.listeners.MetaDataCapture.EntryInfo;
 
 public class MaterialListOutput {
 
@@ -168,16 +169,16 @@ public class MaterialListOutput {
 
 		//metadata processing
 		HashSet<String> lines = new HashSet<String>();
-		for(Entry<Material, Integer> entry  : MetaDataCapture.mats.entrySet()){
+		for(Entry<Material, EntryInfo> entry  : MetaDataCapture.mats.entrySet()){
 
 			Material m = entry.getKey();
-			int mask = entry.getValue();
+			int mask = entry.getValue().mask;
 
 			String base = m.isBlock() ? "block":"item";
 
 			String def = materialOutputList.getProperty(base + "." + m.toString().replace("_", "").toLowerCase()).split(",")[0];
 
-			for(int i = 0;i<16;i++){
+			for(int i = entry.getValue().min;i<=entry.getValue().max;i++){
 				String s = m.toString().toLowerCase().replace("_","") + "_" + (i & mask);
 				if(!lines.contains(s)){
 					lines.add(s);

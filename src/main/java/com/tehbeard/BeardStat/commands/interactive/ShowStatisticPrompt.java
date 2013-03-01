@@ -29,7 +29,10 @@ public class ShowStatisticPrompt extends MessagePrompt implements ConfigurablePr
         String player = (String) context.getSessionData("player");
         
         String msg = (String)context.getSessionData("c") + "." + (String)context.getSessionData("s") + " = ";
-        msg += FormatFactory.formatStat(playerStatManager.getPlayerBlob(player).getStat((String)context.getSessionData("c"), (String)context.getSessionData("s")));
+        msg += FormatFactory.formatStat(playerStatManager.getPlayerBlob(player).getStat(
+        		BeardStat.DEFAULT_DOMAIN,
+        		BeardStat.GLOBAL_WORLD,
+        		(String)context.getSessionData("c"), (String)context.getSessionData("s")));//TODO: FIX THIS
         return msg;
     }
 
