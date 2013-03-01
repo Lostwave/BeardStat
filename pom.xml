@@ -87,6 +87,7 @@
 					<include>config.yml</include>
 					<include>interactive.yml</include>
 					<include>messages.lang</include>
+					<include>metadata.txt</include>
 					<include>sql/*</include>
 				</includes>
 			</resource>
