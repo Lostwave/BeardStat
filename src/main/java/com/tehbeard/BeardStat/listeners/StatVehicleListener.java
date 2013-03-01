@@ -52,6 +52,8 @@ public class StatVehicleListener implements Listener {
                 if(from.distance(to) < 10){
                     Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
                     promiseblob.onResolve(new DelegateIncrement(
+                    		BeardStat.DEFAULT_DOMAIN,
+                    		to.getWorld().getName(),
                             "vehicle",
                             event.getVehicle().getType().toString().toLowerCase(),
                             (int)Math.ceil(from.distance(to))));

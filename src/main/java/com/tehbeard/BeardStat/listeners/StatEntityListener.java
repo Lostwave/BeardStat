@@ -77,6 +77,7 @@ public class StatEntityListener implements Listener{
     private void processEntityDamage(EntityDamageEvent event,String[] category,boolean forceOne){
         //Initialise base stats
         Entity attacked = event.getEntity();
+        String world = attacked.getWorld().getName();
         DamageCause cause = event.getCause();
         int amount = forceOne ? 1 : event.getDamage();
         Entity attacker = null;
@@ -113,12 +114,12 @@ public class StatEntityListener implements Listener{
         Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
 
         //Total damage
-        promiseblob.onResolve(new DelegateIncrement(category[idx], "total",amount));
+        promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,category[idx], "total",amount));
 
 
         //Damage cause
         if(cause != DamageCause.PROJECTILE){
-            promiseblob.onResolve(new DelegateIncrement(category[idx], cause.toString().toLowerCase().replace("_",""),amount));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,category[idx], cause.toString().toLowerCase().replace("_",""),amount));
         }
         //Entity damage
         if(other !=null && !(other instanceof Player)){
@@ -126,7 +127,7 @@ public class StatEntityListener implements Listener{
         }
         //Projectile damage
         if(projectile!=null){
-            promiseblob.onResolve(new DelegateIncrement(category[idx], projectile.getType().toString().toLowerCase().replace("_",""),amount));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,category[idx], projectile.getType().toString().toLowerCase().replace("_",""),amount));
         }
 
         //TODO: pvp Damage
@@ -134,8 +135,8 @@ public class StatEntityListener implements Listener{
             Promise<EntityStatBlob> attackerBlob = playerStatManager.getPlayerBlobASync(((Player)attacker).getName());
             Promise<EntityStatBlob> attackedBlob = playerStatManager.getPlayerBlobASync(((Player)attacked).getName());
 
-            attackerBlob.onResolve(new DelegateIncrement(category[0],"pvp",1));
-            attackedBlob.onResolve(new DelegateIncrement(category[1],"pvp",1));
+            attackerBlob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,category[0],"pvp",1));
+            attackedBlob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,category[1],"pvp",1));
         }
     }
 
@@ -144,6 +145,7 @@ public class StatEntityListener implements Listener{
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
 
         if(event.isCancelled()==false && event.getEntity() instanceof Player && !worlds.contains(event.getEntity().getWorld().getName())){
+        	String world = event.getEntity().getWorld().getName();
             int amount = event.getAmount();
             RegainReason reason = event.getRegainReason();
             
@@ -152,9 +154,9 @@ public class StatEntityListener implements Listener{
         	}
             
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(((Player)event.getEntity()).getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","damagehealed",amount));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"stats","damagehealed",amount));
             if(reason != RegainReason.CUSTOM){
-                promiseblob.onResolve(new DelegateIncrement("stats","heal" + reason.toString().replace("_", "").toLowerCase(),amount));	
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"stats","heal" + reason.toString().replace("_", "").toLowerCase(),amount));	
             }
         }
     }
@@ -165,8 +167,9 @@ public class StatEntityListener implements Listener{
         	if(((Player)event.getOwner()).getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
         		return;
         	}
+        	String world = event.getEntity().getWorld().getName();
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getOwner().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", ""),1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"stats","tame"+event.getEntity().getType().toString().toLowerCase().replace("_", ""),1));
         }
     }
 
@@ -182,12 +185,13 @@ public class StatEntityListener implements Listener{
                     if(p.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
                 		return;
                 	}
+                    String world = event.getEntity().getWorld().getName();
                     Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
-                    promiseblob.onResolve(new DelegateIncrement("potions","splashhit",1));
+                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"potions","splashhit",1));
                     //added per potion details
                     for(PotionEffect potionEffect : potion.getEffects()){
                         String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
-                        promiseblob.onResolve(new DelegateIncrement("potions","splash" + effect,1));
+                        promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"potions","splash" + effect,1));
                     }
                 }
             }
@@ -204,17 +208,18 @@ public class StatEntityListener implements Listener{
                 if(p.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
             		return;
             	}
-
+                String world = event.getEntity().getWorld().getName();
+                
                 Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(p.getName());
                 //total shots fired
-                promiseblob.onResolve(new DelegateIncrement("bow","shots",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"bow","shots",1));
 
                 if(event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)){
-                    promiseblob.onResolve(new DelegateIncrement("bow","fireshots",1));
+                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"bow","fireshots",1));
                 }
 
                 if(event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)){
-                    promiseblob.onResolve(new DelegateIncrement("bow","infiniteshots",1));
+                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"bow","infiniteshots",1));
                 }
 
             }

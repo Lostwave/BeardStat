@@ -50,9 +50,10 @@ public class StatPlayerListener implements Listener {
     	if(event.getPlayer().getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
     		return;
     	}
+    	String world = event.getPlayer().getWorld().getName();
         if(event.getAnimationType()==PlayerAnimationType.ARM_SWING){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","armswing",1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"stats","armswing",1));
 
         }
 
@@ -60,13 +61,15 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-        promiseblob.onResolve(new DelegateIncrement("stats","login",1));
-        promiseblob.onResolve(new DelegateSet("stats","lastlogin",(int)(System.currentTimeMillis()/1000L)));
+        promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","login",1));
+        promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","lastlogin",(int)(System.currentTimeMillis()/1000L)));
         promiseblob.onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
-
+        
+        
             public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
-                if(!params.getValue().hasStat("stats", "firstlogin")){
-                    params.getValue().getStat("stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));
+
+                if(!params.getValue().hasStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats", "firstlogin")){
+                    params.getValue().getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","firstlogin").setValue((int)(event.getPlayer().getFirstPlayed()/1000L));
                     
                 }
                 
@@ -84,8 +87,10 @@ public class StatPlayerListener implements Listener {
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             int len = event.getMessage().length();
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","chatletters",len));
-            promiseblob.onResolve(new DelegateIncrement("stats","chat",1));
+            
+            String world = event.getPlayer().getWorld().getName();
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"stats","chatletters",len));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,"stats","chat",1));
 
 
 
@@ -113,15 +118,15 @@ public class StatPlayerListener implements Listener {
     	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","fishcaught",1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","fishcaught",1));
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event){
         if(event.isCancelled()==false){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","kicks",1));
-            promiseblob.onResolve(new DelegateSet("stats","lastlogout",(int)((new Date()).getTime()/1000L)));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","kicks",1));
+            promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","lastlogout",(int)((new Date()).getTime()/1000L)));
 
             calc_timeonline_and_wipe(event.getPlayer().getName());
         }
@@ -130,7 +135,7 @@ public class StatPlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-        promiseblob.onResolve(new DelegateSet("stats","lastlogout",(int)((new Date()).getTime()/1000L)));
+        promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","lastlogout",(int)((new Date()).getTime()/1000L)));
         calc_timeonline_and_wipe(event.getPlayer().getName());
 
     }
@@ -155,7 +160,8 @@ public class StatPlayerListener implements Listener {
                 final double distance = from.distance(to);
                 if(distance < 8){
                     Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-                    promiseblob.onResolve(new DelegateIncrement("stats","move",(int)Math.ceil(distance)));
+                    
+                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,from.getWorld().getName(),"stats","move",(int)Math.ceil(distance)));
 
 
                 }
@@ -182,7 +188,7 @@ public class StatPlayerListener implements Listener {
     public void onPlayerPortal(PlayerPortalEvent event){
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","portal",1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","portal",1));
         }
     }
     @EventHandler(priority=EventPriority.MONITOR)
@@ -192,9 +198,9 @@ public class StatPlayerListener implements Listener {
 
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             if(teleportCause == TeleportCause.ENDER_PEARL){
-                promiseblob.onResolve(new DelegateIncrement("itemuse","enderpearl",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"itemuse","enderpearl",1));
             }
-            promiseblob.onResolve(new DelegateIncrement("stats","teleport",1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","teleport",1));
 
         }
     }
@@ -205,7 +211,7 @@ public class StatPlayerListener implements Listener {
     	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","fill"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","fill"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
 
         }
     }
@@ -216,7 +222,7 @@ public class StatPlayerListener implements Listener {
     	}
         if(event.isCancelled()==false && !worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("stats","empty"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","empty"+ event.getBucket().toString().toLowerCase().replace("_",""),1));
 
         }
     }
@@ -236,15 +242,15 @@ public class StatPlayerListener implements Listener {
 
 
             if(material == Material.BUCKET && rightClicked instanceof Cow){
-                promiseblob.onResolve(new DelegateIncrement("interact", "milkcow",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"interact", "milkcow",1));
             }
 
             if(material == Material.BOWL && rightClicked instanceof MushroomCow){
-                promiseblob.onResolve(new DelegateIncrement("interact", "milkmushroomcow",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"interact", "milkmushroomcow",1));
             }
 
             if(material == Material.INK_SACK && rightClicked instanceof Sheep){
-                promiseblob.onResolve(new DelegateIncrement("dye", "total",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"dye", "total",1));
 
                 /**
                  * if MetaDataable, make the item string correct
@@ -265,7 +271,7 @@ public class StatPlayerListener implements Listener {
             	if(!wolf.isTamed()){return;}
             	if(wolf.getOwner() != event.getPlayer()){return;}
             	
-                promiseblob.onResolve(new DelegateIncrement("wolfdye", "total",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"wolfdye", "total",1));
 
                 /**
                  * if MetaDataable, make the item string correct
@@ -290,11 +296,11 @@ public class StatPlayerListener implements Listener {
 
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
             if(event.getEntity() instanceof Sheep){
-                promiseblob.onResolve(new DelegateIncrement("sheared", "sheep",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"sheared", "sheep",1));
             }
 
             if(event.getEntity() instanceof MushroomCow){
-                promiseblob.onResolve(new DelegateIncrement("sheared", "mushroomcow",1));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"sheared", "mushroomcow",1));
             }
         }
     }
@@ -329,15 +335,15 @@ public class StatPlayerListener implements Listener {
                                 item.getType()==Material.FLINT_AND_STEEL ||
                                 item.getType()==Material.SIGN 
                                 ){
-                            promiseblob.onResolve(new DelegateIncrement("itemuse",item.getType().toString().toLowerCase().replace("_",""),1));
+                            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"itemuse",item.getType().toString().toLowerCase().replace("_",""),1));
                         }
                     }
                     if(clickedBlock.getType() == Material.CAKE_BLOCK||
                             (clickedBlock.getType() == Material.TNT && item.getType()==Material.FLINT_AND_STEEL)){
-                        promiseblob.onResolve(new DelegateIncrement("itemuse",clickedBlock.getType().toString().toLowerCase().replace("_",""),1));
+                        promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"itemuse",clickedBlock.getType().toString().toLowerCase().replace("_",""),1));
                     }
                     if(clickedBlock.getType().equals(Material.CHEST)){
-                        promiseblob.onResolve(new DelegateIncrement("stats","openchest",1));
+                        promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","openchest",1));
                     }
                     if(clickedBlock.getType().equals(Material.FLOWER_POT) && action == Action.RIGHT_CLICK_BLOCK && clickedBlock.getData() == 0){
                     	Material[] m = {
@@ -375,8 +381,8 @@ public class StatPlayerListener implements Listener {
         if(!worlds.contains(event.getPlayer().getWorld().getName())){
             Player player = event.getPlayer();
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateIncrement("exp","lifetimexp",event.getAmount()));
-            promiseblob.onResolve(new DelegateSet("exp","currentexp",player.getTotalExperience() + event.getAmount()));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"exp","lifetimexp",event.getAmount()));
+            promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"exp","currentexp",player.getTotalExperience() + event.getAmount()));
         }
     }
 
@@ -387,10 +393,10 @@ public class StatPlayerListener implements Listener {
     	}
         if(!worlds.contains(event.getPlayer().getWorld().getName())){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
-            promiseblob.onResolve(new DelegateSet("exp","currentlvl",event.getNewLevel()));
+            promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"exp","currentlvl",event.getNewLevel()));
             int change = event.getNewLevel() - event.getOldLevel();
             if(change > 0){
-                promiseblob.onResolve(new DelegateIncrement("exp","lifetimelvl",change));
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"exp","lifetimelvl",change));
             }
         }
     }
@@ -405,8 +411,8 @@ public class StatPlayerListener implements Listener {
         
         if(event.isCancelled()==false && !worlds.contains(player.getWorld().getName())){
             Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
-            promiseblob.onResolve(new DelegateIncrement("enchant","total",1));
-            promiseblob.onResolve(new DelegateIncrement("enchant","totallvlspent",event.getExpLevelCost()));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getEnchanter().getWorld().getName(),"enchant","total",1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getEnchanter().getWorld().getName(),"enchant","totallvlspent",event.getExpLevelCost()));
         }
     }
 
@@ -414,7 +420,7 @@ public class StatPlayerListener implements Listener {
 
         int seconds = BeardStat.self().getStatManager().getSessionTime(player);
         Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player);
-        promiseblob.onResolve(new DelegateIncrement("stats","playedfor",seconds));
+        promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","playedfor",seconds));
         BeardStat.self().getStatManager().wipeLoginTime(player);		
 
     }
