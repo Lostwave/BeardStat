@@ -2,6 +2,7 @@ package com.tehbeard.BeardStat;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -127,6 +128,14 @@ public class BeardStat extends JavaPlugin {
         //start initialisation
         self = this;
         printCon("Starting BeardStat");
+        
+        MetaDataCapture.readData(getResource("metadata.txt"));
+        
+        try {
+			MetaDataCapture.readData(new FileInputStream(new File(getDataFolder(),"metadata.txt")));
+		} catch (FileNotFoundException e) {
+			BeardStat.printCon("No External metadata file detected");
+		}
 
         try {
     		printCon("Loading default language pack");
@@ -173,8 +182,6 @@ public class BeardStat extends JavaPlugin {
         loadCompositeStats();
         loadFormats();
 
-        loadIdTracks();
-        
         printCon("Registering events and collectors");
 
 
@@ -349,15 +356,7 @@ public class BeardStat extends JavaPlugin {
     }
 
     
-    private void loadIdTracks(){
-        List<String> l = getConfig().getStringList("trackids");
-        for(String ll : l){
-            int typeid = Integer.parseInt(ll.split(":")[0]);
-            int mask = Integer.parseInt(ll.split(":")[1]);
-            MetaDataCapture.addData(typeid, mask);
-        }
-    }
-
+    
     private void loadCompositeStats(){
 
         for(String cstat : getConfig().getStringList("customstats")){
