@@ -216,7 +216,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 					//load all stats data
 					loadEntityData.setInt(1, pb.getEntityID());
-					System.out.println("executing " + loadEntityData);
+					BeardStat.printDebugCon("executing " + loadEntityData);
 					rs = loadEntityData.executeQuery();
 
 					boolean foundStats = false;
