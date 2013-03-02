@@ -45,7 +45,7 @@ INSERT into `stat_keystore`
 SELECT  
 `entityId` , 
 "default" AS  `domain` , 
- "__global__" AS  `world` ,  
+ "__imported__" AS  `world` ,  
  `category` ,  
  `stat` ,  
  `value` 
