@@ -15,30 +15,33 @@
 -- 
 
 -- Create entity table
-CREATE TABLE IF NOT EXISTS `statentity` (
-  `entityId` int(11) NOT NULL AUTO_INCREMENT,
-  `name` char(16) NOT NULL,
-  `type` enum('player','plugin','group') NOT NULL,
-   PRIMARY KEY (`entityId`),
-   UNIQUE KEY `name` (`name`,`type`)
+CREATE TABLE IF NOT EXISTS `stat_entity` ( 
+  `entityId` int(11) NOT NULL AUTO_INCREMENT, 
+  `name` char(16) NOT NULL,  
+  `type` enum('player','plugin','group') NOT NULL, 
+  PRIMARY KEY (`entityId`)
+  ) 
+ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
- ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- Populate table with players
-INSERT INTO `statentity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
+INSERT INTO `stat_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
+
+ALTER TABLE `stat_entity` ADD UNIQUE KEY `name` (`name`,`type`);
 
 -- Create statkeystore
-CREATE TABLE IF NOT EXISTS `statkeystore` (
+CREATE TABLE IF NOT EXISTS `stat_keystore` (
   `entityId` int(11) NOT NULL,
   `domain` char(32) NOT NULL,
-  `world` char(32) NOT NULL,
-  `category` char(32) NOT NULL,
-  `statistic` char(32) NOT NULL,
+  `world` char(32) NOT NULL,  
+  `category` char(32) NOT NULL,  
+  `statistic` char(32) NOT NULL,  
   `value` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  ) 
+ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Populate with data
-INSERT into `statkeystore`
+INSERT into `stat_keystore`
 SELECT  
 `entityId` , 
 "default" AS  `domain` , 
@@ -48,10 +51,11 @@ SELECT
  `value` 
 FROM  
 `stats` ,  
-`statentity` 
+`stat_entity` 
 WHERE  
 `player` =  `name` AND  
 `type` =  'player';
 
 -- Re-initialise indexes
- ALTER TABLE `statkeystore` ADD UNIQUE KEY `entityId` (`entityId`,`domain`,`world`,`category`,`statistic`);
+ ALTER TABLE `stat_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domain`,`world`,`category`,`statistic`);
+ ALTER TABLE `stat_keystore` ADD KEY `entityId` (`entityId`);
