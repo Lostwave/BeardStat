@@ -14,6 +14,6 @@ CREATE TABLE IF NOT EXISTS keystore (
   `value` INTEGER,
    UNIQUE (`entityId`,`domain`,`world`,`category`,`statistic`)
   );
-CREATE INDEX idx_keystore ON keystore ( 
+CREATE INDEX IF NOT EXISTS idx_keystore ON keystore ( 
     entityId 
 );
