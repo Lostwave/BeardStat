@@ -411,6 +411,17 @@ public class BeardStat extends JavaPlugin {
             }
             
         }
+        
+        if(config.getString("type").equalsIgnoreCase("memory")){
+            try {
+                db = new SQLiteStatDataProvider(":memory:");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                db =null;
+            }
+            
+        }
+        
         if(config.getString("type").equalsIgnoreCase("file")){
             BeardStat.printCon("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
         }
