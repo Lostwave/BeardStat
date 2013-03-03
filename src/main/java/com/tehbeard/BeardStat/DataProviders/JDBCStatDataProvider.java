@@ -43,7 +43,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 	//save to db
 	protected PreparedStatement saveEntity;
-	protected PreparedStatement saveEntityData;
+	protected PreparedStatement saveEntityDataNew;
+	protected PreparedStatement saveEntityDataUpdate;
+	
 
 	//Maintenance
 	protected PreparedStatement keepAlive;
@@ -153,7 +155,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 			//save to db
 			saveEntity     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveEntity", tblConfig),Statement.RETURN_GENERATED_KEYS);
-			saveEntityData = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveStat", tblConfig));
+			saveEntityDataNew = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveStat", tblConfig));
 
 			//Maintenance
 			keepAlive      = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/keepAlive", tblConfig));
@@ -290,23 +292,23 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 						try {
 							EntityStatBlob pb = entry.getValue();
 
-							saveEntityData.clearBatch();
+							saveEntityDataNew.clearBatch();
 							for(IStat stat : pb.getStats()){
-								saveEntityData.setInt(1, pb.getEntityID());
-								saveEntityData.setString(2,stat.getDomain());
-								saveEntityData.setString(3,stat.getWorld());
-								saveEntityData.setString(4,stat.getCategory());
-								saveEntityData.setString(5,stat.getStatistic());
-								saveEntityData.setInt(6,stat.getValue());
+								saveEntityDataNew.setInt(1, pb.getEntityID());
+								saveEntityDataNew.setString(2,stat.getDomain());
+								saveEntityDataNew.setString(3,stat.getWorld());
+								saveEntityDataNew.setString(4,stat.getCategory());
+								saveEntityDataNew.setString(5,stat.getStatistic());
+								saveEntityDataNew.setInt(6,stat.getValue());
 								try{
-								saveEntityData.setInt(7,stat.getValue());
+								saveEntityDataNew.setInt(7,stat.getValue());
 								}
 								catch(Exception e){
 									//Catch sqlite error
 								}
-								saveEntityData.addBatch();
+								saveEntityDataNew.addBatch();
 							}
-							saveEntityData.executeBatch();
+							saveEntityDataNew.executeBatch();
 
 						} catch (SQLException e) {
 							checkConnection();
