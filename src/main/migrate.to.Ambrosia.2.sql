@@ -84,7 +84,7 @@ SELECT
 @domainId as `domain` , 
 @worldId  as `world` ,  
 `categoryId` ,  
-`statId` ,  
+`statisticId` ,  
  `value` 
 FROM  
 `stats` ,  
