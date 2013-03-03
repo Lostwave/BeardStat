@@ -48,7 +48,7 @@ public class MetaDataCapture {
     		ei.mask      = Integer.parseInt(entry[1].replaceAll("[^0-9]",""));
     		ei.min       = Integer.parseInt(entry[2].replaceAll("[^0-9]",""));
     		ei.max       = Integer.parseInt(entry[3].replaceAll("[^0-9]",""));
-    		
+    		mats.put(mat, ei);
     	}
     	
     	s.close();

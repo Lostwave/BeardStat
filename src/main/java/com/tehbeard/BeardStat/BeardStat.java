@@ -19,7 +19,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
@@ -128,8 +127,8 @@ public class BeardStat extends JavaPlugin {
         self = this;
         printCon("Starting BeardStat");
         
-        MetaDataCapture.readData(getResource("metadata.txt"));
         
+        MetaDataCapture.readData(getResource("metadata.txt"));
         try {
 			MetaDataCapture.readData(new FileInputStream(new File(getDataFolder(),"metadata.txt")));
 		} catch (FileNotFoundException e) {
@@ -145,7 +144,7 @@ public class BeardStat extends JavaPlugin {
 	    		LanguagePack.overlay(new FileInputStream(extLangPack));
 	    	}
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			printCon("Faield to load language pack");
 			e1.printStackTrace();
 		}
 
@@ -248,20 +247,6 @@ public class BeardStat extends JavaPlugin {
      * Update config as needed.
      */
     private void updateConfig() {
-
-
-        //Convert from old BeardStat.yml file (REMOVE IN 0.5)
-        File f = new File(getDataFolder(),"BeardStat.yml");
-        if(f.exists()){
-            printCon("OLD CONFIG FILE FOUND, TRANSFERING TO NEW CONFIG");
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(f);
-            config.set("stats.version", getDescription().getVersion());
-            getConfig().setDefaults(config);
-            getConfig().options().copyDefaults(true);
-            saveConfig();
-            f.delete();
-        }
-
 
         //convert old world lists over to blacklist (introduced. 0.4.7 - Honey)
         if(getConfig().contains("stats.worlds")){
