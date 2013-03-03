@@ -17,7 +17,7 @@
 -- Create entity table
 SELECT "Creating entity table" as action;
 
-CREATE TABLE IF NOT EXISTS `stat_entity` ( 
+CREATE TABLE IF NOT EXISTS `stats_entity` ( 
   `entityId` int(11) NOT NULL AUTO_INCREMENT, 
   `name` char(16) NOT NULL,  
   `type` enum('player','plugin','group') NOT NULL, 
@@ -28,14 +28,14 @@ ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- Populate table with players
 SELECT "Populating entity table" as action;
-INSERT INTO `stat_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
+INSERT INTO `stats_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
 
 SELECT "Indexing entity table" as action;
-ALTER TABLE `stat_entity` ADD UNIQUE KEY `name` (`name`,`type`);
+ALTER TABLE `stats_entity` ADD UNIQUE KEY `name` (`name`,`type`);
 
 -- Create statkeystore
 SELECT "Creating keystore table" as action;
-CREATE TABLE IF NOT EXISTS `stat_keystore` (
+CREATE TABLE IF NOT EXISTS `stats_keystore` (
   `entityId` int(11) NOT NULL,
   `domain` char(32) NOT NULL,
   `world` char(32) NOT NULL,  
@@ -47,7 +47,7 @@ ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Populate with data
 SELECT "Populating keystore table" as action;
-INSERT into `stat_keystore`
+INSERT into `stats_keystore`
 SELECT  
 `entityId` , 
 "default" AS  `domain` , 
@@ -57,13 +57,13 @@ SELECT
  `value` 
 FROM  
 `stats` ,  
-`stat_entity` 
+`stats_entity` 
 WHERE  
 `player` =  `name` AND  
 `type` =  'player';
 
 -- Re-initialise indexes
 SELECT "Indexing keystore table (WARNING: MAY TAKE A WHILE)" as action;
- ALTER TABLE `stat_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domain`,`world`,`category`,`statistic`);
- ALTER TABLE `stat_keystore` ADD KEY `entityId` (`entityId`);
+ ALTER TABLE `stats_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domain`,`world`,`category`,`statistic`);
+ ALTER TABLE `stats_keystore` ADD KEY `entityId` (`entityId`);
  SELECT "Finished!" as action;
