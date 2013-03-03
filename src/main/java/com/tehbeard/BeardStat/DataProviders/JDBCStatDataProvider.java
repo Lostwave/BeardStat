@@ -58,8 +58,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 	protected String connectionUrl = "";
 	protected Properties connectionProperties = new Properties();
-
-	protected Map<String,String> tblConfig = new HashMap<String, String>();
+	
+	protected String tblPrefix = "stats";
 
 	//private WorkQueue loadQueue = new WorkQueue(1);
 	private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
@@ -136,7 +136,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 		try{
 
-			String[] creates = BeardStat.self().readSQL(type,"sql/maintenence/create.tables", tblConfig).replaceAll("\n|\r", "").split(";");
+			String[] creates = BeardStat.self().readSQL(type,"sql/maintenence/create.tables", tblPrefix).replaceAll("\n|\r", "").split(";");
 			for(String sql : creates){
 				BeardStat.printDebugCon("Creating: " + sql);
 				conn.prepareStatement(sql).execute();
@@ -150,17 +150,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 		try{
 			BeardStat.printDebugCon("Preparing statements");
 
-			loadEntity     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/getEntity", tblConfig));
-			loadEntityData = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/getEntityData", tblConfig));
+			loadEntity     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/getEntity", tblPrefix));
+			loadEntityData = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/getEntityData", tblPrefix));
 
 			//save to db
-			saveEntity     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveEntity", tblConfig),Statement.RETURN_GENERATED_KEYS);
-			saveEntityDataNew = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveStat", tblConfig));
+			saveEntity     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveEntity", tblPrefix),Statement.RETURN_GENERATED_KEYS);
+			saveEntityDataNew = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveStat", tblPrefix));
 
 			//Maintenance
-			keepAlive      = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/keepAlive", tblConfig));
-			listEntities   = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/listEntities", tblConfig));
-			deleteEntity   = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/deletePlayerFully", tblConfig));
+			keepAlive      = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/keepAlive", tblPrefix));
+			listEntities   = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/listEntities", tblPrefix));
+			deleteEntity   = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/deletePlayerFully", tblPrefix));
 
 
 			BeardStat.printDebugCon("Set player stat statement created");

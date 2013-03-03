@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_statistic`(
   PRIMARY KEY (`statisticId`,`statistic`)
 );
 -- Create statkeystore
-SELECT "Creating keystore table" as action;
+SELECT "Creating value table" as action;
 CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `entityId`    int(11) NOT NULL,
   `domainId`    int(11) NOT NULL,
@@ -37,5 +37,5 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `value`       int(11) NOT NULL
   ) 
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
-ALTER TABLE `${PREFIX}_value` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
+ALTER TABLE `${PREFIX}_value` ADD UNIQUE KEY `chkUnique` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
 ALTER TABLE `${PREFIX}_value` ADD KEY `entityId` (`entityId`);
