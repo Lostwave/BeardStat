@@ -100,14 +100,14 @@ WHERE
 ;
 
 -- Re-initialise indexes
-#SELECT "Indexing keystore table (WARNING: MAY TAKE A WHILE)" as action;
-#ALTER TABLE `stats_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
-#ALTER TABLE `stats_keystore` ADD KEY `entityId` (`entityId`);
-#SELECT "Finished!" as action;
+SELECT "Indexing keystore table (WARNING: MAY TAKE A WHILE)" as action;
+ALTER TABLE `stats_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
+ALTER TABLE `stats_keystore` ADD KEY `entityId` (`entityId`);
+SELECT "Finished!" as action;
 
-select stats_keystore.* from stats_keystore,stats_entity where stats_keystore.entityId = stats_entity.entityId AND stats_entity.name="Tehbeard";
+#select stats_keystore.* from stats_keystore,stats_entity where stats_keystore.entityId = stats_entity.entityId AND stats_entity.name="Tehbeard";
 
-set @catId := (select categoryId from stats_category WHERE category="stats");
-set @statId := (select statisticId from stats_statistic WHERE statistic="playedfor");
-set @val := (SELECT value from stats_keystore WHERE entityId=39916 AND categoryId = @catId AND statisticId = @statId and domainId=1 and worldId=1);
-INSERT INTO `${TBL_KEYSTORE}` values (?,?,?,?,?,?);
+#set @catId := (select categoryId from stats_category WHERE category="stats");
+#set @statId := (select statisticId from stats_statistic WHERE statistic="playedfor");
+#set @val := (SELECT value from stats_keystore WHERE entityId=39916 AND categoryId = @catId AND statisticId = @statId and domainId=1 and worldId=1);
+#INSERT INTO `stats_keystore` values (39916,1,1,20,6,5000) ON DUPLICATE KEY UPDATE value=5000;
