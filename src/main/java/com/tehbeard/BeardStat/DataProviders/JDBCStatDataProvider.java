@@ -233,8 +233,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 			statement.setString(1, name);
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
+			rs.next();
 			mapTo.put(name,rs.getInt(1));
-			
+			rs.close();
 		}
 		BeardStat.printDebugCon(name + " : " + mapTo.get(name));
 		return mapTo.get(name);
@@ -376,6 +377,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 							saveEntityData.executeBatch();
 
 						} catch (SQLException e) {
+							BeardStat.mysqlError(e);
 							checkConnection();
 						}
 					}
