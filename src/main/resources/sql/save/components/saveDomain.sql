@@ -1,0 +1,1 @@
+INSERT INTO `${PREFIX}_domain` (domain) VALUES (?);
