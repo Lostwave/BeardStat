@@ -1,1 +1,0 @@
-DELETE FROM `${TBL_KEYSTORE}` WHERE `entityId`=?

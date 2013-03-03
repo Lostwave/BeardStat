@@ -1,23 +1,6 @@
--- 
--- Base to Ambrosia conversion script
--- 
--- Currently stats are stored as a single table, this is BAD
--- 
--- Amborsia improves the storage mechanism
--- 
--- player -> entity
--- new entity types (plugin, group alongside player)
--- Future : UUID -> entity when mojang does that.
--- Seperation of entity from stats
--- Addition of domain (Context for stat) and world
--- 
--- 
--- 
-
--- Create entity table
 SELECT "Creating entity table" as action;
 
-CREATE TABLE IF NOT EXISTS `stats_entity` ( 
+CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` ( 
   `entityId` int(11) NOT NULL AUTO_INCREMENT, 
   `name` char(16) NOT NULL,  
   `type` enum('player','plugin','group') NOT NULL, 
@@ -26,47 +9,45 @@ CREATE TABLE IF NOT EXISTS `stats_entity` (
 ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
--- Populate table with players
 SELECT "Populating entity table" as action;
-INSERT INTO `stats_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
+INSERT INTO `${PREFIX}_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
 
 SELECT "Indexing entity table" as action;
-ALTER TABLE `stats_entity` ADD UNIQUE KEY `name` (`name`,`type`);
+ALTER TABLE `${PREFIX}_entity` ADD UNIQUE KEY `name` (`name`,`type`);
 
-CREATE TABLE IF NOT EXISTS `stats_domain`(
+CREATE TABLE IF NOT EXISTS `${PREFIX}_domain`(
   `domainId` int(11) NOT NULL AUTO_INCREMENT, 
   `domain` char(32) NOT NULL,  
   PRIMARY KEY (`domainId`,`domain`)
 );
-INSERT INTO `stats_domain` (`domain`) VALUES ("default");
-SET @domainId := (SELECT `domainId` from `stats_domain` WHERE `domain` = "default");
+INSERT INTO `${PREFIX}_domain` (`domain`) VALUES ("default");
+SET @domainId := (SELECT `domainId` from `${PREFIX}_domain` WHERE `domain` = "default");
 
-CREATE TABLE IF NOT EXISTS `stats_world`(
+CREATE TABLE IF NOT EXISTS `${PREFIX}_world`(
   `worldId` int(11) NOT NULL AUTO_INCREMENT, 
   `world` char(32) NOT NULL,  
   PRIMARY KEY (`worldId`,`world`)
 );
-INSERT INTO `stats_world` (`world`) VALUES ("__imported__");
-SET @worldId := (SELECT `worldId` from `stats_world` WHERE `world` = "__imported__");
+INSERT INTO `${PREFIX}_world` (`world`) VALUES ("__imported__");
+SET @worldId := (SELECT `worldId` from `${PREFIX}_world` WHERE `world` = "__imported__");
 
 
-CREATE TABLE IF NOT EXISTS `stats_category`(
+CREATE TABLE IF NOT EXISTS `${PREFIX}_category`(
   `categoryId` int(11) NOT NULL AUTO_INCREMENT, 
   `category` char(32) NOT NULL,  
   PRIMARY KEY (`categoryId`,`category`)
 );
-INSERT INTO `stats_category` (`category`) SELECT DISTINCT(`category`) from stats;
+INSERT INTO `${PREFIX}_category` (`category`) SELECT DISTINCT(`category`) from stats;
 
-CREATE TABLE IF NOT EXISTS `stats_statistic`(
+CREATE TABLE IF NOT EXISTS `${PREFIX}_statistic`(
   `statisticId` int(11) NOT NULL AUTO_INCREMENT, 
   `statistic` char(32) NOT NULL,  
   PRIMARY KEY (`statisticId`,`statistic`)
 );
-INSERT INTO `stats_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
+INSERT INTO `${PREFIX}_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
 
--- Create statkeystore
 SELECT "Creating keystore table" as action;
-CREATE TABLE IF NOT EXISTS `stats_keystore` (
+CREATE TABLE IF NOT EXISTS `${PREFIX}_keystore` (
   `entityId`    int(11) NOT NULL,
   `domainId`    int(11) NOT NULL,
   `worldId`     int(11) NOT NULL,  
@@ -76,9 +57,8 @@ CREATE TABLE IF NOT EXISTS `stats_keystore` (
   ) 
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Populate with data
 SELECT "Populating keystore table" as action;
-INSERT into `stats_keystore`
+INSERT into `${PREFIX}_keystore`
 SELECT  
 `entityId` , 
 @domainId as `domain` , 
@@ -88,26 +68,18 @@ SELECT
  `value` 
 FROM  
 `stats` ,  
-`stats_entity`,
-`stats_category`,
-`stats_statistic`
+`${PREFIX}_entity`,
+`${PREFIX}_category`,
+`${PREFIX}_statistic`
 
 WHERE  
 `player` = `name` AND 
 `type` =  'player' AND
-`stats_category`.`category` = `stats`.`category` AND
-`stats_statistic`.`statistic` = `stat`
+`${PREFIX}_category`.`category` = `stats`.`category` AND
+`${PREFIX}_statistic`.`statistic` = `stat`
 ;
 
--- Re-initialise indexes
 SELECT "Indexing keystore table (WARNING: MAY TAKE A WHILE)" as action;
-ALTER TABLE `stats_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
-ALTER TABLE `stats_keystore` ADD KEY `entityId` (`entityId`);
+ALTER TABLE `${PREFIX}_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
+ALTER TABLE `${PREFIX}_keystore` ADD KEY `entityId` (`entityId`);
 SELECT "Finished!" as action;
-
-#select stats_keystore.* from stats_keystore,stats_entity where stats_keystore.entityId = stats_entity.entityId AND stats_entity.name="Tehbeard";
-
-#set @catId := (select categoryId from stats_category WHERE category="stats");
-#set @statId := (select statisticId from stats_statistic WHERE statistic="playedfor");
-#set @val := (SELECT value from stats_keystore WHERE entityId=39916 AND categoryId = @catId AND statisticId = @statId and domainId=1 and worldId=1);
-#INSERT INTO `stats_keystore` values (39916,1,1,20,6,5000) ON DUPLICATE KEY UPDATE value=5000;

@@ -1,1 +1,1 @@
-SELECT `name` from `${TBL_ENTITY}` WHERE `type`=?;
+SELECT `name` from `${PREFIX}_entity` WHERE `type`=?;

@@ -1,1 +1,1 @@
-SELECT COUNT(*) from `${TBL_ENTITY}`;
+SELECT COUNT(*) from `${PREFIX}_entity`;
