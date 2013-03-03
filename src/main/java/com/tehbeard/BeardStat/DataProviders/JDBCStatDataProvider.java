@@ -161,7 +161,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 			String[] creates = BeardStat.self().readSQL(type,"sql/maintenence/create.tables", tblPrefix).replaceAll("\n|\r", "").split(";");
 			for(String sql : creates){
-				BeardStat.printDebugCon("Creating: " + sql);
+				BeardStat.printDebugCon(sql);
 				conn.prepareStatement(sql).execute();
 			}
 		} catch (SQLException e) {
@@ -196,7 +196,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 			//Maintenance
 			keepAlive      = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/keepAlive", tblPrefix));
 			listEntities   = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/listEntities", tblPrefix));
-			deleteEntity   = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/deletePlayerFully", tblPrefix));
+			//deleteEntity   = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/deletePlayerFully", tblPrefix));
 
 
 			BeardStat.printDebugCon("Set player stat statement created");
@@ -229,11 +229,14 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 	private int getComponentId(Map<String,Integer> mapTo,PreparedStatement statement,String name) throws SQLException{
 		if(!mapTo.containsKey(name)){
+			BeardStat.printDebugCon("Recording new component: " + name);
 			statement.setString(1, name);
 			statement.execute();
 			ResultSet rs = statement.getGeneratedKeys();
 			mapTo.put(name,rs.getInt(1));
+			
 		}
+		BeardStat.printDebugCon(name + " : " + mapTo.get(name));
 		return mapTo.get(name);
 	}
 
@@ -282,6 +285,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 					rs = null;
 
 					//load all stats data
+					loadEntityData.setInt(1, pb.getEntityID());
 					loadEntityData.setInt(1, pb.getEntityID());
 					BeardStat.printDebugCon("executing " + loadEntityData);
 					rs = loadEntityData.executeQuery();

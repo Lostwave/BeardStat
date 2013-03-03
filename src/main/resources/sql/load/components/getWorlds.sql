@@ -1,1 +1,1 @@
-SELECT * FROM `${PREFIX}_world` WHERE worldId = ?;
+SELECT * FROM `${PREFIX}_world`;

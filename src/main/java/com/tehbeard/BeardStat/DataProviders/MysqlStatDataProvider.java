@@ -7,7 +7,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 	public MysqlStatDataProvider(String host,int port,String database,String tablePrefix,String username,String password) throws SQLException {
 		
 		super("sql","com.mysql.jdbc.Driver");
-		tblPrefix = tablePrefix;
+		//tblPrefix = tablePrefix;
 
 		connectionUrl =  String.format("jdbc:mysql://%s:%s/%s",
 				host,

@@ -1,1 +1,1 @@
-SELECT * FROM `${PREFIX}_category` WHERE categoryId = ?;
+SELECT * FROM `${PREFIX}_category`;

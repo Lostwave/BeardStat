@@ -430,7 +430,7 @@ public class BeardStat extends JavaPlugin {
 		String sql = new Scanner(is).useDelimiter("\\Z").next();
 
 
-		return sql.replace("${prefix}",prefix);
+		return sql.replaceAll("\\$\\{PREFIX\\}",prefix);
 
 	}
 }

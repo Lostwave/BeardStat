@@ -1,1 +1,1 @@
-SELECT * FROM `${PREFIX}_statistic` WHERE statisticId = ?;
+SELECT * FROM `${PREFIX}_statistic`;
