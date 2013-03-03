@@ -8,9 +8,6 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 		
 		super("sqlite","org.sqlite.JDBC");
 		
-		tblConfig.put("TBL_ENTITY", "entity");
-		tblConfig.put("TBL_KEYSTORE","keystore");
-		
 		connectionUrl = String.format("jdbc:sqlite:%s",filename);
 		
 		initialise();
