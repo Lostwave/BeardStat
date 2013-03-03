@@ -63,7 +63,7 @@ WHERE
 `type` =  'player';
 
 -- Re-initialise indexes
-SELECT "Indexing keystore table (WARNING: MAY TAKE A WHILE" as action;
+SELECT "Indexing keystore table (WARNING: MAY TAKE A WHILE)" as action;
  ALTER TABLE `stat_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domain`,`world`,`category`,`statistic`);
  ALTER TABLE `stat_keystore` ADD KEY `entityId` (`entityId`);
  SELECT "Finished!" as action;
