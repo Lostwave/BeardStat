@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_statistic`(
 INSERT INTO `${PREFIX}_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
 
 SELECT "Creating keystore table" as action;
-CREATE TABLE IF NOT EXISTS `${PREFIX}_keystore` (
+CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `entityId`    int(11) NOT NULL,
   `domainId`    int(11) NOT NULL,
   `worldId`     int(11) NOT NULL,  
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_keystore` (
   ) 
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-SELECT "Populating keystore table" as action;
-INSERT into `${PREFIX}_keystore`
+SELECT "Populating value table" as action;
+INSERT into `${PREFIX}_value`
 SELECT  
 `entityId` , 
 @domainId as `domain` , 
@@ -79,7 +79,7 @@ WHERE
 `${PREFIX}_statistic`.`statistic` = `stat`
 ;
 
-SELECT "Indexing keystore table (WARNING: MAY TAKE A WHILE)" as action;
-ALTER TABLE `${PREFIX}_keystore` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
-ALTER TABLE `${PREFIX}_keystore` ADD KEY `entityId` (`entityId`);
+SELECT "Indexing value table (WARNING: MAY TAKE A WHILE)" as action;
+ALTER TABLE `${PREFIX}_value` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
+ALTER TABLE `${PREFIX}_value` ADD KEY `entityId` (`entityId`);
 SELECT "Finished!" as action;
