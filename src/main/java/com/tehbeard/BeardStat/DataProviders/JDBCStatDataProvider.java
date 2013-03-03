@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 
@@ -36,15 +37,27 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 	//protected static PreparedStatement prepGetPlayerStat;
 
+	//Load components
+	protected PreparedStatement getDomains;
+	protected PreparedStatement getWorlds;
+	protected PreparedStatement getCategories;
+	protected PreparedStatement getStatistics;
+
+	//save components
+	protected PreparedStatement saveDomain;
+	protected PreparedStatement saveWorld;
+	protected PreparedStatement saveCategory;
+	protected PreparedStatement saveStatistic;
+
 	//Load data from db
 	protected PreparedStatement loadEntity;
 	protected PreparedStatement loadEntityData;
 
 	//save to db
 	protected PreparedStatement saveEntity;
-	protected PreparedStatement saveEntityDataNew;
-	protected PreparedStatement saveEntityDataUpdate;
-	
+	protected PreparedStatement saveEntityData;
+
+
 
 	//Maintenance
 	protected PreparedStatement keepAlive;
@@ -55,15 +68,25 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 	private HashMap<String,EntityStatBlob> writeCache = new HashMap<String,EntityStatBlob>();
 
+
+	//Connection related configuration
 	protected String connectionUrl = "";
 	protected Properties connectionProperties = new Properties();
-	
 	protected String tblPrefix = "stats";
+	private String type = "sql";
+
+
+
+	//ID Cache
+	private Map<String,Integer> domains = new HashMap<String, Integer>();
+	private Map<String,Integer> worlds = new HashMap<String, Integer>();
+	private Map<String,Integer> categories = new HashMap<String, Integer>();
+	private Map<String,Integer> statistics = new HashMap<String, Integer>();
+
 
 	//private WorkQueue loadQueue = new WorkQueue(1);
 	private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
 
-	private String type = "sql";
 	public JDBCStatDataProvider(String type,String driverClass){
 		this.type = type;
 		try {
@@ -78,6 +101,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 		checkAndMakeTable();
 		prepareStatements();
+		cacheComponents();
 	}
 
 	/**
@@ -124,7 +148,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 			conn = null;
 			return false;
 		}catch(AbstractMethodError e){
-			
+
 		}
 		BeardStat.printDebugCon("Checking is " + conn != null ? "up" : "down");
 		return conn != null;
@@ -152,9 +176,22 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 			loadEntity     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/getEntity", tblPrefix));
 			loadEntityData = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/getEntityData", tblPrefix));
 
+
+			//Load components
+			getDomains    = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/components/getDomains", tblPrefix));
+			getWorlds     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/components/getWorlds", tblPrefix));
+			getCategories = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/components/getCategories", tblPrefix));
+			getStatistics = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/load/components/getStatistics", tblPrefix));
+
+			//save components
+			saveDomain    = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/components/saveDomain", tblPrefix),Statement.RETURN_GENERATED_KEYS);
+			saveWorld     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/components/saveWorld", tblPrefix),Statement.RETURN_GENERATED_KEYS);
+			saveCategory  = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/components/saveCategory", tblPrefix),Statement.RETURN_GENERATED_KEYS);
+			saveStatistic = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/components/saveStatistic", tblPrefix),Statement.RETURN_GENERATED_KEYS);
+
 			//save to db
 			saveEntity     = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveEntity", tblPrefix),Statement.RETURN_GENERATED_KEYS);
-			saveEntityDataNew = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveStat", tblPrefix));
+			saveEntityData = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/save/saveStat", tblPrefix));
 
 			//Maintenance
 			keepAlive      = conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/keepAlive", tblPrefix));
@@ -170,6 +207,35 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	}
 
 
+	private void cacheComponents(){
+		try {
+			cacheComponent(domains,getDomains);
+			cacheComponent(worlds,getWorlds);
+			cacheComponent(categories,getCategories);
+			cacheComponent(statistics,getStatistics);
+		} catch (SQLException e) {
+			BeardStat.mysqlError(e);
+		}
+	}
+
+	private void cacheComponent(Map<String,Integer> mapTo,PreparedStatement statement) throws SQLException{
+		ResultSet rs = statement.executeQuery();
+		while(rs.next()){
+			mapTo.put(rs.getString(2),rs.getInt(1));
+		}
+
+		rs.close();
+	}
+
+	private int getComponentId(Map<String,Integer> mapTo,PreparedStatement statement,String name) throws SQLException{
+		if(!mapTo.containsKey(name)){
+			statement.setString(1, name);
+			statement.execute();
+			ResultSet rs = statement.getGeneratedKeys();
+			mapTo.put(name,rs.getInt(1));
+		}
+		return mapTo.get(name);
+	}
 
 	public Promise<EntityStatBlob> pullPlayerStatBlob(String player) {
 		return pullPlayerStatBlob(player,true);
@@ -291,23 +357,19 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 						try {
 							EntityStatBlob pb = entry.getValue();
 
-							saveEntityDataNew.clearBatch();
+							saveEntityData.clearBatch();
 							for(IStat stat : pb.getStats()){
-								saveEntityDataNew.setInt(1, pb.getEntityID());
-								saveEntityDataNew.setString(2,stat.getDomain());
-								saveEntityDataNew.setString(3,stat.getWorld());
-								saveEntityDataNew.setString(4,stat.getCategory());
-								saveEntityDataNew.setString(5,stat.getStatistic());
-								saveEntityDataNew.setInt(6,stat.getValue());
-								try{
-								saveEntityDataNew.setInt(7,stat.getValue());
-								}
-								catch(Exception e){
-									//Catch sqlite error
-								}
-								saveEntityDataNew.addBatch();
+								saveEntityData.setInt(1, pb.getEntityID());
+								saveEntityData.setInt(2,getComponentId(domains, saveDomain, stat.getDomain()));
+								saveEntityData.setInt(3,getComponentId(worlds, saveWorld, stat.getWorld()));
+								saveEntityData.setInt(4,getComponentId(categories, saveCategory, stat.getCategory()));
+								saveEntityData.setInt(5,getComponentId(statistics, saveStatistic, stat.getStatistic()));
+								saveEntityData.setInt(6,stat.getValue());
+
+
+								saveEntityData.addBatch();
 							}
-							saveEntityDataNew.executeBatch();
+							saveEntityData.executeBatch();
 
 						} catch (SQLException e) {
 							checkConnection();
