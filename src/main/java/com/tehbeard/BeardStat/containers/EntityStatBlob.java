@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import com.tehbeard.BeardStat.BeardStat;
@@ -45,7 +46,7 @@ public class EntityStatBlob implements VariableProvider{
 		}
 	}
 
-	private Map<String,IStat> stats = new HashMap<String, IStat>();
+	private Map<String,IStat> stats = new ConcurrentHashMap<String, IStat>();
 
 	private int entityId;
 	private String name;
