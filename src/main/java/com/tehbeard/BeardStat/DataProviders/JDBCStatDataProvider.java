@@ -28,6 +28,7 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 /**
  * base class for JDBC based data providers
+ * Allows easy development of data providers that make use of JDBC
  * @author James
  *
  */
@@ -66,10 +67,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	protected PreparedStatement createTable;
 
 
+	
 	private HashMap<String,EntityStatBlob> writeCache = new HashMap<String,EntityStatBlob>();
 
 
-	//Connection related configuration
+	//default connection related configuration
 	protected String connectionUrl = "";
 	protected Properties connectionProperties = new Properties();
 	protected String tblPrefix = "stats";
@@ -90,7 +92,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	public JDBCStatDataProvider(String type,String driverClass){
 		this.type = type;
 		try {
-			Class.forName(driverClass);
+			Class.forName(driverClass);//load driver
 		} catch (ClassNotFoundException e) {
 			BeardStat.printCon("JDBC "+ driverClass + "Library not found!");
 		}
