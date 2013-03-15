@@ -1,6 +1,7 @@
 package me.tehbeard.BeardStat.containers;
 
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -64,7 +65,8 @@ public class PlayerStatBlob implements VariableProvider{
     public PlayerStatBlob(String name,String ID){
         this.name = name;
         playerID=ID;
-        stats = new HashSet<PlayerStat>();
+        stats = (HashSet<PlayerStat>) Collections.synchronizedSet(new HashSet<PlayerStat>());
+        
 
         addDynamics();
     }
