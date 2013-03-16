@@ -1,5 +1,3 @@
-SELECT "Creating entity table" as action;
-
 CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` ( 
   `entityId` int(11) NOT NULL AUTO_INCREMENT, 
   `name` char(16) NOT NULL,  
@@ -8,11 +6,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` (
   ) 
 ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
-
-SELECT "Populating entity table" as action;
 INSERT INTO `${PREFIX}_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
-
-SELECT "Indexing entity table" as action;
 ALTER TABLE `${PREFIX}_entity` ADD UNIQUE KEY `name` (`name`,`type`);
 
 CREATE TABLE IF NOT EXISTS `${PREFIX}_domain`(
@@ -46,7 +40,6 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_statistic`(
 );
 INSERT INTO `${PREFIX}_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
 
-SELECT "Creating keystore table" as action;
 CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `entityId`    int(11) NOT NULL,
   `domainId`    int(11) NOT NULL,
@@ -57,7 +50,6 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   ) 
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-SELECT "Populating value table" as action;
 INSERT into `${PREFIX}_value`
 SELECT  
 `entityId` , 
@@ -67,7 +59,7 @@ SELECT
 `statisticId` ,  
  `value` 
 FROM  
-`stats` ,  
+`${OLD_TBL}` ,  
 `${PREFIX}_entity`,
 `${PREFIX}_category`,
 `${PREFIX}_statistic`
@@ -75,11 +67,10 @@ FROM
 WHERE  
 `player` = `name` AND 
 `type` =  'player' AND
-`${PREFIX}_category`.`category` = `stats`.`category` AND
+`${PREFIX}_category`.`category` = `${OLD_TBL}`.`category` AND
 `${PREFIX}_statistic`.`statistic` = `stat`
 ;
 
-SELECT "Indexing value table (WARNING: MAY TAKE A WHILE)" as action;
 ALTER TABLE `${PREFIX}_value` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
 ALTER TABLE `${PREFIX}_value` ADD KEY `entityId` (`entityId`);
 SELECT "Finished!" as action;

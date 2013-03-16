@@ -4,12 +4,14 @@ stats:
   configversion: ${project.config.version}
   trackcreativemode: false
   database:
+    sql_db_version: ${project.database.version}
     type: "sqlite"
     host: "localhost"
     username: "Beardstats"
     password: "changeme"
     database: "stats"
     table: "stats"
+    prefix: "stats"
     port: 3306
   blacklist:
     - creative

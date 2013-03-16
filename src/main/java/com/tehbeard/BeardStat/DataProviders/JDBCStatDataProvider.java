@@ -67,7 +67,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	protected PreparedStatement createTable;
 
 
-	
+
 	private HashMap<String,EntityStatBlob> writeCache = new HashMap<String,EntityStatBlob>();
 
 
@@ -98,12 +98,80 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 		}
 	}
 
-	protected void initialise(){
+	protected void initialise() throws SQLException{
 		createConnection();
+
+		checkForMigration();
 
 		checkAndMakeTable();
 		prepareStatements();
 		cacheComponents();
+	}
+
+
+	/**
+	 * checks outside config against default (current versions config)
+	 * If version conflicts it will attempt to run migration scripts sequentially to upgrade
+	 * @throws SQLException 
+	 */
+	private void checkForMigration() throws SQLException {
+		int latestVersion = BeardStat.self().getConfig().getDefaults().getInt("stats.database.sql_db_version");
+
+		int installedVersion = BeardStat.self().getConfig().getInt("stats.database.sql_db_version",1);
+
+		if(installedVersion > latestVersion){
+			throw new RuntimeException("database version > this one, You appear to be running an out of date BeardStat!");
+		}
+
+		if(installedVersion < latestVersion){
+			//Swap to transaction based mode, 
+			//Execute each migration script in sequence, 
+			//commit if successful, 
+			//rollback and error out if not
+			//Should support partial recovery of migration effort, saves current version if successful commit
+
+			BeardStat.printCon("Updating database to latest version");
+			BeardStat.printCon("Your database: " + installedVersion + " latest: " + latestVersion);
+
+			conn.setAutoCommit(false);
+
+			PreparedStatement migrate;
+
+			int curVersion = 0;
+			try{
+				
+				for(curVersion = installedVersion +1; curVersion <= latestVersion; curVersion++){
+
+					migrate = conn.prepareStatement(
+							BeardStat.self().readSQL(
+									type, 
+									"sql/maintenence/migration/migrate." + curVersion, 
+									tblPrefix).replaceAll("\\$\\{OLD_TBL\\}",BeardStat.self().getConfig().getString("stats.database.table")
+											)
+									);
+
+					migrate.execute();
+
+					conn.commit();
+					BeardStat.self().getConfig().set("stats.database.sql_db_version",curVersion);
+					BeardStat.self().saveConfig();
+
+				}
+
+			}
+			catch(SQLException e){
+				BeardStat.printCon("An error occured while migrating the database, initiating rollback to version " + (curVersion - 1));
+				BeardStat.printCon("Begining database error dump");
+				BeardStat.mysqlError(e);
+				conn.rollback();
+
+			}
+
+			BeardStat.printCon("Migration successful");
+			conn.setAutoCommit(true);
+
+
+		}
 	}
 
 	/**

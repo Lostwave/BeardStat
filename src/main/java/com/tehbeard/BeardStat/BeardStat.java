@@ -50,7 +50,7 @@ public class BeardStat extends JavaPlugin {
 	private int runner;
 	private PlayerStatManager playerStatManager;
 	private static final String PERM_PREFIX = "stat";
-
+	
 	/**
 	 * Return the instance of this plugin
 	 * @return
@@ -380,7 +380,7 @@ public class BeardStat extends JavaPlugin {
 						config.getString("host"),
 						config.getInt("port",3306),
 						config.getString("database"),
-						config.getString("table"),
+						config.getString("prefix"),
 						config.getString("username"),
 						config.getString("password")
 						);
@@ -435,5 +435,6 @@ public class BeardStat extends JavaPlugin {
 		return sql.replaceAll("\\$\\{PREFIX\\}",prefix);
 
 	}
+	
 }
 
