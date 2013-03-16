@@ -324,7 +324,11 @@ public class BeardStat extends JavaPlugin {
 		case 1045:self.getLogger().severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this remote machine");break;
 		case 1049:self.getLogger().severe("Cannot locate database, check you spelt it correctly and username has access rights.");break;
 
-		default:self.getLogger().severe("Error code not found, either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");break; 
+		default:
+			self.getLogger().severe("Error code not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
+			self.getLogger().severe("Exception Detail:");
+			self.getLogger().severe(e.getMessage());
+			break; 
 		}
 
 		self.getLogger().severe("=========================================");
