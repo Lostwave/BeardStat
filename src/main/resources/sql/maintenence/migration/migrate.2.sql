@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` (
   ) 
 ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
-INSERT INTO `${PREFIX}_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
+INSERT INTO `${PREFIX}_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `${OLD_TBL}` GROUP BY `player`;
 ALTER TABLE `${PREFIX}_entity` ADD UNIQUE KEY `name` (`name`,`type`);
 
 CREATE TABLE IF NOT EXISTS `${PREFIX}_domain`(

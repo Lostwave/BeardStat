@@ -117,6 +117,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 	private void checkForMigration() throws SQLException {
 		int latestVersion = BeardStat.self().getConfig().getDefaults().getInt("stats.database.sql_db_version");
 
+		if(!BeardStat.self().getConfig().isSet("stats.database.sql_db_version")){
+			BeardStat.self().getConfig().set("stats.database.sql_db_version",1);
+			BeardStat.self().saveConfig();
+		}
 		int installedVersion = BeardStat.self().getConfig().getInt("stats.database.sql_db_version",1);
 
 		if(installedVersion > latestVersion){
