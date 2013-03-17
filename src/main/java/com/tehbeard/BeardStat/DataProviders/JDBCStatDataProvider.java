@@ -136,7 +136,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 			BeardStat.printCon("Updating database to latest version");
 			BeardStat.printCon("Your database: " + installedVersion + " latest: " + latestVersion);
-
+			for(int i = 0;i <3;i++){
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "WARNING: DATABASE MIGRATION WILL TAKE A LONG TIME ON LARGE DATABASES.");
+			}
 			conn.setAutoCommit(false);
 
 			PreparedStatement migrate;
