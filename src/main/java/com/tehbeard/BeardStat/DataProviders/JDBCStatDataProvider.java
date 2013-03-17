@@ -143,18 +143,18 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 			int curVersion = 0;
 			try{
-				
+
 				for(curVersion = installedVersion +1; curVersion <= latestVersion; curVersion++){
+					String[] sql = BeardStat.self().readSQL(
+							type, 
+							"sql/maintenence/migration/migrate." + curVersion, 
+							tblPrefix).replaceAll("\\$\\{OLD_TBL\\}",BeardStat.self().getConfig().getString("stats.database.table")
+									).split("\\;");
+					for(String s : sql){
+						migrate = conn.prepareStatement(s);
 
-					migrate = conn.prepareStatement(
-							BeardStat.self().readSQL(
-									type, 
-									"sql/maintenence/migration/migrate." + curVersion, 
-									tblPrefix).replaceAll("\\$\\{OLD_TBL\\}",BeardStat.self().getConfig().getString("stats.database.table")
-											)
-									);
-
-					migrate.execute();
+						migrate.execute();
+					}
 
 					conn.commit();
 					BeardStat.self().getConfig().set("stats.database.sql_db_version",curVersion);
