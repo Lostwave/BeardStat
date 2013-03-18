@@ -168,8 +168,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 			catch(SQLException e){
 				BeardStat.printCon("An error occured while migrating the database, initiating rollback to version " + (curVersion - 1));
 				BeardStat.printCon("Begining database error dump");
-				BeardStat.mysqlError(e);
+				//BeardStat.mysqlError(e);
 				conn.rollback();
+				throw e;
 
 			}
 

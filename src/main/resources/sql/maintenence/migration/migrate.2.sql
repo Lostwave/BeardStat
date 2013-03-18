@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` ( 
   `entityId` int(11) NOT NULL AUTO_INCREMENT, 
-  `name` char(16) NOT NULL,  
+  `name` char(32) NOT NULL,  
   `type` enum('player','plugin','group') NOT NULL, 
   PRIMARY KEY (`entityId`)
   ) 
