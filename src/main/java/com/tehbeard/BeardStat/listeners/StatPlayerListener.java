@@ -445,7 +445,7 @@ public class StatPlayerListener implements Listener {
 	}
 
 
-	@EventHandler(priority=EventPriority.MONITOR)
+	//@EventHandler(priority=EventPriority.MONITOR)
 	public void onNom(PlayerItemConsumeEvent event){
 		Player player = event.getPlayer();
 
