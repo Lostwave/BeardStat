@@ -446,7 +446,7 @@ public class StatPlayerListener implements Listener {
 
 
 	//@EventHandler(priority=EventPriority.MONITOR)
-	public void onNom(PlayerItemConsumeEvent event){
+	/*public void onNom(PlayerItemConsumeEvent event){
 		Player player = event.getPlayer();
 
 		if(player.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
@@ -493,7 +493,7 @@ public class StatPlayerListener implements Listener {
 
 
 
-	}
+	}*/
 
 
 }
