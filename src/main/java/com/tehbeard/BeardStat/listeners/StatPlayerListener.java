@@ -9,6 +9,7 @@ import java.util.List;
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,6 +35,8 @@ import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.BeardStat.containers.OnlineTimeManager;
+import com.tehbeard.BeardStat.containers.OnlineTimeManager.ManagerRecord;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
@@ -83,7 +86,7 @@ public class StatPlayerListener implements Listener {
 		});
 
 
-		BeardStat.self().getStatManager().setLoginTime(event.getPlayer().getName(), System.currentTimeMillis());
+		OnlineTimeManager.setRecord(event.getPlayer());
 
 	}
 
@@ -135,7 +138,7 @@ public class StatPlayerListener implements Listener {
 			promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,event.getPlayer().getWorld().getName(),"stats","kicks",1));
 			promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","lastlogout",(int)((new Date()).getTime()/1000L)));
 
-			calc_timeonline_and_wipe(event.getPlayer().getName());
+			addTimeOnlineAndWipe(event.getPlayer().getName());
 		}
 
 	}
@@ -143,7 +146,7 @@ public class StatPlayerListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(event.getPlayer().getName());
 		promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","lastlogout",(int)((new Date()).getTime()/1000L)));
-		calc_timeonline_and_wipe(event.getPlayer().getName());
+		addTimeOnlineAndWipe(event.getPlayer().getName());
 
 	}
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -435,15 +438,22 @@ public class StatPlayerListener implements Listener {
 		}
 	}
 
-	private void calc_timeonline_and_wipe(String player){
+	private void addTimeOnlineAndWipe(String player){
 
-		int seconds = BeardStat.self().getStatManager().getSessionTime(player);
+		ManagerRecord timeRecord = OnlineTimeManager.getRecord(player);
+		if(timeRecord == null){return;}
+		if(timeRecord.world == null){return;}
 		Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player);
-		promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","playedfor",seconds));
-		BeardStat.self().getStatManager().wipeLoginTime(player);		
+		promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,timeRecord.world,"stats","playedfor",timeRecord.sessionTime()));
+		OnlineTimeManager.wipeRecord(player);
 
 	}
 
+	@EventHandler(ignoreCancelled=true,priority=EventPriority.MONITOR)
+	public void worldJump(PlayerChangedWorldEvent event){
+		addTimeOnlineAndWipe(event.getPlayer().getName());
+		OnlineTimeManager.setRecord(event.getPlayer());
+	}
 
 	//@EventHandler(priority=EventPriority.MONITOR)
 	/*public void onNom(PlayerItemConsumeEvent event){

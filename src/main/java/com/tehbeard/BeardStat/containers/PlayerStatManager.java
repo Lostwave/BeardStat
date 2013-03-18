@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
+import com.tehbeard.BeardStat.containers.OnlineTimeManager.ManagerRecord;
 
 /**
  * Provides a cache between backend storage and the stats plugin
@@ -45,34 +46,39 @@ public class PlayerStatManager implements CommandExecutor {
 		while(i.hasNext()){
 			Entry<String, Promise<EntityStatBlob>> entry = i.next();
 			String player = entry.getKey();
-			
+
 			//check if rejected promise, remove from cache silently
 			if(entry.getValue().isRejected()){
 				BeardStat.printCon("Promise[" + player + "] was rejected (error?), removing from cache.");//alert debug dump
 				i.remove();//clear it out
 				continue;//Skip now
 			}
-			
-			
+
+
 			//skip if not resolved
 			if(!entry.getValue().isResolved()){
 				continue;
 			}
 
-			int seconds = getSessionTime(player);
+			ManagerRecord timeRecord = OnlineTimeManager.getRecord(player);
 
-			BeardStat.printDebugCon("saving time: [Player : " + player +" ] time: " +seconds);
+
 			if(entry.getValue().getValue() != null){
-				entry.getValue().getValue().getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats","playedfor").incrementStat(seconds);
+				if(timeRecord != null){
+					BeardStat.printDebugCon("saving time: [Player : " + player +" , world: " + timeRecord.world + ", time: " +timeRecord.sessionTime() + "]");
+					if(timeRecord.world != null){
+						entry.getValue().getValue().getStat(BeardStat.DEFAULT_DOMAIN,timeRecord.world,"stats","playedfor").incrementStat(timeRecord.sessionTime());
+					}
+				}
 
 				backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
 
 				if(isPlayerOnline(player)){
-					setLoginTime(player,System.currentTimeMillis());
+					OnlineTimeManager.setRecord(Bukkit.getPlayer(player));
 				}
 				else
 				{
-					wipeLoginTime(player);
+					OnlineTimeManager.wipeRecord(player);
 					i.remove();
 				}
 			}
@@ -151,37 +157,7 @@ public class PlayerStatManager implements CommandExecutor {
 
 
 
-	private HashMap<String,Long> loginTimes = new HashMap<String, Long>();
 
-	/**
-	 * Returns length of current session in memory
-	 * @param player
-	 * @return
-	 */
-	public int getSessionTime(String player){
-		if(loginTimes.containsKey(player)){
-			return Integer.parseInt("" + ((System.currentTimeMillis()  - loginTimes.get(player))/1000L));
-
-		}
-		return 0;
-	}
-
-	public Long getLoginTime(String player){
-		if(!loginTimes.containsKey(player)){
-			setLoginTime(player,System.currentTimeMillis());
-		}
-		return loginTimes.get(player);
-
-	}
-
-	public void setLoginTime(String player,long time){
-		loginTimes.put(player,time);
-
-	}
-
-	public void wipeLoginTime(String player){
-		loginTimes.remove(player);
-	}
 
 
 	public boolean onCommand(CommandSender sender, Command cmd, String lbl,
@@ -194,12 +170,12 @@ public class PlayerStatManager implements CommandExecutor {
 			sender.sendMessage(ChatColor.GOLD + player);
 		}
 
-		Iterator<String> ii = loginTimes.keySet().iterator();
+		//Iterator<String> ii = loginTimes.keySet().iterator();
 		sender.sendMessage("Players in login cache");
-		while(ii.hasNext()){
-			String player = ii.next();
-			sender.sendMessage(ChatColor.GOLD + player);
-		}
+		//while(ii.hasNext()){
+		//	String player = ii.next();
+		//	sender.sendMessage(ChatColor.GOLD + player);
+		//}
 		return true;
 	}
 

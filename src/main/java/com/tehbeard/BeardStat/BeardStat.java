@@ -30,6 +30,7 @@ import com.tehbeard.BeardStat.Metrics.Plotter;
 import com.tehbeard.BeardStat.commands.*;
 import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.*;
 
@@ -215,7 +216,7 @@ public class BeardStat extends JavaPlugin {
 		//Incase of /reload, set all logged in player names.
 		for(Player player: getServer().getOnlinePlayers()){
 
-			playerStatManager.setLoginTime(player.getName(),System.currentTimeMillis());
+			OnlineTimeManager.setRecord(player);
 		}
 
 

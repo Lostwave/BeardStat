@@ -1,6 +1,5 @@
 package com.tehbeard.BeardStat.commands;
 
-import java.util.List;
 
 
 import org.bukkit.Bukkit;
@@ -9,12 +8,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.LanguagePack;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
+import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 
@@ -64,7 +63,7 @@ public class playedCommand implements CommandExecutor {
 		StatVector vector = blob.getStats(BeardStat.DEFAULT_DOMAIN,"*","stats", "playedfor");
 		seconds = vector.getValue();
 		
-		seconds += playerStatManager.getSessionTime(selectedPlayer.getName());
+		seconds += OnlineTimeManager.getRecord(selectedPlayer.getName()).sessionTime();
 		sender.sendMessage(getPlayedString(seconds) + " total");
 		
 		for(IStat stat : vector){
