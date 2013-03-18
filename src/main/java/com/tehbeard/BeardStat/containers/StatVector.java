@@ -45,12 +45,6 @@ public class StatVector implements IStat,Iterable<IStat> {
 
 	@Override
 	public void setValue(int value) {
-		
-		for(IStat s : stats){
-			s.setValue(value);
-		}
-		
-		
 	}
 
 	@Override

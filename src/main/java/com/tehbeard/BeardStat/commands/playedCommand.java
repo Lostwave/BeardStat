@@ -59,7 +59,7 @@ public class playedCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer",args[0]));
 			return true;
 		}
-		seconds = blob.getStat(BeardStat.DEFAULT_DOMAIN,BeardStat.GLOBAL_WORLD,"stats", "playedfor").getValue();
+		seconds = blob.getStats(BeardStat.DEFAULT_DOMAIN,"*","stats", "playedfor").getValue();
 		
 		seconds += playerStatManager.getSessionTime(selectedPlayer.getName());
 		sender.sendMessage(GetPlayedString(seconds));
