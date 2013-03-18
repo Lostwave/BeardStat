@@ -98,10 +98,10 @@ public class EntityStatBlob implements VariableProvider{
 	}
 	
 	public StatVector getStats(String domain,String world,String category,String statistic){
-		String pattern = domain;
-		pattern += "\\." + world;
-		pattern += "\\." + category;
-		pattern += "\\." + statistic;
+		String pattern = starToRegex(domain);
+		pattern += "\\." + starToRegex(world);
+		pattern += "\\." + starToRegex(category);
+		pattern += "\\." + starToRegex(statistic);
 		
 		StatVector vector = new StatVector(domain, world, category, statistic);
 		for( Entry<String, IStat> e : stats.entrySet()){
@@ -111,6 +111,14 @@ public class EntityStatBlob implements VariableProvider{
 		}
 		return vector;
 	}
+	
+	private String starToRegex(String s){
+		if(s.equals("*")){
+			return "[a-zA-Z0-9_]*";
+		}
+		return s;
+	}
+	
 	/**
 	 * Return all the stats!
 	 * @return
