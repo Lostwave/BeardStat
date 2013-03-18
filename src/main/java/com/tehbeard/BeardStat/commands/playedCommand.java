@@ -14,7 +14,9 @@ import org.bukkit.entity.Player;
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.LanguagePack;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.containers.StatVector;
 
 
 public class playedCommand implements CommandExecutor {
@@ -59,16 +61,20 @@ public class playedCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer",args[0]));
 			return true;
 		}
-		seconds = blob.getStats(BeardStat.DEFAULT_DOMAIN,"*","stats", "playedfor").getValue();
+		StatVector vector = blob.getStats(BeardStat.DEFAULT_DOMAIN,"*","stats", "playedfor");
+		seconds = vector.getValue();
 		
 		seconds += playerStatManager.getSessionTime(selectedPlayer.getName());
-		sender.sendMessage(GetPlayedString(seconds));
+		sender.sendMessage(getPlayedString(seconds) + " total");
 		
+		for(IStat stat : vector){
+			sender.sendMessage(getPlayedString(stat.getValue()) + " [" + stat.getWorld() + "]"); 
+		}
 
 		return true;
 	}
 
-	public static String GetPlayedString(long seconds){
+	public static String getPlayedString(long seconds){
 		String output = LanguagePack.getMsg("command.played.zero");
 		if(seconds > 0){
 			int weeks   = (int) seconds / 604800;

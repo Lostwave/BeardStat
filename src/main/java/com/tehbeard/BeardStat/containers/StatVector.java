@@ -123,7 +123,6 @@ public class StatVector implements IStat,Iterable<IStat> {
 		return null;
 	}
 
-	@Override
 	public Iterator<IStat> iterator() {
 		return stats.iterator();
 	}
