@@ -153,9 +153,15 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 							tblPrefix).replaceAll("\\$\\{OLD_TBL\\}",BeardStat.self().getConfig().getString("stats.database.table")
 									).split("\\;");
 					for(String s : sql){
+						if(s.startsWith("#")){
+							Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Migration status : " + s.substring(1));
+						}
+						else
+						{
 						migrate = conn.prepareStatement(s);
 
 						migrate.execute();
+						}
 					}
 
 					conn.commit();
