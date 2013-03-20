@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.tehbeard</groupId>
 	<artifactId>BeardStat</artifactId>
-	<version>0.5.3</version>
+	<version>0.5.4</version>
 	<packaging>jar</packaging>
 	<name>BeardStat</name>
 

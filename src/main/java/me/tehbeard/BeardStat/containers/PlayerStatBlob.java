@@ -45,7 +45,7 @@ public class PlayerStatBlob implements VariableProvider{
         }
     }
 
-    private HashSet<PlayerStat> stats;
+    private Set<PlayerStat> stats;
     private String name;
 
     public String getName() {
@@ -65,7 +65,7 @@ public class PlayerStatBlob implements VariableProvider{
     public PlayerStatBlob(String name,String ID){
         this.name = name;
         playerID=ID;
-        stats = (HashSet<PlayerStat>) Collections.synchronizedSet(new HashSet<PlayerStat>());
+        stats = Collections.synchronizedSet(new HashSet<PlayerStat>());
         
 
         addDynamics();
