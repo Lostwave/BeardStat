@@ -1,0 +1,82 @@
+
+#Migrating to yggdrasil format;
+#Creating entity table;
+CREATE TABLE stats_entity ( 
+    entityId INTEGER        PRIMARY KEY AUTOINCREMENT,
+    name     VARCHAR( 32 )  NOT NULL,
+    type     VARCHAR( 16 )  NOT NULL,
+    CONSTRAINT uni UNIQUE ( name, type ) 
+);
+
+#Populating entity table;
+INSERT INTO `stats_entity` (`name`,`type`) SELECT `player`,"player" as `type` FROM `stats` GROUP BY `player`;
+#Indexing entity key;
+ALTER TABLE `stats_entity` ADD UNIQUE KEY `name` (`name`,`type`);
+#Creating domain table and initialising default domain;
+CREATE TABLE IF NOT EXISTS `stats_domain`(
+  `domainId` int(11) NOT NULL AUTO_INCREMENT, 
+  `domain` char(32) NOT NULL,  
+  PRIMARY KEY (`domainId`,`domain`)
+);
+INSERT INTO `stats_domain` (`domain`) VALUES ("default");
+SET @domainId := (SELECT `domainId` from `stats_domain` WHERE `domain` = "default");
+#Creating world table;
+CREATE TABLE IF NOT EXISTS `stats_world`(
+  `worldId` int(11) NOT NULL AUTO_INCREMENT, 
+  `world` char(32) NOT NULL,  
+  PRIMARY KEY (`worldId`,`world`)
+);
+#Creating __imported__ world for stat migration;
+INSERT INTO `stats_world` (`world`) VALUES ("__imported__");
+SET @worldId := (SELECT `worldId` from `stats_world` WHERE `world` = "__imported__");
+#Creating category table;
+CREATE TABLE IF NOT EXISTS `stats_category`(
+  `categoryId` int(11) NOT NULL AUTO_INCREMENT, 
+  `category` char(32) NOT NULL,  
+  PRIMARY KEY (`categoryId`,`category`)
+);
+#Populating category table;
+INSERT INTO `stats_category` (`category`) SELECT DISTINCT(`category`) from stats;
+#Creating Statistic table;
+CREATE TABLE IF NOT EXISTS `stats_statistic`(
+  `statisticId` int(11) NOT NULL AUTO_INCREMENT, 
+  `statistic` char(32) NOT NULL,  
+  PRIMARY KEY (`statisticId`,`statistic`)
+);
+#Populating statistic table;
+INSERT INTO `stats_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
+#Creating value table
+CREATE TABLE IF NOT EXISTS `stats_value` (
+  `entityId`    int(11) NOT NULL,
+  `domainId`    int(11) NOT NULL,
+  `worldId`     int(11) NOT NULL,  
+  `categoryId`  int(11) NOT NULL,  
+  `statisticId` int(11) NOT NULL,  
+  `value`       int(11) NOT NULL
+  ) 
+ENGINE=InnoDB DEFAULT CHARSET=latin1;
+#Populating value table, WARNING: THIS WILL TAKE A LONG TIME WITH LARGE DATABASES;
+INSERT into `stats_value`
+SELECT  
+`entityId` , 
+@domainId as `domain` , 
+@worldId  as `world` ,  
+`categoryId` ,  
+`statisticId` ,  
+ `value` 
+FROM  
+`stats` ,  
+`stats_entity`,
+`stats_category`,
+`stats_statistic`
+
+WHERE  
+`player` = `name` AND 
+`type` =  'player' AND
+`stats_category`.`category` = `stats`.`category` AND
+`stats_statistic`.`statistic` = `stat`
+;
+#Reindexing value table, this may take a while;
+ALTER TABLE `stats_value` ADD UNIQUE KEY `chkUni` (`entityId`,`domainId`,`worldId`,`categoryId`,`statisticId`);
+ALTER TABLE `stats_value` ADD KEY `entityId` (`entityId`);
+#Migration to yggdrasil format complete;
