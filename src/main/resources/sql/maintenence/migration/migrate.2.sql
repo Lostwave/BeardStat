@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_statistic`(
 );
 #Populating statistic table;
 INSERT INTO `${PREFIX}_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
-#Creating value table
+#Creating value table;
 CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `entityId`    int(11) NOT NULL,
   `domainId`    int(11) NOT NULL,
