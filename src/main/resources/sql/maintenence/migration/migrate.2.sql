@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` (
   `entityId` int(11) NOT NULL AUTO_INCREMENT, 
   `name` char(32) NOT NULL,  
   `type` enum('player','plugin','group') NOT NULL, 
-  PRIMARY KEY (`entityId`)
+  PRIMARY KEY (`entityId`),
+  UNIQUE KEY (`name`,`type`)
   ) 
 ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 #Populating entity table;
@@ -15,7 +16,8 @@ ALTER TABLE `${PREFIX}_entity` ADD UNIQUE KEY `name` (`name`,`type`);
 CREATE TABLE IF NOT EXISTS `${PREFIX}_domain`(
   `domainId` int(11) NOT NULL AUTO_INCREMENT, 
   `domain` char(32) NOT NULL,  
-  PRIMARY KEY (`domainId`,`domain`)
+  PRIMARY KEY (`domainId`)
+  UNIQUE KEY (`domain`)
 );
 INSERT INTO `${PREFIX}_domain` (`domain`) VALUES ("default");
 SET @domainId := (SELECT `domainId` from `${PREFIX}_domain` WHERE `domain` = "default");
@@ -23,7 +25,8 @@ SET @domainId := (SELECT `domainId` from `${PREFIX}_domain` WHERE `domain` = "de
 CREATE TABLE IF NOT EXISTS `${PREFIX}_world`(
   `worldId` int(11) NOT NULL AUTO_INCREMENT, 
   `world` char(32) NOT NULL,  
-  PRIMARY KEY (`worldId`,`world`)
+  PRIMARY KEY (`worldId`),
+  UNIQUE KEY (`world`)
 );
 #Creating __imported__ world for stat migration;
 INSERT INTO `${PREFIX}_world` (`world`) VALUES ("__imported__");
@@ -32,7 +35,8 @@ SET @worldId := (SELECT `worldId` from `${PREFIX}_world` WHERE `world` = "__impo
 CREATE TABLE IF NOT EXISTS `${PREFIX}_category`(
   `categoryId` int(11) NOT NULL AUTO_INCREMENT, 
   `category` char(32) NOT NULL,  
-  PRIMARY KEY (`categoryId`,`category`)
+  PRIMARY KEY (`categoryId`),
+  UNIQUE KEY (`category`)
 );
 #Populating category table;
 INSERT INTO `${PREFIX}_category` (`category`) SELECT DISTINCT(`category`) from stats;
@@ -40,7 +44,8 @@ INSERT INTO `${PREFIX}_category` (`category`) SELECT DISTINCT(`category`) from s
 CREATE TABLE IF NOT EXISTS `${PREFIX}_statistic`(
   `statisticId` int(11) NOT NULL AUTO_INCREMENT, 
   `statistic` char(32) NOT NULL,  
-  PRIMARY KEY (`statisticId`,`statistic`)
+  PRIMARY KEY (`statisticId`),
+  UNIQUE KEY (`statistic`)
 );
 #Populating statistic table;
 INSERT INTO `${PREFIX}_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
@@ -51,7 +56,8 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `worldId`     int(11) NOT NULL,  
   `categoryId`  int(11) NOT NULL,  
   `statisticId` int(11) NOT NULL,  
-  `value`       int(11) NOT NULL
+  `value`       int(11) NOT NULL,
+  UNIQUE KEY (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`)
   ) 
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #Populating value table, WARNING: THIS WILL TAKE A LONG TIME WITH LARGE DATABASES;
