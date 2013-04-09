@@ -455,12 +455,16 @@ public class StatPlayerListener implements Listener {
 		OnlineTimeManager.setRecord(event.getPlayer());
 	}
 
-	//@EventHandler(priority=EventPriority.MONITOR)
-	/*public void onNom(PlayerItemConsumeEvent event){
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onNom(PlayerItemConsumeEvent event){
 		Player player = event.getPlayer();
 
 		if(player.getGameMode() == GameMode.CREATIVE && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode",false)){
 			return;
+		}
+		
+		if(worlds.contains(event.getPlayer().getWorld().getName())){
+		    return;
 		}
 
 		Promise<EntityStatBlob> promiseblob = playerStatManager.getPlayerBlobASync(player.getName());
@@ -503,7 +507,7 @@ public class StatPlayerListener implements Listener {
 
 
 
-	}*/
+	}
 
 
 }
