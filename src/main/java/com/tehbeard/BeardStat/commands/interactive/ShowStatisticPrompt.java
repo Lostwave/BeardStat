@@ -32,7 +32,7 @@ public class ShowStatisticPrompt extends MessagePrompt implements ConfigurablePr
         msg += FormatFactory.formatStat(playerStatManager.getPlayerBlob(player).getStat(
         		BeardStat.DEFAULT_DOMAIN,
         		BeardStat.GLOBAL_WORLD,
-        		(String)context.getSessionData("c"), (String)context.getSessionData("s")));//TODO: FIX THIS
+        		(String)context.getSessionData("c"), (String)context.getSessionData("s")));//TODO: FIX THIS TO NEW STYLE OF STATS
         return msg;
     }
 

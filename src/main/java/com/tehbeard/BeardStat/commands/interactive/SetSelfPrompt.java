@@ -14,17 +14,14 @@ public class SetSelfPrompt implements ConfigurablePrompt {
 
     private Prompt next;
     public String getPromptText(ConversationContext context) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public boolean blocksForInput(ConversationContext context) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public Prompt acceptInput(ConversationContext context, String input) {
-        // TODO Auto-generated method stub
         context.setSessionData("player",((Player)context.getForWhom()).getName());
         return next;
     }
@@ -33,5 +30,4 @@ public class SetSelfPrompt implements ConfigurablePrompt {
         builder.makePromptRef(config.getString("id"),this);
         next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder.generatePrompt(config.getConfigurationSection("next"));
     }
-
 }

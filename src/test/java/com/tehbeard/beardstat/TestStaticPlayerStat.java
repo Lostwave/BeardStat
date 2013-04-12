@@ -15,7 +15,16 @@ public class TestStaticPlayerStat {
     public void setup(){
         stat = new StaticStat("domain", "world", "category", "statistic", 0);
     }
-
+    
+    /*
+     * Given a StaticStat object
+     * With a value set to default (0)
+     * When I increment the stat by 1
+     * Then the value should be 1
+     * And the archive flag should be set
+     * And When I increment the stat by 5 again
+     * Then the value should be 6
+     */
     @Test
     public void test_increment(){
         assertEquals("stat is zero",0, stat.getValue());

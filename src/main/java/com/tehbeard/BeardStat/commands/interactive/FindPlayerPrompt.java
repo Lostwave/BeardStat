@@ -17,19 +17,16 @@ public class FindPlayerPrompt extends ValidatingPrompt implements ConfigurablePr
     private Prompt next;
 
     public String getPromptText(ConversationContext context) {
-        // TODO Auto-generated method stub
         return "Enter a player to lookup";
     }
 
     public void configure(ConfigurationSection config, PromptBuilder builder) {
-
         builder.makePromptRef(config.getString("id"),this);
         next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder.generatePrompt(config.getConfigurationSection("next"));
     }
 
     @Override
     protected boolean isInputValid(ConversationContext context, String input) {
-        // TODO Auto-generated method stub
         return (BeardStat.self().getStatManager().findPlayerBlob(input)!=null);
     }
 
@@ -39,5 +36,4 @@ public class FindPlayerPrompt extends ValidatingPrompt implements ConfigurablePr
         context.setSessionData("player", input);
         return next;
     }
-
 }

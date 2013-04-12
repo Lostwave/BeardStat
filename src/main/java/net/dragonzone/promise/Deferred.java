@@ -89,7 +89,6 @@ public class Deferred<T> implements Promise<T>, Runnable {
                 try {
                     progressFilter.invoke(progress);
                 } catch (Exception e) {
-                    // TODO figure out what to do with the exception
                     // We shouldn't reject a pipe if the progress handler fails, but
                     // we need a better way to report this
                     log.log(Level.SEVERE, "Error filtering progress value: " + progress, e);

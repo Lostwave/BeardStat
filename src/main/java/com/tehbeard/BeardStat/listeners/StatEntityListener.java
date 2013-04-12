@@ -133,7 +133,6 @@ public class StatEntityListener implements Listener{
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN,world,category[idx], projectile.getType().toString().toLowerCase().replace("_",""),amount));
         }
 
-        //TODO: pvp Damage
         if(attacker instanceof Player  && attacked instanceof Player){
             Promise<EntityStatBlob> attackerBlob = playerStatManager.getPlayerBlobASync(((Player)attacker).getName());
             Promise<EntityStatBlob> attackedBlob = playerStatManager.getPlayerBlobASync(((Player)attacked).getName());

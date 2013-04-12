@@ -103,7 +103,6 @@ public class DynamicStat implements IStat {
 
 	@Override
 	public String getDomain() {
-		// TODO Auto-generated method stub
 		return domain;
 	}
 
