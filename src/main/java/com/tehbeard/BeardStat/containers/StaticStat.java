@@ -1,7 +1,7 @@
 package com.tehbeard.BeardStat.containers;
 
 /**
- * Concrete implmentation of a player stat.
+ * Concrete implementation of a player stat.
  * This is the default type for stats, they are saved to the database
  * @author James
  *
