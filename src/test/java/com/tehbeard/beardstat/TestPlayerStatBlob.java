@@ -14,11 +14,23 @@ public class TestPlayerStatBlob {
     
     private EntityStatBlob blob;
     
+    /**
+     * Given an EntityStatBlob
+     * with Name name
+     * and id 101
+     * and type player
+     */
     @Before
     public void setup(){
         blob = new EntityStatBlob("name", 101, "player");
     }
     
+    /*
+     * When I add a StaticStat to the EntityStatBlob
+     * Then the blob size() should be 1
+     * And When I getState with the same fields as the StaticStat
+     * Then the IStat returned should be the same object put in (StaticStat) 
+     */
     @Test
     public void testAddStat(){
         
@@ -30,6 +42,19 @@ public class TestPlayerStatBlob {
         assertEquals("Same stat returned",stat,st);
     }
     
+    /*
+     * When I getStat()
+	 * with the domain domain
+	 * and the world world
+	 * and the category category
+	 * and the stat statistic
+	 * Then I should get a new Stat object back
+	 * with the domain domain
+	 * and the world world
+	 * and the category category
+	 * and the stat statistic
+	 * and the value 0
+	 */
     @Test
     public void testGetStatCreate(){
         
