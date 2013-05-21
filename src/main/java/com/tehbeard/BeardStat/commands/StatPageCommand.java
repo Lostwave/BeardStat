@@ -16,6 +16,11 @@ import org.bukkit.entity.Player;
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
+/**
+ * Display a statpage
+ * @author James
+ *
+ */
 public class StatPageCommand implements CommandExecutor {
 
     private Map<String, List<String>> pages;

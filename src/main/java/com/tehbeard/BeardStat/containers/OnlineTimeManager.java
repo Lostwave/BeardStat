@@ -1,11 +1,12 @@
 package com.tehbeard.BeardStat.containers;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 
 /**
- * Manages online time for a player
+ * Manages online time tracking for a player
  * 
  * @author James
  * 
@@ -45,5 +46,9 @@ public class OnlineTimeManager {
 
     public static void wipeRecord(String player) {
         records.remove(player);
+    }
+    
+    public static Collection<String> getPlayers(){
+        return records.keySet();
     }
 }

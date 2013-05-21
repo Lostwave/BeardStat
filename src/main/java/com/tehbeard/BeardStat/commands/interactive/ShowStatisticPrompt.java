@@ -13,6 +13,11 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
+/**
+ * Display stat to player
+ * @author James
+ *
+ */
 @PromptTag(tag = "showstat")
 public class ShowStatisticPrompt extends MessagePrompt implements ConfigurablePrompt {
 

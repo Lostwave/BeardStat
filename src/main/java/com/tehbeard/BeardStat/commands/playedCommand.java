@@ -15,6 +15,11 @@ import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 
+/**
+ * Shows a users playtime
+ * @author James
+ *
+ */
 public class playedCommand implements CommandExecutor {
 
     private PlayerStatManager playerStatManager;

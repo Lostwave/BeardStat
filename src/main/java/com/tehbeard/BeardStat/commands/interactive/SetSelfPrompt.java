@@ -9,6 +9,11 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 
+/**
+ * Set the player to lookup to the person in this conversation
+ * @author James
+ *
+ */
 @PromptTag(tag = "self")
 public class SetSelfPrompt implements ConfigurablePrompt {
 

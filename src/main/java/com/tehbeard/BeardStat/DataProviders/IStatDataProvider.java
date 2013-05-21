@@ -7,7 +7,7 @@ import net.dragonzone.promise.Promise;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 /**
- * Provides push/pull service for stats to a backend storage facility
+ * Provides push/pull service for getting and saving stats to a backend storage system.
  * 
  * @author James
  * 
@@ -35,7 +35,7 @@ public interface IStatDataProvider {
     public Promise<EntityStatBlob> pullPlayerStatBlob(String player, boolean create);
 
     /**
-     * Push all stats for this player to the database
+     * Push all stats for this player to the database. This may happen immediately or at some point in the future
      * 
      * @param player
      *            StatBlob to push to the database
@@ -44,13 +44,13 @@ public interface IStatDataProvider {
 
     /**
      * Forces the DataProvider to flush data to the backend, in the case of a
-     * second level cache.
+     * second level cache or queue.
      */
     public void flush();
 
     /**
      * Forces the DataProvider to flush data to the backend, in the case of a
-     * second level cache. MUST BE IN THIS THREAD.
+     * second level cache. Execution must block the caller until completion
      */
     public void flushSync();
 

@@ -36,6 +36,15 @@ import org.bukkit.potion.PotionType;
 import com.tehbeard.BeardStat.listeners.MetaDataCapture;
 import com.tehbeard.BeardStat.listeners.MetaDataCapture.EntryInfo;
 
+/**
+ * FUTURE BEARD
+ * APPROACH THIS EITHER SOBER OR PARTIALLY DRUNK
+ * 
+ * GENERATES INFO ON METADATA OF THINGS IN MINECRAFT
+ * 
+ * @author James
+ *
+ */
 public class MaterialListOutput {
 
     private static Properties   materialOutputList = new Properties() {

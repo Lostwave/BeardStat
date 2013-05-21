@@ -15,6 +15,11 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
+/**
+ * Implements last on feature, figures out when a user was last online
+ * @author James
+ *
+ */
 public class LastOnCommand implements CommandExecutor {
 
     private static final String PLAYEDCAT       = "stats";

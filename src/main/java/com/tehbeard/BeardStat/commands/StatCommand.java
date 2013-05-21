@@ -25,6 +25,11 @@ import com.tehbeard.BeardStat.commands.interactive.ShowStatisticPrompt;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
+/**
+ * Show stats for a player,
+ * @author James
+ *
+ */
 public class StatCommand implements CommandExecutor {
 
     private PlayerStatManager               playerStatManager;

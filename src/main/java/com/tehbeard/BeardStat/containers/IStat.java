@@ -1,7 +1,7 @@
 package com.tehbeard.BeardStat.containers;
 
 /**
- * Represents a players stat
+ * Represents a stat
  * 
  * @author James
  * 

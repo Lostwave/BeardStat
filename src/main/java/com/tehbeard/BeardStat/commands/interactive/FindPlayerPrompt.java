@@ -11,6 +11,11 @@ import org.bukkit.conversations.ValidatingPrompt;
 
 import com.tehbeard.BeardStat.BeardStat;
 
+/**
+ * Get a player for stat lookup
+ * @author James
+ *
+ */
 @PromptTag(tag = "findplayer")
 public class FindPlayerPrompt extends ValidatingPrompt implements ConfigurablePrompt {
 

@@ -103,7 +103,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     /**
-     * checks outside config against default (current versions config) If
+     * checks config in data folder against default (current versions config) If
      * version conflicts it will attempt to run migration scripts sequentially
      * to upgrade
      * 
@@ -139,12 +139,15 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             }
             this.conn.setAutoCommit(false);
 
+            
+            //Begin ze migration
             PreparedStatement migrate;
 
             int curVersion = 0;
             try {
 
                 for (curVersion = installedVersion + 1; curVersion <= latestVersion; curVersion++) {
+
                     String[] sql = BeardStat
                             .self()
                             .readSQL(this.type, "sql/maintenence/migration/migrate." + curVersion, this.tblPrefix)
@@ -156,7 +159,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                     ChatColor.YELLOW + "Migration status : " + s.substring(1));
                         } else {
                             migrate = this.conn.prepareStatement(s);
-
                             migrate.execute();
                         }
                     }
@@ -247,6 +249,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         }
     }
 
+    /**
+     * Load statements from jar
+     */
     protected void prepareStatements() {
         try {
             BeardStat.printDebugCon("Preparing statements");
@@ -362,12 +367,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                     // Ok, try to get entity from database
                     JDBCStatDataProvider.this.loadEntity.setString(1, player);
-                    JDBCStatDataProvider.this.loadEntity.setString(2, "player");// TODO:
-                                                                                // ALLOW
-                                                                                // CHOICE
-                                                                                // OF
-                                                                                // ENTITY
-                                                                                // TYPE
+                    // TODO:ALLOW CHOICE OF ENTITY TYPE
+                    JDBCStatDataProvider.this.loadEntity.setString(2, "player");
 
                     ResultSet rs = JDBCStatDataProvider.this.loadEntity.executeQuery();
                     EntityStatBlob pb = null;
@@ -379,10 +380,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         JDBCStatDataProvider.this.saveEntity.setString(1, player);
                         JDBCStatDataProvider.this.saveEntity.setString(2, "player");
                         JDBCStatDataProvider.this.saveEntity.executeUpdate();
-                        rs = JDBCStatDataProvider.this.saveEntity.getGeneratedKeys();// get
-                                                                                     // dat
-                                                                                     // key
-                        rs.next();
+                        rs = JDBCStatDataProvider.this.saveEntity.getGeneratedKeys();
+                        rs.next();//load player id
 
                     }
 

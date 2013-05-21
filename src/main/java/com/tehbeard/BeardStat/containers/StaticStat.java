@@ -2,7 +2,8 @@ package com.tehbeard.BeardStat.containers;
 
 /**
  * Concrete implementation of a player stat. This is the default type for stats,
- * they are saved to the database
+ * They do not change themselves, instead relying on other code to modify them.
+ * Upon modification they raise the archive flag, making eligable to be saved.
  * 
  * @author James
  * 

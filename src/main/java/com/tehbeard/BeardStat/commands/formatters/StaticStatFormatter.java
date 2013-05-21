@@ -1,5 +1,10 @@
 package com.tehbeard.BeardStat.commands.formatters;
 
+/**
+ * Uses String.Format to format a stats
+ * @author James
+ *
+ */
 public class StaticStatFormatter implements StatFormatter {
 
     String format = "%s";

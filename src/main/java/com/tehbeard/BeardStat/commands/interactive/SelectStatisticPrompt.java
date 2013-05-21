@@ -17,6 +17,11 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
+/**
+ * Get statistic name to lookup
+ * @author James
+ *
+ */
 @PromptTag(tag = "getstat")
 public class SelectStatisticPrompt extends ValidatingPrompt implements ConfigurablePrompt {
 
