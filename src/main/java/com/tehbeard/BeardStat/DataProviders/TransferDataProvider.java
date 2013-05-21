@@ -11,8 +11,7 @@ import com.tehbeard.BeardStat.containers.IStat;
 /**
  * Will transfer blobs from one stat provider to another.
  * 
- * Mechanism: onPull: Attempt to locate statblob in oldProvider if found return
- * it and wipe from old provider if fail use newProvider
+ * Transfers inside constructor
  * 
  * @author James
  * 

@@ -5,6 +5,11 @@ import net.dragonzone.promise.Promise;
 
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
+/**
+ * Delegate setting a stat's value to a later date
+ * @author James
+ *
+ */
 public class DelegateSet implements Delegate<Void, Promise<EntityStatBlob>> {
 
     private String domain;

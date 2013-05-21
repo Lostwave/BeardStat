@@ -15,9 +15,7 @@ import org.bukkit.entity.Zombie;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 /**
- * translates a material to the metadata to capture.
- * 
- * Current materials Wood log sapling dye coal slab wool stone brick
+ * translates a material/entity to the metadata to capture.
  * 
  * @author james
  * 
