@@ -2,11 +2,10 @@ package com.tehbeard.BeardStat.containers;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
-
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,171 +20,167 @@ import com.tehbeard.BeardStat.containers.OnlineTimeManager.ManagerRecord;
 
 /**
  * Provides a cache between backend storage and the stats plugin
+ * 
  * @author James
- *
+ * 
  */
 public class PlayerStatManager implements CommandExecutor {
 
-	private HashMap<String,Promise<EntityStatBlob>> cache = new HashMap<String,Promise<EntityStatBlob>>();
-	private IStatDataProvider backendDatabase = null;
+    private HashMap<String, Promise<EntityStatBlob>> cache           = new HashMap<String, Promise<EntityStatBlob>>();
+    private IStatDataProvider                        backendDatabase = null;
 
+    public PlayerStatManager(IStatDataProvider database) {
+        this.backendDatabase = database;
+    }
 
+    /**
+     * Force save of all cached stats to backend storage
+     */
+    public void saveCache() {
+        if (this.backendDatabase == null) {
+            return;
+        }
+        Iterator<Entry<String, Promise<EntityStatBlob>>> i = this.cache.entrySet().iterator();
 
-	public PlayerStatManager(IStatDataProvider database){
-		backendDatabase = database;
-	}
+        while (i.hasNext()) {
+            Entry<String, Promise<EntityStatBlob>> entry = i.next();
+            String player = entry.getKey();
 
+            // check if rejected promise, remove from cache silently
+            if (entry.getValue().isRejected()) {
+                BeardStat.printCon("Promise[" + player + "] was rejected (error?), removing from cache.");// alert
+                                                                                                          // debug
+                                                                                                          // dump
+                i.remove();// clear it out
+                continue;// Skip now
+            }
 
-	/**
-	 * Force save of all cached stats to backend storage
-	 */
-	public void saveCache(){
-		if(backendDatabase == null){return;}
-		Iterator<Entry<String, Promise<EntityStatBlob>>> i = cache.entrySet().iterator();
+            // skip if not resolved
+            if (!entry.getValue().isResolved()) {
+                continue;
+            }
 
-		while(i.hasNext()){
-			Entry<String, Promise<EntityStatBlob>> entry = i.next();
-			String player = entry.getKey();
+            ManagerRecord timeRecord = OnlineTimeManager.getRecord(player);
 
-			//check if rejected promise, remove from cache silently
-			if(entry.getValue().isRejected()){
-				BeardStat.printCon("Promise[" + player + "] was rejected (error?), removing from cache.");//alert debug dump
-				i.remove();//clear it out
-				continue;//Skip now
-			}
+            if (entry.getValue().getValue() != null) {
+                if (timeRecord != null) {
+                    BeardStat.printDebugCon("saving time: [Player : " + player + " , world: " + timeRecord.world
+                            + ", time: " + timeRecord.sessionTime() + "]");
+                    if (timeRecord.world != null) {
+                        entry.getValue().getValue()
+                                .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
+                                .incrementStat(timeRecord.sessionTime());
+                    }
+                }
 
+                this.backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
 
-			//skip if not resolved
-			if(!entry.getValue().isResolved()){
-				continue;
-			}
+                if (isPlayerOnline(player)) {
+                    OnlineTimeManager.setRecord(Bukkit.getPlayer(player));
+                } else {
+                    OnlineTimeManager.wipeRecord(player);
+                    i.remove();
+                }
+            } else {
+                // Nulled player data
+                BeardStat.printCon("Promise[" + player + "] had a null value! Removed from cache.");
+                i.remove();
+            }
 
-			ManagerRecord timeRecord = OnlineTimeManager.getRecord(player);
+        }
 
+    }
 
-			if(entry.getValue().getValue() != null){
-				if(timeRecord != null){
-					BeardStat.printDebugCon("saving time: [Player : " + player +" , world: " + timeRecord.world + ", time: " +timeRecord.sessionTime() + "]");
-					if(timeRecord.world != null){
-						entry.getValue().getValue().getStat(BeardStat.DEFAULT_DOMAIN,timeRecord.world,"stats","playedfor").incrementStat(timeRecord.sessionTime());
-					}
-				}
+    private boolean isPlayerOnline(String player) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getName().equals(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-				backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
+    /**
+     * Retrieve a players Stat Blob, or create one if it doesn't exist
+     * 
+     * @param name
+     * @return
+     */
+    public Promise<EntityStatBlob> getPlayerBlobASync(String name) {
+        if (this.backendDatabase == null) {
+            return null;
+        }
+        if (!this.cache.containsKey(name)) {
+            this.cache.put(name, this.backendDatabase.pullPlayerStatBlob(name));
+        }
+        return this.cache.get(name);
+    }
 
-				if(isPlayerOnline(player)){
-					OnlineTimeManager.setRecord(Bukkit.getPlayer(player));
-				}
-				else
-				{
-					OnlineTimeManager.wipeRecord(player);
-					i.remove();
-				}
-			}
-			else
-			{
-				//Nulled player data
-				BeardStat.printCon("Promise[" + player + "] had a null value! Removed from cache.");
-				i.remove();
-			}
+    public EntityStatBlob getPlayerBlob(String name) {
+        return getPlayerBlobASync(name).getValue();
+    }
 
+    /**
+     * Finds a player's stat blob, but does not try to make it
+     * 
+     * @param name
+     *            player to find
+     * @return The player's stat blob or a null if not found
+     */
+    public Promise<EntityStatBlob> findPlayerBlobASync(final String name) {
+        if (this.backendDatabase == null) {
+            return null;
+        }
+        if (!this.cache.containsKey(name)) {
+            Promise<EntityStatBlob> pbs = this.backendDatabase.pullPlayerStatBlob(name, false);
+            pbs.onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
 
+                @Override
+                public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
+                    PlayerStatManager.this.cache.put(name, params);
+                    return null;
+                }
+            });
+            return pbs;
+        }
+        return this.cache.get(name);
+    }
 
-		}
+    public EntityStatBlob findPlayerBlob(String name) {
+        return findPlayerBlobASync(name).getValue();
+    }
 
+    public void flush() {
 
-	}
+        this.backendDatabase.flush();
+    }
 
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
+        Iterator<Entry<String, Promise<EntityStatBlob>>> i = this.cache.entrySet().iterator();
+        sender.sendMessage("Players in Stat cache");
+        while (i.hasNext()) {
+            Entry<String, Promise<EntityStatBlob>> entry = i.next();
+            String player = entry.getKey();
+            sender.sendMessage(ChatColor.GOLD + player);
+        }
 
+        // Iterator<String> ii = loginTimes.keySet().iterator();
+        sender.sendMessage("Players in login cache");
+        // while(ii.hasNext()){
+        // String player = ii.next();
+        // sender.sendMessage(ChatColor.GOLD + player);
+        // }
+        return true;
+    }
 
-	private boolean isPlayerOnline(String player) {
-		for(Player p : Bukkit.getOnlinePlayers()){
-			if(p.getName().equals(player)){
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-	/**
-	 * Retrieve a players Stat Blob, or create one if it doesn't exist
-	 * @param name
-	 * @return
-	 */
-	public Promise<EntityStatBlob> getPlayerBlobASync(String name){
-		if(backendDatabase == null){return null;}
-		if(!cache.containsKey(name)){
-			cache.put(name,backendDatabase.pullPlayerStatBlob(name));
-		}
-		return cache.get(name);
-	}
-
-	public EntityStatBlob getPlayerBlob(String name){
-		return getPlayerBlobASync(name).getValue();
-	}
-
-	/**
-	 * Finds a player's stat blob, but does not try to make it
-	 * @param name player to find
-	 * @return The player's stat blob or a null if not found
-	 */
-	public Promise<EntityStatBlob> findPlayerBlobASync(final String name){
-		if(backendDatabase == null){return null;}
-		if(!cache.containsKey(name)){
-			Promise<EntityStatBlob> pbs = backendDatabase.pullPlayerStatBlob(name,false);
-			pbs.onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
-
-				public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
-					cache.put(name, params);
-					return null;
-				}
-			});
-			return pbs;
-		}
-		return cache.get(name);
-	}
-
-	public EntityStatBlob findPlayerBlob(String name){
-		return findPlayerBlobASync(name).getValue();
-	}
-
-	public void flush(){
-
-		backendDatabase.flush();
-	}
-
-
-
-
-
-
-	public boolean onCommand(CommandSender sender, Command cmd, String lbl,
-			String[] args) {
-		Iterator<Entry<String, Promise<EntityStatBlob>>> i = cache.entrySet().iterator();
-		sender.sendMessage("Players in Stat cache");
-		while(i.hasNext()){
-			Entry<String, Promise<EntityStatBlob>> entry = i.next();
-			String player = entry.getKey();
-			sender.sendMessage(ChatColor.GOLD + player);
-		}
-
-		//Iterator<String> ii = loginTimes.keySet().iterator();
-		sender.sendMessage("Players in login cache");
-		//while(ii.hasNext()){
-		//	String player = ii.next();
-		//	sender.sendMessage(ChatColor.GOLD + player);
-		//}
-		return true;
-	}
-
-	public boolean deletePlayer(String player){
-		if(!backendDatabase.hasStatBlob(player)){
-			return false;
-		}
-		cache.remove(player);
-		backendDatabase.deletePlayerStatBlob(player);
-		return true;
-	}
+    public boolean deletePlayer(String player) {
+        if (!this.backendDatabase.hasStatBlob(player)) {
+            return false;
+        }
+        this.cache.remove(player);
+        this.backendDatabase.deletePlayerStatBlob(player);
+        return true;
+    }
 
 }

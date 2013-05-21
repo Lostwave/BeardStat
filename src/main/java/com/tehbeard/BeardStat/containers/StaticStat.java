@@ -1,168 +1,169 @@
 package com.tehbeard.BeardStat.containers;
 
 /**
- * Concrete implementation of a player stat.
- * This is the default type for stats, they are saved to the database
+ * Concrete implementation of a player stat. This is the default type for stats,
+ * they are saved to the database
+ * 
  * @author James
- *
+ * 
  */
 
-public class StaticStat implements IStat{
+public class StaticStat implements IStat {
 
-	EntityStatBlob owner = null;
-	private String domain;
-	private String world;
-	private String category="stats";
-	private String statistic;
-	private int value;
-	
+    EntityStatBlob  owner    = null;
+    private String  domain;
+    private String  world;
+    private String  category = "stats";
+    private String  statistic;
+    private int     value;
 
-	private boolean archive = false;
-	
+    private boolean archive  = false;
 
-
-
-
-	public StaticStat(String domain, String world, String cat,
-			String statistic, int value) {
-		super();
-		this.domain = domain;
-		this.world = world;
-		this.statistic = statistic;
-		this.value = value;
-		this.category = cat;
-	}
-
-	/**
-	 * Get the stats value
-	 * @return
-	 */
-	public synchronized int getValue(){
-		return value;
-	}
-
-	/**
-	 * Set the stats value
-	 * @param value value to set stat to
-	 */
-	public synchronized void setValue(int value){
-		changeValue(value);
-	}
-
-	/**
-	 * Get the stats name
-	 * @return name of tstat
-	 */
-	public String getStatistic(){
-		return statistic;
-	}
-
-	/**
-	 * Increment the stat by i 
-	 * @param i amount to increment stat by
-	 * new value = old value + i
-	 */
-	public synchronized void incrementStat(int i){
-		//if(i < 0 ){throw new IllegalArgumentException("Cannot increment by negative number!");}
-		changeValue(value + i);
-	}
-
-	/**
-	 * decrement the stat by i
-	 * @param i amount to dencrement stat by
-     * new value = old value - i
-	 */
-	public synchronized void decrementStat(int i){
-		//if(i < 0 ){throw new IllegalArgumentException("Cannot decrement by negative number!");}
-		changeValue(value - i);
-	}
-
-
-	/**
-	 * @return name of category stat is in
-	 */
-	public String getCategory() {	
-		return category;
-	}
-
-	/**
-	 * Clear the archive flag
-	 */
-	public synchronized void clearArchive() {
-		this.archive = false;
-	}
-
-	/**
-	 * Is archive flag set?
-	 * if the flag is set, the stat will be stored in the database, and the flag cleared on the next save.
-	 */
-	public synchronized boolean isArchive() {
-		return archive;
-	}
-
-	/**
-	 * get the blob of stats this stat belongs to.
-	 */
-	public EntityStatBlob getOwner(){
-		return owner;
-	}
-	
-	private synchronized void changeValue(int to){
-			value = to;
-			archive = true;
-	}
-
-
-
-	/**
-	 * Set owner of this stat
-	 */
-	public void setOwner(EntityStatBlob playerStatBlob) {
-		owner = playerStatBlob;
-	}
-	
-	
-
-	public String toString(){
-	    return category + "." + statistic + "=" + value;
-	}
-
-
-
-    public synchronized void archive() {
-        archive=true;
-        
+    public StaticStat(String domain, String world, String cat, String statistic, int value) {
+        super();
+        this.domain = domain;
+        this.world = world;
+        this.statistic = statistic;
+        this.value = value;
+        this.category = cat;
     }
 
+    /**
+     * Get the stats value
+     * 
+     * @return
+     */
+    @Override
+    public synchronized int getValue() {
+        return this.value;
+    }
 
+    /**
+     * Set the stats value
+     * 
+     * @param value
+     *            value to set stat to
+     */
+    @Override
+    public synchronized void setValue(int value) {
+        changeValue(value);
+    }
 
-	@Override
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
+    /**
+     * Get the stats name
+     * 
+     * @return name of tstat
+     */
+    @Override
+    public String getStatistic() {
+        return this.statistic;
+    }
 
+    /**
+     * Increment the stat by i
+     * 
+     * @param i
+     *            amount to increment stat by new value = old value + i
+     */
+    @Override
+    public synchronized void incrementStat(int i) {
+        // if(i < 0 ){throw new
+        // IllegalArgumentException("Cannot increment by negative number!");}
+        changeValue(this.value + i);
+    }
 
+    /**
+     * decrement the stat by i
+     * 
+     * @param i
+     *            amount to dencrement stat by new value = old value - i
+     */
+    @Override
+    public synchronized void decrementStat(int i) {
+        // if(i < 0 ){throw new
+        // IllegalArgumentException("Cannot decrement by negative number!");}
+        changeValue(this.value - i);
+    }
 
-	@Override
-	public String getDomain() {
-		return domain;
-	}
+    /**
+     * @return name of category stat is in
+     */
+    @Override
+    public String getCategory() {
+        return this.category;
+    }
 
+    /**
+     * Clear the archive flag
+     */
+    @Override
+    public synchronized void clearArchive() {
+        this.archive = false;
+    }
 
+    /**
+     * Is archive flag set? if the flag is set, the stat will be stored in the
+     * database, and the flag cleared on the next save.
+     */
+    @Override
+    public synchronized boolean isArchive() {
+        return this.archive;
+    }
 
-	@Override
-	public void setWorld(String world) {
-		this.world = world;
-	}
+    /**
+     * get the blob of stats this stat belongs to.
+     */
+    @Override
+    public EntityStatBlob getOwner() {
+        return this.owner;
+    }
 
+    private synchronized void changeValue(int to) {
+        this.value = to;
+        this.archive = true;
+    }
 
+    /**
+     * Set owner of this stat
+     */
+    @Override
+    public void setOwner(EntityStatBlob playerStatBlob) {
+        this.owner = playerStatBlob;
+    }
 
-	@Override
-	public String getWorld() {
-		return world;
-	}
-	
-	public IStat clone(){
-		return new StaticStat(domain, world, category, statistic, value);
-	}
+    @Override
+    public String toString() {
+        return this.category + "." + this.statistic + "=" + this.value;
+    }
+
+    @Override
+    public synchronized void archive() {
+        this.archive = true;
+
+    }
+
+    @Override
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    @Override
+    public String getDomain() {
+        return this.domain;
+    }
+
+    @Override
+    public void setWorld(String world) {
+        this.world = world;
+    }
+
+    @Override
+    public String getWorld() {
+        return this.world;
+    }
+
+    @Override
+    public IStat clone() {
+        return new StaticStat(this.domain, this.world, this.category, this.statistic, this.value);
+    }
 }

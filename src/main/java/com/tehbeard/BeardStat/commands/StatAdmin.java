@@ -13,52 +13,42 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
- * Stat admin
- * /statadmin -a tehbeard - reset all stats for person, clears all stats for them.
- * /statadmin -s tehbeard cat.stat1 cat.stat2 - Reset stat to 0
+ * Stat admin /statadmin -a tehbeard - reset all stats for person, clears all
+ * stats for them. /statadmin -s tehbeard cat.stat1 cat.stat2 - Reset stat to 0
+ * 
  * @author James
- *
+ * 
  */
 public class StatAdmin implements CommandExecutor {
 
     private final PlayerStatManager manager;
-    
-    
-    
-    public boolean onCommand(CommandSender sender, Command cmd, String lbl,
-            String[] args) {
-        ArgumentPack arguments = new ArgumentPack(new String[] {"a","s"}, new String[0], args);
-        
-        if(arguments.size()==1){
-            if(arguments.getFlag("a")){
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
+        ArgumentPack arguments = new ArgumentPack(new String[] { "a", "s" }, new String[0], args);
+
+        if (arguments.size() == 1) {
+            if (arguments.getFlag("a")) {
                 final String name = arguments.get(0);
 
-
-
-                new Conversation(BeardStat.self(),(Conversable)sender,
-                        new QuickConfirmationPrompt() {
+                new Conversation(BeardStat.self(), (Conversable) sender, new QuickConfirmationPrompt() {
 
                     @Override
                     public void called(boolean result) {
-                        if(result){
-                            manager.deletePlayer(name);
+                        if (result) {
+                            StatAdmin.this.manager.deletePlayer(name);
                         }
 
                     }
-                }
-                        ).begin();
-            }
-            else
-            {
+                }).begin();
+            } else {
                 sender.sendMessage("Operation not supported yet!");
             }
             return true;
         }
-        
+
         return false;
     }
-
-
 
     /**
      * @param manager

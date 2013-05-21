@@ -17,33 +17,32 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
-@PromptTag(tag="getcat")
-public class SelectCategoryPrompt extends ValidatingPrompt implements ConfigurablePrompt{
-
-
+@PromptTag(tag = "getcat")
+public class SelectCategoryPrompt extends ValidatingPrompt implements ConfigurablePrompt {
 
     private PlayerStatManager playerStatManager = BeardStat.self().getStatManager();
-    private Prompt next;
+    private Prompt            next;
 
-    public SelectCategoryPrompt(){
+    public SelectCategoryPrompt() {
 
     }
+
+    @Override
     public String getPromptText(ConversationContext context) {
         String player = (String) context.getSessionData("player");
 
-
-        //begin paste
+        // begin paste
         HashSet<String> cats = new HashSet<String>();
-        for( IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(!cats.contains(ps.getCategory())){
+        for (IStat ps : this.playerStatManager.getPlayerBlob(player).getStats()) {
+            if (!cats.contains(ps.getCategory())) {
                 cats.add(ps.getCategory());
             }
         }
         String msg = "";
 
         Iterator<String> it = cats.iterator();
-        while(it.hasNext()){
-            msg+=ChatColor.BLUE + it.next() + "\n";
+        while (it.hasNext()) {
+            msg += ChatColor.BLUE + it.next() + "\n";
         }
         return msg + ChatColor.AQUA + "Select a category to view";
     }
@@ -51,8 +50,8 @@ public class SelectCategoryPrompt extends ValidatingPrompt implements Configurab
     @Override
     protected boolean isInputValid(ConversationContext context, String input) {
         String player = (String) context.getSessionData("player");
-        for(IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(ps.getCategory().equalsIgnoreCase(input)){
+        for (IStat ps : this.playerStatManager.getPlayerBlob(player).getStats()) {
+            if (ps.getCategory().equalsIgnoreCase(input)) {
                 return true;
             }
         }
@@ -60,16 +59,16 @@ public class SelectCategoryPrompt extends ValidatingPrompt implements Configurab
     }
 
     @Override
-    protected Prompt acceptValidatedInput(ConversationContext context,
-            String input) {
+    protected Prompt acceptValidatedInput(ConversationContext context, String input) {
         context.setSessionData("c", input);
-        return next;
+        return this.next;
     }
 
+    @Override
     public void configure(ConfigurationSection config, PromptBuilder builder) {
-        builder.makePromptRef(config.getString("id"),this);
-        next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder.generatePrompt(config.getConfigurationSection("next"));
+        builder.makePromptRef(config.getString("id"), this);
+        this.next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder
+                .generatePrompt(config.getConfigurationSection("next"));
     }
-
 
 }

@@ -1,68 +1,73 @@
 package com.tehbeard.BeardStat.containers;
 
-
 /**
  * Represents a players stat
+ * 
  * @author James
- *
+ * 
  */
 
-public interface IStat{
+public interface IStat {
 
-	
-		/**
-	 * Get the stats value
-	 * @return
-	 */
-	public int getValue();
+    /**
+     * Get the stats value
+     * 
+     * @return
+     */
+    public int getValue();
 
-	/**
-	 * Set the stats value
-	 * @param value
-	 */
-	public void setValue(int value);
+    /**
+     * Set the stats value
+     * 
+     * @param value
+     */
+    public void setValue(int value);
 
-	/**
-	 * Get the stats name
-	 * @return
-	 */
-	public String getStatistic();
+    /**
+     * Get the stats name
+     * 
+     * @return
+     */
+    public String getStatistic();
 
-	
-	public String getCategory() ;
+    public String getCategory();
 
-	public void clearArchive();
+    public void clearArchive();
 
-	public void archive();
-	
-	public boolean isArchive();
-		
-	public void setOwner(EntityStatBlob playerStatBlob);
+    public void archive();
 
-	public EntityStatBlob getOwner();
+    public boolean isArchive();
 
-	
-	public void setDomain(String domain);
-	public String getDomain();
-	
-	public void setWorld(String world);
-	public String getWorld();
+    public void setOwner(EntityStatBlob playerStatBlob);
 
-	/**
-	 * Increment the stat by i 
-	 * @param i
-	 */
-	public void incrementStat(int i);
+    public EntityStatBlob getOwner();
 
-	/**
-	 * decrement the stat by i
-	 * @param i
-	 */
-	public void decrementStat(int i);
-	
-	/**
-	 * Clone self
-	 * @return
-	 */
-	public IStat clone();
+    public void setDomain(String domain);
+
+    public String getDomain();
+
+    public void setWorld(String world);
+
+    public String getWorld();
+
+    /**
+     * Increment the stat by i
+     * 
+     * @param i
+     */
+    public void incrementStat(int i);
+
+    /**
+     * decrement the stat by i
+     * 
+     * @param i
+     */
+    public void decrementStat(int i);
+
+    /**
+     * Clone self
+     * 
+     * @return
+     */
+    public IStat clone();
 }

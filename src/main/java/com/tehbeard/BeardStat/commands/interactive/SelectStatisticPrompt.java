@@ -17,45 +17,44 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
-@PromptTag(tag="getstat")
-public class SelectStatisticPrompt extends ValidatingPrompt implements ConfigurablePrompt{
-
-
+@PromptTag(tag = "getstat")
+public class SelectStatisticPrompt extends ValidatingPrompt implements ConfigurablePrompt {
 
     private PlayerStatManager playerStatManager = BeardStat.self().getStatManager();
-    private Prompt next;
+    private Prompt            next;
 
-    public SelectStatisticPrompt(){
+    public SelectStatisticPrompt() {
 
     }
-    public String getPromptText(ConversationContext context) {
-        String player = (String)context.getSessionData("player");
 
-        //begin paste
+    @Override
+    public String getPromptText(ConversationContext context) {
+        String player = (String) context.getSessionData("player");
+
+        // begin paste
         HashSet<String> stats = new HashSet<String>();
-        for( IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(ps.getCategory().equalsIgnoreCase((String)context.getSessionData("c"))){
+        for (IStat ps : this.playerStatManager.getPlayerBlob(player).getStats()) {
+            if (ps.getCategory().equalsIgnoreCase((String) context.getSessionData("c"))) {
                 stats.add(ps.getStatistic());
             }
         }
         String msg = "";
 
         Iterator<String> it = stats.iterator();
-        while(it.hasNext()){
-            msg+=ChatColor.BLUE + it.next() + "\n";
+        while (it.hasNext()) {
+            msg += ChatColor.BLUE + it.next() + "\n";
 
         }
-    
 
-        return  msg + ChatColor.AQUA + "Select a statistic to view";
+        return msg + ChatColor.AQUA + "Select a statistic to view";
     }
 
     @Override
     protected boolean isInputValid(ConversationContext context, String input) {
         String player = (String) context.getSessionData("player");
-        for(IStat ps :playerStatManager.getPlayerBlob(player).getStats()){
-            if(ps.getCategory().equalsIgnoreCase((String)context.getSessionData("c"))){
-                if(ps.getStatistic().equalsIgnoreCase(input)){
+        for (IStat ps : this.playerStatManager.getPlayerBlob(player).getStats()) {
+            if (ps.getCategory().equalsIgnoreCase((String) context.getSessionData("c"))) {
+                if (ps.getStatistic().equalsIgnoreCase(input)) {
                     return true;
                 }
             }
@@ -64,15 +63,17 @@ public class SelectStatisticPrompt extends ValidatingPrompt implements Configura
     }
 
     @Override
-    protected Prompt acceptValidatedInput(ConversationContext context,
-            String input) {
+    protected Prompt acceptValidatedInput(ConversationContext context, String input) {
         context.setSessionData("s", input);
-        return  next;
+        return this.next;
     }
+
+    @Override
     public void configure(ConfigurationSection config, PromptBuilder builder) {
 
-        builder.makePromptRef(config.getString("id"),this);
-        next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder.generatePrompt(config.getConfigurationSection("next"));
+        builder.makePromptRef(config.getString("id"), this);
+        this.next = config.isString("next") ? builder.locatePromptById(config.getString("next")) : builder
+                .generatePrompt(config.getConfigurationSection("next"));
     }
 
 }
