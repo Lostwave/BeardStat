@@ -213,6 +213,8 @@ public class BeardStat extends JavaPlugin {
 		getCommand("beardstatdebug").setExecutor(playerStatManager);
 		getCommand("statadmin").setExecutor(new StatAdmin(playerStatManager));
 
+		
+		printCon("loading any players already online");
 		//Incase of /reload, set all logged in player names.
 		for(Player player: getServer().getOnlinePlayers()){
 
@@ -344,7 +346,7 @@ public class BeardStat extends JavaPlugin {
 
 
 
-	private void loadCompositeStats(){
+	private void loadDynamicStatConfiguration(){
 
 		for(String cstat : getConfig().getStringList("customstats")){
 
@@ -365,7 +367,7 @@ public class BeardStat extends JavaPlugin {
 
 	}
 
-	private void loadFormats(){
+	private void loadCustomFormats(){
 		for(String format : getConfig().getStringList("customformats")){
 			String stat = format.split(":")[0];
 			String formating = format.replace(stat + ":","");
@@ -418,6 +420,7 @@ public class BeardStat extends JavaPlugin {
 		if(config.getString("type").equalsIgnoreCase("transfer")){
 			IStatDataProvider _old = getProvider(getConfig().getConfigurationSection("stats.transfer.old"));
 			IStatDataProvider _new = getProvider(getConfig().getConfigurationSection("stats.transfer.new"));
+			BeardStat.printCon("Initiating transfer of stats, this may take a while");
 			new TransferDataProvider(_old, _new);
 			db = _new;
 		}

@@ -9,7 +9,6 @@ import java.util.List;
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
