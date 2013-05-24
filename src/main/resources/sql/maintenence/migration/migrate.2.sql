@@ -56,8 +56,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `worldId`     int(11) NOT NULL,  
   `categoryId`  int(11) NOT NULL,  
   `statisticId` int(11) NOT NULL,  
-  `value`       int(11) NOT NULL,
-  UNIQUE KEY (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`)
+  `value`       int(11) NOT NULL
   ) 
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #Populating value table, WARNING: THIS WILL TAKE A LONG TIME WITH LARGE DATABASES;
