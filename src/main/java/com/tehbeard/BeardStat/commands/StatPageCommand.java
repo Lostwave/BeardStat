@@ -18,8 +18,9 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
  * Display a statpage
+ * 
  * @author James
- *
+ * 
  */
 public class StatPageCommand implements CommandExecutor {
 

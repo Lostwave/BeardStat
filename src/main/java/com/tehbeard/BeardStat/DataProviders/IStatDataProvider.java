@@ -7,7 +7,8 @@ import net.dragonzone.promise.Promise;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 /**
- * Provides push/pull service for getting and saving stats to a backend storage system.
+ * Provides push/pull service for getting and saving stats to a backend storage
+ * system.
  * 
  * @author James
  * 
@@ -35,7 +36,8 @@ public interface IStatDataProvider {
     public Promise<EntityStatBlob> pullPlayerStatBlob(String player, boolean create);
 
     /**
-     * Push all stats for this player to the database. This may happen immediately or at some point in the future
+     * Push all stats for this player to the database. This may happen
+     * immediately or at some point in the future
      * 
      * @param player
      *            StatBlob to push to the database

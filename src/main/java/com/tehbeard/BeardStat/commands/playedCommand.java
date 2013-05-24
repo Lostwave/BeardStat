@@ -17,8 +17,9 @@ import com.tehbeard.BeardStat.containers.StatVector;
 
 /**
  * Shows a users playtime
+ * 
  * @author James
- *
+ * 
  */
 public class playedCommand implements CommandExecutor {
 

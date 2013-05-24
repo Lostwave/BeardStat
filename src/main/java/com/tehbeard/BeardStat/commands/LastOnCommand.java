@@ -17,8 +17,9 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
  * Implements last on feature, figures out when a user was last online
+ * 
  * @author James
- *
+ * 
  */
 public class LastOnCommand implements CommandExecutor {
 

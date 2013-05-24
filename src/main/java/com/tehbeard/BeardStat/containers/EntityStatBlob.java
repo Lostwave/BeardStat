@@ -12,8 +12,9 @@ import me.tehbeard.utils.expressions.VariableProvider;
 import com.tehbeard.BeardStat.BeardStat;
 
 /**
- * Represents a collection of statistics bound to an entity
- * Currently only used for Players.
+ * Represents a collection of statistics bound to an entity Currently only used
+ * for Players.
+ * 
  * @author James
  * 
  */

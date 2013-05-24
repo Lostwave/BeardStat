@@ -47,8 +47,8 @@ public class OnlineTimeManager {
     public static void wipeRecord(String player) {
         records.remove(player);
     }
-    
-    public static Collection<String> getPlayers(){
+
+    public static Collection<String> getPlayers() {
         return records.keySet();
     }
 }

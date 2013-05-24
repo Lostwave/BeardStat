@@ -9,8 +9,9 @@ import org.bukkit.ChatColor;
 
 /**
  * Loads language files to allow better localization
+ * 
  * @author James
- *
+ * 
  */
 public class LanguagePack {
 
@@ -18,6 +19,7 @@ public class LanguagePack {
 
     /**
      * Load in a language file, clears all loaded definitions
+     * 
      * @param in
      * @throws IOException
      */
@@ -28,6 +30,7 @@ public class LanguagePack {
 
     /**
      * loads in a language file, overwrites any conflicting loaded definitions
+     * 
      * @param in
      * @throws IOException
      */
@@ -41,6 +44,7 @@ public class LanguagePack {
 
     /**
      * Get raw message from table
+     * 
      * @param code
      * @return
      */
@@ -50,6 +54,7 @@ public class LanguagePack {
 
     /**
      * Returns a localised message with colour formatting
+     * 
      * @param code
      * @return
      */
@@ -58,7 +63,9 @@ public class LanguagePack {
     }
 
     /**
-     * Returns a localised message, with colour coding and parameters passed into it
+     * Returns a localised message, with colour coding and parameters passed
+     * into it
+     * 
      * @param code
      * @param args
      * @return
@@ -66,9 +73,10 @@ public class LanguagePack {
     public static String getMsg(String code, Object... args) {
         return colorFormat(String.format(_getMsg(code), args));
     }
-    
+
     /**
      * Colorize a message
+     * 
      * @param s
      * @return
      */
@@ -76,6 +84,5 @@ public class LanguagePack {
 
         return s.replaceAll("\\[([0-9A-FK-OR])\\]", ChatColor.COLOR_CHAR + "$1");
     }
-
 
 }

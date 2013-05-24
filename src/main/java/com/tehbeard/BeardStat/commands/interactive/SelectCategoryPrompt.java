@@ -19,8 +19,9 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
  * Get the category of stat to look up
+ * 
  * @author James
- *
+ * 
  */
 @PromptTag(tag = "getcat")
 public class SelectCategoryPrompt extends ValidatingPrompt implements ConfigurablePrompt {

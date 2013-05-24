@@ -139,8 +139,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             }
             this.conn.setAutoCommit(false);
 
-            
-            //Begin ze migration
+            // Begin ze migration
             PreparedStatement migrate;
 
             int curVersion = 0;
@@ -381,7 +380,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         JDBCStatDataProvider.this.saveEntity.setString(2, "player");
                         JDBCStatDataProvider.this.saveEntity.executeUpdate();
                         rs = JDBCStatDataProvider.this.saveEntity.getGeneratedKeys();
-                        rs.next();//load player id
+                        rs.next();// load player id
 
                     }
 

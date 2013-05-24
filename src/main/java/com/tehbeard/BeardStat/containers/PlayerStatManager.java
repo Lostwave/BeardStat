@@ -12,7 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
@@ -37,14 +36,14 @@ public class PlayerStatManager implements CommandExecutor {
      * Force save of all cached stats to backend storage
      */
     public void saveCache() {
-        
+
         if (this.backendDatabase == null) {
             return;
         }
-        
+
         Iterator<Entry<String, Promise<EntityStatBlob>>> i = this.cache.entrySet().iterator();
 
-        //iterate over cache and save
+        // iterate over cache and save
         while (i.hasNext()) {
             Entry<String, Promise<EntityStatBlob>> entry = i.next();
             String player = entry.getKey();
@@ -63,8 +62,7 @@ public class PlayerStatManager implements CommandExecutor {
                 continue;
             }
 
-            
-            //record time for player
+            // record time for player
             ManagerRecord timeRecord = OnlineTimeManager.getRecord(player);
 
             if (entry.getValue().getValue() != null) {
@@ -73,8 +71,8 @@ public class PlayerStatManager implements CommandExecutor {
                             + ", time: " + timeRecord.sessionTime() + "]");
                     if (timeRecord.world != null) {
                         entry.getValue().getValue()
-                        .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
-                        .incrementStat(timeRecord.sessionTime());
+                                .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
+                                .incrementStat(timeRecord.sessionTime());
                     }
                 }
 
@@ -101,10 +99,12 @@ public class PlayerStatManager implements CommandExecutor {
     }
 
     /**
-     * Asyncronously retrieves a players Stat Blob, or create one if it doesn't exist
+     * Asyncronously retrieves a players Stat Blob, or create one if it doesn't
+     * exist
      * 
      * @param name
-     * @return a promise object that will later contain the stat blob or return an error
+     * @return a promise object that will later contain the stat blob or return
+     *         an error
      */
     public Promise<EntityStatBlob> getPlayerBlobASync(String name) {
         if (this.backendDatabase == null) {
@@ -117,7 +117,9 @@ public class PlayerStatManager implements CommandExecutor {
     }
 
     /**
-     * Returns a stat blob immediately, halting the calling thread until it is returned.
+     * Returns a stat blob immediately, halting the calling thread until it is
+     * returned.
+     * 
      * @param name
      * @return
      */
@@ -140,7 +142,7 @@ public class PlayerStatManager implements CommandExecutor {
             Promise<EntityStatBlob> pbs = this.backendDatabase.pullPlayerStatBlob(name, false);
             pbs.onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
 
-                //add promise to cache on resolve
+                // add promise to cache on resolve
                 @Override
                 public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
                     PlayerStatManager.this.cache.put(name, params);
@@ -154,6 +156,7 @@ public class PlayerStatManager implements CommandExecutor {
 
     /**
      * returns a player blob without creating it.
+     * 
      * @param name
      * @return
      */
@@ -176,10 +179,9 @@ public class PlayerStatManager implements CommandExecutor {
             sender.sendMessage(ChatColor.GOLD + player);
         }
 
-
         sender.sendMessage("Players in login cache");
-        
-        for(String player : OnlineTimeManager.getPlayers()){
+
+        for (String player : OnlineTimeManager.getPlayers()) {
             sender.sendMessage(ChatColor.GOLD + player);
         }
         return true;

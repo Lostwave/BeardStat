@@ -7,8 +7,9 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
 
 /**
  * Delegate the decrementing of a stat to occur at at a later date
+ * 
  * @author James
- *
+ * 
  */
 public class DelegateDecrement implements Delegate<Void, Promise<EntityStatBlob>> {
 

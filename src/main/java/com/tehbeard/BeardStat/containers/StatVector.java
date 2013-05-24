@@ -6,8 +6,7 @@ import java.util.List;
 
 /**
  * Represents a collection of IStats, usually the result of a regex get
- * operation.
- * Mutator methods related to a value affect ALL objects inside this.
+ * operation. Mutator methods related to a value affect ALL objects inside this.
  * Other mutator methods fail silently
  * 
  * @author James

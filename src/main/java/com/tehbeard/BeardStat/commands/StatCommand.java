@@ -27,8 +27,9 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
  * Show stats for a player,
+ * 
  * @author James
- *
+ * 
  */
 public class StatCommand implements CommandExecutor {
 

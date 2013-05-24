@@ -7,11 +7,10 @@ import java.util.Map;
 import com.tehbeard.BeardStat.containers.IStat;
 
 /**
- * Formats a string to present a stats value
- * e.g. 5000 metres
- *  
+ * Formats a string to present a stats value e.g. 5000 metres
+ * 
  * @author James
- *
+ * 
  */
 public class FormatFactory {
 
