@@ -157,6 +157,8 @@ public class BeardStat extends JavaPlugin {
 
         // run config updater
         updateConfig();
+        saveConfig();
+        reloadConfig();
 
         // setup our data provider, fail out if it's not found
         printCon("Connecting to database");
@@ -180,9 +182,9 @@ public class BeardStat extends JavaPlugin {
 
         printCon("initializing composite stats");
         // Load the dynamic stats from file
-        loadDynamicStatConfiguration();
+        //loadDynamicStatConfiguration();
         // load custom stat formats from file
-        loadCustomFormats();
+        //loadCustomFormats();
 
         printCon("Registering events and collectors");
 

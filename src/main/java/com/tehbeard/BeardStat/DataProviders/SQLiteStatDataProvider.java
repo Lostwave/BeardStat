@@ -9,7 +9,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         super("sqlite", "org.sqlite.JDBC");
 
         this.connectionUrl = String.format("jdbc:sqlite:%s", filename);
-
+        this.tblPrefix = "stats";
         initialise();
 
     }

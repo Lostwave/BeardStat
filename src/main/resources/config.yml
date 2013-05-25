@@ -1,5 +1,5 @@
 general:
-  debug: false
+  debug: true
 stats:
   configversion: ${project.config.version}
   trackcreativemode: false

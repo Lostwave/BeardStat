@@ -1,4 +1,3 @@
-
 #Migrating to yggdrasil format;
 #Creating entity table;
 CREATE TABLE stats_entity ( 
