@@ -3,13 +3,13 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` (
   `name` char(32) NOT NULL,  
   `type` enum('player','plugin','group') NOT NULL, 
   PRIMARY KEY (`entityId`),
-  UNIQUE KEY (`name`,`type`)
+  UNIQUE KEY `chkName` (`name`,`type`)
   ) 
 ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 CREATE TABLE IF NOT EXISTS `${PREFIX}_domain`(
   `domainId` int(11) NOT NULL AUTO_INCREMENT, 
   `domain` char(32) NOT NULL,  
-  PRIMARY KEY (`domainId`)
+  PRIMARY KEY (`domainId`),
   UNIQUE KEY (`domain`)
 );
 CREATE TABLE IF NOT EXISTS `${PREFIX}_world`(
