@@ -337,8 +337,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             rs.next();
             mapTo.put(name, rs.getInt(1));
             rs.close();
+            BeardStat.printDebugCon(name + " : " + mapTo.get(name));
         }
-        BeardStat.printDebugCon(name + " : " + mapTo.get(name));
+        
         return mapTo.get(name);
     }
 
