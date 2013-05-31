@@ -175,7 +175,25 @@ public class EntityStatBlob implements VariableProvider {
     @Override
     public int resolveVariable(String var) {
         String[] parts = var.split("\\.");
-        return getStat(parts[0], parts[1], parts[2], parts[3]).getValue();
+        String domain = BeardStat.DEFAULT_DOMAIN;
+        String world = "*";
+        String cat = "";
+        String stat = "";
+        if(parts.length == 4){
+            domain = parts[0];
+            world  = parts[1];
+            cat    = parts[2];
+            stat   = parts[3];
+        }
+        if(parts.length == 2){
+            cat    = parts[0];
+            stat   = parts[1];
+        }
+        else
+        {
+            throw new IllegalStateException("Attempt to parse invalid varriable " + var);
+        }
+        return getStats(domain, world, cat, stat).getValue();
     }
 
     public String getType() {
