@@ -118,8 +118,10 @@ public class StatCommand implements CommandExecutor {
                 return true;
             }
         }
+        else{
+            Bukkit.dispatchCommand(sender, "statpage " + player + " default");
+        }
 
-        Bukkit.dispatchCommand(sender, "statpage " + player + " default");
 
         // TODO: FINISH UP
 

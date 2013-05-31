@@ -16,8 +16,8 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 
 /**
- * Shows a users playtime
- * 
+ * /played - Show users playtime
+ * /played name - show player of name
  * @author James
  * 
  */
@@ -31,31 +31,27 @@ public class playedCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
-        /*
-         * ERRORS BLOCK
-         * 
-         * 
-         * BeardStat.sendNoPermissionError(sender);
-         */
 
         long seconds = 0;
         EntityStatBlob blob;
 
-        // select sender if they are a Player
+        // If sender is a player, default to them
         OfflinePlayer selectedPlayer = (sender instanceof OfflinePlayer) ? (OfflinePlayer) sender : null;
 
-        // Ok, try an exact player.dat match
+        // We got an argument, use that player instead
         if ((args.length == 1) && BeardStat.hasPermission(sender, "command.played.other")) {
             selectedPlayer = Bukkit.getOfflinePlayer(args[0]).hasPlayedBefore() ? Bukkit.getOfflinePlayer(args[0])
                     : null;
         }
 
-        // failed to ascertain a player
+        // failed to get a player, send error and finish
         if (selectedPlayer == null) {
             sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noconsole.noargs"));
             return true;
         }
 
+        
+        //Grab player blob and format out stat
         // TODO: async this
         blob = this.playerStatManager.getPlayerBlob(selectedPlayer.getName());
         if (blob == null) {
