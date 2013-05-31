@@ -182,9 +182,9 @@ public class BeardStat extends JavaPlugin {
 
         printCon("initializing composite stats");
         // Load the dynamic stats from file
-        //loadDynamicStatConfiguration();
+        loadDynamicStatConfiguration();
         // load custom stat formats from file
-        //loadCustomFormats();
+        loadCustomFormats();
 
         printCon("Registering events and collectors");
 
@@ -478,5 +478,21 @@ public class BeardStat extends JavaPlugin {
         return sql.replaceAll("\\$\\{PREFIX\\}", prefix);
 
     }
-
+    
+    public static void handleError(Exception e){
+        
+    }
+    
+    public static void handleUnknownError(Exception e){
+        printCon("=========");
+        printCon("BeardStat");
+        printCon("=========");
+        printCon("BeardStat encountered an error, please submit the following info + stack trace to the dev bukkit page (http://dev.bukkit.org/server-mods/BeardStat/");
+        printCon("");
+        printCon("BeardStat version: " + self.getDescription().getVersion());
+        printCon("");
+        e.printStackTrace();
+        printCon("");
+        printCon("=========");
+    }
 }
