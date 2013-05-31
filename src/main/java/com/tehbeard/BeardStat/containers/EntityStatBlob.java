@@ -179,18 +179,16 @@ public class EntityStatBlob implements VariableProvider {
         String world = "*";
         String cat = "";
         String stat = "";
-        if(parts.length == 4){
+        if (parts.length == 4) {
             domain = parts[0];
-            world  = parts[1];
-            cat    = parts[2];
-            stat   = parts[3];
+            world = parts[1];
+            cat = parts[2];
+            stat = parts[3];
         }
-        if(parts.length == 2){
-            cat    = parts[0];
-            stat   = parts[1];
-        }
-        else
-        {
+        if (parts.length == 2) {
+            cat = parts[0];
+            stat = parts[1];
+        } else {
             throw new IllegalStateException("Attempt to parse invalid varriable " + var);
         }
         return getStats(domain, world, cat, stat).getValue();

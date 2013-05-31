@@ -16,6 +16,7 @@ import org.bukkit.conversations.ExactMatchConversationCanceller;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.BeardStatRuntimeException;
 import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import com.tehbeard.BeardStat.commands.interactive.FindPlayerPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
@@ -50,78 +51,81 @@ public class StatCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
-
-        if (!BeardStat.hasPermission(sender, "command.stat")) {
-            BeardStat.sendNoPermissionError(sender);
-            return true;
-        }
-
-        ArgumentPack arguments = new ArgumentPack(new String[] { "i", "h" }, new String[] { "p", "s" }, args);
-
-        String player = null;
-
-        if (BeardStat.hasPermission(sender, "command.stat.other")) {
-            player = arguments.getOption("p");
-        }
-
-        if ((player == null) && (sender instanceof Player)) {
-            player = ((Player) sender).getName();
-        }
-
-        if ((player == null) || arguments.getFlag("h")) {
-            sendHelpMessage(sender);
-            return true;
-        }
-
-        if (arguments.getFlag("i")) {
-            sender.sendMessage(ChatColor.GOLD + "Entering interactive mode, type /exit to leave interactive mode");
-            Conversation c = this.builder.makeConversation((Conversable) sender);
-            c.getCancellers().add(this.canceller.clone());
-
-            c.addConversationAbandonedListener(new ConversationAbandonedListener() {
-
-                @Override
-                public void conversationAbandoned(ConversationAbandonedEvent event) {
-                    event.getContext().getForWhom().sendRawMessage(ChatColor.GOLD + "Leaving interactive stats mode");
-
-                }
-
-            });
-
-            return true;
-        }
-
-        if (arguments.getOption("s") != null) {
-            String stat = arguments.getOption("s");
-            if (stat.split("\\.").length == 2) {
-                EntityStatBlob blob = this.playerStatManager.findPlayerBlob(player);
-                if (blob == null) {
-                    sender.sendMessage(ChatColor.RED + "Could not find player");
-                    return true;
-                }
-
-                if (blob.hasStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, stat.split("\\.")[0],
-                        stat.split("\\.")[1])) {
-                    sender.sendMessage(ChatColor.GOLD
-                            + stat
-                            + " = "
-                            + ChatColor.WHITE
-                            + FormatFactory.formatStat(blob.getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD,
-                                    stat.split("\\.")[0], stat.split("\\.")[1])));
-                    return true;
-                } else {
-                    sender.sendMessage("Stat not found");
-                }
-
-            } else {
-                sender.sendMessage(ChatColor.RED + "Invalid stat");
+        try {
+            if (!BeardStat.hasPermission(sender, "command.stat")) {
+                BeardStat.sendNoPermissionError(sender);
                 return true;
             }
-        }
-        else{
-            Bukkit.dispatchCommand(sender, "statpage " + player + " default");
-        }
 
+            ArgumentPack arguments = new ArgumentPack(new String[] { "i", "h" }, new String[] { "p", "s" }, args);
+
+            String player = null;
+
+            if (BeardStat.hasPermission(sender, "command.stat.other")) {
+                player = arguments.getOption("p");
+            }
+
+            if ((player == null) && (sender instanceof Player)) {
+                player = ((Player) sender).getName();
+            }
+
+            if ((player == null) || arguments.getFlag("h")) {
+                sendHelpMessage(sender);
+                return true;
+            }
+
+            if (arguments.getFlag("i")) {
+                sender.sendMessage(ChatColor.GOLD + "Entering interactive mode, type /exit to leave interactive mode");
+                Conversation c = this.builder.makeConversation((Conversable) sender);
+                c.getCancellers().add(this.canceller.clone());
+
+                c.addConversationAbandonedListener(new ConversationAbandonedListener() {
+
+                    @Override
+                    public void conversationAbandoned(ConversationAbandonedEvent event) {
+                        event.getContext().getForWhom()
+                                .sendRawMessage(ChatColor.GOLD + "Leaving interactive stats mode");
+
+                    }
+
+                });
+
+                return true;
+            }
+
+            if (arguments.getOption("s") != null) {
+                String stat = arguments.getOption("s");
+                if (stat.split("\\.").length == 2) {
+                    EntityStatBlob blob = this.playerStatManager.findPlayerBlob(player);
+                    if (blob == null) {
+                        sender.sendMessage(ChatColor.RED + "Could not find player");
+                        return true;
+                    }
+
+                    if (blob.hasStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, stat.split("\\.")[0],
+                            stat.split("\\.")[1])) {
+                        sender.sendMessage(ChatColor.GOLD
+                                + stat
+                                + " = "
+                                + ChatColor.WHITE
+                                + FormatFactory.formatStat(blob.getStat(BeardStat.DEFAULT_DOMAIN,
+                                        BeardStat.GLOBAL_WORLD, stat.split("\\.")[0], stat.split("\\.")[1])));
+                        return true;
+                    } else {
+                        sender.sendMessage("Stat not found");
+                    }
+
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Invalid stat");
+                    return true;
+                }
+            } else {
+                Bukkit.dispatchCommand(sender, "statpage " + player + " default");
+            }
+
+        } catch (Exception e) {
+            BeardStat.handleError(new BeardStatRuntimeException("/stats threw an error", e, true));
+        }
 
         // TODO: FINISH UP
 

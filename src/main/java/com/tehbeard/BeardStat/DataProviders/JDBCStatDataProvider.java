@@ -339,7 +339,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             rs.close();
             BeardStat.printDebugCon(name + " : " + mapTo.get(name));
         }
-        
+
         return mapTo.get(name);
     }
 

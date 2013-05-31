@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -152,13 +153,18 @@ public class BeardStat extends JavaPlugin {
             }
         } catch (IOException e1) {
             printCon("Failed to load language pack");
-            e1.printStackTrace();
+
         }
 
         // run config updater
-        updateConfig();
-        saveConfig();
-        reloadConfig();
+        try {
+            updateConfig();
+            saveConfig();
+            reloadConfig();
+        } catch (Exception e) {
+            handleError(new BeardStatRuntimeException("An error occured while loading or updating the config", e, false));
+            return;
+        }
 
         // setup our data provider, fail out if it's not found
         printCon("Connecting to database");
@@ -181,41 +187,55 @@ public class BeardStat extends JavaPlugin {
         this.playerStatManager = new PlayerStatManager(db);
 
         printCon("initializing composite stats");
-        // Load the dynamic stats from file
-        loadDynamicStatConfiguration();
-        // load custom stat formats from file
-        loadCustomFormats();
+        try {
+            // Load the dynamic stats from file
+            loadDynamicStatConfiguration();
+            // load custom stat formats from file
+            loadCustomFormats();
+        } catch (Exception e) {
+            handleError(new BeardStatRuntimeException("Error loading dynamic stats or custom formats", e, true));
+        }
 
         printCon("Registering events and collectors");
 
         // register event listeners
         // get blacklist, then start and register each type of listener
-        List<String> worldList = getConfig().getStringList("stats.blacklist");
-        StatBlockListener sbl = new StatBlockListener(worldList, this.playerStatManager);
-        StatPlayerListener spl = new StatPlayerListener(worldList, this.playerStatManager);
-        StatEntityListener sel = new StatEntityListener(worldList, this.playerStatManager);
-        StatVehicleListener svl = new StatVehicleListener(worldList, this.playerStatManager);
-        StatCraftListener scl = new StatCraftListener(worldList, this.playerStatManager);
-        getServer().getPluginManager().registerEvents(sbl, this);
-        getServer().getPluginManager().registerEvents(spl, this);
-        getServer().getPluginManager().registerEvents(sel, this);
-        getServer().getPluginManager().registerEvents(svl, this);
-        getServer().getPluginManager().registerEvents(scl, this);
+        try {
+            List<String> worldList = getConfig().getStringList("stats.blacklist");
+            StatBlockListener sbl = new StatBlockListener(worldList, this.playerStatManager);
+            StatPlayerListener spl = new StatPlayerListener(worldList, this.playerStatManager);
+            StatEntityListener sel = new StatEntityListener(worldList, this.playerStatManager);
+            StatVehicleListener svl = new StatVehicleListener(worldList, this.playerStatManager);
+            StatCraftListener scl = new StatCraftListener(worldList, this.playerStatManager);
+            getServer().getPluginManager().registerEvents(sbl, this);
+            getServer().getPluginManager().registerEvents(spl, this);
+            getServer().getPluginManager().registerEvents(sel, this);
+            getServer().getPluginManager().registerEvents(svl, this);
+            getServer().getPluginManager().registerEvents(scl, this);
+        } catch (Exception e) {
+            handleError(new BeardStatRuntimeException("Error registering events", e, false));
+        }
 
         // start Database flusher.
-
-        this.saveTaskId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new DbFlusher(), 2400L, 2400L);
+        try {
+            this.saveTaskId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new DbFlusher(), 2400L, 2400L);
+        } catch (Exception e) {
+            handleError(new BeardStatRuntimeException("Error starting database flusher", e, false));
+        }
 
         printCon("Loading commands");
-        getCommand("stats").setExecutor(new StatCommand(this.playerStatManager));
-        getCommand("played").setExecutor(new playedCommand(this.playerStatManager));
-        getCommand("statpage").setExecutor(new StatPageCommand(this));
-        getCommand("laston").setExecutor(new LastOnCommand(this.playerStatManager));
-        getCommand("beardstatdebug").setExecutor(this.playerStatManager);
-        getCommand("statadmin").setExecutor(new StatAdmin(this.playerStatManager));
+        try {
+            getCommand("stats").setExecutor(new StatCommand(this.playerStatManager));
+            getCommand("played").setExecutor(new playedCommand(this.playerStatManager));
+            getCommand("statpage").setExecutor(new StatPageCommand(this));
+            getCommand("laston").setExecutor(new LastOnCommand(this.playerStatManager));
+            getCommand("beardstatdebug").setExecutor(this.playerStatManager);
+            getCommand("statadmin").setExecutor(new StatAdmin(this.playerStatManager));
+        } catch (Exception e) {
+            handleError(new BeardStatRuntimeException("Error registering commands", e, false));
+        }
 
         printCon("loading any players already online");// Fix people being dumb
-                                                       // and /reload-ing
         for (Player player : getServer().getOnlinePlayers()) {
 
             OnlineTimeManager.setRecord(player);
@@ -236,8 +256,8 @@ public class BeardStat extends JavaPlugin {
             });// record database type
 
             metrics.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            handleError(new BeardStatRuntimeException("Metrics threw an error during startup", null, true));
         }
         printCon("BeardStat Loaded");
     }
@@ -478,12 +498,41 @@ public class BeardStat extends JavaPlugin {
         return sql.replaceAll("\\$\\{PREFIX\\}", prefix);
 
     }
-    
-    public static void handleError(Exception e){
-        
+
+    /**
+     * Handle an error, if it's a {@link BeardStatRuntimeException} it will try
+     * to kill BeardStat if the error is non-recoverable
+     * 
+     * @param e
+     */
+    public static void handleError(Exception e) {
+        if (e instanceof BeardStatRuntimeException) {
+            BeardStatRuntimeException be = (BeardStatRuntimeException) e;
+            if (!be.isRecoverable()) {
+                printCon("WARNING: BeardStat has encountered an error and cannot recover, disabling plugin.");
+                printCon(be.getMessage());
+                if (e != null) {
+                    handleUnknownError(e);
+                }
+                Bukkit.getPluginManager().disablePlugin(self);
+            } else {
+                printCon("WARNING: BeardStat has encountered an error.");
+                printCon(be.getMessage());
+                if (e != null) {
+                    handleUnknownError(e);
+                }
+            }
+        } else {
+            handleUnknownError(e);
+        }
     }
-    
-    public static void handleUnknownError(Exception e){
+
+    /**
+     * Print out information related to unknown errors
+     * 
+     * @param e
+     */
+    private static void handleUnknownError(Exception e) {
         printCon("=========");
         printCon("BeardStat");
         printCon("=========");
