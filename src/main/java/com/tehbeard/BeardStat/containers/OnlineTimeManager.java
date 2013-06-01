@@ -3,8 +3,6 @@ package com.tehbeard.BeardStat.containers;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.bukkit.entity.Player;
-
 /**
  * Manages online time tracking for a player
  * 
@@ -35,8 +33,8 @@ public class OnlineTimeManager {
 
     }
 
-    public static void setRecord(Player player) {
-        setRecord(player.getName(), player.getWorld().getName(), System.currentTimeMillis());
+    public static void setRecord(String player,String world) {
+        setRecord(player, world, System.currentTimeMillis());
     }
 
     public static void setRecord(String player, String world, long time) {

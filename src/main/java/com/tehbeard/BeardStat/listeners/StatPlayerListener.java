@@ -111,7 +111,7 @@ public class StatPlayerListener implements Listener {
             }
         });
 
-        OnlineTimeManager.setRecord(event.getPlayer());
+        OnlineTimeManager.setRecord(event.getPlayer().getName(),event.getPlayer().getWorld().getName());
 
     }
 
@@ -506,7 +506,7 @@ public class StatPlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void worldJump(PlayerChangedWorldEvent event) {
         addTimeOnlineAndWipe(event.getPlayer().getName());
-        OnlineTimeManager.setRecord(event.getPlayer());
+        OnlineTimeManager.setRecord(event.getPlayer().getName(),event.getPlayer().getWorld().getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -238,14 +238,13 @@ public class BeardStat extends JavaPlugin {
         printCon("loading any players already online");// Fix people being dumb
         for (Player player : getServer().getOnlinePlayers()) {
 
-            OnlineTimeManager.setRecord(player);
+            OnlineTimeManager.setRecord(player.getName(),player.getWorld().getName());
         }
 
         // Enabled metrics
         Metrics metrics;
         try {
             metrics = new Metrics(this);
-
             metrics.addCustomData(new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
 
                 @Override
