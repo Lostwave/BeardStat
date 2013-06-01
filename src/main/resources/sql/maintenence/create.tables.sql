@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_value` (
   `statisticId` int(11) NOT NULL,  
   `value`       int(11) NOT NULL,
   UNIQUE KEY `chkUni` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`),
-  KEY `entityId` (`entityId`);
+  KEY `entityId` (`entityId`)
   ) 
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
