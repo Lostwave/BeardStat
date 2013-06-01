@@ -526,7 +526,7 @@ public class StatPlayerListener implements Listener {
 
         if (event.getItem().getType().isEdible()) {
             String stat = "food" + event.getItem().getType().toString().toLowerCase().replaceAll("_", "");
-            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "consume",
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(), "consume",
                     stat, 1));
             return;
 
@@ -553,7 +553,7 @@ public class StatPlayerListener implements Listener {
                 }
             }
             for (String s : stats) {
-                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD,
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(),
                         "consume", "potion" + s, 1));
             }
 
