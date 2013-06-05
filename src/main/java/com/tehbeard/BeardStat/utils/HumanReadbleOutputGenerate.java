@@ -1,5 +1,7 @@
 package com.tehbeard.BeardStat.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.bukkit.Material;
+import org.bukkit.material.Coal;
 import org.bukkit.material.Dye;
 import org.bukkit.material.FlowerPot;
 import org.bukkit.material.Leaves;
@@ -18,6 +21,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Sandstone;
 import org.bukkit.material.SmoothBrick;
 import org.bukkit.material.Step;
+import org.bukkit.material.TexturedMaterial;
 import org.bukkit.material.Tree;
 import org.bukkit.material.WoodenStep;
 import org.bukkit.material.Wool;
@@ -39,27 +43,29 @@ public class HumanReadbleOutputGenerate {
         readers.put(Step.class, "getMaterial");
         readers.put(SmoothBrick.class, "getMaterial");
         readers.put(Sandstone.class, "getType");
+        readers.put(Coal.class, "getType");
         readers.put(FlowerPot.class, "getContents");
+        //readers.put(TexturedMaterial.class, "getMaterial");
 
     }
-    
+
     public static Map<String,String> generateHumanNames(){
         Map<String,String> out = new TreeMap<String, String>();
         for(Entry<Material, EntryInfo> e :MetaDataCapture.mats.entrySet()){
             Material material  = e.getKey();
             EntryInfo info     = e.getValue();
-            
+
             Set<Integer> tags = new HashSet<Integer>();
             for(int i =0;i<16;i++){
                 tags.add(info.getMetdataValue(i));
             }
-            
+
             for(int i : tags){
                 String bsid = material.toString().toLowerCase().replace("_", "") + "_" + i;
-                String humanName = getDataBasedName(material,(byte)(i&0xF));
-                out.put(bsid, humanName);
+                String humanName = getDataBasedName(material,(byte)(i&0xF)).toLowerCase().replace("_", " ");
+                out.put(bsid, humanName + " " + material.toString().toLowerCase().replace("_", " "));
             }
-            
+
         }
         return out;
     }
@@ -96,4 +102,25 @@ public class HumanReadbleOutputGenerate {
         return null;
     }
 
+
+    public static void main(String[] args) throws FileNotFoundException{
+        MetaDataCapture.readData(new FileInputStream("c:/users/james/workspace/BeardStat/src/main/resources/metadata.txt"));
+
+        for(Entry<String, String> entry : generateHumanNames().entrySet()){
+            System.out.println(entry.getKey() + " ==> " + entry.getValue());
+        }
+        
+        /*for(Material mat : MetaDataCapture.mats.keySet()){
+            System.out.println(mat);
+            System.out.println();
+            
+            
+            
+            for(int i = 0;i<16;i++){
+                System.out.print("" + i + " : ");
+                System.out.println(getDataBasedName(mat, (byte)i).toLowerCase() + " " + mat.toString().toLowerCase().replace("_", " "));
+            }
+            System.out.println();
+        }*/
+    }
 }
