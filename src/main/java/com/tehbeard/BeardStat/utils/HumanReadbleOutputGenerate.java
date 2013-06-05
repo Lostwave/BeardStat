@@ -63,6 +63,7 @@ public class HumanReadbleOutputGenerate {
             for(int i : tags){
                 String bsid = material.toString().toLowerCase().replace("_", "") + "_" + i;
                 String humanName = getDataBasedName(material,(byte)(i&0xF)).toLowerCase().replace("_", " ");
+                humanName = humanName.replace("generic", "oak");
                 out.put(bsid, humanName + " " + material.toString().toLowerCase().replace("_", " "));
             }
 
