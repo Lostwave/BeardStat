@@ -23,11 +23,11 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Sandstone;
 import org.bukkit.material.SmoothBrick;
 import org.bukkit.material.Step;
-import org.bukkit.material.TexturedMaterial;
 import org.bukkit.material.Tree;
 import org.bukkit.material.WoodenStep;
 import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionType;
+import org.bukkit.entity.EntityType;
 
 import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
 
@@ -135,6 +135,7 @@ public class HumanReadbleOutputGenerate {
         t.putAll(generateHumanNamesEnum(DamageCause.values()));
         t.putAll(generateHumanNamesEnum(Material.values()));
         t.putAll(generateHumanNamesEnum(PotionType.values()));
+        t.putAll(generateHumanNamesEnum(EntityType.values()));
         for(Entry<String, String> entry :t.entrySet()){
             System.out.println(entry.getKey() + " ==> " + entry.getValue());
         }
