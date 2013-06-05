@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.listeners;
+package com.tehbeard.BeardStat.utils;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
 
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 
 /**
  * translates a material/entity to the metadata to capture.
@@ -26,14 +27,14 @@ public class MetaDataCapture {
     // {Material.WOOD,Material.LOG,Material.SAPLING,Material.INK_SACK,Material.COAL,Material.STEP,Material.WOOL,Material.SMOOTH_BRICK};
 
     public static final Map<Material, EntryInfo> mats = new HashMap<Material, EntryInfo>();
-    
-    static{
-        mats.put(Material.QUARTZ_BLOCK, new EntryInfo(15,0,15){
-         @Override
-        public int getMetdataValue(int value) {
-            // TODO Auto-generated method stub
-            return (value > 2) ? 2 : value;
-        }
+
+    static {
+        mats.put(Material.QUARTZ_BLOCK, new EntryInfo(15, 0, 15) {
+            @Override
+            public int getMetdataValue(int value) {
+                // TODO Auto-generated method stub
+                return (value > 2) ? 2 : value;
+            }
         });
     }
 
@@ -44,11 +45,9 @@ public class MetaDataCapture {
             String line = s.nextLine();
             String[] entry = line.split(",");
 
-            
             Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]", "")));
-            EntryInfo ei = new EntryInfo(Integer.parseInt(entry[1].replaceAll("[^0-9]", "")),
-            Integer.parseInt(entry[2].replaceAll("[^0-9]", "")),
-            Integer.parseInt(entry[3].replaceAll("[^0-9]", "")));
+            EntryInfo ei = new EntryInfo(Integer.parseInt(entry[1].replaceAll("[^0-9]", "")), Integer.parseInt(entry[2]
+                    .replaceAll("[^0-9]", "")), Integer.parseInt(entry[3].replaceAll("[^0-9]", "")));
             mats.put(mat, ei);
         }
 
@@ -62,7 +61,7 @@ public class MetaDataCapture {
         blob.onResolve(new DelegateIncrement(domain, world, category, matName, value));
         if (mats.containsKey(material)) {
             EntryInfo info = mats.get(material);
-            if(info.valid(dataValue)){
+            if (info.valid(dataValue)) {
                 String tag = "_" + info.getMetdataValue(dataValue);
                 blob.onResolve(new DelegateIncrement(domain, world, category, matName + tag, value));
             }
@@ -100,8 +99,6 @@ public class MetaDataCapture {
         public int mask;
         public int min;
         public int max;
-        
-        
 
         public EntryInfo(int mask, int min, int max) {
             super();
@@ -110,12 +107,12 @@ public class MetaDataCapture {
             this.max = max;
         }
 
-        public boolean valid(int value){
-            return (value >= min && value <= max);
+        public boolean valid(int value) {
+            return ((value >= this.min) && (value <= this.max));
         }
 
-        public int getMetdataValue(int value){
-            return value & mask;
+        public int getMetdataValue(int value) {
+            return value & this.mask;
         }
     }
 }

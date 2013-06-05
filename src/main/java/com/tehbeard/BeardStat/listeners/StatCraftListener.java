@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatCraftListener implements Listener {
 

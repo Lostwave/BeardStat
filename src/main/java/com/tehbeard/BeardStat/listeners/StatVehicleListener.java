@@ -15,6 +15,7 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 
 public class StatVehicleListener implements Listener {
 

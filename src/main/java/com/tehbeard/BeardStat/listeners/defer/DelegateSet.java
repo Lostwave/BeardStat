@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.listeners;
+package com.tehbeard.BeardStat.listeners.defer;
 
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;

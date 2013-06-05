@@ -33,7 +33,7 @@ public class OnlineTimeManager {
 
     }
 
-    public static void setRecord(String player,String world) {
+    public static void setRecord(String player, String world) {
         setRecord(player, world, System.currentTimeMillis());
     }
 

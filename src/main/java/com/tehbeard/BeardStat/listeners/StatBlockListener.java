@@ -14,6 +14,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
+import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatBlockListener implements Listener {
 

@@ -56,6 +56,9 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager.ManagerRecord;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
+import com.tehbeard.BeardStat.listeners.defer.DelegateSet;
+import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 /**
  * Calls the stat manager to trigger events
@@ -111,7 +114,7 @@ public class StatPlayerListener implements Listener {
             }
         });
 
-        OnlineTimeManager.setRecord(event.getPlayer().getName(),event.getPlayer().getWorld().getName());
+        OnlineTimeManager.setRecord(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
 
     }
 
@@ -506,7 +509,7 @@ public class StatPlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void worldJump(PlayerChangedWorldEvent event) {
         addTimeOnlineAndWipe(event.getPlayer().getName());
-        OnlineTimeManager.setRecord(event.getPlayer().getName(),event.getPlayer().getWorld().getName());
+        OnlineTimeManager.setRecord(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -526,8 +529,8 @@ public class StatPlayerListener implements Listener {
 
         if (event.getItem().getType().isEdible()) {
             String stat = "food" + event.getItem().getType().toString().toLowerCase().replaceAll("_", "");
-            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(), "consume",
-                    stat, 1));
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(),
+                    "consume", stat, 1));
             return;
 
         }

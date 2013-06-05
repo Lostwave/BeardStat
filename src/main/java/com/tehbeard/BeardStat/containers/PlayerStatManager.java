@@ -79,7 +79,7 @@ public class PlayerStatManager implements CommandExecutor {
                 this.backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
 
                 if (isPlayerOnline(player)) {
-                    OnlineTimeManager.setRecord(player,Bukkit.getPlayer(player).getWorld().getName());
+                    OnlineTimeManager.setRecord(player, Bukkit.getPlayer(player).getWorld().getName());
                 } else {
                     OnlineTimeManager.wipeRecord(player);
                     i.remove();

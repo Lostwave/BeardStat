@@ -31,13 +31,13 @@ import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
-import com.tehbeard.BeardStat.listeners.MetaDataCapture;
 import com.tehbeard.BeardStat.listeners.StatBlockListener;
 import com.tehbeard.BeardStat.listeners.StatCraftListener;
 import com.tehbeard.BeardStat.listeners.StatEntityListener;
 import com.tehbeard.BeardStat.listeners.StatPlayerListener;
 import com.tehbeard.BeardStat.listeners.StatVehicleListener;
 import com.tehbeard.BeardStat.utils.LanguagePack;
+import com.tehbeard.BeardStat.utils.MetaDataCapture;
 import com.tehbeard.BeardStat.utils.Metrics;
 import com.tehbeard.BeardStat.utils.Metrics.Plotter;
 
@@ -240,7 +240,7 @@ public class BeardStat extends JavaPlugin {
         printCon("loading any players already online");// Fix people being dumb
         for (Player player : getServer().getOnlinePlayers()) {
 
-            OnlineTimeManager.setRecord(player.getName(),player.getWorld().getName());
+            OnlineTimeManager.setRecord(player.getName(), player.getWorld().getName());
         }
 
         // Enabled metrics
