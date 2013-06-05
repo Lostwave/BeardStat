@@ -51,20 +51,27 @@ public class HumanReadbleOutputGenerate {
 
     public static Map<String,String> generateHumanNames(){
         Map<String,String> out = new TreeMap<String, String>();
-        for(Entry<Material, EntryInfo> e :MetaDataCapture.mats.entrySet()){
-            Material material  = e.getKey();
-            EntryInfo info     = e.getValue();
 
-            Set<Integer> tags = new HashSet<Integer>();
-            for(int i =0;i<16;i++){
-                tags.add(info.getMetdataValue(i));
-            }
+        for(Material material : Material.values()){
+            EntryInfo info     = MetaDataCapture.hasMetaData(material) ? MetaDataCapture.mats.get(material) : null;
+            
+            String bsid_nometa = material.toString().toLowerCase().replace("_", "");
+           
+            out.put(bsid_nometa, material.toString().toLowerCase().replace("_", " "));
 
-            for(int i : tags){
-                String bsid = material.toString().toLowerCase().replace("_", "") + "_" + i;
-                String humanName = getDataBasedName(material,(byte)(i&0xF)).toLowerCase().replace("_", " ");
-                humanName = humanName.replace("generic", "oak");
-                out.put(bsid, humanName + " " + material.toString().toLowerCase().replace("_", " "));
+            if(info!=null){
+                Set<Integer> tags = new HashSet<Integer>();
+
+                for(int i =0;i<16;i++){
+                    tags.add(info.getMetdataValue(i));
+                }
+
+                for(int i : tags){
+                    String bsid = bsid_nometa + "_" + i;
+                    String humanName = getDataBasedName(material,(byte)(i&0xF)).toLowerCase().replace("_", " ");
+                    humanName = humanName.replace("generic", "oak");
+                    out.put(bsid, humanName + " " + material.toString().toLowerCase().replace("_", " "));
+                }
             }
 
         }
@@ -110,13 +117,13 @@ public class HumanReadbleOutputGenerate {
         for(Entry<String, String> entry : generateHumanNames().entrySet()){
             System.out.println(entry.getKey() + " ==> " + entry.getValue());
         }
-        
+
         /*for(Material mat : MetaDataCapture.mats.keySet()){
             System.out.println(mat);
             System.out.println();
-            
-            
-            
+
+
+
             for(int i = 0;i<16;i++){
                 System.out.print("" + i + " : ");
                 System.out.println(getDataBasedName(mat, (byte)i).toLowerCase() + " " + mat.toString().toLowerCase().replace("_", " "));
