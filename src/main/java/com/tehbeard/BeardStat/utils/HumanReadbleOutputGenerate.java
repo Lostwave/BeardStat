@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.bukkit.Material;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.material.Coal;
 import org.bukkit.material.Dye;
 import org.bukkit.material.FlowerPot;
@@ -25,6 +27,7 @@ import org.bukkit.material.TexturedMaterial;
 import org.bukkit.material.Tree;
 import org.bukkit.material.WoodenStep;
 import org.bukkit.material.Wool;
+import org.bukkit.potion.PotionType;
 
 import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
 
@@ -49,30 +52,43 @@ public class HumanReadbleOutputGenerate {
 
     }
 
-    public static Map<String,String> generateHumanNames(){
+
+    public static Map<String,String> generateHumanNamesEnum(Enum[] ee){
         Map<String,String> out = new TreeMap<String, String>();
 
-        for(Material material : Material.values()){
-            EntryInfo info     = MetaDataCapture.hasMetaData(material) ? MetaDataCapture.mats.get(material) : null;
-            
+        for(Enum e : ee){
+            out.put(e.toString().toLowerCase().replace("_", ""),e.toString().toLowerCase().replace("_", " "));
+        }
+
+
+        return out;
+    }
+
+    public static Map<String,String> generateHumanNamesMaterials(){
+        Map<String,String> out = new TreeMap<String, String>();
+
+        for(Entry<Material, EntryInfo> entry : MetaDataCapture.mats.entrySet()){
+            Material material = entry.getKey();
+            EntryInfo info     = entry.getValue();
+
             String bsid_nometa = material.toString().toLowerCase().replace("_", "");
-           
+
             out.put(bsid_nometa, material.toString().toLowerCase().replace("_", " "));
 
-            if(info!=null){
-                Set<Integer> tags = new HashSet<Integer>();
 
-                for(int i =0;i<16;i++){
-                    tags.add(info.getMetdataValue(i));
-                }
+            Set<Integer> tags = new HashSet<Integer>();
 
-                for(int i : tags){
-                    String bsid = bsid_nometa + "_" + i;
-                    String humanName = getDataBasedName(material,(byte)(i&0xF)).toLowerCase().replace("_", " ");
-                    humanName = humanName.replace("generic", "oak");
-                    out.put(bsid, humanName + " " + material.toString().toLowerCase().replace("_", " "));
-                }
+            for(int i =0;i<16;i++){
+                tags.add(info.getMetdataValue(i));
             }
+
+            for(int i : tags){
+                String bsid = bsid_nometa + "_" + i;
+                String humanName = getDataBasedName(material,(byte)(i&0xF)).toLowerCase().replace("_", " ");
+                humanName = humanName.replace("generic", "oak");
+                out.put(bsid, humanName + " " + material.toString().toLowerCase().replace("_", " "));
+            }
+
 
         }
         return out;
@@ -114,7 +130,12 @@ public class HumanReadbleOutputGenerate {
     public static void main(String[] args) throws FileNotFoundException{
         MetaDataCapture.readData(new FileInputStream("c:/users/james/workspace/BeardStat/src/main/resources/metadata.txt"));
 
-        for(Entry<String, String> entry : generateHumanNames().entrySet()){
+        Map<String,String> t = new TreeMap<String, String>();
+        t.putAll(generateHumanNamesEnum(RegainReason.values()));
+        t.putAll(generateHumanNamesEnum(DamageCause.values()));
+        t.putAll(generateHumanNamesEnum(Material.values()));
+        t.putAll(generateHumanNamesEnum(PotionType.values()));
+        for(Entry<String, String> entry :t.entrySet()){
             System.out.println(entry.getKey() + " ==> " + entry.getValue());
         }
 
