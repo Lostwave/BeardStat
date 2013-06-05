@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.tehbeard.BeardStat.Metrics.Plotter;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.SQLiteStatDataProvider;
@@ -38,6 +37,9 @@ import com.tehbeard.BeardStat.listeners.StatCraftListener;
 import com.tehbeard.BeardStat.listeners.StatEntityListener;
 import com.tehbeard.BeardStat.listeners.StatPlayerListener;
 import com.tehbeard.BeardStat.listeners.StatVehicleListener;
+import com.tehbeard.BeardStat.utils.LanguagePack;
+import com.tehbeard.BeardStat.utils.Metrics;
+import com.tehbeard.BeardStat.utils.Metrics.Plotter;
 
 /**
  * BeardStat Statistic's tracking for the gentleman server

@@ -9,12 +9,12 @@ import org.bukkit.command.CommandSender;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.LanguagePack;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
+import com.tehbeard.BeardStat.utils.LanguagePack;
 
 /**
  * /played - Show users playtime /played name - show player of name

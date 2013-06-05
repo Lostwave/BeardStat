@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat;
+package com.tehbeard.BeardStat.utils;
 
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.

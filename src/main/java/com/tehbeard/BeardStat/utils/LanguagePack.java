@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat;
+package com.tehbeard.BeardStat.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
