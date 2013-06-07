@@ -125,17 +125,23 @@ public class HumanReadbleOutputGenerate {
         }
         return null;
     }
-
-
-    public static void main(String[] args) throws FileNotFoundException{
-        MetaDataCapture.readData(new FileInputStream("c:/users/james/workspace/BeardStat/src/main/resources/metadata.txt"));
-
+    
+    public static Map<String,String> getAllHumanNames(){
         Map<String,String> t = new TreeMap<String, String>();
         t.putAll(generateHumanNamesEnum(RegainReason.values()));
         t.putAll(generateHumanNamesEnum(DamageCause.values()));
         t.putAll(generateHumanNamesEnum(Material.values()));
         t.putAll(generateHumanNamesEnum(PotionType.values()));
         t.putAll(generateHumanNamesEnum(EntityType.values()));
+        t.putAll(generateHumanNamesMaterials());
+        return t;
+    }
+
+
+    public static void main(String[] args) throws FileNotFoundException{
+        MetaDataCapture.readData(new FileInputStream("c:/users/james/workspace/BeardStat/src/main/resources/metadata.txt"));
+
+        Map<String,String> t = getAllHumanNames();
         for(Entry<String, String> entry :t.entrySet()){
             System.out.println(entry.getKey() + " ==> " + entry.getValue());
         }
