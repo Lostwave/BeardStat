@@ -1,5 +1,25 @@
 <?php
-
+Class SPlayerStat{
+ public $domain;
+ public $world;
+ public $category;
+ public $statistic;
+ public $value;
+ 
+ function __construct( $domain, $world, $category, $statistic, $value){
+  $this->domain = $domain;
+  $this->world = $world;
+  $this->category = $category;
+  $this->statistic = $statistic;
+  $this->value = $value;
+ }
+ 
+ function __toString(){
+  StatTabs::$statLookup[$this->statistic]["format"];
+  StatTabs::$statLookup[$this->statistic]["convert"];
+ }
+ 
+}
 Class SPlayer{
 
  public $name = "";
@@ -51,6 +71,14 @@ SQL;
 
  }
 
+ /**
+  * Returns an array of stats based on the given elements
+  * @param string $domainQry
+  * @param string $worldQry
+  * @param string $categoryQry
+  * @param string $statisticQry
+  * @return multitype:SPlayerStat
+  */
  function getStats($domainQry='.*',$worldQry='.*',$categoryQry='.*',$statisticQry='.*'){
   //catch nulls to allow any parameter to be passed
   $domainQry = is_null($domainQry) ? '.*' : $domainQry;
@@ -72,7 +100,7 @@ SQL;
        if(preg_match($categoryPattern,$categoryId)){
         foreach($category as $statisticId => $value){
          if(preg_match($statisticPattern,$statisticId)){
-          $results[$domainId][$worldId][$categoryId][$statisticId] = $value;
+          $results[] = new SPlayerStat($domainId,$worldId,$categoryId,$statisticId,$value);
          }
         }
        }
@@ -84,38 +112,25 @@ SQL;
   return $results;
  }
 
+ /**
+  * Returns a singular object, the result of the array of getStats() sum()'d
+  * @param string $domainQry
+  * @param string $worldQry
+  * @param string $categoryQry
+  * @param string $statisticQry
+  * @return SPlayerStat
+  */
  function getStat($domainQry='.*',$worldQry='.*',$categoryQry='.*',$statisticQry='.*'){
-  //catch nulls to allow any parameter to be passed
-  $domainQry = is_null($domainQry) ? '.*' : $domainQry;
-  $worldQry = is_null($worldQry) ? '.*' : $worldQry;
-  $categoryQry = is_null($categoryQry) ? '.*' : $categoryQry;
-  $statisticQry = is_null($statisticQry) ? '.*' : $statisticQry;
-   
-  $domainPattern = '/' . $domainQry . '/';
-  $worldPattern = '/' . $worldQry . '/';
-  $categoryPattern = '/' . $categoryQry . '/';
-  $statisticPattern = '/' . $statisticQry . '/';
-   
-  $results = 0;
-  foreach($this->data as $domainId => $domain){
-   if(preg_match($domainPattern,$domainId)){
-    foreach($domain as $worldId => $world){
-     if(preg_match($worldPattern,$worldId)){
-      foreach($world as $categoryId => $category){
-       if(preg_match($categoryPattern,$categoryId)){
-        foreach($category as $statisticId => $value){
-         if(preg_match($statisticPattern,$statisticId)){
-          $results += $value;
-         }
-        }
-       }
-      }
-     }
-    }
-   }
+  $res = $this->getStats($domainQry,$worldQry,$categoryQry,$statisticQry);
+  $v = new SPlayerStat($domainQry,$worldQry,$categoryQry,$statisticQry,0);
+  foreach($res as $r){
+   $v->value += $r->value;
   }
-  return $results;
+  
+  return $v;
+   
  }
+
 }
 
 ?>

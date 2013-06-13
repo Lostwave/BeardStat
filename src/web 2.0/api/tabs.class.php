@@ -95,13 +95,23 @@ Class StatTabs{
   for($i = 0;$i<count($parts);$i++){
     $parts[$i] = $parts[$i] === "*" ? ".*" : $parts[$i];  
   }
-  return $player->getStats($parts[0], $parts[1], $parts[2], $parts[3]);
+  $domainId = $parts[0];
+  $worldId  = $parts[1];
+  $catId    = $parts[2];
+  $statId   = $parts[3];
+  return $player->getStat($domainId,$worldId,$catId,$statId);
+ }
+ 
+ function the_entry_label(){
+  $r = explode("::",$this->the_entry());
+  return StatTabs::$statLookup[$r[3]]["statistic"];
  }
  
  
  
 }
 StatTabs::init();
-
+echo "<pre>";
+var_dump(StatTabs::$statLookup);
 
 ?>
