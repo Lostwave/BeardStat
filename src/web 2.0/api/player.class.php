@@ -83,6 +83,9 @@ SQL;
     }
    return $results;
   }
+  
+  function getStat($domainQry='.*',$worldQry='.*',$categoryQry='.*',$statisticQry='.*'){
+   getStat($domainQry,$worldQry,$categoryQry,$statisticQry);
 }
 
 ?>

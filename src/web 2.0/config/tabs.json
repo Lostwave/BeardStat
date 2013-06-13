@@ -1,0 +1,45 @@
+[
+{
+  "tabName": "General",
+  
+  "headings":[
+  {
+   "headingName":"General Statistics",
+   "display":[
+   "*::*::stats::playedfor",
+   "*::*::stats::lastlogin",
+   "*::*::stats::sessionlength",
+   "*::*::stats::move",
+   "*::*::vehicle::boat",
+   "*::*::vehicle::minecart"
+   ]
+  }
+  ]
+},
+{
+  "tabName": "Blocks",
+  
+  "headings":[
+  {
+   "headingName":"Stats",
+   "display":[
+   "*::*::blockcreate::totalblockcreate",
+   "*::*::blockdestroy::totalblockdestroy"
+   ]
+  },
+  {
+   "headingName":"Ores mined",
+   "display":[
+   "*::*::blockdestroy::coalore",
+   "*::*::blockdestroy::ironore",
+   "*::*::blockdestroy::goldore",
+   "*::*::blockdestroy::diamondore",
+   "*::*::blockdestroy::lapisore",
+   "*::*::blockdestroy::emeraldore",
+   "*::*::blockdestroy::redstoneore",
+   "*::*::blockdestroy::quartzore"
+   ]
+  }
+  ]
+}
+]

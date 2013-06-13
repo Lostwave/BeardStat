@@ -154,7 +154,7 @@ if(!function_exists('json_encode')){
     for ($i = 0; ($i < count( $value ) && isset( $value[$i]) ); $i++);
     if ($i === count($value)) {
      // it's a "true" array... or close enough
-     $out .= '[' . implode(',', array_map('toJSON', $value)) . ']';
+     $out .= '[' . implode(',', array_map('json_encode', $value)) . ']';
      break;
     }
     // fallthrough to object for associative arrays...

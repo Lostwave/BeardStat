@@ -1,7 +1,7 @@
 <?php
 include 'api/api.php';
 $p = new SPlayer($_GET['playerName']);
-$res = $p->getStats(null,null,null,".*clay.*");
+$res = $p->getStats();
 echo "<ul>";
 foreach($res as $domain => $worlds){
  echo "<li> $domain";
@@ -28,4 +28,18 @@ foreach($res as $domain => $worlds){
  echo "</ul></li>";
 }
 echo "</ul>";
+
+$tabs = new StatTabs("tabs.json");
+
+while($tabs->have_tabs()){
+ echo $tabs->the_tab_name() . "</br>";
+ while($tabs->have_headings()){
+  echo ".." . $tabs->the_heading_name() . "</br>";
+  while($tabs->have_entries()){
+   echo "...." . $tabs->the_entry() . " = " . $tabs->the_entry_value_for_player($p) . "</br>";
+  }
+ }
+}
+
+
 ?>
