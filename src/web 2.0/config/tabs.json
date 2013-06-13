@@ -6,12 +6,12 @@
   {
    "headingName":"General Statistics",
    "display":[
-   {"domain":"*","world":"*","cat":"stats","stat":"playedfor"},
-   {"domain":"*","world":"*","cat":"stats","stat":"lastlogin"},
-   {"domain":"*","world":"*","cat":"stats","stat":"sessionlength"},
-   {"domain":"*","world":"*","cat":"stats","stat":"move"},
-   {"domain":"*","world":"*","cat":"vehicle","stat":"boat"},
-   {"domain":"*","world":"*","cat":"vehicle","stat":"minecart"}
+   {"domain":".*","world":".*","cat":"stats","stat":"playedfor"},
+   {"domain":".*","world":".*","cat":"stats","stat":"lastlogin"},
+   {"domain":".*","world":".*","cat":"stats","stat":"sessionlength"},
+   {"domain":".*","world":".*","cat":"stats","stat":"move"},
+   {"domain":".*","world":".*","cat":"vehicle","stat":"boat"},
+   {"domain":".*","world":".*","cat":"vehicle","stat":"minecart"}
    ]
   }
   ]
@@ -23,21 +23,21 @@
   {
    "headingName":"Stats",
    "display":[
-   {"domain":"*","world":"*","cat":"blockcreate","stat":"totalblockcreate"},
-   {"domain":"*","world":"*","cat":"blockdestroy","stat":"totalblockdestroy"}
+   {"domain":".*","world":".*","cat":"blockcreate","stat":"totalblockcreate"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"totalblockdestroy"}
    ]
   },
   {
    "headingName":"Ores mined",
    "display":[
-   "*::*::blockdestroy::coalore",
-   "*::*::blockdestroy::ironore",
-   "*::*::blockdestroy::goldore",
-   "*::*::blockdestroy::diamondore",
-   "*::*::blockdestroy::lapisore",
-   "*::*::blockdestroy::emeraldore",
-   "*::*::blockdestroy::redstoneore",
-   "*::*::blockdestroy::quartzore"
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"coalore"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"ironore"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"goldore"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"diamondore"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"emeraldore"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"lapisore"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"redstoneore"},
+   {"domain":".*","world":".*","cat":"blockdestroy","stat":"quartzore"}
    ]
   }
   ]

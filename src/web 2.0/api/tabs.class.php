@@ -91,23 +91,15 @@ Class StatTabs{
  }
  
  function the_entry_value_for_player($player){
-  $parts = explode("::",$this->the_entry());
-  for($i = 0;$i<count($parts);$i++){
-    $parts[$i] = $parts[$i] === "*" ? ".*" : $parts[$i];  
-  }
-  $domainId = $parts[0];
-  $worldId  = $parts[1];
-  $catId    = $parts[2];
-  $statId   = $parts[3];
-  return $player->getStat($domainId,$worldId,$catId,$statId);
+  $entry = $this->the_entry();
+  
+  return $player->getStat($entry->domain,$entry->world,$entry->cat,$entry->stat);
  }
  
  function the_entry_label(){
-  $r = explode("::",$this->the_entry());
-  return isset(StatTabs::$statLookup[$r[3]]) ? StatTabs::$statLookup[$r[3]]["name"] : '[[' . $r[3] . ']]'; 
+
+  return isset(StatTabs::$statLookup[$this->the_entry()->stat]) ? StatTabs::$statLookup[$this->the_entry()->stat]["name"] : '[[' . $this->the_entry()->stat . ']]'; 
  }
- 
- 
  
  
 }
