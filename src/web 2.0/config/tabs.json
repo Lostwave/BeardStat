@@ -6,12 +6,12 @@
   {
    "headingName":"General Statistics",
    "display":[
-   "*::*::stats::playedfor",
-   "*::*::stats::lastlogin",
-   "*::*::stats::sessionlength",
-   "*::*::stats::move",
-   "*::*::vehicle::boat",
-   "*::*::vehicle::minecart"
+   {"domain":"*","world":"*","cat":"stats","stat":"playedfor"},
+   {"domain":"*","world":"*","cat":"stats","stat":"lastlogin"},
+   {"domain":"*","world":"*","cat":"stats","stat":"sessionlength"},
+   {"domain":"*","world":"*","cat":"stats","stat":"move"},
+   {"domain":"*","world":"*","cat":"vehicle","stat":"boat"},
+   {"domain":"*","world":"*","cat":"vehicle","stat":"minecart"}
    ]
   }
   ]
@@ -23,8 +23,8 @@
   {
    "headingName":"Stats",
    "display":[
-   "*::*::blockcreate::totalblockcreate",
-   "*::*::blockdestroy::totalblockdestroy"
+   {"domain":"*","world":"*","cat":"blockcreate","stat":"totalblockcreate"},
+   {"domain":"*","world":"*","cat":"blockdestroy","stat":"totalblockdestroy"}
    ]
   },
   {
