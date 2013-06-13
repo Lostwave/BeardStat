@@ -50,6 +50,39 @@ SQL;
     $res->free();
     
   }  
+  
+  function getStats($domainQry='.*',$worldQry='.*',$categoryQry='.*',$statisticQry='.*'){
+   //catch nulls to allow any parameter to be passed
+   $domainQry = is_null($domainQry) ? '.*' : $domainQry;
+   $worldQry = is_null($worldQry) ? '.*' : $worldQry;
+   $categoryQry = is_null($categoryQry) ? '.*' : $categoryQry;
+   $statisticQry = is_null($statisticQry) ? '.*' : $statisticQry;
+   
+   $domainPattern = '/' . $domainQry . '/';
+   $worldPattern = '/' . $worldQry . '/';
+   $categoryPattern = '/' . $categoryQry . '/';
+   $statisticPattern = '/' . $statisticQry . '/';
+   
+   $results = array();
+    foreach($this->data as $domainId => $domain){
+      if(preg_match($domainPattern,$domainId)){
+       foreach($domain as $worldId => $world){
+        if(preg_match($worldPattern,$worldId)){
+         foreach($world as $categoryId => $category){
+          if(preg_match($categoryPattern,$categoryId)){
+           foreach($category as $statisticId => $value){
+            if(preg_match($statisticPattern,$statisticId)){
+              $results[$domainId][$worldId][$categoryId][$statisticId] = $value;
+            }
+           }            
+          }
+         }
+        }
+       }
+      }
+    }
+   return $results;
+  }
 }
 
 ?>

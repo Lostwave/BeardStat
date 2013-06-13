@@ -1,8 +1,9 @@
 <?php
 include 'api/api.php';
 $p = new SPlayer($_GET['playerName']);
+$res = $p->getStats(null,null,null,".*clay.*");
 echo "<ul>";
-foreach($p->data as $domain => $worlds){
+foreach($res as $domain => $worlds){
  echo "<li> $domain";
  echo "<ul>";
 
