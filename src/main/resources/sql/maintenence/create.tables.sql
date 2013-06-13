@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` (
   `entityId` int(11) NOT NULL AUTO_INCREMENT, 
   `name` char(32) NOT NULL,  
   `type` enum('player','plugin','group') NOT NULL, 
+  `scoreboardhide` BOOLEAN NOT NULL,
   PRIMARY KEY (`entityId`),
   UNIQUE KEY `chkName` (`name`,`type`)
   ) 
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_statistic`(
   `statisticId` int(11) NOT NULL AUTO_INCREMENT, 
   `statistic` char(32) NOT NULL,  
   `name` char(32) NOT NULL, 
+  `formatting` ENUM(  'none',  'timestamp',  'time' ) NOT NULL DEFAULT 'none',
   PRIMARY KEY (`statisticId`),
   UNIQUE KEY (`statistic`)
 );
