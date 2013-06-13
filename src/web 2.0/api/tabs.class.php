@@ -104,7 +104,7 @@ Class StatTabs{
  
  function the_entry_label(){
   $r = explode("::",$this->the_entry());
-  return StatTabs::$statLookup[$r[3]]["statistic"];
+  return StatTabs::$statLookup[$r[3]]["name"];
  }
  
  
