@@ -104,14 +104,14 @@ Class StatTabs{
  
  function the_entry_label(){
   $r = explode("::",$this->the_entry());
-  return StatTabs::$statLookup[$r[3]]["name"];
+  return isset(StatTabs::$statLookup[$r[3]]) ? StatTabs::$statLookup[$r[3]]["name"] : '[[' . $r[3] . ']]'; 
  }
+ 
  
  
  
 }
 StatTabs::init();
-echo "<pre>";
-var_dump(StatTabs::$statLookup);
+//var_dump(StatTabs::$statLookup);
 
 ?>

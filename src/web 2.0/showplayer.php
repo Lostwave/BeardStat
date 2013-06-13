@@ -36,7 +36,7 @@ while($tabs->have_tabs()){
  while($tabs->have_headings()){
   echo ".." . $tabs->the_heading_name() . "</br>";
   while($tabs->have_entries()){
-   echo "...." . $tabs->the_entry_label() . " = " . $tabs->the_entry_value_for_player($p)->value . "</br>";
+   echo "...." . $tabs->the_entry_label() . " = " . $tabs->the_entry_value_for_player($p)->getValueFormatted() . "</br>";
   }
  }
 }

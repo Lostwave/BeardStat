@@ -8,6 +8,7 @@ $bs_db = new mysqli(BS_DB_HOST,BS_DB_USER,BS_DB_PASS,BS_DB_DB);
 if($bs_db->connect_errno > 0){
     die('Unable to connect to database [' . $bs_db->connect_error . ']');
 }
+include_once BEARDSTAT_API_DIR . 'formating.php';
 include_once BEARDSTAT_API_DIR . 'sql.php';
 include_once BEARDSTAT_API_DIR . 'player.class.php';
 include_once BEARDSTAT_API_DIR . 'tabs.class.php';
