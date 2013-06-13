@@ -8,3 +8,4 @@ org.maven.ide.eclipse.prefs
 releases
 bin
 .buildpath
+src/web 2.0/api/config.php
