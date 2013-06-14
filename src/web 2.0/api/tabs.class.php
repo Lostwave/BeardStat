@@ -106,7 +106,7 @@ Class StatTabs{
  
  function the_entry_label(){
 
-  return isset(StatTabs::$statLookup[$this->the_entry()->stat]) ? StatTabs::$statLookup[$this->the_entry()->stat]["name"] : '[[' . $this->the_entry()->stat . ']]'; 
+  return isset(StatTabs::$statLookup[$this->the_entry()->stat]) ? (strlen(StatTabs::$statLookup[$this->the_entry()->stat]["name"]) > 0 ? StatTabs::$statLookup[$this->the_entry()->stat]["name"] : $this->the_entry()->stat) : '[[' . $this->the_entry()->stat . ']]'; 
  }
  
  
