@@ -65,6 +65,10 @@ Class StatTabs{
    return $this->data[$this->tabIdx]->tabName;
  }
  
+ function the_tab_id(){
+  return str_ireplace(" ", "-", $this->the_tab_name());
+ }
+ 
  function have_headings(){
   $this->headingIdx ++;
   if($this->headingIdx < count($this->data[$this->tabIdx])){
@@ -79,6 +83,10 @@ Class StatTabs{
  
  function the_heading_name(){
   return $this->data[$this->tabIdx]->headings[$this->headingIdx]->headingName;
+ }
+ 
+ function the_heading_id(){
+  return str_ireplace(" ", "-", $this->the_heading_name());
  }
  
  function have_entries(){

@@ -10,14 +10,14 @@ if(!IS_AUTHED){
  }
  
  define('BS_TITLE','login');
- include 'templates/header.php';
+ include '../templates/header.php';
  ?>
 <form action="login.php" method="POST">
 	password:<input type="password" name="pw"><br>
 	<input type="submit" value="login">
 </form>
 <?php
-include 'templates/footer.php';
+include '../templates/footer.php';
 }
 else
 {
