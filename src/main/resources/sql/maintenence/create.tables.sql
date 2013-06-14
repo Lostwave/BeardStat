@@ -10,7 +10,6 @@ ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 CREATE TABLE IF NOT EXISTS `${PREFIX}_domain`(
   `domainId` int(11) NOT NULL AUTO_INCREMENT, 
   `domain` char(32) NOT NULL,  
-  `name` char(32) NOT NULL, 
   PRIMARY KEY (`domainId`),
   UNIQUE KEY (`domain`)
 );
@@ -24,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_world`(
 CREATE TABLE IF NOT EXISTS `${PREFIX}_category`(
   `categoryId` int(11) NOT NULL AUTO_INCREMENT, 
   `category` char(32) NOT NULL,  
-  `name` char(32) NOT NULL, 
   PRIMARY KEY (`categoryId`),
   UNIQUE KEY (`category`)
 );
