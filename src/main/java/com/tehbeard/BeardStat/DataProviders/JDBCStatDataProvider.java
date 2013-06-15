@@ -24,6 +24,7 @@ import org.bukkit.ChatColor;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.NoRecordFoundException;
+import com.tehbeard.BeardStat.DataProviders.StatisticMetadata.Formatting;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 
@@ -78,7 +79,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private Map<String, Integer>            domains              = new HashMap<String, Integer>();
     private Map<String, Integer>            worlds               = new HashMap<String, Integer>();
     private Map<String, Integer>            categories           = new HashMap<String, Integer>();
-    private Map<String, Integer>            statistics           = new HashMap<String, Integer>();
+    private Map<String, StatisticMetadata>            statistics           = new HashMap<String, StatisticMetadata>();
 
     // private WorkQueue loadQueue = new WorkQueue(1);
     private ExecutorService                 loadQueue            = Executors.newSingleThreadExecutor();
@@ -312,9 +313,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             cacheComponent(this.domains, this.getDomains);
             cacheComponent(this.worlds, this.getWorlds);
             cacheComponent(this.categories, this.getCategories);
-            cacheComponent(this.statistics, this.getStatistics);
+            cacheStatistics();
         } catch (SQLException e) {
             BeardStat.mysqlError(e);
+        }
+    }
+    
+    private void cacheStatistics() throws SQLException {
+        ResultSet rs = this.getStatistics.executeQuery();
+        while (rs.next()) {
+            StatisticMetadata meta = new StatisticMetadata(rs.getInt(1),rs.getString(2), rs.getString(3), Formatting.valueOf(rs.getString(4)));
+            this.statistics.put(meta.getName(),meta);
         }
     }
 
@@ -325,6 +334,25 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         }
 
         rs.close();
+    }
+    
+    private int getStatisticId(String name)    throws SQLException {
+        StatisticMetadata meta = this.statistics.get(name);
+        if (!this.statistics.containsKey(name)) {
+            BeardStat.printDebugCon("Recording new component: " + name);
+            this.saveStatistic.setString(1, name);
+            this.saveStatistic.setString(2, name);
+            this.saveStatistic.setString(3, Formatting.none.toString().toLowerCase());
+            this.saveStatistic.execute();
+            ResultSet rs = this.saveStatistic.getGeneratedKeys();
+            rs.next();
+            this.statistics.put(name,new StatisticMetadata(rs.getInt(1),name,name,Formatting.none));
+            rs.close();
+            BeardStat.printDebugCon(name + " : " + this.statistics.get(name).getId());
+        }
+
+        return this.statistics.get(name).getId();
+        
     }
 
     private int getComponentId(Map<String, Integer> mapTo, PreparedStatement statement, String name)
@@ -486,8 +514,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                                                        stat.getCategory()));
                                                        JDBCStatDataProvider.this.saveEntityData.setInt(
                                                                5,
-                                                               getComponentId(JDBCStatDataProvider.this.statistics,
-                                                                       JDBCStatDataProvider.this.saveStatistic,
+                                                               getStatisticId(
                                                                        stat.getStatistic()));
                                                        JDBCStatDataProvider.this.saveEntityData.setInt(6,
                                                                stat.getValue());
