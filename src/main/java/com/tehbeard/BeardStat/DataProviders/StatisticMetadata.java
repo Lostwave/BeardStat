@@ -1,19 +1,17 @@
 package com.tehbeard.BeardStat.DataProviders;
 
 public class StatisticMetadata {
-    
-    public enum Formatting{
-        none,
-        time,
-        timestamp
+
+    public enum Formatting {
+        none, time, timestamp
     }
-    
-    private int id;
-    
-    private String name;
-    
-    private String localizedName;
-    
+
+    private int        id;
+
+    private String     name;
+
+    private String     localizedName;
+
     private Formatting format;
 
     public StatisticMetadata(int id, String name, String localizedName, Formatting format) {
@@ -24,7 +22,7 @@ public class StatisticMetadata {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
@@ -32,7 +30,7 @@ public class StatisticMetadata {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -40,7 +38,7 @@ public class StatisticMetadata {
     }
 
     public String getLocalizedName() {
-        return localizedName;
+        return this.localizedName;
     }
 
     public void setLocalizedName(String localizedName) {
@@ -48,14 +46,11 @@ public class StatisticMetadata {
     }
 
     public Formatting getFormat() {
-        return format;
+        return this.format;
     }
 
     public void setFormat(Formatting format) {
         this.format = format;
     }
-    
-    
-    
 
 }
