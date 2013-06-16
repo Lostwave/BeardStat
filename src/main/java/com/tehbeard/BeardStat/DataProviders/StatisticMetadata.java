@@ -1,6 +1,49 @@
 package com.tehbeard.BeardStat.DataProviders;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.tehbeard.BeardStat.commands.formatters.StatFormatter;
+import com.tehbeard.BeardStat.utils.LanguagePack;
+
 public class StatisticMetadata {
+    
+    private static Map<Formatting,StatFormatter> formatters = new HashMap<StatisticMetadata.Formatting, StatFormatter>();
+    
+    static{
+        formatters.put(Formatting.time, new StatFormatter() {
+
+            @Override
+            public String format(int value) {
+                long seconds = value;
+                int weeks = (int) seconds / 604800;
+                int days = (int) Math.ceil((seconds - (604800 * weeks)) / 86400);
+                int hours = (int) Math.ceil((seconds - ((86400 * days) + (604800 * weeks))) / 3600);
+                int minutes = (int) Math.ceil((seconds - ((604800 * weeks) + (86400 * days) + (3600 * hours))) / 60);
+
+                return LanguagePack.getMsg("format.time",weeks,days ,hours ,minutes);
+            }
+        });
+        formatters.put(Formatting.timestamp, new StatFormatter() {
+
+            @Override
+            public String format(int value) {
+                return (new Date(value)).toString();
+            }
+
+        });
+        formatters.put(Formatting.none, new StatFormatter() {
+            
+            @Override
+            public String format(int value) {
+
+                return "" + value;
+            }
+        });
+    }
+    
+    
 
     public enum Formatting {
         none, time, timestamp

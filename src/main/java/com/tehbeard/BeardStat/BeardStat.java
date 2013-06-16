@@ -27,7 +27,6 @@ import com.tehbeard.BeardStat.commands.StatAdmin;
 import com.tehbeard.BeardStat.commands.StatCommand;
 import com.tehbeard.BeardStat.commands.StatPageCommand;
 import com.tehbeard.BeardStat.commands.playedCommand;
-import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
@@ -192,8 +191,6 @@ public class BeardStat extends JavaPlugin {
         try {
             // Load the dynamic stats from file
             loadDynamicStatConfiguration();
-            // load custom stat formats from file
-            loadCustomFormats();
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error loading dynamic stats or custom formats", e, true));
         }
@@ -403,17 +400,6 @@ public class BeardStat extends JavaPlugin {
 
         }
 
-    }
-
-    /**
-     * Load custom formats from config formats based on String.Format
-     */
-    private void loadCustomFormats() {
-        for (String format : getConfig().getStringList("customformats")) {
-            String stat = format.split(":")[0];
-            String formating = format.replace(stat + ":", "");
-            FormatFactory.addStringFormat(stat.split("\\.")[0], stat.split("\\.")[1], formating);
-        }
     }
 
     /**
