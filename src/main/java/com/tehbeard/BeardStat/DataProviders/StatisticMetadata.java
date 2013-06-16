@@ -96,22 +96,20 @@ public class StatisticMetadata {
     }
 
     public String formatStat(int value) {
-        return String.format(this.outputStr, formatters.get(this.format).format(value));// Wrap
-                                                                                        // output
-                                                                                        // of
-                                                                                        // formatter
-                                                                                        // with
-                                                                                        // outputStr,
-                                                                                        // to
-                                                                                        // allow
-                                                                                        // for
-                                                                                        // things
-                                                                                        // like
-                                                                                        // x
-                                                                                        // metres
+        return String.format(this.outputStr, formatters.get(this.format).format(value));
+        // Wrap output of formatter with outputStr, to allow for things like x
+        // metres
     }
 
-    public StatisticMetadata getMeta(String name) {
+    public static StatisticMetadata getMeta(String name) {
         return meta.get(name);
+    }
+
+    public static String formatStat(String name, int value) {
+        return getMeta(name) == null ? "" + value : getMeta(name).formatStat(value);
+    }
+
+    public static String localizedName(String name) {
+        return getMeta(name) == null ? name : getMeta(name).getLocalizedName();
     }
 }

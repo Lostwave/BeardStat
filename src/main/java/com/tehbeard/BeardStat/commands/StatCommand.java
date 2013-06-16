@@ -1,5 +1,8 @@
 package com.tehbeard.BeardStat.commands;
 
+import java.util.Iterator;
+import java.util.Stack;
+
 import me.tehbeard.utils.commands.ArgumentPack;
 import me.tehbeard.vocalise.parser.PromptBuilder;
 
@@ -17,13 +20,17 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
+import com.tehbeard.BeardStat.DataProviders.StatisticMetadata;
 import com.tehbeard.BeardStat.commands.interactive.FindPlayerPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectStatisticPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SetSelfPrompt;
 import com.tehbeard.BeardStat.commands.interactive.ShowStatisticPrompt;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.containers.StatVector;
+import com.tehbeard.BeardStat.utils.LanguagePack;
 
 /**
  * Show stats for a player,
@@ -74,7 +81,7 @@ public class StatCommand implements CommandExecutor {
             }
 
             if (arguments.getFlag("i")) {
-                sender.sendMessage(ChatColor.GOLD + "Entering interactive mode, type /exit to leave interactive mode");
+                sender.sendMessage(LanguagePack.getMsg("interactive.enter"));
                 Conversation c = this.builder.makeConversation((Conversable) sender);
                 c.getCancellers().add(this.canceller.clone());
 
@@ -82,8 +89,7 @@ public class StatCommand implements CommandExecutor {
 
                     @Override
                     public void conversationAbandoned(ConversationAbandonedEvent event) {
-                        event.getContext().getForWhom()
-                                .sendRawMessage(ChatColor.GOLD + "Leaving interactive stats mode");
+                        event.getContext().getForWhom().sendRawMessage(LanguagePack.getMsg("interactive.exit"));
 
                     }
 
@@ -93,37 +99,60 @@ public class StatCommand implements CommandExecutor {
             }
 
             if (arguments.getOption("s") != null) {
-                String stat = arguments.getOption("s");
-                if (stat.split("\\.").length == 2) {
-                    EntityStatBlob blob = this.playerStatManager.findPlayerBlob(player);
-                    if (blob == null) {
-                        sender.sendMessage(ChatColor.RED + "Could not find player");
-                        return true;
-                    }
 
-                    if (blob.hasStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, stat.split("\\.")[0],
-                            stat.split("\\.")[1])) {
-                        sender.sendMessage(ChatColor.GOLD
-                                + stat
-                                + " = "
-                                + ChatColor.WHITE
-                                + FormatFactory.formatStat(blob.getStat(BeardStat.DEFAULT_DOMAIN,
-                                        BeardStat.GLOBAL_WORLD, stat.split("\\.")[0], stat.split("\\.")[1])));// TODO
-                                                                                                              // -
-                                                                                                              // Change
-                                                                                                              // to
-                                                                                                              // use
-                                                                                                              // stat
-                                                                                                              // metadata
-                        return true;
-                    } else {
-                        sender.sendMessage("Stat not found");
-                    }
+                Stack<String> stat = new Stack<String>();
+                for (String s : arguments.getOption("s").split("\\.")) {
+                    stat.add(s);
+                }
 
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Invalid stat");
+                String statistic = !stat.isEmpty() ? stat.pop() : null;
+                String category = !stat.isEmpty() ? stat.pop() : null;
+                String world = !stat.isEmpty() ? stat.pop() : ".*";
+                String domain = !stat.isEmpty() ? stat.pop() : ".*";
+
+                EntityStatBlob blob = this.playerStatManager.findPlayerBlob(player);
+                if (blob == null) {
+                    sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
                     return true;
                 }
+
+                StatVector vector = blob.getStats(domain, world, category, statistic, true);
+
+                if (vector.size() == 0) {
+                    sender.sendMessage(LanguagePack.getMsg("command.error.nostat"));
+                    return true;
+                }
+                String msg = "IF YOU SEE THIS, SOMETHING DERPED HORRIBLY";
+                if (vector.size() == 1) {
+                    IStat iStat = vector.iterator().next();
+
+                    sender.sendMessage(LanguagePack.getMsg("command.stat.stat",
+                            StatisticMetadata.localizedName(iStat.getStatistic()),
+                            StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())
+                            )
+                            );
+                    return true;
+                }
+                if(vector.size() > 1){
+                    //command.stat.stat.world
+                    Iterator<IStat> it = vector.iterator();
+                    while(it.hasNext()){
+                        IStat iStat = it.next();
+                        
+                        sender.sendMessage(LanguagePack.getMsg("command.stat.stat.world",
+                                iStat.getWorld(),
+                                StatisticMetadata.localizedName(iStat.getStatistic()),
+                                StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())
+                                )
+                                );
+                        return true;
+                    }
+                    
+                }
+
+
+                // String msg =
+
             } else {
                 Bukkit.dispatchCommand(sender, "statpage " + player + " default");
             }

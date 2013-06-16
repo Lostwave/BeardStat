@@ -148,4 +148,8 @@ public class StatVector implements IStat, Iterable<IStat> {
         return this.stats.iterator();
     }
 
+    public int size() {
+        return this.stats.size();
+    }
+
 }
