@@ -10,7 +10,6 @@ import org.bukkit.conversations.MessagePrompt;
 import org.bukkit.conversations.Prompt;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**

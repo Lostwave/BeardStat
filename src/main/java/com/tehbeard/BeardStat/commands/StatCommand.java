@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.commands.formatters.FormatFactory;
 import com.tehbeard.BeardStat.commands.interactive.FindPlayerPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectStatisticPrompt;
@@ -109,7 +108,13 @@ public class StatCommand implements CommandExecutor {
                                 + " = "
                                 + ChatColor.WHITE
                                 + FormatFactory.formatStat(blob.getStat(BeardStat.DEFAULT_DOMAIN,
-                                        BeardStat.GLOBAL_WORLD, stat.split("\\.")[0], stat.split("\\.")[1])));
+                                        BeardStat.GLOBAL_WORLD, stat.split("\\.")[0], stat.split("\\.")[1])));// TODO
+                                                                                                              // -
+                                                                                                              // Change
+                                                                                                              // to
+                                                                                                              // use
+                                                                                                              // stat
+                                                                                                              // metadata
                         return true;
                     } else {
                         sender.sendMessage("Stat not found");

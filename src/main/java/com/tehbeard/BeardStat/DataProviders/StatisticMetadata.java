@@ -8,10 +8,12 @@ import com.tehbeard.BeardStat.commands.formatters.StatFormatter;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 
 public class StatisticMetadata {
-    
-    private static Map<Formatting,StatFormatter> formatters = new HashMap<StatisticMetadata.Formatting, StatFormatter>();
-    
-    static{
+
+    private static Map<String, StatisticMetadata> meta       = new HashMap<String, StatisticMetadata>();
+
+    private static Map<Formatting, StatFormatter> formatters = new HashMap<StatisticMetadata.Formatting, StatFormatter>();
+
+    static {
         formatters.put(Formatting.time, new StatFormatter() {
 
             @Override
@@ -22,7 +24,7 @@ public class StatisticMetadata {
                 int hours = (int) Math.ceil((seconds - ((86400 * days) + (604800 * weeks))) / 3600);
                 int minutes = (int) Math.ceil((seconds - ((604800 * weeks) + (86400 * days) + (3600 * hours))) / 60);
 
-                return LanguagePack.getMsg("format.time",weeks,days ,hours ,minutes);
+                return LanguagePack.getMsg("format.time", weeks, days, hours, minutes);
             }
         });
         formatters.put(Formatting.timestamp, new StatFormatter() {
@@ -34,7 +36,7 @@ public class StatisticMetadata {
 
         });
         formatters.put(Formatting.none, new StatFormatter() {
-            
+
             @Override
             public String format(int value) {
 
@@ -42,26 +44,23 @@ public class StatisticMetadata {
             }
         });
     }
-    
-    
 
     public enum Formatting {
         none, time, timestamp
     }
 
     private int        id;
-
     private String     name;
-
     private String     localizedName;
-
     private Formatting format;
+    private String     outputStr = "%s"; // TODO - Add support for
 
     public StatisticMetadata(int id, String name, String localizedName, Formatting format) {
         this.id = id;
         this.name = name;
         this.localizedName = localizedName;
         this.format = format;
+        meta.put(name, this);
     }
 
     public int getId() {
@@ -96,4 +95,23 @@ public class StatisticMetadata {
         this.format = format;
     }
 
+    public String formatStat(int value) {
+        return String.format(this.outputStr, formatters.get(this.format).format(value));// Wrap
+                                                                                        // output
+                                                                                        // of
+                                                                                        // formatter
+                                                                                        // with
+                                                                                        // outputStr,
+                                                                                        // to
+                                                                                        // allow
+                                                                                        // for
+                                                                                        // things
+                                                                                        // like
+                                                                                        // x
+                                                                                        // metres
+    }
+
+    public StatisticMetadata getMeta(String name) {
+        return meta.get(name);
+    }
 }
