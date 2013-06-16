@@ -142,7 +142,11 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     public StatVector getStats(String domain, String world, String category, String statistic, String regex) {
-        StatVector vector = new StatVector(domain, world, category, statistic);
+        return getStats(domain,world,category,statistic,regex,false);
+    }
+    
+    public StatVector getStats(String domain, String world, String category, String statistic, String regex,boolean readOnly) {
+        StatVector vector = new StatVector(domain, world, category, statistic,readOnly);
         for (Entry<String, IStat> e : this.stats.entrySet()) {
             if (Pattern.matches(regex, e.getKey())) {
                 vector.add(e.getValue());

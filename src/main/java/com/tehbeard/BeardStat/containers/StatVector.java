@@ -20,12 +20,15 @@ public class StatVector implements IStat, Iterable<IStat> {
     private String      world;
     private String      category;
     private String      statistic;
+    
+    private boolean readOnly = false;
 
-    public StatVector(String domain, String world, String category, String statistic) {
+    public StatVector(String domain, String world, String category, String statistic,boolean readOnly) {
         this.domain = domain;
         this.world = world;
         this.category = category;
         this.statistic = statistic;
+        this.readOnly = readOnly;
     }
 
     public void add(IStat stat) {
@@ -44,6 +47,10 @@ public class StatVector implements IStat, Iterable<IStat> {
 
     @Override
     public void setValue(int value) {
+        if(readOnly){throw new IllegalStateException("Cannot set value of read only stat vector");}
+        for(IStat s : this.stats){
+            s.setValue(value);
+        }
     }
 
     @Override
@@ -63,6 +70,10 @@ public class StatVector implements IStat, Iterable<IStat> {
 
     @Override
     public void archive() {
+        if(readOnly){throw new IllegalStateException("Cannot set value of read only stat vector");}
+        for(IStat s : this.stats){
+            s.archive();
+        }
 
     }
 
@@ -103,6 +114,7 @@ public class StatVector implements IStat, Iterable<IStat> {
 
     @Override
     public void incrementStat(int i) {
+        if(readOnly){throw new IllegalStateException("Cannot set value of read only stat vector");}
         for (IStat s : this.stats) {
             s.incrementStat(i);
         }
@@ -111,6 +123,7 @@ public class StatVector implements IStat, Iterable<IStat> {
 
     @Override
     public void decrementStat(int i) {
+        if(readOnly){throw new IllegalStateException("Cannot set value of read only stat vector");}
         for (IStat s : this.stats) {
             s.decrementStat(i);
         }
