@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS `stats_entity` (
     entityId INTEGER        PRIMARY KEY AUTOINCREMENT,
     name     VARCHAR( 32 )  NOT NULL,
     type     VARCHAR( 16 )  NOT NULL,
+    `scoreboardhide` BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT uni UNIQUE ( name, type ) 
 );
 CREATE TABLE IF NOT EXISTS `stats_domain` ( 
@@ -25,7 +26,8 @@ CREATE TABLE IF NOT EXISTS `stats_category`(
 CREATE TABLE IF NOT EXISTS `stats_statistic`(
   `statisticId` INTEGER PRIMARY KEY AUTOINCREMENT, 
   `statistic` varchar(32) NOT NULL,  
-    name     VARCHAR( 32 )  NOT NULL,
+  `name` VARCHAR( 32 ),
+  `formatting` VARCHAR(16) NOT NULL DEFAULT 'none',
   CONSTRAINT uni UNIQUE (`statistic`)
 );
 CREATE TABLE IF NOT EXISTS `stats_value` (

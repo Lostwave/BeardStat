@@ -1,0 +1,6 @@
+#Migrating to yggdrasil 1.1;
+#Adding metadata tables to statistics;
+ALTER TABLE  `stats_statistic` ADD  `name` VARCHAR( 32 );
+ALTER TABLE  `stats_statistic` ADD  `formatting` VARCHAR(16) NOT NULL DEFAULT 'none';
+ALTER TABLE  `stats_entity`    ADD  `scoreboardhide` BOOLEAN NOT NULL DEFAULT FALSE;
+#Done migrating
