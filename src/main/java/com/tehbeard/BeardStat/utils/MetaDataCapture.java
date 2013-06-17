@@ -32,7 +32,6 @@ public class MetaDataCapture {
         mats.put(Material.QUARTZ_BLOCK, new EntryInfo(15, 0, 15) {
             @Override
             public int getMetdataValue(int value) {
-                // TODO Auto-generated method stub
                 return (value > 2) ? 2 : value;
             }
         });
