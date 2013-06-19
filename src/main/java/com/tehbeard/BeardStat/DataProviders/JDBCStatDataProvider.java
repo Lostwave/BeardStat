@@ -66,6 +66,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected PreparedStatement             listEntities;
     protected PreparedStatement             deleteEntity;
     protected PreparedStatement             createTable;
+    protected PreparedStatement             updateMetadata;
 
     private HashMap<String, EntityStatBlob> writeCache           = new HashMap<String, EntityStatBlob>();
 
@@ -100,6 +101,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         checkAndMakeTable();
         prepareStatements();
+        
+        String mcver = BeardStat.self().getConfig().getString("general.mcver");
+        String implver = Bukkit.getVersion();
+        
+        if(!implver.equals(mcver)){
+            updateMetadata.execute();
+            BeardStat.self().getConfig().set("general.mcver",implver);
+            BeardStat.printCon("Different version to last boot! Running built in metadata script.");
+        }
+        
+        
         cacheComponents();
     }
 
@@ -300,6 +312,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             // deleteEntity =
             // conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/deletePlayerFully",
             // tblPrefix));
+            
+            this.updateMetadata = this.conn.prepareStatement(BeardStat.self().readSQL(this.type, "sql/maintenence/updateMetadata", this.tblPrefix));
 
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised MySQL Data Provider.");
