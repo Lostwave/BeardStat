@@ -57,7 +57,7 @@ public class TestBlockListener {
         Player bob = mock(Player.class);
         when(bob.getName()).thenReturn("bob");
         World mockWorld = PowerMockito.mock(World.class);
-        when(mockWorld.getName()).thenReturn("blacklisted");
+        when(mockWorld.getName()).thenReturn("overworld");
         
         when(bob.getWorld()).thenReturn(mockWorld);
         
@@ -75,6 +75,36 @@ public class TestBlockListener {
         IStat stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "stats", "totalblockcreate");
         assertTrue("total blocks placed archived",stat.isArchive());
         assertEquals("total blocks is one", 1, stat.getValue());
+        
+        stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "blockcreate", "stone");
+        assertTrue("stone blocks placed archived",stat.isArchive());
+        assertEquals("stone blocks is one", 1, stat.getValue());
+    }
+    
+    @Test
+    public void testPlayerPlaceBlockUnTrackedWorld(){
+        
+        Player bob = mock(Player.class);
+        when(bob.getName()).thenReturn("bob");
+        World mockWorld = PowerMockito.mock(World.class);
+        when(mockWorld.getName()).thenReturn("blacklisted");
+        
+        when(bob.getWorld()).thenReturn(mockWorld);
+        
+        Block block = mock(Block.class);
+        when(block.getType()).thenReturn(Material.STONE);
+        when(block.getData()).thenReturn((byte) 0);
+        
+        
+        BlockPlaceEvent event = new BlockPlaceEvent(block, null, null, null, bob, true);
+        
+       
+        listener.onBlockPlace(event);
+        
+        
+        IStat stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "stats", "totalblockcreate");
+        assertFalse("total blocks placed archived",stat.isArchive());
+        assertEquals("total blocks is one", 0, stat.getValue());
         
     }
 }
