@@ -24,9 +24,10 @@ import org.bukkit.ChatColor;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.NoRecordFoundException;
-import com.tehbeard.BeardStat.DataProviders.StatisticMetadata.Formatting;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
+import com.tehbeard.BeardStat.utils.StatisticMetadata;
+import com.tehbeard.BeardStat.utils.StatisticMetadata.Formatting;
 
 /**
  * base class for JDBC based data providers Allows easy development of data

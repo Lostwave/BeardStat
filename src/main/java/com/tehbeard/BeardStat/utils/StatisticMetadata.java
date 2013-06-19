@@ -1,11 +1,10 @@
-package com.tehbeard.BeardStat.DataProviders;
+package com.tehbeard.BeardStat.utils;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.tehbeard.BeardStat.commands.formatters.StatFormatter;
-import com.tehbeard.BeardStat.utils.LanguagePack;
 
 public class StatisticMetadata {
 
@@ -110,6 +109,8 @@ public class StatisticMetadata {
     }
 
     public static String localizedName(String name) {
-        return getMeta(name) == null ? name : getMeta(name).getLocalizedName();
+        String genMetaName = HumanReadbleOutputGenerator.getNameOf(name);
+        StatisticMetadata nameMeta = getMeta(name);
+        return nameMeta == null ?  (genMetaName != null ? genMetaName : name) : getMeta(name).getLocalizedName();
     }
 }

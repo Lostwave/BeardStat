@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.DataProviders.StatisticMetadata;
 import com.tehbeard.BeardStat.commands.interactive.FindPlayerPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
 import com.tehbeard.BeardStat.commands.interactive.SelectStatisticPrompt;
@@ -31,6 +30,7 @@ import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 import com.tehbeard.BeardStat.utils.LanguagePack;
+import com.tehbeard.BeardStat.utils.StatisticMetadata;
 
 /**
  * Show stats for a player,

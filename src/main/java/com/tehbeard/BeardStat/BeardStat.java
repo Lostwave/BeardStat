@@ -35,6 +35,7 @@ import com.tehbeard.BeardStat.listeners.StatCraftListener;
 import com.tehbeard.BeardStat.listeners.StatEntityListener;
 import com.tehbeard.BeardStat.listeners.StatPlayerListener;
 import com.tehbeard.BeardStat.listeners.StatVehicleListener;
+import com.tehbeard.BeardStat.utils.HumanReadbleOutputGenerator;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 import com.tehbeard.BeardStat.utils.Metrics;
@@ -142,6 +143,7 @@ public class BeardStat extends JavaPlugin {
         } catch (FileNotFoundException e) {
             BeardStat.printCon("No External metadata file detected");
         }
+        HumanReadbleOutputGenerator.init();
 
         // load language file from jar and from data folder
         try {

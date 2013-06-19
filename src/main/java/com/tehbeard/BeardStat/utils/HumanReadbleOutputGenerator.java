@@ -31,9 +31,14 @@ import org.bukkit.potion.PotionType;
 
 import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
 
-public class HumanReadbleOutputGenerate {
+public class HumanReadbleOutputGenerator {
 
     private static Map<Class<? extends MaterialData>, String> readers = new HashMap<Class<? extends MaterialData>, String>();
+    private static Map<String, String> mapping;
+    
+    public static String getNameOf(String key){
+        return mapping.get(key);
+    }
 
     static {
 
@@ -133,6 +138,10 @@ public class HumanReadbleOutputGenerate {
         return t;
     }
 
+    public static void init(){
+        mapping = getAllHumanNames();
+    }
+    
     public static void main(String[] args) throws FileNotFoundException {
         MetaDataCapture.readData(new FileInputStream(
                 "c:/users/james/workspace/BeardStat/src/main/resources/metadata.txt"));
