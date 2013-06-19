@@ -34,9 +34,9 @@ import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
 public class HumanReadbleOutputGenerator {
 
     private static Map<Class<? extends MaterialData>, String> readers = new HashMap<Class<? extends MaterialData>, String>();
-    private static Map<String, String> mapping;
-    
-    public static String getNameOf(String key){
+    private static Map<String, String>                        mapping;
+
+    public static String getNameOf(String key) {
         return mapping.get(key);
     }
 
@@ -138,17 +138,18 @@ public class HumanReadbleOutputGenerator {
         return t;
     }
 
-    public static void init(){
+    public static void init() {
         mapping = getAllHumanNames();
     }
-    
+
     public static void main(String[] args) throws FileNotFoundException {
         MetaDataCapture.readData(new FileInputStream(
                 "c:/users/james/workspace/BeardStat/src/main/resources/metadata.txt"));
 
         Map<String, String> t = getAllHumanNames();
         for (Entry<String, String> entry : t.entrySet()) {
-            System.out.println("UPDATE ${PREFIX}_statistic SET `name`=\"" +  entry.getValue() + "\" WHERE `statistic`=\"" + entry.getKey() +"\" AND `name`!=NULL;");
+            System.out.println("UPDATE ${PREFIX}_statistic SET `name`=\"" + entry.getValue()
+                    + "\" WHERE `statistic`=\"" + entry.getKey() + "\" AND `name`!=NULL;");
         }
         System.out.println("UPDATE ${PREFIX}_statistic SET `name`=`statistic` WHERE `name` is NULL;");
 

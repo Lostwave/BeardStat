@@ -111,6 +111,6 @@ public class StatisticMetadata {
     public static String localizedName(String name) {
         String genMetaName = HumanReadbleOutputGenerator.getNameOf(name);
         StatisticMetadata nameMeta = getMeta(name);
-        return nameMeta == null ?  (genMetaName != null ? genMetaName : name) : getMeta(name).getLocalizedName();
+        return nameMeta == null ? (genMetaName != null ? genMetaName : name) : getMeta(name).getLocalizedName();
     }
 }

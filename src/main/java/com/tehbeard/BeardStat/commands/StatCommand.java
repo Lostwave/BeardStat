@@ -128,28 +128,22 @@ public class StatCommand implements CommandExecutor {
 
                     sender.sendMessage(LanguagePack.getMsg("command.stat.stat",
                             StatisticMetadata.localizedName(iStat.getStatistic()),
-                            StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())
-                            )
-                            );
+                            StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())));
                     return true;
                 }
-                if(vector.size() > 1){
-                    //command.stat.stat.world
+                if (vector.size() > 1) {
+                    // command.stat.stat.world
                     Iterator<IStat> it = vector.iterator();
-                    while(it.hasNext()){
+                    while (it.hasNext()) {
                         IStat iStat = it.next();
-                        
-                        sender.sendMessage(LanguagePack.getMsg("command.stat.stat.world",
-                                iStat.getWorld(),
+
+                        sender.sendMessage(LanguagePack.getMsg("command.stat.stat.world", iStat.getWorld(),
                                 StatisticMetadata.localizedName(iStat.getStatistic()),
-                                StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())
-                                )
-                                );
+                                StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())));
                         return true;
                     }
-                    
-                }
 
+                }
 
                 // String msg =
 
