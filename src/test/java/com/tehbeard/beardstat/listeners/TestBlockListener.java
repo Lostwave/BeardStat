@@ -18,7 +18,9 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.StatBlockListener;
 
@@ -55,21 +57,24 @@ public class TestBlockListener {
         Player bob = mock(Player.class);
         when(bob.getName()).thenReturn("bob");
         World mockWorld = PowerMockito.mock(World.class);
-        when(mockWorld.getName()).thenReturn("overworld");
+        when(mockWorld.getName()).thenReturn("blacklisted");
         
         when(bob.getWorld()).thenReturn(mockWorld);
         
-        Block block = PowerMockito.mock(Block.class);
+        Block block = mock(Block.class);
         when(block.getType()).thenReturn(Material.STONE);
         when(block.getData()).thenReturn((byte) 0);
         
         
-        BlockPlaceEvent event = PowerMockito.mock(BlockPlaceEvent.class);
-        PowerMockito.when(event.getBlock()).thenReturn(block);
-        when(event.getPlayer()).thenReturn(bob);
-        
+        BlockPlaceEvent event = new BlockPlaceEvent(block, null, null, null, bob, true);
         
        
         listener.onBlockPlace(event);
+        
+        
+        IStat stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "stats", "totalblockcreate");
+        assertTrue("total blocks placed archived",stat.isArchive());
+        assertEquals("total blocks is one", 1, stat.getValue());
+        
     }
 }
