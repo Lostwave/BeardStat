@@ -1,7 +1,9 @@
 package com.tehbeard.beardstat.listeners;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.dragonzone.promise.Deferred;
 
@@ -22,6 +24,8 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.StatBlockListener;
+import com.tehbeard.BeardStat.utils.MetaDataCapture;
+import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
 
 import static org.mockito.Mockito.*;
 
@@ -50,6 +54,20 @@ public class TestBlockListener {
 
     }
 
+    public Byte[] genUniqueSubIds(Material mat){
+        if(MetaDataCapture.hasMetaData(mat)){
+            EntryInfo info = MetaDataCapture.mats.get(mat);
+            Set<Byte> bytes = new HashSet<Byte>();
+            for(byte i = (byte) info.min;i<=info.max;i++){
+                bytes.add((byte) info.getMetdataValue(i));
+            }
+            return bytes.toArray(new Byte[0]);
+        }
+
+
+        return new Byte[]{0};
+    }
+
     @Test
     public void testPlayerPlaceBlockTrackedWorld(){
 
@@ -68,26 +86,32 @@ public class TestBlockListener {
             if(!m.isBlock()){continue;}
 
             when(block.getType()).thenReturn(m);
-            when(block.getData()).thenReturn((byte) 0);
 
+            Byte[] bytes = genUniqueSubIds(m);
+            for(byte b : bytes){
+                when(block.getData()).thenReturn(b);
 
-            BlockPlaceEvent event = new BlockPlaceEvent(block, null, null, null, bob, true);
+                BlockPlaceEvent event = new BlockPlaceEvent(block, null, null, null, bob, true);
 
+                listener.onBlockPlace(event);
 
-            listener.onBlockPlace(event);
+                IStat stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "stats", "totalblockcreate");
+                assertTrue("total blocks placed archived",stat.isArchive());
+                assertEquals("total blocks count correct", count, stat.getValue());
 
-            IStat stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "stats", "totalblockcreate");
-            assertTrue("total blocks placed archived",stat.isArchive());
-            assertEquals("total blocks is one", count, stat.getValue());
+                String matName = m.toString().toLowerCase().replace("_", "");
+                System.out.println("Testing " + matName);
 
-            String matName = m.toString().toLowerCase().replace("_", "");
-            System.out.println("Testing " + matName);
+                String statId = matName;
+                if(MetaDataCapture.hasMetaData(m)){
+                    statId = matName + "_" + ((int)b);
+                }
+                stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "blockcreate", statId);
+                assertTrue(statId + " blocks placed archived",stat.isArchive());
+                assertEquals(statId + " count",1,stat.getValue());
+                count++;
+            }
 
-            stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "blockcreate", matName);
-            assertTrue("stone blocks placed archived",stat.isArchive());
-            assertEquals("stone blocks is one", 1, stat.getValue());
-
-            count++;
         }
     }
 
@@ -108,24 +132,30 @@ public class TestBlockListener {
             if(!m.isBlock()){continue;}
 
             when(block.getType()).thenReturn(m);
-            when(block.getData()).thenReturn((byte) 0);
 
+            Byte[] bytes = genUniqueSubIds(m);
+            for(byte b : bytes){
+                when(block.getData()).thenReturn(b);
 
-            BlockPlaceEvent event = new BlockPlaceEvent(block, null, null, null, bob, true);
+                BlockPlaceEvent event = new BlockPlaceEvent(block, null, null, null, bob, true);
 
+                listener.onBlockPlace(event);
 
-            listener.onBlockPlace(event);
+                IStat stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "stats", "totalblockcreate");
+                assertFalse("total blocks placed archived",stat.isArchive());
+                assertEquals("total blocks count correct", 0, stat.getValue());
 
-            IStat stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "stats", "totalblockcreate");
-            assertFalse("total blocks placed archived",stat.isArchive());
-            assertEquals("total blocks is zero", 0, stat.getValue());
+                String matName = m.toString().toLowerCase().replace("_", "");
+                System.out.println("Testing " + matName);
 
-            String matName = m.toString().toLowerCase().replace("_", "");
-            System.out.println("Testing " + matName);
-
-            stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "blockcreate", matName);
-            assertFalse("stone blocks not placed archived",stat.isArchive());
-            assertEquals("stone blocks is not one", 0, stat.getValue());
+                String statId = matName;
+                if(MetaDataCapture.hasMetaData(m)){
+                    statId = matName + "_" + ((int)b);
+                }
+                stat = blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "blockcreate", statId);
+                assertFalse(statId + " blocks placed archived",stat.isArchive());
+                assertEquals(statId + " count",0,stat.getValue());
+            }
 
         }
     }
