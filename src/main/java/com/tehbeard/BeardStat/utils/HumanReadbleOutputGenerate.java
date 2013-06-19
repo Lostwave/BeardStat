@@ -139,7 +139,7 @@ public class HumanReadbleOutputGenerate {
 
         Map<String, String> t = getAllHumanNames();
         for (Entry<String, String> entry : t.entrySet()) {
-            System.out.println(entry.getKey() + " ==> " + entry.getValue());
+            System.out.println("UPDATE ${PREFIX}_statistic SET `name`=\"" +  entry.getValue() + "\" WHERE `statistic`=\"" + entry.getKey() +"\";");
         }
 
         /*
