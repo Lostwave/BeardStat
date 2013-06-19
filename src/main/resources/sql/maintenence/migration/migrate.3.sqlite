@@ -472,4 +472,5 @@ UPDATE stats_statistic SET `name`="workbench" WHERE `statistic`="workbench";
 UPDATE stats_statistic SET `name`="written book" WHERE `statistic`="writtenbook";
 UPDATE stats_statistic SET `name`="yellow flower" WHERE `statistic`="yellowflower";
 UPDATE stats_statistic SET `name`="zombie" WHERE `statistic`="zombie";
+UPDATE stats_statistic SET `name`=`statistic` WHERE `statistic`=NULL;
 #Done migrating

@@ -472,5 +472,6 @@ UPDATE ${PREFIX}_statistic SET `name`="workbench" WHERE `statistic`="workbench";
 UPDATE ${PREFIX}_statistic SET `name`="written book" WHERE `statistic`="writtenbook";
 UPDATE ${PREFIX}_statistic SET `name`="yellow flower" WHERE `statistic`="yellowflower";
 UPDATE ${PREFIX}_statistic SET `name`="zombie" WHERE `statistic`="zombie";
+UPDATE ${PREFIX}_statistic SET `name`=`statistic` WHERE `statistic`=NULL;
 
 #Done migrating
