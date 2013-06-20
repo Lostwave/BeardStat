@@ -6,9 +6,9 @@ define('BS_TITLE',"Player stats");
 include 'templates/header.php';
 
 ?>
-<div class="span-8 offset2">
+<div class="span8 offset2" style="background-color: #FAFAFA">
 <h2><img src="https://minotar.net/avatar/<?php echo $_GET['playerName']; ?>/100"><?php echo $_GET['playerName']; ?></h2>
-<div class="tab-stats">
+<div class="tab-stats span7">
 <ul class="nav nav-tabs">
 <?php 
 

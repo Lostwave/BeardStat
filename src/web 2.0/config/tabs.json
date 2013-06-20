@@ -8,7 +8,6 @@
    "display":[
    {"domain":".*","world":".*","cat":"stats","stat":"playedfor"},
    {"domain":".*","world":".*","cat":"stats","stat":"lastlogin"},
-   {"domain":".*","world":".*","cat":"stats","stat":"sessionlength"},
    {"domain":".*","world":".*","cat":"stats","stat":"move"},
    {"domain":".*","world":".*","cat":"vehicle","stat":"boat"},
    {"domain":".*","world":".*","cat":"vehicle","stat":"minecart"}
