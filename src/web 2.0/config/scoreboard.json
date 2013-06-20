@@ -1,4 +1,4 @@
 [
-{"label":"play time","domain":"default","world":"__imported__","cat":"stats","stat":"playedfor"},
-{"label":"diamonds mined","domain":"default","world":"__imported__","cat":"blockdestroy","stat":"diamondore"}
+{"label":"play time","domain":"default","world":"__imported__","cat":"stats","stat":"playedfor","order":{"idx":1,"type":"DESC"}},
+{"label":"diamonds mined","domain":"default","world":"__imported__","cat":"blockdestroy","stat":"diamondore","order":{"idx":2,"type":"DESC"}}
 ]
