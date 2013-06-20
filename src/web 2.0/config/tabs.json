@@ -6,11 +6,12 @@
   {
    "headingName":"General Statistics",
    "display":[
-   {"domain":".*","world":".*","cat":"stats","stat":"playedfor"},
-   {"domain":".*","world":".*","cat":"stats","stat":"lastlogin"},
-   {"domain":".*","world":".*","cat":"stats","stat":"move"},
-   {"domain":".*","world":".*","cat":"vehicle","stat":"boat"},
-   {"domain":".*","world":".*","cat":"vehicle","stat":"minecart"}
+   {"domain":"default","world":".*","cat":"stats","stat":"playedfor"},
+   {"domain":"default","world":".*","cat":"stats","stat":"lastlogin"},
+   {"domain":"default","world":".*","cat":"stats","stat":"move"},
+   {"domain":"default","world":".*","cat":"vehicle","stat":"boat"},
+   {"domain":"default","world":".*","cat":"vehicle","stat":"minecart"},
+   {"domain":"default","world":".*","cat":"stats","stat":"armswing"}
    ]
   }
   ]
@@ -22,21 +23,70 @@
   {
    "headingName":"Stats",
    "display":[
-   {"domain":".*","world":".*","cat":"blockcreate","stat":"totalblockcreate"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"totalblockdestroy"}
+   {"domain":"default","world":".*","cat":"stats","stat":"totalblockcreate"},
+   {"domain":"default","world":".*","cat":"stats","stat":"totalblockdestroy"}
    ]
   },
   {
    "headingName":"Ores mined",
    "display":[
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"coalore"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"ironore"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"goldore"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"diamondore"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"emeraldore"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"lapisore"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"redstoneore"},
-   {"domain":".*","world":".*","cat":"blockdestroy","stat":"quartzore"}
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"coalore"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"ironore"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"goldore"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"diamondore"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"emeraldore"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"lapisore"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"redstoneore"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"quartzore"}
+   ]
+  },
+  {
+   "headingName":"Nature destroyed",
+   "display":[
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"dirt"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"stone"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"cobblestone"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"grass"},
+   {"domain":"default","world":".*","cat":"blockdestroy","stat":"mossycobblestone"}
+   ]
+  }
+  ]
+},
+{
+  "tabName": "Crafting",
+  
+  "headings":[
+  {
+   "headingName":"Stats",
+   "display":[
+   {"domain":"default","world":".*","cat":"stats","stat":"totalblockcreate"},
+   {"domain":"default","world":".*","cat":"stats","stat":"totalblockdestroy"}
+   ]
+  }
+  ]
+},
+{
+  "tabName": "Kills and Deaths",
+  
+  "headings":[
+  {
+   "headingName":"Totals",
+   "display":[
+   {"domain":"default","world":".*","cat":"kills","stat":"total"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"total"}
+   ]
+  }
+  ]
+},
+{
+  "tabName": "Redstone",
+  
+  "headings":[
+  {
+   "headingName":"Stats",
+   "display":[
+   {"domain":"default","world":".*","cat":"stats","stat":"totalblockcreate"},
+   {"domain":"default","world":".*","cat":"stats","stat":"totalblockdestroy"}
    ]
   }
   ]
