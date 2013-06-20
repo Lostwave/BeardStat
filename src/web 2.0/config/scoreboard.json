@@ -1,0 +1,4 @@
+[
+{"label":"play time","domain":"default","world":"__imported__","cat":"stats","stat":"playedfor"},
+{"label":"diamonds mined","domain":"default","world":"__imported__","cat":"blockdestroy","stat":"diamondore"}
+]

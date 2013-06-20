@@ -11,6 +11,7 @@ if($bs_db->connect_errno > 0){
 include_once BEARDSTAT_API_DIR . 'formating.php';
 include_once BEARDSTAT_API_DIR . 'sql.php';
 include_once BEARDSTAT_API_DIR . 'player.class.php';
+include_once BEARDSTAT_API_DIR . 'scoreboard.class.php';
 include_once BEARDSTAT_API_DIR . 'tabs.class.php';
 
 /*$bs_db->real_query("SELECT DISTINCT(name) FROM " . BS_DB_PREFIX . "_entity;");
