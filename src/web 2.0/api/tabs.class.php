@@ -50,8 +50,6 @@ Class StatTabs{
    $this->tabIdx ++;
    if($this->tabIdx < count($this->data)){
     //start of loop, reset the counters below us
-    $this->reset_headings();
-    $this->reset_entries();
     
     return true;    
    }
@@ -71,8 +69,7 @@ Class StatTabs{
  
  function have_headings(){
   $this->headingIdx ++;
-  if($this->headingIdx < count($this->data[$this->tabIdx])){
-   $this->reset_entries();
+  if($this->headingIdx < sizeof($this->data[$this->tabIdx]->headings)){
    return true;
   }
   else
