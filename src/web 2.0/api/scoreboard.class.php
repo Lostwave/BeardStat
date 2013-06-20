@@ -12,6 +12,21 @@ function arr_regex($array,$regex){
  }
 }
 
+function formatStat($stat,$value){
+ if(!isset(StatTabs::$statLookup[$stat])){return number_format($value);}
+
+ switch(StatTabs::$statLookup[$stat]["formatting"]){
+  case 'time':
+   return gettimeformat($value);
+   break;
+  case 'timestamp':
+   return date(BS_FORMAT_DATE,$value);
+   break;
+
+ }
+ return number_format($value);
+}
+
 Class SScoreboad{
 
 
@@ -95,20 +110,6 @@ SQL;
 
  }
  
- function formatStat($stat,$value){
-  if(!isset(StatTabs::$statLookup[$stat])){return $this->value;}
- 
-  switch(StatTabs::$statLookup[$stat]["formatting"]){
-   case 'time':
-    return gettimeformat($value);
-    break;
-   case 'timestamp':
-    return date(BS_FORMAT_DATE,$value);
-  }
- 
-  return $value;
- }
- 
  function reset_entry(){
   $this->dataIdx = -1;
  }
@@ -139,7 +140,7 @@ SQL;
   return $this->fields[$this->fieldIdx]["lbl"];
  }
  function the_field_value(){
-  return $this->formatStat($this->fields[$this->fieldIdx]["data"]["statistic"],$this->data[$this->dataIdx][$this->the_field_name()]);
+  return formatStat($this->fields[$this->fieldIdx]["data"]["statistic"],$this->data[$this->dataIdx][$this->the_field_name()]);
  }
  
  

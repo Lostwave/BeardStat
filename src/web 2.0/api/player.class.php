@@ -15,7 +15,7 @@ Class SPlayerStat{
  }
  
  function getValueFormatted(){
-  if(!isset(StatTabs::$statLookup[$this->statistic])){return $this->value;}
+  if(!isset(StatTabs::$statLookup[$this->statistic])){return number_format($this->value);}
   
   switch(StatTabs::$statLookup[$this->statistic]["formatting"]){
    case 'time':
@@ -25,7 +25,7 @@ Class SPlayerStat{
     return date(BS_FORMAT_DATE,$this->value);
   }
   
-  return $this->value;
+  return number_format($this->value);
  }
  
 }
