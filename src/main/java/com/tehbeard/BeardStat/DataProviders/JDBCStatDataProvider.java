@@ -111,7 +111,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             this.updateMetadata.execute();
             BeardStat.self().getConfig().set("general.mcver", implver);
             BeardStat.self().saveConfig();
-            
+
         }
 
         cacheComponents();
@@ -355,8 +355,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     private int getStatisticId(String name) throws SQLException {
-        
-        
+
         if (!this.statistics.containsKey(name)) {
             BeardStat.printDebugCon("Recording new component: " + name);
             this.saveStatistic.setString(1, name);
