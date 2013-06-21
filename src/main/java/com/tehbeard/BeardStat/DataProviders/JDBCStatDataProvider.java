@@ -107,9 +107,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         String implver = Bukkit.getVersion();
 
         if (!implver.equals(mcver)) {
+            BeardStat.printCon("Different version to last boot! Running built in metadata script.");
             this.updateMetadata.execute();
             BeardStat.self().getConfig().set("general.mcver", implver);
-            BeardStat.printCon("Different version to last boot! Running built in metadata script.");
+            BeardStat.self().saveConfig();
+            
         }
 
         cacheComponents();
