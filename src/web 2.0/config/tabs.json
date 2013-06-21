@@ -49,6 +49,28 @@
    {"domain":"default","world":".*","cat":"blockdestroy","stat":"grass"},
    {"domain":"default","world":".*","cat":"blockdestroy","stat":"mossycobblestone"}
    ]
+  },
+  {
+   "headingName":"SO FLUFFY",
+   "display":[
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_0"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_1"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_2"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_3"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_4"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_5"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_6"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_7"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_8"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_9"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_10"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_11"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_12"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_13"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_14"},
+   {"domain":"default","world":".*","cat":"blockcreate","stat":"wool_15"}
+   ]
   }
   ]
 },
@@ -73,7 +95,27 @@
    "headingName":"Totals",
    "display":[
    {"domain":"default","world":".*","cat":"kills","stat":"total"},
-   {"domain":"default","world":".*","cat":"deaths","stat":"total"}
+   {"domain":"default","world":".*","cat":"deaths","stat":"total"},
+   {"domain":"default","world":".*","cat":"kills","stat":"player"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"player"}
+   ]
+  },
+  {
+   "headingName":"Deaths",
+   "display":[
+   {"domain":"default","world":".*","cat":"deaths","stat":"creeper"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"skeleton"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"zombie"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"spider"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"magmacube"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"fall"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"drowning"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"suffocation"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"entityexplosion"},   
+   {"domain":"default","world":".*","cat":"deaths","stat":"lava"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"fire"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"firetick"},
+   {"domain":"default","world":".*","cat":"deaths","stat":"magic"}
    ]
   }
   ]
