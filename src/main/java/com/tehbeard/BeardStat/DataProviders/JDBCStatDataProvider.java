@@ -355,7 +355,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     private int getStatisticId(String name) throws SQLException {
-        StatisticMetadata meta = this.statistics.get(name);
+        
+        
         if (!this.statistics.containsKey(name)) {
             BeardStat.printDebugCon("Recording new component: " + name);
             this.saveStatistic.setString(1, name);
