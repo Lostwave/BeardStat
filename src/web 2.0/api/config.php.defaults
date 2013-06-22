@@ -7,5 +7,6 @@ define('BS_DB_USER',"root");
 define('BS_DB_PASS',"");
 define('BS_DB_DB',"stats");
 define('BS_DB_PREFIX',"stats");
-
+define('BS_FORMAT_DATE','r');
+define('BS_PW','omnomnom');
 ?>
