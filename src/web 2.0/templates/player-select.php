@@ -48,15 +48,17 @@ else{
 	foreach($names as $name){
 ?>
 	<tr>
+		
 		<td><canvas class="head head-small" data-name="<?php echo $name;?>"></canvas>
 		</td>
-		<td><?php echo $name;?>
+		<td><a href="showplayer.php?playerName=<?php echo $name;?>"><?php echo $name;?></a>
 		</td>
+
 	</tr>
 	<?php } ?>
 </table>
 <?php
-} 
+}
 }
 
 
