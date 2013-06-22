@@ -39,8 +39,23 @@ while($score->have_entry()){
 }
 else
 {
- echo "No scoreboard selected";
+?>
+<div class="span6 offset2">
+<form action="testScoreboard.php" method="get">
+<h1>Scoreboards</h1>
+<div class="input-append">
+<select name="board">
+<?php 
+while($score->have_scoreboard()){
+?><option value="<?php echo $score->the_scoreboard_id();?>"><?php echo $score->the_scoreboard_title();?></option><?php 
 }
+?>
+</select>
+<button class="btn" type="submit">View</button>
+</div>
+</form>
+</div>
+<?php }
 ?>
 </div>
 <?php include 'templates/footer.php';?>
