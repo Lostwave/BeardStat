@@ -2,7 +2,7 @@
 $p = new SPlayer($_GET['playerName']);
 $tabs = new StatTabs("tabs.json");
 ?>
-   <div style="float:left"><h2><canvas class="head head-huge" data-name="<?php echo $p->name;?>"></canvas><?php echo $p->name; ?></h2></div>
+   <div style="float:left"><h2><canvas class="head head-huge" data-name="<?php echo $p->name;?>"></canvas>  <?php echo $p->name; ?></h2></div>
 	
 	<div style="float:right;margin-top:20px;margin-right:20px;margin-bottom:0px;">
 	<form action="showplayer.php" method="get">
