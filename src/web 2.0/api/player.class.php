@@ -1,4 +1,9 @@
 <?php
+/**
+ * Represents a stat object
+ * @author James
+ *
+ */
 Class SPlayerStat{
  public $domain;
  public $world;
@@ -13,7 +18,10 @@ Class SPlayerStat{
   $this->statistic = $statistic;
   $this->value = $value;
  }
- 
+ /**
+  * Return formatted value of this stat.
+  * @return Ambigous <string, mixed>
+  */
  function getValueFormatted(){
   return formatStat($this->statistic,$this->value);
  }

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * grab all data from a table, used for local lookup
+ * @param string $element
+ * @param string $key
+ * @return multitype:
+ */
 function getLookup($element,$key){
  global $bs_db;
  $e = $bs_db->real_escape_string($element);
