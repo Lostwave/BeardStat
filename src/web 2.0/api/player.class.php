@@ -27,6 +27,7 @@ Class SPlayerStat{
  }
  
 }
+
 Class SPlayer{
 
  public $name = "";
@@ -35,7 +36,14 @@ Class SPlayer{
  function __construct($playerName) {
 
   global $bs_db;
+  
+  //FEEX player name to be case correct using db as authoritive source. because i'm awesome.
   $this->name = $bs_db->real_escape_string($playerName);
+  $bs_db->real_query("SELECT `name` FROM `stats_entity` WHERE `name`='$this->name'"); 
+  $res = $bs_db->store_result();
+  $this->name = array_value($res->fetch_assoc(), "name");
+  $res->free();
+  
   $sql = <<<SQL
     SELECT
 `domain`,
