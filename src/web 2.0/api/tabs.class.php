@@ -25,7 +25,7 @@ Class StatTabs{
   * @param unknown $file
   */
  function __construct($file){
-  $this->data = json_decode(file_get_contents(BEARDSTAT_API_DIR . "..\\config\\" . $file));
+  $this->data = json_decode(file_get_contents(BEARDSTAT_API_DIR . "../config/" . $file));
  }
  
  function reset_tabs(){
