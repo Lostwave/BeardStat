@@ -1,9 +1,19 @@
 <?php
-
+/**
+ * Return value of array (used to bypass func()[x] issue
+ * @param unknown $array
+ * @param unknown $key
+ * @return unknown
+ */
 function array_value($array, $key) {
  return $array[$key];
 }
-
+/**
+ * Search associative array for value based on regex match of key
+ * @param unknown $array
+ * @param unknown $regex
+ * @return unknown
+ */
 function arr_regex($array,$regex){
  foreach($array as $k=>$v){
   if(preg_match('/' . $regex . '/', $k)){
@@ -11,7 +21,12 @@ function arr_regex($array,$regex){
   }
  }
 }
-
+/**
+ * Format stat
+ * @param string $stat 
+ * @param number $value
+ * @return string
+ */
 function formatStat($stat,$value){
  if(!isset(StatTabs::$statLookup[$stat])){return number_format($value);}
 
@@ -27,26 +42,87 @@ function formatStat($stat,$value){
  return number_format($value);
 }
 
+/**
+ * Class for accessing and iterating scoreboard data
+ * @author James
+ *
+ */
 Class SScoreboad{
 
-
+ 
+ /**
+  * Cached data, format undocumented, use at own risk
+  * @var unknown
+  */
  public $data;
+ /**
+  * Cached fields of dataset, in order from db
+  * @var unknown
+  */
  public $fields;
  
+ /**
+  * Title of scoreboard selected
+  * @var unknown
+  */
  public $title;
  
+ 
+ //Iterator indexes
  private $dataIdx = -1;
  private $fieldIdx = -1;
+ private $scoreboardsIdx = -1;
+ //Cached scoreboard json
+ private $scoreboards;
 
- function __construct($file,$page){
-   
+ /**
+  * Load a json file 
+  * @param string $file
+  */
+ function __construct($file){
+  $this->scoreboards = json_decode(file_get_contents($file));
+ }
+ 
+ /**
+  * Iterator for scoreboard metadata (id, title)
+  * @return boolean if there is a scoreboard currently loaded
+  */
+ function have_scoreboard(){
+  $this->scoreboardsIdx ++;
+  return ($this->scoreboardsIdx < sizeof($this->scoreboards));
+ }
+ /**
+  * Resets scoreboard iterator
+  */
+ function reset_scoreboard(){
+  $this->scoreboardsIdx = 0;
+ }
+ /**
+  * @return id of current scoreboard (in scoreboard loop)
+  */
+ function the_scoreboard_id(){
+   return $this->scoreboards[$this->scoreboardsIdx]->id;   
+ }
+ 
+ /**
+  * @return title of scoreboard (in scoreboard loop)
+  */
+ function the_scoreboard_title(){
+  return $this->scoreboards[$this->scoreboardsIdx]->title;
+ }
+ 
+ /**
+  * query db for scoreboard information
+  * @param string $page id of scoreboard to load
+  */
+ function load($page){
+  
   $domainLookup    = getLookup("domain", "domain");
   $worldLookup     = getLookup("world", "world");
   $categoryLookup  = getLookup("category", "category");
   $statisticLookup = getLookup("statistic", "statistic");
   
-  $scoreboards = json_decode(file_get_contents($file));
-  foreach($scoreboards as $scoreboard){
+  foreach($this->scoreboards as $scoreboard){
    if($scoreboard->id == $page){
     $selectedScoreboard = $scoreboard;
     $this->title = $selectedScoreboard->title;
@@ -121,39 +197,75 @@ SQL;
 
  }
  
+ /**
+  * Reset entry loop
+  */
  function reset_entry(){
   $this->dataIdx = -1;
  }
  
+ /**
+  * entry loop iterator check
+  * @return boolean
+  */
  function have_entry(){
   $this->dataIdx ++;
   return ($this->dataIdx < sizeof($this->data));
  }
- 
+ /**
+  * Returns the rank of the current entry
+  * @return number
+  */
  function the_rank(){
   return $this->dataIdx +1;
  }
  
+ /**
+  * Returns the name of the player
+  */
  function the_player_name(){
   return $this->data[$this->dataIdx]["player"];
  }
- 
+ /**
+  * Resets field iterator
+  */
  function reset_field(){
   $this->fieldIdx = -1;
  }
  
+ /**
+  * Field iterator
+  * @return boolean
+  */
  function have_field(){
   $this->fieldIdx ++;
   return ($this->fieldIdx < sizeof($this->fields));
  }
  
+ /**
+  * Name of current field
+  */
  function the_field_name(){
   return $this->fields[$this->fieldIdx]["lbl"];
  }
+ /**
+  * Value of field for current entry, formatted
+  * @return string
+  */
  function the_field_value(){
   return formatStat($this->fields[$this->fieldIdx]["data"]["statistic"],$this->data[$this->dataIdx][$this->the_field_name()]);
  }
- 
+ /**
+  * Raw value of field
+  * @return number
+  */
+ function the_field_value_raw(){
+  return $this->data[$this->dataIdx][$this->the_field_name()];
+ }
+ /**
+  * The title of the scoreboard
+  * @return unknown
+  */
  function the_title(){
   return $this->title;
  }

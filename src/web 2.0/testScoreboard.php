@@ -1,10 +1,12 @@
 <?php
 include 'api/api.php';
 include 'templates/header.php';
-$board = isset($_GET['board']) ? $_GET['board'] : 'playtime';
-$score = new SScoreboad('config/scoreboards.json',$board);
+?><div class="span8 offset2" style="background-color: #FAFAFA">
+<?php
+$score = new SScoreboad('config/scoreboards.json'); 
+if(isset($_GET['board'])){
+$score->load($_GET['board']);
 ?>
-<div class="span8 offset2" style="background-color: #FAFAFA">
 <style>
 .head{
 width:32px;
@@ -33,5 +35,12 @@ while($score->have_entry()){
 ?>
 </table>
 <script type="text/javascript" src="js/PlayerHead.js"></script>
+<?php 
+}
+else
+{
+ echo "No scoreboard selected";
+}
+?>
 </div>
 <?php include 'templates/footer.php';?>
