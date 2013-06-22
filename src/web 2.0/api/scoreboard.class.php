@@ -30,22 +30,33 @@ function formatStat($stat,$value){
 Class SScoreboad{
 
 
- private $data; 
- 
+ public $data;
  public $fields;
+ 
+ public $title;
  
  private $dataIdx = -1;
  private $fieldIdx = -1;
 
- function __construct($file){
+ function __construct($file,$page){
    
   $domainLookup    = getLookup("domain", "domain");
   $worldLookup     = getLookup("world", "world");
   $categoryLookup  = getLookup("category", "category");
   $statisticLookup = getLookup("statistic", "statistic");
+  
+  $scoreboards = json_decode(file_get_contents($file));
+  foreach($scoreboards as $scoreboard){
+   if($scoreboard->id == $page){
+    $selectedScoreboard = $scoreboard;
+    $this->title = $selectedScoreboard->title;
+    break;
+   }
+  }
+  if(!isset($selectedScoreboard)){
+   die('no scoreboard selected');
+  }
    
-
-  $data = json_decode(file_get_contents($file));
   $type = "player";//TODO - Make selectable in future
 
   $sqlSelect = "$[PREFIX]_entity.`name` as `player`";
@@ -57,7 +68,7 @@ Class SScoreboad{
   
   $sqlOrder = array(); 
   $id = 0;
-  foreach($data as $entry){
+  foreach($selectedScoreboard->data as $entry){
    //{"label":"diamonds mined","domain":".*","world":".*","cat":"blockdestroy","stat":"diamondore"}
    $sqlSelect .= ",\n vk$id.`value` as `" . $entry->label . "`";
    
@@ -143,6 +154,9 @@ SQL;
   return formatStat($this->fields[$this->fieldIdx]["data"]["statistic"],$this->data[$this->dataIdx][$this->the_field_name()]);
  }
  
+ function the_title(){
+  return $this->title;
+ }
  
 }
 
