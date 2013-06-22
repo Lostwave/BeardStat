@@ -15,17 +15,7 @@ Class SPlayerStat{
  }
  
  function getValueFormatted(){
-  if(!isset(StatTabs::$statLookup[$this->statistic])){return number_format($this->value);}
-  
-  switch(StatTabs::$statLookup[$this->statistic]["formatting"]){
-   case 'time':
-    return gettimeformat($this->value);
-    break;
-   case 'timestamp':
-    return date(BS_FORMAT_DATE,$this->value);
-  }
-  
-  return number_format($this->value);
+  return formatStat($this->statistic,$this->value);
  }
  
 }

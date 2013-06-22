@@ -1,46 +1,4 @@
 <?php
-/**
- * Return value of array (used to bypass func()[x] issue
- * @param unknown $array
- * @param unknown $key
- * @return unknown
- */
-function array_value($array, $key) {
- return $array[$key];
-}
-/**
- * Search associative array for value based on regex match of key
- * @param unknown $array
- * @param unknown $regex
- * @return unknown
- */
-function arr_regex($array,$regex){
- foreach($array as $k=>$v){
-  if(preg_match('/' . $regex . '/', $k)){
-   return $v;
-  }
- }
-}
-/**
- * Format stat
- * @param string $stat 
- * @param number $value
- * @return string
- */
-function formatStat($stat,$value){
- if(!isset(StatTabs::$statLookup[$stat])){return number_format($value);}
-
- switch(StatTabs::$statLookup[$stat]["formatting"]){
-  case 'time':
-   return gettimeformat($value);
-   break;
-  case 'timestamp':
-   return date(BS_FORMAT_DATE,$value);
-   break;
-
- }
- return number_format($value);
-}
 
 /**
  * Class for accessing and iterating scoreboard data
