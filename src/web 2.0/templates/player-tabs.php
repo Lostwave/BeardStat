@@ -2,10 +2,18 @@
 $p = new SPlayer($_GET['playerName']);
 $tabs = new StatTabs("tabs.json");
 ?>
-<h2>
-		<canvas class="head head-huge" data-name="<?php echo $p->name;?>"></canvas>
-		<?php echo $p->name; ?>
-	</h2>
+   <div style="float:left"><h2><canvas class="head head-huge" data-name="<?php echo $p->name;?>"></canvas><?php echo $p->name; ?></h2></div>
+	
+	<div style="float:right;margin-top:20px;margin-right:20px;margin-bottom:0px;">
+	<form action="showplayer.php" method="get">
+		<div class="input-append">
+			<input type="hidden" name="search"> <input type="text"
+				name="playerName" placeholder="player name">
+			<button class="btn" type="submit">Search!</button>
+		</div>
+	</form>
+	</div>
+	
 	<div class="tab-stats span7">
 		<ul class="nav nav-tabs">
 			<?php 
