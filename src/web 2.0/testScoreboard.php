@@ -13,7 +13,7 @@ width:32px;
 height:32px;
 }
 </style>
-<h1><?php echo $score->the_title(); ?></h1>
+<div style="float:left"><h1><?php echo $score->the_title(); ?></h1></div><div style="float:right;margin-top:20px;margin-right:20px;margin-bottom:0px;"><?php include 'scoreboard-select.php';?></div>
 <table class="table">
 <tr><th></th><th>Rank</th><th>Player</th>
 <?php 
@@ -22,7 +22,6 @@ while($score->have_field()){
 }
 $score->reset_field();
 ?></tr>
-</tr>
 <?php 
 while($score->have_entry()){
 ?><tr><td><canvas class="head" data-name="<?php echo $score->the_player_name(); ?>"></canvas></td><td><?php echo $score->the_rank(); ?></td><td><?php echo $score->the_player_name(); ?></td><?php 
@@ -41,21 +40,7 @@ else
 {
 ?>
 <div class="span6 offset2">
-<form action="testScoreboard.php" method="get">
 <h1>Scoreboards</h1>
-<div class="input-append">
-<select name="board">
-<?php 
-while($score->have_scoreboard()){
-?><option value="<?php echo $score->the_scoreboard_id();?>"><?php echo $score->the_scoreboard_title();?></option><?php 
-}
-?>
-</select>
-<button class="btn" type="submit">View</button>
+<?php include 'scoreboard-select.php';?>
 </div>
-</form>
-</div>
-<?php }
-?>
-</div>
-<?php include 'templates/footer.php';?>
+<?php };include 'templates/footer.php';?>
