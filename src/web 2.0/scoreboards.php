@@ -13,7 +13,7 @@ width:32px;
 height:32px;
 }
 </style>
-<div style="float:left"><h1><?php echo $score->the_title(); ?></h1></div><div style="float:right;margin-top:20px;margin-right:20px;margin-bottom:0px;"><?php include 'scoreboard-select.php';?></div>
+<div style="float:left"><h1><?php echo $score->the_title(); ?></h1></div><div style="float:right;margin-top:20px;margin-right:20px;margin-bottom:0px;"><?php include 'templates/scoreboard-select.php';?></div>
 <table class="table">
 <tr><th></th><th>Rank</th><th>Player</th>
 <?php 
@@ -41,6 +41,6 @@ else
 ?>
 <div class="span6 offset2">
 <h1>Scoreboards</h1>
-<?php include 'scoreboard-select.php';?>
+<?php include 'templates/scoreboard-select.php';?>
 </div>
 <?php };include 'templates/footer.php';?>

@@ -1,4 +1,4 @@
-<form action="testScoreboard.php" method="get">
+<form action="scoreboards.php" method="get">
 <div class="input-append">
 <select name="board">
 <?php 

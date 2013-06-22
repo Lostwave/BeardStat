@@ -10,7 +10,7 @@ include 'templates/header.php';
 	<h2>
 		<img
 			src="https://minotar.net/avatar/<?php echo $_GET['playerName']; ?>/100">
-		<?php echo $_GET['playerName']; ?>
+		<?php echo strip_tags($_GET['playerName']); ?>
 	</h2>
 	<div class="tab-stats span7">
 		<ul class="nav nav-tabs">
