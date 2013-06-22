@@ -1,18 +1,14 @@
 <?php
 include 'api/api.php';
+define('BS_TITLE', "Scoreboards");
 include 'templates/header.php';
-?><div class="span8 offset2" style="background-color: #FAFAFA">
-<?php
+
 $score = new SScoreboad('config/scoreboards.json'); 
 if(isset($_GET['board'])){
 $score->load($_GET['board']);
 ?>
-<style>
-.head{
-width:32px;
-height:32px;
-}
-</style>
+<div class="span8 offset2" style="background-color: #FAFAFA">
+
 <div style="float:left"><h1><?php echo $score->the_title(); ?></h1></div><div style="float:right;margin-top:20px;margin-right:20px;margin-bottom:0px;"><?php include 'templates/scoreboard-select.php';?></div>
 <table class="table">
 <tr><th></th><th>Rank</th><th>Player</th>
@@ -33,7 +29,6 @@ while($score->have_entry()){
 }
 ?>
 </table>
-<script type="text/javascript" src="js/PlayerHead.js"></script>
 <?php 
 }
 else

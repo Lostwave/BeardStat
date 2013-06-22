@@ -10,12 +10,14 @@ Class StatTabs{
  
  
  public static $statLookup = null;
+ public static $catLookup = null;
  
  /**
   * Bootstrap lookup table
   */
  static function init(){
   StatTabs::$statLookup = getLookup("statistic","statistic");
+  StatTabs::$catLookup = getLookup("category","category");
  }
  
  /**
@@ -101,9 +103,24 @@ Class StatTabs{
   return $player->getStat($entry->domain,$entry->world,$entry->cat,$entry->stat);
  }
  
- function the_entry_label(){
 
-  return isset(StatTabs::$statLookup[$this->the_entry()->stat]) ? (strlen(StatTabs::$statLookup[$this->the_entry()->stat]["name"]) > 0 ? StatTabs::$statLookup[$this->the_entry()->stat]["name"] : $this->the_entry()->stat) : '[[' . $this->the_entry()->stat . ']]'; 
+ 
+ function the_entry_label(){
+  
+  if(isset(StatTabs::$statLookup[$this->the_entry()->stat])){
+    if(strlen(StatTabs::$statLookup[$this->the_entry()->stat]["name"]) > 0){
+      $name = StatTabs::$statLookup[$this->the_entry()->stat]["name"];
+    }
+    else
+    {
+    $name = $this->the_entry()->stat;
+    }
+  }
+  else
+  {
+   $name = '[[' . $this->the_entry()->stat . ']]';
+  }
+  return sprintf(StatTabs::$catLookup[$this->the_entry()->cat]["statwrapper"],$name);
  }
  
  

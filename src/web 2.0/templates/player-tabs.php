@@ -3,8 +3,7 @@ $p = new SPlayer($_GET['playerName']);
 $tabs = new StatTabs("tabs.json");
 ?>
 <h2>
-		<img
-			src="https://minotar.net/avatar/<?php echo $p->name; ?>/100">
+		<canvas class="head head-huge" data-name="<?php echo $p->name;?>"></canvas>
 		<?php echo $p->name; ?>
 	</h2>
 	<div class="tab-stats span7">
@@ -21,7 +20,7 @@ $tabs = new StatTabs("tabs.json");
 			<?php
 			$firstTab = false;
 }
-echo "</ul><div class=\"tab-content\">";
+?></ul><div class="tab-content"><?php 
 $tabs->reset_tabs();
 $dump = "";
 $firstTab = true;
@@ -32,7 +31,7 @@ while($tabs->have_tabs()){
   $dump .= "Making tab $id:$name\n";//DUMP
   
   
-  echo "</ul><div id=\"$id\" class=\"tab-pane fade " . ($firstTab ? "active in":"") . "\">";
+  echo "<div id=\"$id\" class=\"tab-pane fade " . ($firstTab ? "active in":"") . "\">";
   if($firstTab){
 $firstTab=false;
 }
@@ -53,9 +52,6 @@ while($tabs->have_headings()){
  echo "</table></div>";
 }
 $tabs->reset_tabs();
-
-echo "</div>";
-
-
 ?>
+</div>
 </div>
