@@ -15,6 +15,7 @@ import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 import com.tehbeard.BeardStat.utils.LanguagePack;
+import com.tehbeard.BeardStat.utils.StatisticMetadata;
 
 /**
  * /played - Show users playtime /played name - show player of name
@@ -34,7 +35,7 @@ public class playedCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
 
-            long seconds = 0;
+            int seconds = 0;
             EntityStatBlob blob;
 
             // If sender is a player, default to them
@@ -75,17 +76,12 @@ public class playedCommand implements CommandExecutor {
         return true;
     }
 
-    public static String getPlayedString(long seconds) {
-        String output = LanguagePack.getMsg("command.played.zero");
+    public static String getPlayedString(int seconds) {
+        
         if (seconds > 0) {
-            int weeks = (int) seconds / 604800;
-            int days = (int) Math.ceil((seconds - (604800 * weeks)) / 86400);
-            int hours = (int) Math.ceil((seconds - ((86400 * days) + (604800 * weeks))) / 3600);
-            int minutes = (int) Math.ceil((seconds - ((604800 * weeks) + (86400 * days) + (3600 * hours))) / 60);
-
-            output = LanguagePack.getMsg("command.played.output", weeks, days, hours, minutes);
+            return StatisticMetadata.formatStat("playedfor",seconds);
         }
 
-        return output;
+        return LanguagePack.getMsg("command.played.zero");
     }
 }
