@@ -36,7 +36,7 @@ public class EntityStatBlob implements VariableProvider {
         if(type.equals(BeardStat.PLAYER_TYPE)){
             for (Entry<String, String> entry : dynamics.entrySet()) {
 
-                String[] parts = entry.getKey().split("\\.");
+                String[] parts = entry.getKey().split("\\::");
 
                 String domain = BeardStat.DEFAULT_DOMAIN;
                 String world = BeardStat.GLOBAL_WORLD;
@@ -59,7 +59,7 @@ public class EntityStatBlob implements VariableProvider {
         // dynamics that will be saved to database
         for (Entry<String, String> entry : dynamicsSaved.entrySet()) {
 
-            String[] parts = entry.getKey().split("\\.");
+            String[] parts = entry.getKey().split("\\::");
 
             String domain = BeardStat.DEFAULT_DOMAIN;
             String world = BeardStat.GLOBAL_WORLD;
@@ -113,7 +113,7 @@ public class EntityStatBlob implements VariableProvider {
      * @param stat
      */
     public void addStat(IStat stat) {
-        this.stats.put(stat.getDomain() + "." + stat.getWorld() + "." + stat.getCategory() + "." + stat.getStatistic(),
+        this.stats.put(stat.getDomain() + "::" + stat.getWorld() + "::" + stat.getCategory() + "::" + stat.getStatistic(),
                 stat);
         stat.setOwner(this);
     }
@@ -125,7 +125,7 @@ public class EntityStatBlob implements VariableProvider {
      * @return
      */
     public IStat getStat(String domain, String world, String category, String statistic) {
-        IStat psn = this.stats.get(domain + "." + world + "." + category + "." + statistic);
+        IStat psn = this.stats.get(domain + "::" + world + "::" + category + "::" + statistic);
         if (psn != null) {
             return psn;
         }
@@ -169,9 +169,9 @@ public class EntityStatBlob implements VariableProvider {
      */
     public StatVector getStats(String domain, String world, String category, String statistic, boolean readOnly) {
         String pattern = starToRegex(domain);
-        pattern += "\\." + starToRegex(world);
-        pattern += "\\." + starToRegex(category);
-        pattern += "\\." + starToRegex(statistic);
+        pattern += "\\::" + starToRegex(world);
+        pattern += "\\::" + starToRegex(category);
+        pattern += "\\::" + starToRegex(statistic);
 
         return getStats(domain, world, category, statistic, pattern, readOnly);
     }
@@ -224,13 +224,13 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     public boolean hasStat(String domain, String world, String category, String statistic) {
-        return this.stats.containsKey(domain + "." + world + "." + category + "." + statistic);
+        return this.stats.containsKey(domain + "::" + world + "::" + category + "::" + statistic);
 
     }
 
     @Override
     public int resolveVariable(String var) {
-        String[] parts = var.split("\\.");
+        String[] parts = var.split("\\::");
         String domain = BeardStat.DEFAULT_DOMAIN;
         String world = "*";
         String cat = "";
@@ -259,8 +259,8 @@ public class EntityStatBlob implements VariableProvider {
         blob.stats.clear();
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
-                BeardStat.printDebugCon("Archiving stat " + stat.getDomain() + "." + stat.getWorld() + "."
-                        + stat.getCategory() + "." + stat.getStatistic() + " = " + stat.getValue());
+                BeardStat.printDebugCon("Archiving stat " + stat.getDomain() + "::" + stat.getWorld() + "::"
+                        + stat.getCategory() + "::" + stat.getStatistic() + " = " + stat.getValue());
                 IStat is = stat.clone();
                 if (is != null) {
                     BeardStat.printDebugCon("Stat added");
