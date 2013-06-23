@@ -18,7 +18,7 @@ public class TestPlayerStatBlob {
      */
     @Before
     public void setup() {
-        this.blob = new EntityStatBlob("name", 101, "player");
+        this.blob = new EntityStatBlob("name", 101, "");
     }
 
     /*
@@ -28,7 +28,6 @@ public class TestPlayerStatBlob {
      */
     @Test
     public void testAddStat() {
-
         StaticStat stat = new StaticStat("domain", "world", "cat", "stat", 555);
 
         this.blob.addStat(stat);
