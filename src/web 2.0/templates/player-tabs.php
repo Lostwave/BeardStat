@@ -16,7 +16,7 @@ $tabs = new StatTabs("tabs.json");
 	<div style="clear:both;margin-bottom:8px" class="span7">
 	<?php
 	  //Health of player
-	  $health = 11;//TODO - SET TO THIS AFTER TESTING $p->getHealth();
+	  $health = $p->getHealth();
 	  while($health > 0){
         if($health >= 2){
           echo "<img src=\"img/Heart.svg\" class=\"heart\">";

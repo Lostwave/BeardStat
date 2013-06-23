@@ -27,9 +27,5 @@ stats:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
-customstats:
-  - "comp.kd = $kills.total - $deaths.total"
-savedcustomstats:
-  - "comp.pk = $kills.player - $deaths.player"
 customformats:
   - "stats.move:%1$s metres" 
