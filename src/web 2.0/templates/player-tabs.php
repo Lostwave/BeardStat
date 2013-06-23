@@ -2,7 +2,7 @@
 $p = new SPlayer($_GET['playerName']);
 $tabs = new StatTabs("tabs.json");
 ?>
-   <div style="float:left"><h2><canvas class="head head-huge" data-name="<?php echo $p->name;?>"></canvas>  <?php echo $p->name; ?></h2></div>
+   <div style="float:left"><h2><canvas class="head head-huge" data-name="<?php echo $p->name;?>"></canvas><?php echo $p->name; ?></h2></div>
 	
 	<div style="float:right;margin-top:20px;margin-right:20px;margin-bottom:0px;">
 	<form action="showplayer.php" method="get">
@@ -13,7 +13,21 @@ $tabs = new StatTabs("tabs.json");
 		</div>
 	</form>
 	</div>
-	
+	<div style="clear:both;margin-bottom:8px" class="span7">
+	<?php
+	  //Health of player
+	  $health = 11;//TODO - SET TO THIS AFTER TESTING $p->getHealth();
+	  while($health > 0){
+        if($health >= 2){
+          echo "<img src=\"img/Heart.svg\" class=\"heart\">";
+        }
+        else if($health == 1){
+          echo "<img src=\"img/Half_Heart.svg\" class=\"heart\">";
+        }
+        $health -= 2;
+      }
+	?>
+	</div>
 	<div class="tab-stats span7">
 		<ul class="nav nav-tabs">
 			<?php 

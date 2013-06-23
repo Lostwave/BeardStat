@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
+
 import me.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.BeardStat.BeardStat;
@@ -54,6 +56,86 @@ public class EntityStatBlob implements VariableProvider {
                 }
                 addStat(new DynamicStat(domain, world, cat, stat, entry.getValue()));
             }
+            //Add health status
+            addStat(new IStat() {
+                
+                @Override
+                public void setWorld(String world) {
+                }
+                
+                @Override
+                public void setValue(int value) {
+                    
+                }
+                
+                @Override
+                public void setOwner(EntityStatBlob playerStatBlob) {
+                    
+                }
+                
+                @Override
+                public void setDomain(String domain) {
+                    
+                }
+                
+                @Override
+                public boolean isArchive() {
+                    return true;
+                }
+                
+                @Override
+                public void incrementStat(int i) {
+                }
+                
+                @Override
+                public String getWorld() {
+
+                    return BeardStat.GLOBAL_WORLD;//Bukkit.getPlayer(getName()).getWorld().getName();
+                }
+                
+                @Override
+                public int getValue() {
+                    // TODO Auto-generated method stub
+                    return Bukkit.getPlayer(getName()).getHealth();
+                }
+                
+                @Override
+                public String getStatistic() {
+                    return "health";
+                }
+                
+                @Override
+                public EntityStatBlob getOwner() {
+                    return null;
+                }
+                
+                @Override
+                public String getDomain() {
+                    return BeardStat.DEFAULT_DOMAIN;
+                }
+                
+                @Override
+                public String getCategory() {
+                    return "status";
+                }
+                
+                @Override
+                public void decrementStat(int i) {
+                }
+                
+                @Override
+                public void clearArchive() {
+                }
+                
+                @Override
+                public void archive() {
+                }
+                
+                @Override
+                public IStat clone() {
+                    return new StaticStat(getDomain(), getWorld(), getCategory(), getStatistic(), getValue());
+                }
+            });
         }
 
         // dynamics that will be saved to database

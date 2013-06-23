@@ -146,6 +146,9 @@ SQL;
    
  }
 
+ function getHealth(){
+  return 0 + @$this->data["default"]["__global__"]["status"]["health"];
+ }
 }
 
 ?>

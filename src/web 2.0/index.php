@@ -6,6 +6,7 @@ include 'templates/header.php';
 ?>
 <div class="hero-unit">
 <h1>Search players</h1>
+  <p>Find your friends and enemies<img src="http://media-mcw.cursecdn.com/a/a7/Heart.svg" style="width:16px;height:32px;image-scale:cover;"></p>
 	<form action="showplayer.php" method="get">
 		<div class="input-append">
 			<input type="hidden" name="search"> <input type="text"
@@ -17,6 +18,7 @@ include 'templates/header.php';
 
 <div class="hero-unit">
 <h1>Scoreboards</h1>
+<p>Find out whose got too much time to play, and whose most likely to fall of a ledge.</p>
 <?php 
 $score = new SScoreboad('config/scoreboards.json');
 include 'templates/scoreboard-select.php';
