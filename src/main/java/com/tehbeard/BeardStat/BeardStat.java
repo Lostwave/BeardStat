@@ -54,6 +54,7 @@ public class BeardStat extends JavaPlugin {
     public static final String  GLOBAL_WORLD   = "__global__";
     // Stat permission prefix
     private static final String PERM_PREFIX    = "stat";
+    public static final String PLAYER_TYPE = "player";
 
     private static BeardStat    self;
     private int                 saveTaskId;

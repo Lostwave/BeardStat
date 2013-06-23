@@ -46,11 +46,11 @@ public class PlayerStatManager implements CommandExecutor {
         // iterate over cache and save
         while (i.hasNext()) {
             Entry<String, Promise<EntityStatBlob>> entry = i.next();
-            String player = entry.getKey();
+            String entityId = entry.getKey();
 
             // check if rejected promise, remove from cache silently
             if (entry.getValue().isRejected()) {
-                BeardStat.printCon("Promise[" + player + "] was rejected (error?), removing from cache.");// alert
+                BeardStat.printCon("Promise[" + entityId + "] was rejected (error?), removing from cache.");// alert
                 // debug
                 // dump
                 i.remove();// clear it out
@@ -62,31 +62,36 @@ public class PlayerStatManager implements CommandExecutor {
                 continue;
             }
 
-            // record time for player
-            ManagerRecord timeRecord = OnlineTimeManager.getRecord(player);
-
             if (entry.getValue().getValue() != null) {
-                if (timeRecord != null) {
-                    BeardStat.printDebugCon("saving time: [Player : " + player + " , world: " + timeRecord.world
-                            + ", time: " + timeRecord.sessionTime() + "]");
-                    if (timeRecord.world != null) {
-                        entry.getValue().getValue()
-                                .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
-                                .incrementStat(timeRecord.sessionTime());
+                // record time for player
+                EntityStatBlob blob = entry.getValue().getValue();
+
+                if(blob.getType().equals(BeardStat.PLAYER_TYPE)){
+                    String entityName = blob.getName(); 
+                    ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
+
+                    if (timeRecord != null) {
+                        BeardStat.printDebugCon("saving time: [Player : " + entityName + " , world: " + timeRecord.world
+                                + ", time: " + timeRecord.sessionTime() + "]");
+                        if (timeRecord.world != null) {
+                            entry.getValue().getValue()
+                            .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
+                            .incrementStat(timeRecord.sessionTime());
+                        }
+                    }
+                    if (isPlayerOnline(entityName)) {
+                        OnlineTimeManager.setRecord(entityName, Bukkit.getPlayer(entityName).getWorld().getName());
+                    } else {
+                        OnlineTimeManager.wipeRecord(entityName);
+                        i.remove();
                     }
                 }
 
-                this.backendDatabase.pushPlayerStatBlob(entry.getValue().getValue());
+                this.backendDatabase.pushPlayerStatBlob(blob);
 
-                if (isPlayerOnline(player)) {
-                    OnlineTimeManager.setRecord(player, Bukkit.getPlayer(player).getWorld().getName());
-                } else {
-                    OnlineTimeManager.wipeRecord(player);
-                    i.remove();
-                }
             } else {
                 // Nulled player data
-                BeardStat.printCon("Promise[" + player + "] had a null value! Removed from cache.");
+                BeardStat.printCon("Promise[" + entityId + "] had a null value! Removed from cache.");
                 i.remove();
             }
 
@@ -98,6 +103,32 @@ public class PlayerStatManager implements CommandExecutor {
         return Bukkit.getOfflinePlayer(player).isOnline();
     }
 
+
+    public Promise<EntityStatBlob> getBlob(String name,String type,boolean create){
+        final String cacheKey = type + "::" + name;
+        if (this.backendDatabase == null) {
+            return null;
+        }
+        if (!this.cache.containsKey(cacheKey)) {
+            Promise<EntityStatBlob> promise = this.backendDatabase.pullPlayerStatBlob(name,create);
+            this.cache.put(cacheKey, promise);//Pre-emptively cache the promise, defer removing to on error.
+
+            Delegate<Void, Promise<EntityStatBlob>> killCache = new Delegate<Void, Promise<EntityStatBlob>>() {
+
+                @Override
+                public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
+                    if(params.getValue() == null){
+                        cache.remove(cacheKey);
+                    }
+                    return null;
+                }
+            };
+
+            promise.onReject(killCache);
+        }
+        return this.cache.get(cacheKey);
+    }
+
     /**
      * Asyncronously retrieves a players Stat Blob, or create one if it doesn't
      * exist
@@ -107,13 +138,7 @@ public class PlayerStatManager implements CommandExecutor {
      *         an error
      */
     public Promise<EntityStatBlob> getPlayerBlobASync(String name) {
-        if (this.backendDatabase == null) {
-            return null;
-        }
-        if (!this.cache.containsKey(name)) {
-            this.cache.put(name, this.backendDatabase.pullPlayerStatBlob(name));
-        }
-        return this.cache.get(name);
+        return getBlob(name, BeardStat.PLAYER_TYPE, true);
     }
 
     /**
@@ -135,23 +160,7 @@ public class PlayerStatManager implements CommandExecutor {
      * @return The player's stat blob or a null if not found
      */
     public Promise<EntityStatBlob> findPlayerBlobASync(final String name) {
-        if (this.backendDatabase == null) {
-            return null;
-        }
-        if (!this.cache.containsKey(name)) {
-            Promise<EntityStatBlob> pbs = this.backendDatabase.pullPlayerStatBlob(name, false);
-            pbs.onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
-
-                // add promise to cache on resolve
-                @Override
-                public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
-                    PlayerStatManager.this.cache.put(name, params);
-                    return null;
-                }
-            });
-            return pbs;
-        }
-        return this.cache.get(name);
+        return getBlob(name, BeardStat.PLAYER_TYPE, false);
     }
 
     /**

@@ -33,25 +33,27 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     private void addDynamics() {
-        for (Entry<String, String> entry : dynamics.entrySet()) {
+        if(type.equals(BeardStat.PLAYER_TYPE)){
+            for (Entry<String, String> entry : dynamics.entrySet()) {
 
-            String[] parts = entry.getKey().split("\\.");
+                String[] parts = entry.getKey().split("\\.");
 
-            String domain = BeardStat.DEFAULT_DOMAIN;
-            String world = BeardStat.GLOBAL_WORLD;
-            String cat = null;
-            String stat = null;
-            if (parts.length == 2) {
-                BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
-                cat = parts[0];
-                stat = parts[1];
-            } else if (parts.length == 4) {
-                domain = parts[0];
-                world = parts[1];
-                cat = parts[2];
-                stat = parts[3];
+                String domain = BeardStat.DEFAULT_DOMAIN;
+                String world = BeardStat.GLOBAL_WORLD;
+                String cat = null;
+                String stat = null;
+                if (parts.length == 2) {
+                    BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
+                    cat = parts[0];
+                    stat = parts[1];
+                } else if (parts.length == 4) {
+                    domain = parts[0];
+                    world = parts[1];
+                    cat = parts[2];
+                    stat = parts[3];
+                }
+                addStat(new DynamicStat(domain, world, cat, stat, entry.getValue()));
             }
-            addStat(new DynamicStat(domain, world, cat, stat, entry.getValue()));
         }
 
         // dynamics that will be saved to database
