@@ -103,7 +103,13 @@ public class PlayerStatManager implements CommandExecutor {
         return Bukkit.getOfflinePlayer(player).isOnline();
     }
 
-
+    /**
+     * Gets a blob from the database or cache.
+     * @param name name of blob
+     * @param type type of blob, use {@link BeardStat.PLAYER_TYPE} for players
+     * @param create whether to create the blob or not if it's not found
+     * @return
+     */
     public Promise<EntityStatBlob> getBlob(String name,String type,boolean create){
         final String cacheKey = type + "::" + name;
         if (this.backendDatabase == null) {

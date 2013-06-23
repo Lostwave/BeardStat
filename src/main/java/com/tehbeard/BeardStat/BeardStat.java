@@ -483,8 +483,9 @@ public class BeardStat extends JavaPlugin {
         if (is == null) {
             throw new IllegalArgumentException("No SQL file found with name " + filename);
         }
-        String sql = new Scanner(is).useDelimiter("\\Z").next().replaceAll("\\Z", "").replaceAll("\\n|\\r", "");
-
+        Scanner scanner = new Scanner(is);
+        String sql = scanner.useDelimiter("\\Z").next().replaceAll("\\Z", "").replaceAll("\\n|\\r", "");
+        scanner.close();
         return sql.replaceAll("\\$\\{PREFIX\\}", prefix);
 
     }
