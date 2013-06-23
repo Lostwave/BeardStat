@@ -422,6 +422,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     EntityStatBlob pb = null;
 
                     if (!rs.next()) {
+                        if(!create){
+                            promise.reject(new NoRecordFoundException());//Fail out here instead.
+                            return;
+                        }
+
+
                         // No player found! Let's create an entry for them!
                         rs.close();
                         rs = null;
