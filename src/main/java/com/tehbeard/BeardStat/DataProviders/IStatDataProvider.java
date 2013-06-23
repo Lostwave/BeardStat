@@ -22,7 +22,7 @@ public interface IStatDataProvider {
      *            Player to pull stats for. Creates a new object if non exists
      * @return a PlayerStatBlob containing all stats for a player
      */
-    public Promise<EntityStatBlob> pullPlayerStatBlob(String player);
+    public Promise<EntityStatBlob> pullStatBlob(String player,String type);
 
     /**
      * Pull the players stats from the database.
@@ -33,7 +33,7 @@ public interface IStatDataProvider {
      *            wether to create the player object
      * @return a PlayerStatBlob containing all stats for a player
      */
-    public Promise<EntityStatBlob> pullPlayerStatBlob(String player, boolean create);
+    public Promise<EntityStatBlob> pullStatBlob(String player,String type, boolean create);
 
     /**
      * Push all stats for this player to the database. This may happen
@@ -42,7 +42,7 @@ public interface IStatDataProvider {
      * @param player
      *            StatBlob to push to the database
      */
-    public void pushPlayerStatBlob(EntityStatBlob player);
+    public void pushStatBlob(EntityStatBlob player);
 
     /**
      * Forces the DataProvider to flush data to the backend, in the case of a
@@ -62,7 +62,7 @@ public interface IStatDataProvider {
      * @param player
      *            Player to delete stats of
      */
-    public void deletePlayerStatBlob(String player);
+    public void deleteStatBlob(String player);
 
     /**
      * Has a stat blob for a player

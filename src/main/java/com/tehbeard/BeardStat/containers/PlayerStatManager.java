@@ -87,7 +87,7 @@ public class PlayerStatManager implements CommandExecutor {
                     }
                 }
 
-                this.backendDatabase.pushPlayerStatBlob(blob);
+                this.backendDatabase.pushStatBlob(blob);
 
             } else {
                 // Nulled player data
@@ -116,7 +116,7 @@ public class PlayerStatManager implements CommandExecutor {
             return null;
         }
         if (!this.cache.containsKey(cacheKey)) {
-            Promise<EntityStatBlob> promise = this.backendDatabase.pullPlayerStatBlob(name,create);
+            Promise<EntityStatBlob> promise = this.backendDatabase.pullStatBlob(name,type,create);
             this.cache.put(cacheKey, promise);//Pre-emptively cache the promise, defer removing to on error.
 
             Delegate<Void, Promise<EntityStatBlob>> killCache = new Delegate<Void, Promise<EntityStatBlob>>() {
@@ -131,6 +131,7 @@ public class PlayerStatManager implements CommandExecutor {
             };
 
             promise.onReject(killCache);
+            
         }
         return this.cache.get(cacheKey);
     }
@@ -207,7 +208,7 @@ public class PlayerStatManager implements CommandExecutor {
             return false;
         }
         this.cache.remove(player);
-        this.backendDatabase.deletePlayerStatBlob(player);
+        this.backendDatabase.deleteStatBlob(player);
         return true;
     }
 

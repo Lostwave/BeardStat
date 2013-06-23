@@ -393,12 +393,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public Promise<EntityStatBlob> pullPlayerStatBlob(String player) {
-        return pullPlayerStatBlob(player, true);
+    public Promise<EntityStatBlob> pullStatBlob(String player,String type) {
+        return pullStatBlob(player,type, true);
     }
 
     @Override
-    public Promise<EntityStatBlob> pullPlayerStatBlob(final String player, final boolean create) {
+    public Promise<EntityStatBlob> pullStatBlob(final String player,final String type, final boolean create) {
 
         final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
@@ -416,8 +416,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                     // Ok, try to get entity from database
                     JDBCStatDataProvider.this.loadEntity.setString(1, player);
-                    // TODO:ALLOW CHOICE OF ENTITY TYPE
-                    JDBCStatDataProvider.this.loadEntity.setString(2, "player");
+                    JDBCStatDataProvider.this.loadEntity.setString(2, type);
 
                     ResultSet rs = JDBCStatDataProvider.this.loadEntity.executeQuery();
                     EntityStatBlob pb = null;
@@ -427,7 +426,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         rs.close();
                         rs = null;
                         JDBCStatDataProvider.this.saveEntity.setString(1, player);
-                        JDBCStatDataProvider.this.saveEntity.setString(2, "player");
+                        JDBCStatDataProvider.this.saveEntity.setString(2, type);
                         JDBCStatDataProvider.this.saveEntity.executeUpdate();
                         rs = JDBCStatDataProvider.this.saveEntity.getGeneratedKeys();
                         rs.next();// load player id
@@ -479,7 +478,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public void pushPlayerStatBlob(EntityStatBlob player) {
+    public void pushStatBlob(EntityStatBlob player) {
 
         synchronized (this.writeCache) {
 
@@ -569,7 +568,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public void deletePlayerStatBlob(String player) {
+    public void deleteStatBlob(String player) {
         throw new UnsupportedOperationException();
     }
 

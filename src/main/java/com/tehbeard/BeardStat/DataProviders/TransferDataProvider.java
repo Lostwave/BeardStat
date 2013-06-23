@@ -33,11 +33,12 @@ public class TransferDataProvider implements IStatDataProvider {
     }
 
     private void transfer() {
+        //TODO: FEEX
         BeardStat.printCon("Beginning data transfer");
         List<String> theList = this.oldProvider.getStatBlobsHeld();
         EntityStatBlob b;
         for (String player : theList) {
-            b = this.oldProvider.pullPlayerStatBlob(player, false).getValue();
+            b = this.oldProvider.pullStatBlob(player,"player", false).getValue();
             if (b == null) {
                 BeardStat.printCon("[ERROR] " + player + " not found in old database");
                 continue;
@@ -46,7 +47,7 @@ public class TransferDataProvider implements IStatDataProvider {
                 s.archive();
             }
             BeardStat.printCon("Pushing " + player + " to new dataprovider");
-            this.newProvider.pushPlayerStatBlob(b);
+            this.newProvider.pushStatBlob(b);
 
         }
         BeardStat.printCon("Flushing data");
@@ -55,18 +56,18 @@ public class TransferDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public Promise<EntityStatBlob> pullPlayerStatBlob(String player) {
-        return pullPlayerStatBlob(player, true);
+    public Promise<EntityStatBlob> pullStatBlob(String player, String type) {
+        return pullStatBlob(player, type, true);
     }
 
     @Override
-    public Promise<EntityStatBlob> pullPlayerStatBlob(String player, boolean create) {
-        return this.newProvider.pullPlayerStatBlob(player, create);
+    public Promise<EntityStatBlob> pullStatBlob(String player, String type, boolean create) {
+        return this.newProvider.pullStatBlob(player,type, create);
     }
 
     @Override
-    public void pushPlayerStatBlob(EntityStatBlob player) {
-        this.newProvider.pushPlayerStatBlob(player);
+    public void pushStatBlob(EntityStatBlob player) {
+        this.newProvider.pushStatBlob(player);
 
     }
 
@@ -77,8 +78,8 @@ public class TransferDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public void deletePlayerStatBlob(String player) {
-        this.newProvider.deletePlayerStatBlob(player);
+    public void deleteStatBlob(String player) {
+        this.newProvider.deleteStatBlob(player);
 
     }
 
