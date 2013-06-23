@@ -58,23 +58,20 @@ public class StatCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
-            if (!BeardStat.hasPermission(sender, "command.stat")) {
-                BeardStat.sendNoPermissionError(sender);
-                return true;
-            }
-
             ArgumentPack arguments = new ArgumentPack(new String[] { "i", "h" }, new String[] { "p", "s" }, args);
 
             String player = null;
-
+            //Use another player
             if (BeardStat.hasPermission(sender, "command.stat.other")) {
                 player = arguments.getOption("p");
             }
 
+            //Else use this player
             if ((player == null) && (sender instanceof Player)) {
                 player = ((Player) sender).getName();
             }
 
+            //not a player and no player picked? show the help message
             if ((player == null) || arguments.getFlag("h")) {
                 sendHelpMessage(sender);
                 return true;
@@ -101,7 +98,7 @@ public class StatCommand implements CommandExecutor {
             if (arguments.getOption("s") != null) {
 
                 Stack<String> stat = new Stack<String>();
-                for (String s : arguments.getOption("s").split("\\.")) {
+                for (String s : arguments.getOption("s").split("\\:\\:")) {
                     stat.add(s);
                 }
 
@@ -122,7 +119,6 @@ public class StatCommand implements CommandExecutor {
                     sender.sendMessage(LanguagePack.getMsg("command.error.nostat"));
                     return true;
                 }
-                String msg = "IF YOU SEE THIS, SOMETHING DERPED HORRIBLY";
                 if (vector.size() == 1) {
                     IStat iStat = vector.iterator().next();
 
@@ -144,8 +140,6 @@ public class StatCommand implements CommandExecutor {
                     }
 
                 }
-
-                // String msg =
 
             } else {
                 Bukkit.dispatchCommand(sender, "statpage " + player + " default");
