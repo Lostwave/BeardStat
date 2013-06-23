@@ -398,7 +398,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public Promise<EntityStatBlob> pullStatBlob(final String player,final String type, final boolean create) {
+    public Promise<EntityStatBlob> pullStatBlob(final String player,final String type,final boolean create) {
 
         final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
@@ -456,10 +456,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                     BeardStat.printDebugCon("time taken to retrieve: " + ((new Date()).getTime() - t1)
                             + " Milliseconds");
-                    if (!foundStats && (create == false)) {
-                        promise.reject(new NoRecordFoundException());
-                        return;
-                    }
+
 
                     promise.resolve(pb);
                     return;
