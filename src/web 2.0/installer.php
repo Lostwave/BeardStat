@@ -61,10 +61,16 @@ else
  foreach($_POST as $k => $v){
    $configPage = str_replace('${' . $k . '}', $v, $configPage);
  }
- echo "<pre>";
- echo htmlspecialchars($configPage);
- echo "</pre>";
- file_put_contents("api/config.php", $configPage);
+ if(file_put_contents("api/config.php", $configPage)===false){
+   echo "<p> Failed to write to config file! Please save the section below as api/config.php, or configure the permissions to allow write access to api/</p>";
+   echo "<pre>";
+   echo htmlspecialchars($configPage);
+   echo "</pre>";
+ } 
+ else
+ {
+  echo "<p>Config successfully written,</p>";
+ }
 }
 ?>
 

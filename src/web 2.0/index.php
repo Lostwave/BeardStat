@@ -18,7 +18,7 @@ include 'templates/header.php';
 
 <div class="hero-unit">
 <h1>Scoreboards</h1>
-<p>Find out whose got too much time to play, and whose most likely to fall of a ledge.</p>
+<p>Find out who's got too much time to play, and who's most likely to fall of a ledge.</p>
 <?php 
 $score = new SScoreboad('config/scoreboards.json');
 include 'templates/scoreboard-select.php';
