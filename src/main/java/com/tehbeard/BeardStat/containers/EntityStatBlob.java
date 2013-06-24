@@ -59,6 +59,8 @@ public class EntityStatBlob implements VariableProvider {
             //Add health status
             addStat(new IStat() {
                 
+                private int lastHealth = 20;
+                
                 @Override
                 public void setWorld(String world) {
                 }
@@ -95,8 +97,10 @@ public class EntityStatBlob implements VariableProvider {
                 
                 @Override
                 public int getValue() {
-                    // TODO Auto-generated method stub
-                    return Bukkit.getPlayer(getName()).getHealth();
+                    if(Bukkit.getPlayer(getName())!=null){
+                        lastHealth = Bukkit.getPlayer(getName()).getHealth();
+                    }
+                    return lastHealth;
                 }
                 
                 @Override
