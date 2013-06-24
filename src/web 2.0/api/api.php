@@ -4,7 +4,7 @@ API file for beardstat web API.
 */
 define("BEARDSTAT_API_DIR", dirname(__FILE__) . "/");
 (@include BEARDSTAT_API_DIR . 'config.php') or die("<h1>No API config found!</h1>");
-$bs_db = new mysqli(BS_DB_HOST,BS_DB_USER,BS_DB_PASS,BS_DB_DB);
+$bs_db = new mysqli(BS_DB_HOST,BS_DB_USER,BS_DB_PASS,BS_DB_DB,BS_DB_PORT);
 if($bs_db->connect_errno > 0){
     die('Unable to connect to database [' . $bs_db->connect_error . ']');
 }
