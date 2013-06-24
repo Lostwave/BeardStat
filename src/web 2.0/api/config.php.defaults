@@ -3,7 +3,7 @@
 Config for BeardStat API
 */
 define('BS_DB_HOST',"${host}");
-define('BS_DB_USER',"${use}");
+define('BS_DB_USER',"${user}");
 define('BS_DB_PASS',"${pass}");
 define('BS_DB_DB',"${db}");
 define('BS_DB_PORT',${port});
