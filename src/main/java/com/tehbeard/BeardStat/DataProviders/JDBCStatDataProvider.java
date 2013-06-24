@@ -362,7 +362,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (!this.statistics.containsKey(name)) {
             BeardStat.printDebugCon("Recording new component: " + name);
             this.saveStatistic.setString(1, name);
-            this.saveStatistic.setString(2, name);
+            this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See if we can generate a localized name for this ourselves.
             this.saveStatistic.setString(3, Formatting.none.toString().toLowerCase());
             this.saveStatistic.execute();
             ResultSet rs = this.saveStatistic.getGeneratedKeys();
