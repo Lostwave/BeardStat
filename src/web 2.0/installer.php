@@ -6,7 +6,7 @@ include 'templates/header.php';
 	<h1>BeardStat web interface installer</h1>
 	<?php 
 	if(file_exists('api/config.php')){
-	 die("<p>Existing config detected installed disabled, delete api/config.php to use installer</p>");
+	 die("<p>Existing config detected installed disabled, delete api/config.php to use installer</p><p>Please delete this installer file asap to prevent security issues in the future.</p>");
 	}
 
 	if(!isset($_POST['host'])){
