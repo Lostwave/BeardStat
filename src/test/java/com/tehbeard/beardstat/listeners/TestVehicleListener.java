@@ -1,6 +1,7 @@
 package com.tehbeard.beardstat.listeners;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,51 +31,51 @@ import com.tehbeard.BeardStat.listeners.StatVehicleListener;
 @RunWith(PowerMockRunner.class)
 public class TestVehicleListener {
 
-    private PlayerStatManager manager;
-    private List<String> blacklist = new ArrayList<String>();
+    private PlayerStatManager   manager;
+    private List<String>        blacklist = new ArrayList<String>();
     private StatVehicleListener listener;
 
-    private EntityStatBlob blob;
-    
-    
+    private EntityStatBlob      blob;
+
     @Before
-    public void setup(){
-        //Create test blob
-        blob = new EntityStatBlob("bob", 0, "player");
-        //world blacklist
-        blacklist.add("blacklisted");
+    public void setup() {
+        // Create test blob
+        this.blob = new EntityStatBlob("bob", 0, "player");
+        // world blacklist
+        this.blacklist.add("blacklisted");
 
-        //Mock manager to return our blob
-        manager = mock(PlayerStatManager.class);
-        when(manager.getPlayerBlobASync(anyString())).thenReturn(new Deferred<EntityStatBlob>(blob));
+        // Mock manager to return our blob
+        this.manager = mock(PlayerStatManager.class);
+        when(this.manager.getPlayerBlobASync(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
 
-        listener = new StatVehicleListener(blacklist, manager);
+        this.listener = new StatVehicleListener(this.blacklist, this.manager);
     }
-    
+
     @Test
-    public void testPlayerCartRide(){
-        
+    public void testPlayerCartRide() {
+
         World world = mock(World.class);
         when(world.getName()).thenReturn("overworld");
-        
-        Location to = new Location(world,0,0,0);
-        Location from = new Location(world,1,0,0);
-        
+
+        Location to = new Location(world, 0, 0, 0);
+        Location from = new Location(world, 1, 0, 0);
+
         Vehicle v = mock(RideableMinecart.class);
         when(v.getWorld()).thenReturn(world);
-        
+
         Player bob = mock(Player.class);
         when(bob.getName()).thenReturn("bob");
-        
+
         when(v.getPassenger()).thenReturn(bob);
-        
+
         when(v.getType()).thenReturn(EntityType.MINECART);
-        
+
         VehicleMoveEvent event = new VehicleMoveEvent(v, from, to);
-        
-        listener.onVehicleMove(event);
-        
-        assertTrue(blob.getStat(BeardStat.DEFAULT_DOMAIN, "overworld", "vehicle", "minecart").isArchive());
-        assertEquals("Ride value is 1",1,blob.getStat(BeardStat.DEFAULT_DOMAIN, "overworld", "vehicle", "minecart").getValue());
+
+        this.listener.onVehicleMove(event);
+
+        assertTrue(this.blob.getStat(BeardStat.DEFAULT_DOMAIN, "overworld", "vehicle", "minecart").isArchive());
+        assertEquals("Ride value is 1", 1,
+                this.blob.getStat(BeardStat.DEFAULT_DOMAIN, "overworld", "vehicle", "minecart").getValue());
     }
 }

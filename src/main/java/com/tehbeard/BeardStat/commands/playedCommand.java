@@ -67,7 +67,8 @@ public class playedCommand implements CommandExecutor {
             sender.sendMessage(getPlayedString(seconds) + " total");
 
             for (IStat stat : vector) {
-                sender.sendMessage(LanguagePack.getMsg("command.stat.stat",stat.getWorld(),getPlayedString(stat.getValue())));
+                sender.sendMessage(LanguagePack.getMsg("command.stat.stat", stat.getWorld(),
+                        getPlayedString(stat.getValue())));
             }
         } catch (Exception e) {
             BeardStat.handleError(new BeardStatRuntimeException("An error occured running /played", e, true));
@@ -77,9 +78,9 @@ public class playedCommand implements CommandExecutor {
     }
 
     public static String getPlayedString(int seconds) {
-        
+
         if (seconds > 0) {
-            return StatisticMetadata.formatStat("playedfor",seconds);
+            return StatisticMetadata.formatStat("playedfor", seconds);
         }
 
         return LanguagePack.getMsg("command.played.zero");

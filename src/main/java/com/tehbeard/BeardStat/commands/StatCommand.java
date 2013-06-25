@@ -10,11 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.conversations.Conversable;
-import org.bukkit.conversations.Conversation;
-import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.conversations.ConversationAbandonedListener;
-import org.bukkit.conversations.ExactMatchConversationCanceller;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
@@ -34,32 +29,29 @@ import com.tehbeard.BeardStat.utils.StatisticMetadata;
  */
 public class StatCommand implements CommandExecutor {
 
-    private PlayerStatManager               playerStatManager;
+    private PlayerStatManager playerStatManager;
 
-    private ExactMatchConversationCanceller canceller = new ExactMatchConversationCanceller("/exit");
-
-    @SuppressWarnings("unchecked")
     public StatCommand(PlayerStatManager playerStatManager) {
         this.playerStatManager = playerStatManager;
     }
-  
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
             ArgumentPack arguments = new ArgumentPack(new String[] { "i", "h" }, new String[] { "p", "s" }, args);
 
             String player = null;
-            //Use another player
+            // Use another player
             if (BeardStat.hasPermission(sender, "command.stat.other")) {
                 player = arguments.getOption("p");
             }
 
-            //Else use this player
+            // Else use this player
             if ((player == null) && (sender instanceof Player)) {
                 player = ((Player) sender).getName();
             }
 
-            //not a player and no player picked? show the help message
+            // not a player and no player picked? show the help message
             if ((player == null) || arguments.getFlag("h")) {
                 sendHelpMessage(sender);
                 return true;
@@ -134,7 +126,8 @@ public class StatCommand implements CommandExecutor {
         sender.sendMessage(ChatColor.BLUE + "/stats:" + ChatColor.GOLD + " Default display of your stats");
         sender.sendMessage(ChatColor.BLUE + "/stats [flags]:");
         sender.sendMessage(ChatColor.BLUE + "-h :" + ChatColor.GOLD + " This page");
-        //sender.sendMessage(ChatColor.BLUE + "-i :" + ChatColor.GOLD + " Interactive stats menu");
+        // sender.sendMessage(ChatColor.BLUE + "-i :" + ChatColor.GOLD +
+        // " Interactive stats menu");
         sender.sendMessage(ChatColor.BLUE + "-p [player]:" + ChatColor.GOLD + " view [player]'s stats");
         sender.sendMessage(ChatColor.BLUE + "-s [stat] :" + ChatColor.GOLD
                 + " view this stat (format category.statistic)");

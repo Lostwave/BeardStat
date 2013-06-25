@@ -27,16 +27,15 @@ public class StatAdmin implements CommandExecutor {
             if (arguments.getFlag("a")) {
                 final String name = arguments.get(0);
 
-                /*new Conversation(BeardStat.self(), (Conversable) sender, new QuickConfirmationPrompt() {
-
-                    @Override
-                    public void called(boolean result) {
-                        if (result) {
-                            StatAdmin.this.manager.deletePlayer(name);
-                        }
-
-                    }
-                }).begin();*/
+                /*
+                 * new Conversation(BeardStat.self(), (Conversable) sender, new
+                 * QuickConfirmationPrompt() {
+                 * 
+                 * @Override public void called(boolean result) { if (result) {
+                 * StatAdmin.this.manager.deletePlayer(name); }
+                 * 
+                 * } }).begin();
+                 */
                 sender.sendMessage("Operation not supported yet!");
             } else {
                 sender.sendMessage("Operation not supported yet!");

@@ -53,12 +53,12 @@ public class TestPlayerStatBlob {
         assertEquals("Statistic", "stat", stat.getStatistic());
         assertEquals("Value", 0, stat.getValue());
     }
-    
+
     @Test
-    public void testRegexGrab(){
-        this.blob.getStat("domain","world", "cat", "stat").setValue(5);
-        this.blob.getStat("domain","world_2", "cat", "stat").setValue(3);
-        
-        assertEquals("Stat is 5",5,this.blob.getStats("domain","world","cat","stat").getValue());
+    public void testRegexGrab() {
+        this.blob.getStat("domain", "world", "cat", "stat").setValue(5);
+        this.blob.getStat("domain", "world_2", "cat", "stat").setValue(3);
+
+        assertEquals("Stat is 5", 5, this.blob.getStats("domain", "world", "cat", "stat").getValue());
     }
 }

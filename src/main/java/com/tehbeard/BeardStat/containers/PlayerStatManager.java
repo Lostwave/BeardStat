@@ -66,17 +66,17 @@ public class PlayerStatManager implements CommandExecutor {
                 // record time for player
                 EntityStatBlob blob = entry.getValue().getValue();
 
-                if(blob.getType().equals(BeardStat.PLAYER_TYPE)){
-                    String entityName = blob.getName(); 
+                if (blob.getType().equals(BeardStat.PLAYER_TYPE)) {
+                    String entityName = blob.getName();
                     ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
 
                     if (timeRecord != null) {
-                        BeardStat.printDebugCon("saving time: [Player : " + entityName + " , world: " + timeRecord.world
-                                + ", time: " + timeRecord.sessionTime() + "]");
+                        BeardStat.printDebugCon("saving time: [Player : " + entityName + " , world: "
+                                + timeRecord.world + ", time: " + timeRecord.sessionTime() + "]");
                         if (timeRecord.world != null) {
                             entry.getValue().getValue()
-                            .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
-                            .incrementStat(timeRecord.sessionTime());
+                                    .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
+                                    .incrementStat(timeRecord.sessionTime());
                         }
                     }
                     if (isPlayerOnline(entityName)) {
@@ -105,33 +105,39 @@ public class PlayerStatManager implements CommandExecutor {
 
     /**
      * Gets a blob from the database or cache.
-     * @param name name of blob
-     * @param type type of blob, use {@link BeardStat.PLAYER_TYPE} for players
-     * @param create whether to create the blob or not if it's not found
+     * 
+     * @param name
+     *            name of blob
+     * @param type
+     *            type of blob, use {@link BeardStat.PLAYER_TYPE} for players
+     * @param create
+     *            whether to create the blob or not if it's not found
      * @return
      */
-    public Promise<EntityStatBlob> getBlob(String name,String type,boolean create){
+    public Promise<EntityStatBlob> getBlob(String name, String type, boolean create) {
         final String cacheKey = type + "::" + name;
         if (this.backendDatabase == null) {
             return null;
         }
         if (!this.cache.containsKey(cacheKey)) {
-            Promise<EntityStatBlob> promise = this.backendDatabase.pullStatBlob(name,type,create);
-            this.cache.put(cacheKey, promise);//Pre-emptively cache the promise, defer removing to on error.
+            Promise<EntityStatBlob> promise = this.backendDatabase.pullStatBlob(name, type, create);
+            this.cache.put(cacheKey, promise);// Pre-emptively cache the
+                                              // promise, defer removing to on
+                                              // error.
 
             Delegate<Void, Promise<EntityStatBlob>> killCache = new Delegate<Void, Promise<EntityStatBlob>>() {
 
                 @Override
                 public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
-                    if(params.getValue() == null){
-                        cache.remove(cacheKey);
+                    if (params.getValue() == null) {
+                        PlayerStatManager.this.cache.remove(cacheKey);
                     }
                     return null;
                 }
             };
 
             promise.onReject(killCache);
-            
+
         }
         return this.cache.get(cacheKey);
     }

@@ -111,7 +111,8 @@ public class StatisticMetadata {
     public static String localizedName(String name) {
         String genMetaName = HumanReadbleOutputGenerator.getNameOf(name);
         StatisticMetadata nameMeta = getMeta(name);
-        //Cascade, go with cached meta name first, then generated  meta name, then just return if generated meta failed.
+        // Cascade, go with cached meta name first, then generated meta name,
+        // then just return if generated meta failed.
         return nameMeta != null ? getMeta(name).getLocalizedName() : (genMetaName != null ? genMetaName : name);
     }
 }

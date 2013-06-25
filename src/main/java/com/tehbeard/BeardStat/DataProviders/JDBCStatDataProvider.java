@@ -107,10 +107,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         if (!implver.equals(mcver)) {
             BeardStat.printCon("Different version to last boot! Running built in metadata script.");
-            String sql[] = BeardStat.self().readSQL(this.type,
-                    "sql/maintenence/updateMetadata", this.tblPrefix).split("\\;");
+            String sql[] = BeardStat.self().readSQL(this.type, "sql/maintenence/updateMetadata", this.tblPrefix)
+                    .split("\\;");
             PreparedStatement updateMetadata;
-            for(String s : sql){
+            for (String s : sql) {
                 updateMetadata = this.conn.prepareStatement(s);
                 updateMetadata.execute();
             }
@@ -320,7 +320,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             // conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/deletePlayerFully",
             // tblPrefix));
 
-
             BeardStat.printDebugCon("Set player stat statement created");
             BeardStat.printCon("Initaised MySQL Data Provider.");
         } catch (SQLException e) {
@@ -362,7 +361,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (!this.statistics.containsKey(name)) {
             BeardStat.printDebugCon("Recording new component: " + name);
             this.saveStatistic.setString(1, name);
-            this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See if we can generate a localized name for this ourselves.
+            this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See
+                                                                                    // if
+                                                                                    // we
+                                                                                    // can
+                                                                                    // generate
+                                                                                    // a
+                                                                                    // localized
+                                                                                    // name
+                                                                                    // for
+                                                                                    // this
+                                                                                    // ourselves.
             this.saveStatistic.setString(3, Formatting.none.toString().toLowerCase());
             this.saveStatistic.execute();
             ResultSet rs = this.saveStatistic.getGeneratedKeys();
@@ -393,12 +402,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public Promise<EntityStatBlob> pullStatBlob(String player,String type) {
-        return pullStatBlob(player,type, true);
+    public Promise<EntityStatBlob> pullStatBlob(String player, String type) {
+        return pullStatBlob(player, type, true);
     }
 
     @Override
-    public Promise<EntityStatBlob> pullStatBlob(final String player,final String type,final boolean create) {
+    public Promise<EntityStatBlob> pullStatBlob(final String player, final String type, final boolean create) {
 
         final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
@@ -422,11 +431,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     EntityStatBlob pb = null;
 
                     if (!rs.next()) {
-                        if(!create){
-                            promise.reject(new NoRecordFoundException());//Fail out here instead.
+                        if (!create) {
+                            promise.reject(new NoRecordFoundException());// Fail
+                                                                         // out
+                                                                         // here
+                                                                         // instead.
                             return;
                         }
-
 
                         // No player found! Let's create an entry for them!
                         rs.close();
@@ -450,19 +461,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     BeardStat.printDebugCon("executing " + JDBCStatDataProvider.this.loadEntityData);
                     rs = JDBCStatDataProvider.this.loadEntityData.executeQuery();
 
-                    boolean foundStats = false;
                     while (rs.next()) {
                         // `domain`,`world`,`category`,`statistic`,`value`
                         IStat ps = pb.getStat(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
                         ps.setValue(rs.getInt(5));
                         ps.clearArchive();
-                        foundStats = true;
                     }
                     rs.close();
 
                     BeardStat.printDebugCon("time taken to retrieve: " + ((new Date()).getTime() - t1)
                             + " Milliseconds");
-
 
                     promise.resolve(pb);
                     return;

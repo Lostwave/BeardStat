@@ -33,12 +33,12 @@ public class TransferDataProvider implements IStatDataProvider {
     }
 
     private void transfer() {
-        //TODO: FEEX
+        // TODO: FEEX
         BeardStat.printCon("Beginning data transfer");
         List<String> theList = this.oldProvider.getStatBlobsHeld();
         EntityStatBlob b;
         for (String player : theList) {
-            b = this.oldProvider.pullStatBlob(player,"player", false).getValue();
+            b = this.oldProvider.pullStatBlob(player, "player", false).getValue();
             if (b == null) {
                 BeardStat.printCon("[ERROR] " + player + " not found in old database");
                 continue;
@@ -62,7 +62,7 @@ public class TransferDataProvider implements IStatDataProvider {
 
     @Override
     public Promise<EntityStatBlob> pullStatBlob(String player, String type, boolean create) {
-        return this.newProvider.pullStatBlob(player,type, create);
+        return this.newProvider.pullStatBlob(player, type, create);
     }
 
     @Override

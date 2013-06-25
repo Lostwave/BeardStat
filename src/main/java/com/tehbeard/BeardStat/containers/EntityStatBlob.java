@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
-
 import me.tehbeard.utils.expressions.VariableProvider;
+
+import org.bukkit.Bukkit;
 
 import com.tehbeard.BeardStat.BeardStat;
 
@@ -35,7 +35,7 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     private void addDynamics() {
-        if(type.equals(BeardStat.PLAYER_TYPE)){
+        if (this.type.equals(BeardStat.PLAYER_TYPE)) {
             for (Entry<String, String> entry : dynamics.entrySet()) {
 
                 String[] parts = entry.getKey().split("\\::");
@@ -56,85 +56,85 @@ public class EntityStatBlob implements VariableProvider {
                 }
                 addStat(new DynamicStat(domain, world, cat, stat, entry.getValue()));
             }
-            //Add health status
+            // Add health status
             addStat(new IStat() {
-                
+
                 private int lastHealth = 20;
-                
+
                 @Override
                 public void setWorld(String world) {
                 }
-                
+
                 @Override
                 public void setValue(int value) {
-                    
+
                 }
-                
+
                 @Override
                 public void setOwner(EntityStatBlob playerStatBlob) {
-                    
+
                 }
-                
+
                 @Override
                 public void setDomain(String domain) {
-                    
+
                 }
-                
+
                 @Override
                 public boolean isArchive() {
                     return true;
                 }
-                
+
                 @Override
                 public void incrementStat(int i) {
                 }
-                
+
                 @Override
                 public String getWorld() {
 
-                    return BeardStat.GLOBAL_WORLD;//Bukkit.getPlayer(getName()).getWorld().getName();
+                    return BeardStat.GLOBAL_WORLD;// Bukkit.getPlayer(getName()).getWorld().getName();
                 }
-                
+
                 @Override
                 public int getValue() {
-                    if(Bukkit.getPlayer(getName())!=null){
-                        lastHealth = Bukkit.getPlayer(getName()).getHealth();
+                    if (Bukkit.getPlayer(getName()) != null) {
+                        this.lastHealth = Bukkit.getPlayer(getName()).getHealth();
                     }
-                    return lastHealth;
+                    return this.lastHealth;
                 }
-                
+
                 @Override
                 public String getStatistic() {
                     return "health";
                 }
-                
+
                 @Override
                 public EntityStatBlob getOwner() {
                     return null;
                 }
-                
+
                 @Override
                 public String getDomain() {
                     return BeardStat.DEFAULT_DOMAIN;
                 }
-                
+
                 @Override
                 public String getCategory() {
                     return "status";
                 }
-                
+
                 @Override
                 public void decrementStat(int i) {
                 }
-                
+
                 @Override
                 public void clearArchive() {
                 }
-                
+
                 @Override
                 public void archive() {
                 }
-                
+
                 @Override
                 public IStat clone() {
                     return new StaticStat(getDomain(), getWorld(), getCategory(), getStatistic(), getValue());
@@ -199,7 +199,8 @@ public class EntityStatBlob implements VariableProvider {
      * @param stat
      */
     public void addStat(IStat stat) {
-        this.stats.put(stat.getDomain() + "::" + stat.getWorld() + "::" + stat.getCategory() + "::" + stat.getStatistic(),
+        this.stats.put(
+                stat.getDomain() + "::" + stat.getWorld() + "::" + stat.getCategory() + "::" + stat.getStatistic(),
                 stat);
         stat.setOwner(this);
     }
