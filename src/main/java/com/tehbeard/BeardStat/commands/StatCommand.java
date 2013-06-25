@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Stack;
 
 import me.tehbeard.utils.commands.ArgumentPack;
-import me.tehbeard.vocalise.parser.PromptBuilder;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,11 +19,6 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.commands.interactive.FindPlayerPrompt;
-import com.tehbeard.BeardStat.commands.interactive.SelectCategoryPrompt;
-import com.tehbeard.BeardStat.commands.interactive.SelectStatisticPrompt;
-import com.tehbeard.BeardStat.commands.interactive.SetSelfPrompt;
-import com.tehbeard.BeardStat.commands.interactive.ShowStatisticPrompt;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
@@ -42,19 +36,13 @@ public class StatCommand implements CommandExecutor {
 
     private PlayerStatManager               playerStatManager;
 
-    private PromptBuilder                   builder;
     private ExactMatchConversationCanceller canceller = new ExactMatchConversationCanceller("/exit");
 
     @SuppressWarnings("unchecked")
     public StatCommand(PlayerStatManager playerStatManager) {
         this.playerStatManager = playerStatManager;
-        this.builder = new PromptBuilder(BeardStat.self());
-        this.builder.AddPrompts(SelectCategoryPrompt.class, SelectStatisticPrompt.class, ShowStatisticPrompt.class,
-                SetSelfPrompt.class, FindPlayerPrompt.class);
-
-        this.builder.load(BeardStat.self().getResource("interactive.yml"));
     }
-
+  
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
@@ -78,20 +66,7 @@ public class StatCommand implements CommandExecutor {
             }
 
             if (arguments.getFlag("i")) {
-                sender.sendMessage(LanguagePack.getMsg("interactive.enter"));
-                Conversation c = this.builder.makeConversation((Conversable) sender);
-                c.getCancellers().add(this.canceller.clone());
-
-                c.addConversationAbandonedListener(new ConversationAbandonedListener() {
-
-                    @Override
-                    public void conversationAbandoned(ConversationAbandonedEvent event) {
-                        event.getContext().getForWhom().sendRawMessage(LanguagePack.getMsg("interactive.exit"));
-
-                    }
-
-                });
-
+                sender.sendMessage("Interactive mode has been removed at this time.");
                 return true;
             }
 
@@ -159,7 +134,7 @@ public class StatCommand implements CommandExecutor {
         sender.sendMessage(ChatColor.BLUE + "/stats:" + ChatColor.GOLD + " Default display of your stats");
         sender.sendMessage(ChatColor.BLUE + "/stats [flags]:");
         sender.sendMessage(ChatColor.BLUE + "-h :" + ChatColor.GOLD + " This page");
-        sender.sendMessage(ChatColor.BLUE + "-i :" + ChatColor.GOLD + " Interactive stats menu");
+        //sender.sendMessage(ChatColor.BLUE + "-i :" + ChatColor.GOLD + " Interactive stats menu");
         sender.sendMessage(ChatColor.BLUE + "-p [player]:" + ChatColor.GOLD + " view [player]'s stats");
         sender.sendMessage(ChatColor.BLUE + "-s [stat] :" + ChatColor.GOLD
                 + " view this stat (format category.statistic)");

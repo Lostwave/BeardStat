@@ -1,15 +1,11 @@
 package com.tehbeard.BeardStat.commands;
 
 import me.tehbeard.utils.commands.ArgumentPack;
-import me.tehbeard.vocalise.prompts.QuickConfirmationPrompt;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.conversations.Conversable;
-import org.bukkit.conversations.Conversation;
 
-import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
@@ -31,7 +27,7 @@ public class StatAdmin implements CommandExecutor {
             if (arguments.getFlag("a")) {
                 final String name = arguments.get(0);
 
-                new Conversation(BeardStat.self(), (Conversable) sender, new QuickConfirmationPrompt() {
+                /*new Conversation(BeardStat.self(), (Conversable) sender, new QuickConfirmationPrompt() {
 
                     @Override
                     public void called(boolean result) {
@@ -40,7 +36,8 @@ public class StatAdmin implements CommandExecutor {
                         }
 
                     }
-                }).begin();
+                }).begin();*/
+                sender.sendMessage("Operation not supported yet!");
             } else {
                 sender.sendMessage("Operation not supported yet!");
             }
