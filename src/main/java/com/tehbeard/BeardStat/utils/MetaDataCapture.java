@@ -40,13 +40,15 @@ public class MetaDataCapture {
     public static void readData(InputStream is) {
         Scanner s = new Scanner(is);
 
-        while (s.hasNext()) {
+        while (s.hasNext()) {        
             String line = s.nextLine();
             String[] entry = line.split(",");
 
             Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]", "")));
-            EntryInfo ei = new EntryInfo(Integer.parseInt(entry[1].replaceAll("[^0-9]", "")), Integer.parseInt(entry[2]
-                    .replaceAll("[^0-9]", "")), Integer.parseInt(entry[3].replaceAll("[^0-9]", "")));
+            EntryInfo ei = new EntryInfo(
+                    Integer.parseInt(entry[1].replaceAll("0(X|x)", "").replaceAll("[^0-9A-Fa-f]", ""),16), 
+                    Integer.parseInt(entry[2].replaceAll("[^0-9A-Fa-f]", "")), 
+                    Integer.parseInt(entry[3].replaceAll("[^0-9A-Fa-f]", "")));
             mats.put(mat, ei);
         }
 
@@ -113,5 +115,12 @@ public class MetaDataCapture {
         public int getMetdataValue(int value) {
             return value & this.mask;
         }
+
+        @Override
+        public String toString() {
+            return "EntryInfo [mask=" + mask + ", min=" + min + ", max=" + max + "]";
+        }
+        
+        
     }
 }
