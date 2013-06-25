@@ -48,12 +48,13 @@ import com.tehbeard.BeardStat.utils.Metrics.Plotter;
  * 
  */
 public class BeardStat extends JavaPlugin {
+    
+    public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
+    public static final String PERM_COMMAND_STAT_OTHER = "command.stat.other";
 
     // Default values for domain and world
     public static final String  DEFAULT_DOMAIN = "default";
     public static final String  GLOBAL_WORLD   = "__global__";
-    // Stat permission prefix
-    private static final String PERM_PREFIX    = "stat";
     public static final String  PLAYER_TYPE    = "player";
 
     private static BeardStat    self;
@@ -76,21 +77,6 @@ public class BeardStat extends JavaPlugin {
      */
     public PlayerStatManager getStatManager() {
         return this.playerStatManager;
-    }
-
-    /**
-     * Check for permission
-     * 
-     * @param player
-     *            player to check
-     * @param node
-     *            permission node to check
-     * @return
-     */
-    public static boolean hasPermission(Permissible player, String node) {
-
-        return player.hasPermission(PERM_PREFIX + "." + node);
-
     }
 
     /**

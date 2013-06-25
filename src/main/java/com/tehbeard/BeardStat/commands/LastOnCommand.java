@@ -34,12 +34,7 @@ public class LastOnCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
-
-        if (!BeardStat.hasPermission(sender, "command.laston")) {
-            BeardStat.sendNoPermissionError(sender);
-            return true;
-        }
-
+        
         String name = "";
         EntityStatBlob blob = null;
         OfflinePlayer player = null;

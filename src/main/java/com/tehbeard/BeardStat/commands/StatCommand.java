@@ -42,7 +42,7 @@ public class StatCommand implements CommandExecutor {
 
             String player = null;
             // Use another player
-            if (BeardStat.hasPermission(sender, "command.stat.other")) {
+            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {
                 player = arguments.getOption("p");
             }
 
@@ -133,15 +133,15 @@ public class StatCommand implements CommandExecutor {
                 + " view this stat (format category.statistic)");
         sender.sendMessage(ChatColor.BLUE + "/statpage :" + ChatColor.GOLD + " list available stat pages");
         sender.sendMessage(ChatColor.BLUE + "/statpage [user] page :" + ChatColor.GOLD + " show a specific stat page");
-        if (BeardStat.hasPermission(sender, "command.laston")) {
+        if (sender.hasPermission("command.laston")) {
             sender.sendMessage(ChatColor.BLUE + "/laston [user] :" + ChatColor.GOLD
                     + " show when you [or user] was last on");
         }
-        if (BeardStat.hasPermission(sender, "command.laston")) {
+        if (sender.hasPermission("command.laston")) {
             sender.sendMessage(ChatColor.BLUE + "/firston [user] :" + ChatColor.GOLD
                     + " show when you [or user] was first on");
         }
-        if (BeardStat.hasPermission(sender, "command.played")) {
+        if (sender.hasPermission("command.played")) {
             sender.sendMessage(ChatColor.BLUE + "/played [user] :" + ChatColor.GOLD
                     + " shows how long you [or user] have played");
         }

@@ -42,7 +42,7 @@ public class playedCommand implements CommandExecutor {
             OfflinePlayer selectedPlayer = (sender instanceof OfflinePlayer) ? (OfflinePlayer) sender : null;
 
             // We got an argument, use that player instead
-            if ((args.length == 1) && BeardStat.hasPermission(sender, "command.played.other")) {
+            if ((args.length == 1) && sender.hasPermission(BeardStat.PERM_COMMAND_PLAYED_OTHER)) {
                 selectedPlayer = Bukkit.getOfflinePlayer(args[0]).hasPlayedBefore() ? Bukkit.getOfflinePlayer(args[0])
                         : null;
             }
