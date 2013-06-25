@@ -388,7 +388,8 @@ public class BeardStat extends JavaPlugin {
      * other stats.
      */
     private void loadDynamicStatConfiguration() {
-
+        BeardStat.printCon(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
+        /*
         for (String cstat : getConfig().getStringList("customstats")) {
 
             String[] i = cstat.split("\\=");
@@ -401,7 +402,7 @@ public class BeardStat extends JavaPlugin {
             String[] i = cstat.split("\\=");
             EntityStatBlob.addDynamicSavedStat(i[0].trim(), i[1].trim());
 
-        }
+        }*/
 
     }
 

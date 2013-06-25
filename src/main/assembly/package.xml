@@ -13,18 +13,23 @@
       <outputDirectory>/</outputDirectory>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <includes>
-      <include>me.tehbeard:BeardStat</include>
+      <include>com.tehbeard:BeardStat</include>
       </includes>
      
     </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>
-      <directory>src/web</directory>
+      <directory>src/web 2.0</directory>
       <outputDirectory>web</outputDirectory>
       <includes>
+        <include>*/*.*</include>
         <include>*.*</include>
       </includes>
+      <excludes>
+        <exclude>api/config.php</exclude><!-- DO NOT REMOVE, NESSECARY TO "RESET" CONFIG FOR DEPLOYABLE -->
+        <exclude>admin/*</exclude><!-- REMOVE ONCE ADMIN IS DONE -->
+      </excludes>
     </fileSet>
   </fileSets>
   <files>
