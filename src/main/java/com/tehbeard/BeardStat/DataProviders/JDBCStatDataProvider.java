@@ -392,7 +392,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (!mapTo.containsKey(name)) {
             BeardStat.printDebugCon("Recording new component: " + name);
             statement.setString(1, name);
-            statement.setString(2, name);
+            try{statement.setString(2, name);}catch(Exception e){}// TODO - Need to seperate out each element to it's own getId system I think :/
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
             rs.next();
