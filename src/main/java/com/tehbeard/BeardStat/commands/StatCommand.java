@@ -130,7 +130,7 @@ public class StatCommand implements CommandExecutor {
         // " Interactive stats menu");
         sender.sendMessage(ChatColor.BLUE + "-p [player]:" + ChatColor.GOLD + " view [player]'s stats");
         sender.sendMessage(ChatColor.BLUE + "-s [stat] :" + ChatColor.GOLD
-                + " view this stat (format category.statistic)");
+                + " view this stat (format category::statistic)");
         sender.sendMessage(ChatColor.BLUE + "/statpage :" + ChatColor.GOLD + " list available stat pages");
         sender.sendMessage(ChatColor.BLUE + "/statpage [user] page :" + ChatColor.GOLD + " show a specific stat page");
         if (sender.hasPermission("command.laston")) {
