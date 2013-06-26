@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,6 +59,7 @@ public class BeardStat extends JavaPlugin {
     public static final String  PLAYER_TYPE    = "player";
 
     private static BeardStat    self;
+    private static Logger logger;
     private int                 saveTaskId;
     private PlayerStatManager   playerStatManager;
 
@@ -85,7 +87,7 @@ public class BeardStat extends JavaPlugin {
      * @param line
      */
     public static void printCon(String line) {
-        self.getLogger().info(line);
+        logger.info(line);
     }
 
     /**
@@ -121,6 +123,7 @@ public class BeardStat extends JavaPlugin {
     public void onEnable() {
 
         self = this;
+        logger = getLogger();
         printCon("Starting BeardStat");
 
         // Read in the metadata file from jar and from data folder
@@ -326,45 +329,45 @@ public class BeardStat extends JavaPlugin {
      * @param e
      */
     public static void mysqlError(SQLException e) {
-        self.getLogger().severe("=========================================");
-        self.getLogger().severe("|             DATABASE ERROR            |");
-        self.getLogger().severe("=========================================");
-        self.getLogger().severe("An error occured while trying to connect to the BeardStat database");
-        self.getLogger().severe("Mysql error code: " + e.getErrorCode());
+        logger.severe("=========================================");
+        logger.severe("|             DATABASE ERROR            |");
+        logger.severe("=========================================");
+        logger.severe("An error occured while trying to connect to the BeardStat database");
+        logger.severe("Mysql error code: " + e.getErrorCode());
 
         switch (e.getErrorCode()) {
         case 1042:
-            self.getLogger().severe("Cannot find hostname provided, check spelling of hostname in config file");
+            logger.severe("Cannot find hostname provided, check spelling of hostname in config file");
             break;
         case 1044:
         case 1045:
-            self.getLogger()
+            logger
                     .severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
             break;
         case 1049:
-            self.getLogger()
+            logger
                     .severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
             break;
 
         default:
-            self.getLogger()
+            logger
                     .severe("Error code ["
                             + e.getErrorCode()
                             + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
-            self.getLogger().severe("Exception Detail:");
-            self.getLogger().severe(e.getMessage());
+            logger.severe("Exception Detail:");
+            logger.severe(e.getMessage());
             break;
         }
 
         // dump stack trace if in verbose mode
         if (self.getConfig().getBoolean("general.verbose", false)) {
-            self.getLogger().severe("=========================================");
-            self.getLogger().severe("            Begin error dump             ");
-            self.getLogger().severe("=========================================");
+            logger.severe("=========================================");
+            logger.severe("            Begin error dump             ");
+            logger.severe("=========================================");
             e.printStackTrace();
-            self.getLogger().severe("=========================================");
-            self.getLogger().severe("             End error dump              ");
-            self.getLogger().severe("=========================================");
+            logger.severe("=========================================");
+            logger.severe("             End error dump              ");
+            logger.severe("=========================================");
         }
 
     }
