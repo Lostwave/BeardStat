@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_world`(
 CREATE TABLE IF NOT EXISTS `${PREFIX}_category`(
   `categoryId` int(11) NOT NULL AUTO_INCREMENT, 
   `category` char(32) NOT NULL,  
+  `statwrapper` char(32) NOT NULL DEFAULT '%s',
   PRIMARY KEY (`categoryId`),
   UNIQUE KEY (`category`)
 );

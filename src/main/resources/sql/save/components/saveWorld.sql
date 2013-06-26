@@ -1,1 +1,1 @@
-INSERT INTO `${PREFIX}_world` (world) VALUES (?);
+INSERT INTO `${PREFIX}_world` (world,name) VALUES (?,?);

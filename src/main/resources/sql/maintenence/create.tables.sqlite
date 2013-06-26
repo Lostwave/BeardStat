@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `stats_world`(
 CREATE TABLE IF NOT EXISTS `stats_category`(
   `categoryId` INTEGER PRIMARY KEY AUTOINCREMENT, 
   `category` varchar(32) NOT NULL,  
-    name     VARCHAR( 32 )  NOT NULL,
+  `statwrapper` VARCHAR( 32 )  NOT NULL DEFAULT '%s',
   CONSTRAINT uni UNIQUE (`category`)
 );
 CREATE TABLE IF NOT EXISTS `stats_statistic`(

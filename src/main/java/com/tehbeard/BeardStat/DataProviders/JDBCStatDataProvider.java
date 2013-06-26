@@ -346,6 +346,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             this.statistics.put(meta.getName(), meta);
         }
     }
+    
+
 
     private void cacheComponent(Map<String, Integer> mapTo, PreparedStatement statement) throws SQLException {
         ResultSet rs = statement.executeQuery();
@@ -390,6 +392,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (!mapTo.containsKey(name)) {
             BeardStat.printDebugCon("Recording new component: " + name);
             statement.setString(1, name);
+            statement.setString(2, name);
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
             rs.next();
