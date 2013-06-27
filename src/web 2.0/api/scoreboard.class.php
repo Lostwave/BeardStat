@@ -105,6 +105,7 @@ Class SScoreboad{
   foreach($selectedScoreboard->data as $entry){
    //{"label":"diamonds mined","domain":".*","world":".*","cat":"blockdestroy","stat":"diamondore"}
    $sqlSelect .= ",\n vk$id.`value` as `" . $entry->label . "`";
+   //TODO - ADD REGEX SUPPORT TO SCOREBOARDS
    
   
    $did = array_value(arr_regex($domainLookup,$entry->domain),"domainId");
