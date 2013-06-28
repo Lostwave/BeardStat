@@ -2,6 +2,7 @@ package com.tehbeard.BeardStat.commands;
 
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.regex.PatternSyntaxException;
 
 import me.tehbeard.utils.commands.ArgumentPack;
 
@@ -79,8 +80,13 @@ public class StatCommand implements CommandExecutor {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
                     return true;
                 }
-
-                StatVector vector = blob.getStats(domain, world, category, statistic, true);
+                StatVector vector = null;
+                try{
+                vector = blob.getStats(domain, world, category, statistic, true);
+                }catch(PatternSyntaxException ex){
+                    sender.sendMessage("Invalid stat entered");
+                    return true;
+                }
 
                 if (vector.size() == 0) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.nostat"));
