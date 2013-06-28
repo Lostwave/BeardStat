@@ -80,7 +80,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private Map<String, Integer>            domains              = new HashMap<String, Integer>();
     private Map<String, Integer>            worlds               = new HashMap<String, Integer>();
     private Map<String, Integer>            categories           = new HashMap<String, Integer>();
-    private Map<String, StatisticMetadata>  statistics           = new HashMap<String, StatisticMetadata>();
 
     // private WorkQueue loadQueue = new WorkQueue(1);
     private ExecutorService                 loadQueue            = Executors.newSingleThreadExecutor();
@@ -343,7 +342,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         while (rs.next()) {
             StatisticMetadata meta = new StatisticMetadata(rs.getInt(1), rs.getString(2), rs.getString(3),
                     Formatting.valueOf(rs.getString(4)));
-            this.statistics.put(meta.getName(), meta);
         }
     }
     
@@ -360,7 +358,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     private int getStatisticId(String name) throws SQLException {
 
-        if (!this.statistics.containsKey(name)) {
+        StatisticMetadata meta = StatisticMetadata.getMeta(name);
+        if (meta == null) {
             BeardStat.printDebugCon("Recording new component: " + name);
             this.saveStatistic.setString(1, name);
             this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See
@@ -378,12 +377,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             this.saveStatistic.execute();
             ResultSet rs = this.saveStatistic.getGeneratedKeys();
             rs.next();
-            this.statistics.put(name, new StatisticMetadata(rs.getInt(1), name, name, Formatting.none));
+            meta = new StatisticMetadata(rs.getInt(1), name, name, Formatting.none);
             rs.close();
-            BeardStat.printDebugCon(name + " : " + this.statistics.get(name).getId());
         }
 
-        return this.statistics.get(name).getId();
+        return meta.getId();
 
     }
 
