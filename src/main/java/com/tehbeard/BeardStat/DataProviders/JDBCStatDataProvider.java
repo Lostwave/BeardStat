@@ -340,7 +340,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private void cacheStatistics() throws SQLException {
         ResultSet rs = this.getStatistics.executeQuery();
         while (rs.next()) {
-            StatisticMetadata meta = new StatisticMetadata(rs.getInt(1), rs.getString(2), rs.getString(3),
+            new StatisticMetadata(rs.getInt(1), rs.getString(2), rs.getString(3),
                     Formatting.valueOf(rs.getString(4)));
         }
     }
