@@ -18,6 +18,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
+import org.mcstats.Metrics.Plotter;
 
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
@@ -39,8 +41,7 @@ import com.tehbeard.BeardStat.listeners.StatVehicleListener;
 import com.tehbeard.BeardStat.utils.HumanReadbleOutputGenerator;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
-import com.tehbeard.BeardStat.utils.Metrics;
-import com.tehbeard.BeardStat.utils.Metrics.Plotter;
+
 
 /**
  * BeardStat Statistic's tracking for the gentleman server
@@ -236,7 +237,7 @@ public class BeardStat extends JavaPlugin {
         Metrics metrics;
         try {
             metrics = new Metrics(this);
-            metrics.addCustomData(new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
+            metrics.createGraph("Database Type").addPlotter(new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
 
                 @Override
                 public int getValue() {

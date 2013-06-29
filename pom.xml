@@ -27,7 +27,10 @@
 
 		<!--<repository> <snapshots /> <id>snapshots</id> <name>deferred-snapshot</name> 
 			<url>https://maven.dragonzone.net/artifactory/libs-snapshot</url> </repository> -->
-
+		<repository>
+			<id>mcStats</id>
+			<url>http://repo.mcstats.org/content/repositories/public</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -49,28 +52,32 @@
 			<version>1.3</version>
 		</dependency>
 		<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<version>4.8.2</version>
-  		<type>jar</type>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.powermock</groupId>
-  		<artifactId>powermock-module-junit4</artifactId>
-  		<version>1.4.9</version>
-  		<type>jar</type>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.powermock</groupId>
-  		<artifactId>powermock-api-mockito</artifactId>
-  		<version>1.4.9</version>
-  		<type>jar</type>
-  		<scope>test</scope>
-  	</dependency>
-		
-        
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.4.9</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.4.9</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mcstats.bukkit</groupId>
+			<artifactId>metrics</artifactId>
+			<version>R7</version>
+		</dependency>
 	</dependencies>
 
 	<distributionManagement>
@@ -110,7 +117,7 @@
 					<include>interactive.yml</include>
 					<include>messages.lang</include>
 					<include>metadata.txt</include>
-					
+
 				</includes>
 			</resource>
 
@@ -182,6 +189,10 @@
 								<relocation>
 									<pattern>net.dragonzone:Deferred</pattern>
 									<shadedPattern>com.tehbeard.BeardStat.utils.deferred</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.mcstats</pattern>
+									<shadedPattern>com.tehbeard.BeardStat.utils</shadedPattern>
 								</relocation>
 							</relocations>
 							<minimizeJar>true</minimizeJar>
