@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
 
+import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 
@@ -43,13 +44,16 @@ public class MetaDataCapture {
         while (s.hasNext()) {        
             String line = s.nextLine();
             String[] entry = line.split(",");
-
+            try{
             Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]", "")));
             EntryInfo ei = new EntryInfo(
                     Integer.parseInt(entry[1].replaceAll("0(X|x)", "").replaceAll("[^0-9A-Fa-f]", ""),16), 
                     Integer.parseInt(entry[2].replaceAll("[^0-9A-Fa-f]", "")), 
                     Integer.parseInt(entry[3].replaceAll("[^0-9A-Fa-f]", "")));
             mats.put(mat, ei);
+            }catch(Exception e){
+                BeardStat.printCon("Failed to load metadata for id: " + entry[0] +", skipping (version mismatch?)");
+            }
         }
 
         s.close();
