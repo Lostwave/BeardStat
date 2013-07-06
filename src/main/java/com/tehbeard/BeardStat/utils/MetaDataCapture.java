@@ -12,7 +12,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
 
-import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 
@@ -41,18 +40,18 @@ public class MetaDataCapture {
     public static void readData(InputStream is) {
         Scanner s = new Scanner(is);
 
-        while (s.hasNext()) {        
+        while (s.hasNext()) {
             String line = s.nextLine();
             String[] entry = line.split(",");
-            try{
-            Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]", "")));
-            EntryInfo ei = new EntryInfo(
-                    Integer.parseInt(entry[1].replaceAll("0(X|x)", "").replaceAll("[^0-9A-Fa-f]", ""),16), 
-                    Integer.parseInt(entry[2].replaceAll("[^0-9A-Fa-f]", "")), 
-                    Integer.parseInt(entry[3].replaceAll("[^0-9A-Fa-f]", "")));
-            mats.put(mat, ei);
-            }catch(Exception e){
-                BeardStat.printCon("Failed to load metadata for id: " + entry[0] +", skipping (version mismatch?)");
+            try {
+                Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]", "")));
+                EntryInfo ei = new EntryInfo(Integer.parseInt(
+                        entry[1].replaceAll("0(X|x)", "").replaceAll("[^0-9A-Fa-f]", ""), 16),
+                        Integer.parseInt(entry[2].replaceAll("[^0-9A-Fa-f]", "")), Integer.parseInt(entry[3]
+                                .replaceAll("[^0-9A-Fa-f]", "")));
+                mats.put(mat, ei);
+            } catch (Exception e) {
+                System.out.println("Failed to load metadata for id: " + entry[0] + ", skipping (version mismatch?)");
             }
         }
 
@@ -122,9 +121,8 @@ public class MetaDataCapture {
 
         @Override
         public String toString() {
-            return "EntryInfo [mask=" + mask + ", min=" + min + ", max=" + max + "]";
+            return "EntryInfo [mask=" + this.mask + ", min=" + this.min + ", max=" + this.max + "]";
         }
-        
-        
+
     }
 }

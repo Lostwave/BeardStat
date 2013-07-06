@@ -57,10 +57,10 @@ public class HumanReadbleOutputGenerator {
 
     }
 
-    public static Map<String, String> generateHumanNamesEnum(Enum[] ee) {
+    public static Map<String, String> generateHumanNamesEnum(@SuppressWarnings("rawtypes") Enum[] ee) {
         Map<String, String> out = new TreeMap<String, String>();
 
-        for (Enum e : ee) {
+        for (@SuppressWarnings("rawtypes") Enum e : ee) {
             out.put(e.toString().toLowerCase().replace("_", ""), e.toString().toLowerCase().replace("_", " "));
         }
 

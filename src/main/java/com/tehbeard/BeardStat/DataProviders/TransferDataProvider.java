@@ -21,11 +21,14 @@ public class TransferDataProvider implements IStatDataProvider {
     private IStatDataProvider oldProvider;
     private IStatDataProvider newProvider;
 
+    private BeardStat         plugin;
+
     /**
      * @param oldProvider
      * @param newProvider
      */
-    public TransferDataProvider(IStatDataProvider oldProvider, IStatDataProvider newProvider) {
+    public TransferDataProvider(BeardStat plugin, IStatDataProvider oldProvider, IStatDataProvider newProvider) {
+        this.plugin = plugin;
         this.oldProvider = oldProvider;
         this.newProvider = newProvider;
 
@@ -34,23 +37,23 @@ public class TransferDataProvider implements IStatDataProvider {
 
     private void transfer() {
         // TODO: FEEX
-        BeardStat.printCon("Beginning data transfer");
+        this.plugin.printCon("Beginning data transfer");
         List<String> theList = this.oldProvider.getStatBlobsHeld();
         EntityStatBlob b;
         for (String player : theList) {
             b = this.oldProvider.pullStatBlob(player, "player", false).getValue();
             if (b == null) {
-                BeardStat.printCon("[ERROR] " + player + " not found in old database");
+                this.plugin.printCon("[ERROR] " + player + " not found in old database");
                 continue;
             }
             for (IStat s : b.getStats()) {
                 s.archive();
             }
-            BeardStat.printCon("Pushing " + player + " to new dataprovider");
+            this.plugin.printCon("Pushing " + player + " to new dataprovider");
             this.newProvider.pushStatBlob(b);
 
         }
-        BeardStat.printCon("Flushing data");
+        this.plugin.printCon("Flushing data");
         this.newProvider.flushSync();
 
     }

@@ -84,12 +84,15 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     // private WorkQueue loadQueue = new WorkQueue(1);
     private ExecutorService                 loadQueue            = Executors.newSingleThreadExecutor();
 
-    public JDBCStatDataProvider(String type, String driverClass) {
+    protected BeardStat                     plugin;
+
+    public JDBCStatDataProvider(BeardStat plugin, String type, String driverClass) {
         this.type = type;
+        this.plugin = plugin;
         try {
             Class.forName(driverClass);// load driver
         } catch (ClassNotFoundException e) {
-            BeardStat.printCon("JDBC " + driverClass + "Library not found!");
+            plugin.printCon("JDBC " + driverClass + "Library not found!");
         }
     }
 
@@ -101,20 +104,20 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         checkAndMakeTable();
         prepareStatements();
 
-        String mcver = BeardStat.self().getConfig().getString("general.mcver");
+        String mcver = this.plugin.getConfig().getString("general.mcver");
         String implver = Bukkit.getVersion();
 
         if (!implver.equals(mcver)) {
-            BeardStat.printCon("Different version to last boot! Running built in metadata script.");
-            String sql[] = BeardStat.self().readSQL(this.type, "sql/maintenence/updateMetadata", this.tblPrefix)
+            this.plugin.printCon("Different version to last boot! Running built in metadata script.");
+            String sql[] = this.plugin.readSQL(this.type, "sql/maintenence/updateMetadata", this.tblPrefix)
                     .split("\\;");
             PreparedStatement updateMetadata;
             for (String s : sql) {
                 updateMetadata = this.conn.prepareStatement(s);
                 updateMetadata.execute();
             }
-            BeardStat.self().getConfig().set("general.mcver", implver);
-            BeardStat.self().saveConfig();
+            this.plugin.getConfig().set("general.mcver", implver);
+            this.plugin.saveConfig();
 
         }
 
@@ -129,17 +132,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * @throws SQLException
      */
     private void checkForMigration() throws SQLException {
-        int latestVersion = BeardStat.self().getConfig().getDefaults().getInt("stats.database.sql_db_version");
+        int latestVersion = this.plugin.getConfig().getDefaults().getInt("stats.database.sql_db_version");
 
-        if (!BeardStat.self().getConfig().isSet("stats.database.sql_db_version")) {
-            BeardStat.self().getConfig().set("stats.database.sql_db_version", 1);
-            BeardStat.self().saveConfig();
+        if (!this.plugin.getConfig().isSet("stats.database.sql_db_version")) {
+            this.plugin.getConfig().set("stats.database.sql_db_version", 1);
+            this.plugin.saveConfig();
         }
-        int installedVersion = BeardStat.self().getConfig().getInt("stats.database.sql_db_version", 1);
+        int installedVersion = this.plugin.getConfig().getInt("stats.database.sql_db_version", 1);
 
         if (installedVersion > latestVersion) {
-            throw new RuntimeException(
-                    "database version > this one, You appear to be running an out of date BeardStat!");
+            throw new RuntimeException("database version > this one, You appear to be running an out of date plugin!");
         }
 
         if (installedVersion < latestVersion) {
@@ -150,8 +152,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             // Should support partial recovery of migration effort, saves
             // current version if successful commit
 
-            BeardStat.printCon("Updating database to latest version");
-            BeardStat.printCon("Your database: " + installedVersion + " latest: " + latestVersion);
+            this.plugin.printCon("Updating database to latest version");
+            this.plugin.printCon("Your database: " + installedVersion + " latest: " + latestVersion);
             for (int i = 0; i < 3; i++) {
                 Bukkit.getConsoleSender().sendMessage(
                         ChatColor.RED + "WARNING: DATABASE MIGRATION WILL TAKE A LONG TIME ON LARGE DATABASES.");
@@ -166,11 +168,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                 for (curVersion = installedVersion + 1; curVersion <= latestVersion; curVersion++) {
 
-                    String[] sql = BeardStat
-                            .self()
+                    String[] sql = this.plugin
                             .readSQL(this.type, "sql/maintenence/migration/migrate." + curVersion, this.tblPrefix)
-                            .replaceAll("\\$\\{OLD_TBL\\}",
-                                    BeardStat.self().getConfig().getString("stats.database.table")).split("\\;");
+                            .replaceAll("\\$\\{OLD_TBL\\}", this.plugin.getConfig().getString("stats.database.table"))
+                            .split("\\;");
                     for (String s : sql) {
                         if (s.startsWith("#")) {
                             Bukkit.getConsoleSender().sendMessage(
@@ -182,22 +183,22 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     }
 
                     this.conn.commit();
-                    BeardStat.self().getConfig().set("stats.database.sql_db_version", curVersion);
-                    BeardStat.self().saveConfig();
+                    this.plugin.getConfig().set("stats.database.sql_db_version", curVersion);
+                    this.plugin.saveConfig();
 
                 }
 
             } catch (SQLException e) {
-                BeardStat.printCon("An error occured while migrating the database, initiating rollback to version "
+                this.plugin.printCon("An error occured while migrating the database, initiating rollback to version "
                         + (curVersion - 1));
-                BeardStat.printCon("Begining database error dump");
-                // BeardStat.mysqlError(e);
+                this.plugin.printCon("Begining database error dump");
+                // plugin.mysqlError(e);
                 this.conn.rollback();
                 throw e;
 
             }
 
-            BeardStat.printCon("Migration successful");
+            this.plugin.printCon("Migration successful");
             this.conn.setAutoCommit(true);
 
         }
@@ -210,14 +211,14 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      */
     private void createConnection() {
 
-        BeardStat.printCon("Connecting....");
+        this.plugin.printCon("Connecting....");
 
         try {
             this.conn = DriverManager.getConnection(this.connectionUrl, this.connectionProperties);
 
             // conn.setAutoCommit(false);
         } catch (SQLException e) {
-            BeardStat.mysqlError(e);
+            this.plugin.mysqlError(e);
             this.conn = null;
         }
 
@@ -228,16 +229,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * @return
      */
     private synchronized boolean checkConnection() {
-        BeardStat.printDebugCon("Checking connection");
+        this.plugin.printDebugCon("Checking connection");
         try {
             if ((this.conn == null) || !this.conn.isValid(0)) {
-                BeardStat.printDebugCon("Something is derp, rebooting connection.");
+                this.plugin.printDebugCon("Something is derp, rebooting connection.");
                 createConnection();
                 if (this.conn != null) {
-                    BeardStat.printDebugCon("Rebuilding statements");
+                    this.plugin.printDebugCon("Rebuilding statements");
                     prepareStatements();
                 } else {
-                    BeardStat.printDebugCon("Reboot failed!");
+                    this.plugin.printDebugCon("Reboot failed!");
                 }
 
             }
@@ -247,23 +248,23 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         } catch (AbstractMethodError e) {
 
         }
-        BeardStat.printDebugCon(("Checking is " + this.conn) != null ? "up" : "down");
+        this.plugin.printDebugCon(("Checking is " + this.conn) != null ? "up" : "down");
         return this.conn != null;
     }
 
     protected void checkAndMakeTable() {
-        BeardStat.printCon("Constructing table as needed.");
+        this.plugin.printCon("Constructing table as needed.");
 
         try {
 
-            String[] creates = BeardStat.self().readSQL(this.type, "sql/maintenence/create.tables", this.tblPrefix)
+            String[] creates = this.plugin.readSQL(this.type, "sql/maintenence/create.tables", this.tblPrefix)
                     .replaceAll("\n|\r", "").split(";");
             for (String sql : creates) {
-                BeardStat.printDebugCon(sql);
+                this.plugin.printDebugCon(sql);
                 this.conn.prepareStatement(sql).execute();
             }
         } catch (SQLException e) {
-            BeardStat.mysqlError(e);
+            this.plugin.mysqlError(e);
         }
     }
 
@@ -272,57 +273,57 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      */
     protected void prepareStatements() {
         try {
-            BeardStat.printDebugCon("Preparing statements");
+            this.plugin.printDebugCon("Preparing statements");
 
-            this.loadEntity = this.conn.prepareStatement(BeardStat.self().readSQL(this.type, "sql/load/getEntity",
+            this.loadEntity = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/load/getEntity",
                     this.tblPrefix));
-            this.loadEntityData = this.conn.prepareStatement(BeardStat.self().readSQL(this.type,
-                    "sql/load/getEntityData", this.tblPrefix));
+            this.loadEntityData = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/load/getEntityData",
+                    this.tblPrefix));
 
             // Load components
-            this.getDomains = this.conn.prepareStatement(BeardStat.self().readSQL(this.type,
+            this.getDomains = this.conn.prepareStatement(this.plugin.readSQL(this.type,
                     "sql/load/components/getDomains", this.tblPrefix));
-            this.getWorlds = this.conn.prepareStatement(BeardStat.self().readSQL(this.type,
-                    "sql/load/components/getWorlds", this.tblPrefix));
-            this.getCategories = this.conn.prepareStatement(BeardStat.self().readSQL(this.type,
+            this.getWorlds = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/load/components/getWorlds",
+                    this.tblPrefix));
+            this.getCategories = this.conn.prepareStatement(this.plugin.readSQL(this.type,
                     "sql/load/components/getCategories", this.tblPrefix));
-            this.getStatistics = this.conn.prepareStatement(BeardStat.self().readSQL(this.type,
+            this.getStatistics = this.conn.prepareStatement(this.plugin.readSQL(this.type,
                     "sql/load/components/getStatistics", this.tblPrefix));
 
             // save components
             this.saveDomain = this.conn.prepareStatement(
-                    BeardStat.self().readSQL(this.type, "sql/save/components/saveDomain", this.tblPrefix),
+                    this.plugin.readSQL(this.type, "sql/save/components/saveDomain", this.tblPrefix),
                     Statement.RETURN_GENERATED_KEYS);
             this.saveWorld = this.conn.prepareStatement(
-                    BeardStat.self().readSQL(this.type, "sql/save/components/saveWorld", this.tblPrefix),
+                    this.plugin.readSQL(this.type, "sql/save/components/saveWorld", this.tblPrefix),
                     Statement.RETURN_GENERATED_KEYS);
             this.saveCategory = this.conn.prepareStatement(
-                    BeardStat.self().readSQL(this.type, "sql/save/components/saveCategory", this.tblPrefix),
+                    this.plugin.readSQL(this.type, "sql/save/components/saveCategory", this.tblPrefix),
                     Statement.RETURN_GENERATED_KEYS);
             this.saveStatistic = this.conn.prepareStatement(
-                    BeardStat.self().readSQL(this.type, "sql/save/components/saveStatistic", this.tblPrefix),
+                    this.plugin.readSQL(this.type, "sql/save/components/saveStatistic", this.tblPrefix),
                     Statement.RETURN_GENERATED_KEYS);
 
             // save to db
             this.saveEntity = this.conn.prepareStatement(
-                    BeardStat.self().readSQL(this.type, "sql/save/saveEntity", this.tblPrefix),
+                    this.plugin.readSQL(this.type, "sql/save/saveEntity", this.tblPrefix),
                     Statement.RETURN_GENERATED_KEYS);
-            this.saveEntityData = this.conn.prepareStatement(BeardStat.self().readSQL(this.type, "sql/save/saveStat",
+            this.saveEntityData = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/save/saveStat",
                     this.tblPrefix));
 
             // Maintenance
-            this.keepAlive = this.conn.prepareStatement(BeardStat.self().readSQL(this.type,
-                    "sql/maintenence/keepAlive", this.tblPrefix));
-            this.listEntities = this.conn.prepareStatement(BeardStat.self().readSQL(this.type,
+            this.keepAlive = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/maintenence/keepAlive",
+                    this.tblPrefix));
+            this.listEntities = this.conn.prepareStatement(this.plugin.readSQL(this.type,
                     "sql/maintenence/listEntities", this.tblPrefix));
             // deleteEntity =
-            // conn.prepareStatement(BeardStat.self().readSQL(type,"sql/maintenence/deletePlayerFully",
+            // conn.prepareStatement(plugin.readSQL(type,"sql/maintenence/deletePlayerFully",
             // tblPrefix));
 
-            BeardStat.printDebugCon("Set player stat statement created");
-            BeardStat.printCon("Initaised MySQL Data Provider.");
+            this.plugin.printDebugCon("Set player stat statement created");
+            this.plugin.printCon("Initaised MySQL Data Provider.");
         } catch (SQLException e) {
-            BeardStat.mysqlError(e);
+            this.plugin.mysqlError(e);
         }
     }
 
@@ -333,19 +334,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             cacheComponent(this.categories, this.getCategories);
             cacheStatistics();
         } catch (SQLException e) {
-            BeardStat.mysqlError(e);
+            this.plugin.mysqlError(e);
         }
     }
 
     private void cacheStatistics() throws SQLException {
         ResultSet rs = this.getStatistics.executeQuery();
         while (rs.next()) {
-            new StatisticMetadata(rs.getInt(1), rs.getString(2), rs.getString(3),
-                    Formatting.valueOf(rs.getString(4)));
+            new StatisticMetadata(rs.getInt(1), rs.getString(2), rs.getString(3), Formatting.valueOf(rs.getString(4)));
         }
     }
-    
-
 
     private void cacheComponent(Map<String, Integer> mapTo, PreparedStatement statement) throws SQLException {
         ResultSet rs = statement.executeQuery();
@@ -360,7 +358,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         StatisticMetadata meta = StatisticMetadata.getMeta(name);
         if (meta == null) {
-            BeardStat.printDebugCon("Recording new component: " + name);
+            this.plugin.printDebugCon("Recording new component: " + name);
             this.saveStatistic.setString(1, name);
             this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See
                                                                                     // if
@@ -388,15 +386,19 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private int getComponentId(Map<String, Integer> mapTo, PreparedStatement statement, String name)
             throws SQLException {
         if (!mapTo.containsKey(name)) {
-            BeardStat.printDebugCon("Recording new component: " + name);
+            this.plugin.printDebugCon("Recording new component: " + name);
             statement.setString(1, name);
-            try{statement.setString(2, name);}catch(Exception e){}// TODO - Need to seperate out each element to it's own getId system I think :/
+            try {
+                statement.setString(2, name);
+            } catch (Exception e) {
+            }// TODO - Need to seperate out each element to it's own getId
+             // system I think :/
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
             rs.next();
             mapTo.put(name, rs.getInt(1));
             rs.close();
-            BeardStat.printDebugCon(name + " : " + mapTo.get(name));
+            this.plugin.printDebugCon(name + " : " + mapTo.get(name));
         }
 
         return mapTo.get(name);
@@ -418,7 +420,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             public void run() {
                 try {
                     if (!checkConnection()) {
-                        BeardStat.printCon("Database connection error!");
+                        JDBCStatDataProvider.this.plugin.printCon("Database connection error!");
                         promise.reject(new SQLException("Error connecting to database"));
                         return;
                     }
@@ -459,7 +461,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     // load all stats data
                     JDBCStatDataProvider.this.loadEntityData.setInt(1, pb.getEntityID());
                     JDBCStatDataProvider.this.loadEntityData.setInt(1, pb.getEntityID());
-                    BeardStat.printDebugCon("executing " + JDBCStatDataProvider.this.loadEntityData);
+                    JDBCStatDataProvider.this.plugin.printDebugCon("executing "
+                            + JDBCStatDataProvider.this.loadEntityData);
                     rs = JDBCStatDataProvider.this.loadEntityData.executeQuery();
 
                     while (rs.next()) {
@@ -470,13 +473,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     }
                     rs.close();
 
-                    BeardStat.printDebugCon("time taken to retrieve: " + ((new Date()).getTime() - t1)
-                            + " Milliseconds");
+                    JDBCStatDataProvider.this.plugin.printDebugCon("time taken to retrieve: "
+                            + ((new Date()).getTime() - t1) + " Milliseconds");
 
                     promise.resolve(pb);
                     return;
                 } catch (SQLException e) {
-                    BeardStat.mysqlError(e);
+                    JDBCStatDataProvider.this.plugin.mysqlError(e);
                     promise.reject(e);
                 }
 
@@ -519,7 +522,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                                            ChatColor.RED
                                                                    + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
                                        } else {
-                                           BeardStat.printDebugCon("Saving to database");
+                                           JDBCStatDataProvider.this.plugin.printDebugCon("Saving to database");
                                            for (Entry<String, EntityStatBlob> entry : JDBCStatDataProvider.this.writeCache
                                                    .entrySet()) {
                                                try {
@@ -554,11 +557,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                                    JDBCStatDataProvider.this.saveEntityData.executeBatch();
 
                                                } catch (SQLException e) {
-                                                   BeardStat.mysqlError(e);
+                                                   JDBCStatDataProvider.this.plugin.mysqlError(e);
                                                    checkConnection();
                                                }
                                            }
-                                           BeardStat.printDebugCon("Clearing write cache");
+                                           JDBCStatDataProvider.this.plugin.printDebugCon("Clearing write cache");
                                            JDBCStatDataProvider.this.writeCache.clear();
                                        }
                                    }
@@ -568,9 +571,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     @Override
     public void flushSync() {
-        BeardStat.printCon("Flushing in main thread! Game will lag!");
+        this.plugin.printCon("Flushing in main thread! Game will lag!");
         this.flush.run();
-        BeardStat.printCon("Flushed!");
+        this.plugin.printCon("Flushed!");
     }
 
     @Override

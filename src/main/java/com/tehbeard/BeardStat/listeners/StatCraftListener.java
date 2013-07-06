@@ -3,11 +3,9 @@ package com.tehbeard.BeardStat.listeners;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -16,56 +14,51 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
-public class StatCraftListener implements Listener {
+public class StatCraftListener extends StatListener {
 
-    List<String>              worlds;
-    private PlayerStatManager playerStatManager;
-
-    public StatCraftListener(List<String> worlds, PlayerStatManager playerStatManager) {
-        this.worlds = worlds;
-        this.playerStatManager = playerStatManager;
+    public StatCraftListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(worlds, playerStatManager, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCraftItem(CraftItemEvent event) {
-        if ((event.getWhoClicked().getGameMode() == GameMode.CREATIVE)
-                && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode", false)) {
+        if (event.isCancelled() || !shouldTrack((Player) event.getWhoClicked(), event.getWhoClicked().getWorld())) {
             return;
         }
-        if (!this.worlds.contains(event.getWhoClicked().getWorld().getName())) {
-            int amount = event.getRecipe().getResult().getAmount();
-            final Player p = (Player) event.getWhoClicked();
-            if (event.isShiftClick()) {
 
-                final Inventory inv = event.getWhoClicked().getInventory();
-                final ItemStack is = event.getRecipe().getResult();
-                final int preAmount = getItemCount(inv, is);
+        int amount = event.getRecipe().getResult().getAmount();
+        final Player p = (Player) event.getWhoClicked();
+        if (event.isShiftClick()) {
 
-                Bukkit.getScheduler().runTaskAsynchronously(BeardStat.self(), new Runnable() {
+            final Inventory inv = event.getWhoClicked().getInventory();
+            final ItemStack is = event.getRecipe().getResult();
+            final int preAmount = getItemCount(inv, is);
 
-                    @Override
-                    public void run() {
-                        int made = getItemCount(inv, is) - preAmount;
-                        // String item =
-                        // is.getType().toString().toLowerCase().replace("_","");
-                        MetaDataCapture.saveMetaDataMaterialStat(
-                                StatCraftListener.this.playerStatManager.getPlayerBlobASync(p.getName()),
-                                BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", is.getType(),
-                                is.getDurability(), made);
-                    }
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, new Runnable() {
 
-                });
-            } else {
+                @Override
+                public void run() {
+                    int made = getItemCount(inv, is) - preAmount;
+                    // String item =
+                    // is.getType().toString().toLowerCase().replace("_","");
+                    MetaDataCapture.saveMetaDataMaterialStat(
+                            StatCraftListener.this.playerStatManager.getPlayerBlobASync(p.getName()),
+                            BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", is.getType(),
+                            is.getDurability(), made);
+                }
 
-                /**
-                 * if MetaDataable, make the item string correct
-                 */
-                MetaDataCapture.saveMetaDataMaterialStat(this.playerStatManager.getPlayerBlobASync(p.getName()),
-                        BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", event.getRecipe().getResult()
-                                .getType(), event.getRecipe().getResult().getDurability(), amount);
+            });
+        } else {
 
-            }
+            /**
+             * if MetaDataable, make the item string correct
+             */
+            MetaDataCapture.saveMetaDataMaterialStat(this.playerStatManager.getPlayerBlobASync(p.getName()),
+                    BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", event.getRecipe().getResult()
+                            .getType(), event.getRecipe().getResult().getDurability(), amount);
+
         }
+
     }
 
     private int getItemCount(Inventory inv, ItemStack item) {

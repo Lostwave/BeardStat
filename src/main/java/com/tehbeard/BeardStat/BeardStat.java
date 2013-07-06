@@ -40,7 +40,6 @@ import com.tehbeard.BeardStat.utils.HumanReadbleOutputGenerator;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
-
 /**
  * BeardStat Statistic's tracking for the gentleman server
  * 
@@ -48,28 +47,17 @@ import com.tehbeard.BeardStat.utils.MetaDataCapture;
  * 
  */
 public class BeardStat extends JavaPlugin {
-    
+
     public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
-    public static final String PERM_COMMAND_STAT_OTHER = "command.stat.other";
+    public static final String PERM_COMMAND_STAT_OTHER   = "command.stat.other";
 
     // Default values for domain and world
-    public static final String  DEFAULT_DOMAIN = "default";
-    public static final String  GLOBAL_WORLD   = "__global__";
-    public static final String  PLAYER_TYPE    = "player";
+    public static final String DEFAULT_DOMAIN            = "default";
+    public static final String GLOBAL_WORLD              = "__global__";
+    public static final String PLAYER_TYPE               = "player";
 
-    private static BeardStat    self;
-    private static Logger logger;
-    private int                 saveTaskId;
-    private PlayerStatManager   playerStatManager;
-
-    /**
-     * Return the instance of this plugin
-     * 
-     * @return
-     */
-    public static BeardStat self() {
-        return self;
-    }
+    private int                saveTaskId;
+    private PlayerStatManager  playerStatManager;
 
     /**
      * Returns the stat manager for use by other plugins
@@ -85,8 +73,8 @@ public class BeardStat extends JavaPlugin {
      * 
      * @param line
      */
-    public static void printCon(String line) {
-        logger.info(line);
+    public void printCon(String line) {
+        getLogger().info(line);
     }
 
     /**
@@ -94,9 +82,9 @@ public class BeardStat extends JavaPlugin {
      * 
      * @param line
      */
-    public static void printDebugCon(String line) {
+    public void printDebugCon(String line) {
 
-        if ((self != null) && self.getConfig().getBoolean("general.debug", false)) {
+        if (getConfig().getBoolean("general.debug", false)) {
             printCon("[DEBUG] " + line);
         }
     }
@@ -115,14 +103,11 @@ public class BeardStat extends JavaPlugin {
             this.playerStatManager.flush();
             printCon("Cache flushed to database");
         }
-        self = null;
     }
 
     @Override
     public void onEnable() {
 
-        self = this;
-        logger = getLogger();
         printCon("Starting BeardStat");
 
         // Read in the metadata file from jar and from data folder
@@ -130,7 +115,7 @@ public class BeardStat extends JavaPlugin {
         try {
             MetaDataCapture.readData(new FileInputStream(new File(getDataFolder(), "metadata.txt")));
         } catch (FileNotFoundException e) {
-            BeardStat.printCon("No External metadata file detected");
+            printCon("No External metadata file detected");
         }
         HumanReadbleOutputGenerator.init();
 
@@ -176,7 +161,7 @@ public class BeardStat extends JavaPlugin {
         }
 
         // start the player manager
-        this.playerStatManager = new PlayerStatManager(db);
+        this.playerStatManager = new PlayerStatManager(this, db);
 
         printCon("initializing composite stats");
         try {
@@ -192,11 +177,11 @@ public class BeardStat extends JavaPlugin {
         // get blacklist, then start and register each type of listener
         try {
             List<String> worldList = getConfig().getStringList("stats.blacklist");
-            StatBlockListener sbl = new StatBlockListener(worldList, this.playerStatManager);
-            StatPlayerListener spl = new StatPlayerListener(worldList, this.playerStatManager);
-            StatEntityListener sel = new StatEntityListener(worldList, this.playerStatManager);
-            StatVehicleListener svl = new StatVehicleListener(worldList, this.playerStatManager);
-            StatCraftListener scl = new StatCraftListener(worldList, this.playerStatManager);
+            StatBlockListener sbl = new StatBlockListener(worldList, this.playerStatManager, this);
+            StatPlayerListener spl = new StatPlayerListener(worldList, this.playerStatManager, this);
+            StatEntityListener sel = new StatEntityListener(worldList, this.playerStatManager, this);
+            StatVehicleListener svl = new StatVehicleListener(worldList, this.playerStatManager, this);
+            StatCraftListener scl = new StatCraftListener(worldList, this.playerStatManager, this);
             getServer().getPluginManager().registerEvents(sbl, this);
             getServer().getPluginManager().registerEvents(spl, this);
             getServer().getPluginManager().registerEvents(sel, this);
@@ -215,12 +200,12 @@ public class BeardStat extends JavaPlugin {
 
         printCon("Loading commands");
         try {
-            getCommand("stats").setExecutor(new StatCommand(this.playerStatManager));
-            getCommand("played").setExecutor(new playedCommand(this.playerStatManager));
-            getCommand("statpage").setExecutor(new StatPageCommand(this));
-            getCommand("laston").setExecutor(new LastOnCommand(this.playerStatManager));
+            getCommand("stats").setExecutor(new StatCommand(this.playerStatManager, this));
+            getCommand("played").setExecutor(new playedCommand(this.playerStatManager, this));
+            getCommand("statpage").setExecutor(new StatPageCommand(this.playerStatManager, this));
+            getCommand("laston").setExecutor(new LastOnCommand(this.playerStatManager, this));
             getCommand("beardstatdebug").setExecutor(this.playerStatManager);
-            getCommand("statadmin").setExecutor(new StatAdmin(this.playerStatManager));
+            getCommand("statadmin").setExecutor(new StatAdmin(this.playerStatManager, this));
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error registering commands", e, false));
         }
@@ -235,14 +220,15 @@ public class BeardStat extends JavaPlugin {
         Metrics metrics;
         try {
             metrics = new Metrics(this);
-            metrics.createGraph("Database Type").addPlotter(new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
+            metrics.createGraph("Database Type").addPlotter(
+                    new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
 
-                @Override
-                public int getValue() {
-                    return 1;
-                }
+                        @Override
+                        public int getValue() {
+                            return 1;
+                        }
 
-            });// record database type
+                    });// record database type
 
             metrics.start();
         } catch (Exception e) {
@@ -302,13 +288,13 @@ public class BeardStat extends JavaPlugin {
         @Override
         public void run() {
             if (getConfig().getBoolean("general.verbose", false)) {
-                BeardStat.printCon("Flushing to database.");
+                printCon("Flushing to database.");
             }
 
             BeardStat.this.playerStatManager.saveCache();
             BeardStat.this.playerStatManager.flush();
             if (getConfig().getBoolean("general.verbose", false)) {
-                BeardStat.printCon("flush completed");
+                printCon("flush completed");
             }
         }
 
@@ -327,7 +313,8 @@ public class BeardStat extends JavaPlugin {
      * 
      * @param e
      */
-    public static void mysqlError(SQLException e) {
+    public void mysqlError(SQLException e) {
+        Logger logger = getLogger();
         logger.severe("=========================================");
         logger.severe("|             DATABASE ERROR            |");
         logger.severe("=========================================");
@@ -340,26 +327,23 @@ public class BeardStat extends JavaPlugin {
             break;
         case 1044:
         case 1045:
-            logger
-                    .severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
+            logger.severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
             break;
         case 1049:
-            logger
-                    .severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
+            logger.severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
             break;
 
         default:
-            logger
-                    .severe("Error code ["
-                            + e.getErrorCode()
-                            + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
+            logger.severe("Error code ["
+                    + e.getErrorCode()
+                    + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
             logger.severe("Exception Detail:");
             logger.severe(e.getMessage());
             break;
         }
 
         // dump stack trace if in verbose mode
-        if (self.getConfig().getBoolean("general.verbose", false)) {
+        if (getConfig().getBoolean("general.verbose", false)) {
             logger.severe("=========================================");
             logger.severe("            Begin error dump             ");
             logger.severe("=========================================");
@@ -376,21 +360,22 @@ public class BeardStat extends JavaPlugin {
      * other stats.
      */
     private void loadDynamicStatConfiguration() {
-        BeardStat.printCon(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
+        printCon(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
         /*
-        for (String cstat : getConfig().getStringList("customstats")) {
-
-            String[] i = cstat.split("\\=");
-            EntityStatBlob.addDynamicStat(i[0].trim(), i[1].trim());
-
-        }
-
-        for (String cstat : getConfig().getStringList("savedcustomstats")) {
-
-            String[] i = cstat.split("\\=");
-            EntityStatBlob.addDynamicSavedStat(i[0].trim(), i[1].trim());
-
-        }*/
+         * for (String cstat : getConfig().getStringList("customstats")) {
+         * 
+         * String[] i = cstat.split("\\=");
+         * EntityStatBlob.addDynamicStat(i[0].trim(), i[1].trim());
+         * 
+         * }
+         * 
+         * for (String cstat : getConfig().getStringList("savedcustomstats")) {
+         * 
+         * String[] i = cstat.split("\\=");
+         * EntityStatBlob.addDynamicSavedStat(i[0].trim(), i[1].trim());
+         * 
+         * }
+         */
 
     }
 
@@ -405,7 +390,7 @@ public class BeardStat extends JavaPlugin {
         // MySQL provider
         if (config.getString("type").equalsIgnoreCase("mysql")) {
             try {
-                db = new MysqlStatDataProvider(config.getString("host"), config.getInt("port", 3306),
+                db = new MysqlStatDataProvider(this, config.getString("host"), config.getInt("port", 3306),
                         config.getString("database"), config.getString("prefix"), config.getString("username"),
                         config.getString("password"));
             } catch (SQLException e) {
@@ -416,7 +401,7 @@ public class BeardStat extends JavaPlugin {
         // SQLite provider
         if (config.getString("type").equalsIgnoreCase("sqlite")) {
             try {
-                db = new SQLiteStatDataProvider(new File(getDataFolder(), "stats.db").toString());
+                db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString());
             } catch (SQLException e) {
                 e.printStackTrace();
                 db = null;
@@ -427,7 +412,7 @@ public class BeardStat extends JavaPlugin {
         // In memory provider
         if (config.getString("type").equalsIgnoreCase("memory")) {
             try {
-                db = new SQLiteStatDataProvider(":memory:");
+                db = new SQLiteStatDataProvider(this, ":memory:");
             } catch (SQLException e) {
                 e.printStackTrace();
                 db = null;
@@ -436,16 +421,15 @@ public class BeardStat extends JavaPlugin {
 
         // File provider, kept for alert message, remove in 0.7
         if (config.getString("type").equalsIgnoreCase("file")) {
-            BeardStat
-                    .printCon("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
+            printCon("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
         }
 
         // transfer provider, calls method again to load handlers for transfer
         if (config.getString("type").equalsIgnoreCase("transfer")) {
             IStatDataProvider _old = getProvider(getConfig().getConfigurationSection("stats.transfer.old"));
             IStatDataProvider _new = getProvider(getConfig().getConfigurationSection("stats.transfer.new"));
-            BeardStat.printCon("Initiating transfer of stats, this may take a while");
-            new TransferDataProvider(_old, _new);
+            printCon("Initiating transfer of stats, this may take a while");
+            new TransferDataProvider(this, _old, _new);
             db = _new;
         }
         return db;
@@ -464,7 +448,7 @@ public class BeardStat extends JavaPlugin {
      * @return SQL commands loaded from file.
      */
     public String readSQL(String type, String filename, String prefix) {
-        BeardStat.printDebugCon("Loading SQL: " + filename);
+        printDebugCon("Loading SQL: " + filename);
         InputStream is = getResource(filename + "." + type);
         if (is == null) {
             is = getResource(filename + ".sql");
@@ -485,7 +469,7 @@ public class BeardStat extends JavaPlugin {
      * 
      * @param e
      */
-    public static void handleError(Exception e) {
+    public void handleError(Exception e) {
         if (e instanceof BeardStatRuntimeException) {
             BeardStatRuntimeException be = (BeardStatRuntimeException) e;
             if (!be.isRecoverable()) {
@@ -494,7 +478,7 @@ public class BeardStat extends JavaPlugin {
                 if (e != null) {
                     handleUnknownError(e);
                 }
-                Bukkit.getPluginManager().disablePlugin(self);
+                Bukkit.getPluginManager().disablePlugin(this);
             } else {
                 printCon("WARNING: BeardStat has encountered an error.");
                 printCon(be.getMessage());
@@ -512,13 +496,13 @@ public class BeardStat extends JavaPlugin {
      * 
      * @param e
      */
-    private static void handleUnknownError(Exception e) {
+    private void handleUnknownError(Exception e) {
         printCon("=========");
         printCon("BeardStat");
         printCon("=========");
         printCon("BeardStat encountered an error, please submit the following info + stack trace to the dev bukkit page (http://dev.bukkit.org/server-mods/BeardStat/");
         printCon("");
-        printCon("BeardStat version: " + self.getDescription().getVersion());
+        printCon("BeardStat version: " + getDescription().getVersion());
         printCon("");
         e.printStackTrace();
         printCon("");

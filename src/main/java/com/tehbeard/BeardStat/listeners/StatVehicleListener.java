@@ -4,12 +4,10 @@ import java.util.List;
 
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import com.tehbeard.BeardStat.BeardStat;
@@ -17,21 +15,21 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 
-public class StatVehicleListener implements Listener {
+public class StatVehicleListener extends StatListener {
 
-    private PlayerStatManager playerStatManager;
-    private List<String>      worlds;
-
-    public StatVehicleListener(List<String> worlds, PlayerStatManager playerStatManager) {
-        this.worlds = worlds;
-        this.playerStatManager = playerStatManager;
+    public StatVehicleListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(worlds, playerStatManager, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {
+        if (isBlacklistedWorld(event.getVehicle().getWorld())) {
+            return;
+        }
+
         if (((event.getTo().getBlockX() != event.getFrom().getBlockX())
                 || (event.getTo().getBlockY() != event.getFrom().getBlockY()) || (event.getTo().getBlockZ() != event
-                .getFrom().getBlockZ())) && !this.worlds.contains(event.getVehicle().getWorld().getName())) {
+                .getFrom().getBlockZ()))) {
 
             Location from, to;
             Player player = (event.getVehicle().getPassenger() instanceof Player ? (Player) event.getVehicle()
@@ -40,14 +38,13 @@ public class StatVehicleListener implements Listener {
                 return;
             }
 
-            if ((player.getGameMode() == GameMode.CREATIVE)
-                    && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode", false)) {
+            if (!shouldTrackPlayer(player)) {
                 return;
             }
 
             from = event.getFrom();
             to = event.getTo();
-            BeardStat.printDebugCon("Vehicle move fired!");
+            this.plugin.printDebugCon("Vehicle move fired!");
             if (from.getWorld().equals(to.getWorld())) {
                 if (from.distance(to) < 10) {
                     Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(player.getName());

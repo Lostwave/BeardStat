@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.GameMode;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ComplexEntityPart;
 import org.bukkit.entity.Entity;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -31,34 +29,30 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
-public class StatEntityListener implements Listener {
+public class StatEntityListener extends StatListener {
 
-    List<String>              worlds;
-    private PlayerStatManager playerStatManager;
-
-    private final String[]    DAMAGELBLS = { "damagedealt", "damagetaken" };
-    private final String[]    KDLBLS     = { "kills", "deaths" };
-
-    public StatEntityListener(List<String> worlds, PlayerStatManager playerStatManager) {
-        this.worlds = worlds;
-        this.playerStatManager = playerStatManager;
+    public StatEntityListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(worlds, playerStatManager, plugin);
     }
+
+    private final String[] DAMAGELBLS = { "damagedealt", "damagetaken" };
+    private final String[] KDLBLS     = { "kills", "deaths" };
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamage(EntityDamageEvent event) {
 
-        if ((event.isCancelled() == false) && !this.worlds.contains(event.getEntity().getWorld().getName())) {
-
-            processEntityDamage(event, this.DAMAGELBLS, false);
-
+        if (event.isCancelled() || isBlacklistedWorld(event.getEntity().getWorld())) {
+            return;
         }
+
+        processEntityDamage(event, this.DAMAGELBLS, false);
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event) {
 
-        // ignore the blacklisted worlds
-        if (this.worlds.contains(event.getEntity().getWorld().getName())) {
+        if (isBlacklistedWorld(event.getEntity().getWorld())) {
             return;
         }
 
@@ -111,8 +105,7 @@ public class StatEntityListener implements Listener {
             return;
         }// kill if no player involved
 
-        if ((player.getGameMode() == GameMode.CREATIVE)
-                && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode", false)) {
+        if (event.isCancelled() || !shouldTrack(player, player.getWorld())) {
             return;
         }
 
@@ -156,14 +149,13 @@ public class StatEntityListener implements Listener {
             String world = event.getEntity().getWorld().getName();
             int amount = event.getAmount();
             RegainReason reason = event.getRegainReason();
+            Player player = (Player) event.getEntity();
 
-            if ((((Player) event.getEntity()).getGameMode() == GameMode.CREATIVE)
-                    && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode", false)) {
+            if (!shouldTrack(player, player.getWorld())) {
                 return;
             }
 
-            Promise<EntityStatBlob> promiseblob = this.playerStatManager
-                    .getPlayerBlobASync(((Player) event.getEntity()).getName());
+            Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(player.getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "stats", "damagehealed",
                     amount));
             if (reason != RegainReason.CUSTOM) {
@@ -177,10 +169,10 @@ public class StatEntityListener implements Listener {
     public void onEntityTame(EntityTameEvent event) {
         if ((event.isCancelled() == false) && (event.getOwner() instanceof Player)
                 && !this.worlds.contains(event.getEntity().getWorld().getName())) {
-            if ((((Player) event.getOwner()).getGameMode() == GameMode.CREATIVE)
-                    && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode", false)) {
+            if (event.isCancelled() || !shouldTrack((Player) event.getOwner(), ((Entity) event.getOwner()).getWorld())) {
                 return;
             }
+
             String world = event.getEntity().getWorld().getName();
             Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(event.getOwner().getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "stats", "tame"
@@ -190,27 +182,31 @@ public class StatEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPotionSplash(PotionSplashEvent event) {
-        if ((event.isCancelled() == false) && !this.worlds.contains(event.getPotion().getWorld().getName())) {
-            ThrownPotion potion = event.getPotion();
 
-            for (Entity e : event.getAffectedEntities()) {
-                if (e instanceof Player) {
-                    Player p = (Player) e;
+        if (event.isCancelled() || isBlacklistedWorld(event.getPotion().getWorld())) {
+            return;
+        }
 
-                    if ((p.getGameMode() == GameMode.CREATIVE)
-                            && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode", false)) {
-                        return;
-                    }
-                    String world = event.getEntity().getWorld().getName();
-                    Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(p.getName());
-                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions",
-                            "splashhit", 1));
-                    // added per potion details
-                    for (PotionEffect potionEffect : potion.getEffects()) {
-                        String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
-                        promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions",
-                                "splash" + effect, 1));
-                    }
+        ThrownPotion potion = event.getPotion();
+
+        for (Entity e : event.getAffectedEntities()) {
+            if (e instanceof Player) {
+                Player p = (Player) e;
+
+                if (!shouldTrackPlayer(p)) {
+                    continue;
+                }
+
+                String world = event.getEntity().getWorld().getName();
+
+                Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(p.getName());
+                promiseblob
+                        .onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions", "splashhit", 1));
+                // added per potion details
+                for (PotionEffect potionEffect : potion.getEffects()) {
+                    String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
+                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions", "splash"
+                            + effect, 1));
                 }
             }
         }
@@ -219,31 +215,33 @@ public class StatEntityListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBowShoot(EntityShootBowEvent event) {
 
-        if ((event.isCancelled() == false) && !this.worlds.contains(event.getEntity().getWorld().getName())) {
-            if (event.getEntity() instanceof Player) {
-                Player p = (Player) event.getEntity();
-
-                if ((p.getGameMode() == GameMode.CREATIVE)
-                        && !BeardStat.self().getConfig().getBoolean("stats.trackcreativemode", false)) {
-                    return;
-                }
-                String world = event.getEntity().getWorld().getName();
-
-                Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(p.getName());
-                // total shots fired
-                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow", "shots", 1));
-
-                if (event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)) {
-                    promiseblob
-                            .onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow", "fireshots", 1));
-                }
-
-                if (event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)) {
-                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow",
-                            "infiniteshots", 1));
-                }
-
-            }
+        if ((event.isCancelled() || isBlacklistedWorld(event.getEntity().getWorld()))) {
+            return;
         }
+
+        if (event.getEntity() instanceof Player) {
+            Player p = (Player) event.getEntity();
+
+            if (!shouldTrackPlayer(p)) {
+                return;
+            }
+
+            String world = event.getEntity().getWorld().getName();
+
+            Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(p.getName());
+            // total shots fired
+            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow", "shots", 1));
+
+            if (event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)) {
+                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow", "fireshots", 1));
+            }
+
+            if (event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)) {
+                promiseblob
+                        .onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow", "infiniteshots", 1));
+            }
+
+        }
+
     }
 }

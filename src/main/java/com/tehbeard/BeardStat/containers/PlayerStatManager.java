@@ -27,9 +27,11 @@ public class PlayerStatManager implements CommandExecutor {
 
     private HashMap<String, Promise<EntityStatBlob>> cache           = new HashMap<String, Promise<EntityStatBlob>>();
     private IStatDataProvider                        backendDatabase = null;
+    private BeardStat                                plugin;
 
-    public PlayerStatManager(IStatDataProvider database) {
+    public PlayerStatManager(BeardStat plugin, IStatDataProvider database) {
         this.backendDatabase = database;
+        this.plugin = plugin;
     }
 
     /**
@@ -50,7 +52,7 @@ public class PlayerStatManager implements CommandExecutor {
 
             // check if rejected promise, remove from cache silently
             if (entry.getValue().isRejected()) {
-                BeardStat.printCon("Promise[" + entityId + "] was rejected (error?), removing from cache.");// alert
+                this.plugin.printCon("Promise[" + entityId + "] was rejected (error?), removing from cache.");// alert
                 // debug
                 // dump
                 i.remove();// clear it out
@@ -71,7 +73,7 @@ public class PlayerStatManager implements CommandExecutor {
                     ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
 
                     if (timeRecord != null) {
-                        BeardStat.printDebugCon("saving time: [Player : " + entityName + " , world: "
+                        this.plugin.printDebugCon("saving time: [Player : " + entityName + " , world: "
                                 + timeRecord.world + ", time: " + timeRecord.sessionTime() + "]");
                         if (timeRecord.world != null) {
                             entry.getValue().getValue()
@@ -91,7 +93,7 @@ public class PlayerStatManager implements CommandExecutor {
 
             } else {
                 // Nulled player data
-                BeardStat.printCon("Promise[" + entityId + "] had a null value! Removed from cache.");
+                this.plugin.printCon("Promise[" + entityId + "] had a null value! Removed from cache.");
                 i.remove();
             }
 

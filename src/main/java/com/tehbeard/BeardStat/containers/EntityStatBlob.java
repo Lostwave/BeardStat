@@ -45,7 +45,8 @@ public class EntityStatBlob implements VariableProvider {
                 String cat = null;
                 String stat = null;
                 if (parts.length == 2) {
-                    BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
+                    // BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
+                    // - TODO: FEEX
                     cat = parts[0];
                     stat = parts[1];
                 } else if (parts.length == 4) {
@@ -152,7 +153,8 @@ public class EntityStatBlob implements VariableProvider {
             String cat = null;
             String stat = null;
             if (parts.length == 2) {
-                BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
+                // BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
+                // - TODO: FEEX
                 cat = parts[0];
                 stat = parts[1];
             } else if (parts.length == 4) {
@@ -346,17 +348,18 @@ public class EntityStatBlob implements VariableProvider {
         blob.stats.clear();
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
-                BeardStat.printDebugCon("Archiving stat " + stat.getDomain() + "::" + stat.getWorld() + "::"
-                        + stat.getCategory() + "::" + stat.getStatistic() + " = " + stat.getValue());
+                // BeardStat.printDebugCon("Archiving stat " + stat.getDomain()
+                // + "::" + stat.getWorld() + "::" + stat.getCategory() + "::" +
+                // stat.getStatistic() + " = " + stat.getValue()); - TODO: FEEX
                 IStat is = stat.clone();
                 if (is != null) {
-                    BeardStat.printDebugCon("Stat added");
+                    // BeardStat.printDebugCon("Stat added");
                     blob.addStat(is);
                     stat.clearArchive();
                 }
             }
         }
-        BeardStat.printDebugCon("End cloning");
+        // BeardStat.printDebugCon("End cloning");
         return blob;
     }
 

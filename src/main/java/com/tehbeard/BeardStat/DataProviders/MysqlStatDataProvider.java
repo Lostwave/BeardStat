@@ -2,12 +2,14 @@ package com.tehbeard.BeardStat.DataProviders;
 
 import java.sql.SQLException;
 
+import com.tehbeard.BeardStat.BeardStat;
+
 public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
-    public MysqlStatDataProvider(String host, int port, String database, String tablePrefix, String username,
-            String password) throws SQLException {
+    public MysqlStatDataProvider(BeardStat plugin, String host, int port, String database, String tablePrefix,
+            String username, String password) throws SQLException {
 
-        super("sql", "com.mysql.jdbc.Driver");
+        super(plugin, "sql", "com.mysql.jdbc.Driver");
         this.tblPrefix = tablePrefix;
 
         this.connectionUrl = String.format("jdbc:mysql://%s:%s/%s", host, port, database);

@@ -2,11 +2,13 @@ package com.tehbeard.BeardStat.DataProviders;
 
 import java.sql.SQLException;
 
+import com.tehbeard.BeardStat.BeardStat;
+
 public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
-    public SQLiteStatDataProvider(String filename) throws SQLException {
+    public SQLiteStatDataProvider(BeardStat plugin, String filename) throws SQLException {
 
-        super("sqlite", "org.sqlite.JDBC");
+        super(plugin, "sqlite", "org.sqlite.JDBC");
 
         this.connectionUrl = String.format("jdbc:sqlite:%s", filename);
         this.tblPrefix = "stats";

@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,16 +22,16 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  * @author James
  * 
  */
-public class StatPageCommand implements CommandExecutor {
+public class StatPageCommand extends BeardStatCommand {
 
     private Map<String, List<String>> pages;
-    private PlayerStatManager         playerStatManager;
 
-    public StatPageCommand(BeardStat beardStatPlugin) {
-        this.playerStatManager = beardStatPlugin.getStatManager();
+    public StatPageCommand(PlayerStatManager statManager, BeardStat plugin) {
+        super(statManager, plugin);
+
         this.pages = new HashMap<String, List<String>>();
 
-        ConfigurationSection pageConfig = beardStatPlugin.getConfig().getConfigurationSection("stats.pages");
+        ConfigurationSection pageConfig = plugin.getConfig().getConfigurationSection("stats.pages");
         if (pageConfig != null) {
             Set<String> pageNames = pageConfig.getKeys(false);
             for (String pageName : pageNames) {
@@ -91,7 +90,7 @@ public class StatPageCommand implements CommandExecutor {
                 }
             }
         } catch (Exception e) {
-            BeardStat.handleError(new BeardStatRuntimeException("/statpage threw an error", e, true));
+            this.plugin.handleError(new BeardStatRuntimeException("/statpage threw an error", e, true));
         }
         return true;
     }

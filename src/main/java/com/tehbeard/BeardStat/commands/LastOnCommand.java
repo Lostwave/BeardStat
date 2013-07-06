@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -21,20 +20,19 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  * @author James
  * 
  */
-public class LastOnCommand implements CommandExecutor {
+public class LastOnCommand extends BeardStatCommand {
+
+    public LastOnCommand(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(playerStatManager, plugin);
+    }
 
     private static final String PLAYEDCAT       = "stats";
     private static final String FIRSTPLAYEDSTAT = "firstlogin";
     private static final String LASTPLAYEDSTAT  = "lastlogin";
-    private PlayerStatManager   playerStatManager;
-
-    public LastOnCommand(PlayerStatManager statmanager) {
-        this.playerStatManager = statmanager;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
-        
+
         String name = "";
         EntityStatBlob blob = null;
         OfflinePlayer player = null;

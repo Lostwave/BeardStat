@@ -9,7 +9,6 @@ import me.tehbeard.utils.commands.ArgumentPack;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,12 +27,11 @@ import com.tehbeard.BeardStat.utils.StatisticMetadata;
  * @author James
  * 
  */
-public class StatCommand implements CommandExecutor {
+public class StatCommand extends BeardStatCommand {
 
-    private PlayerStatManager playerStatManager;
-
-    public StatCommand(PlayerStatManager playerStatManager) {
-        this.playerStatManager = playerStatManager;
+    public StatCommand(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(playerStatManager, plugin);
+        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -81,9 +79,9 @@ public class StatCommand implements CommandExecutor {
                     return true;
                 }
                 StatVector vector = null;
-                try{
-                vector = blob.getStats(domain, world, category, statistic, true);
-                }catch(PatternSyntaxException ex){
+                try {
+                    vector = blob.getStats(domain, world, category, statistic, true);
+                } catch (PatternSyntaxException ex) {
                     sender.sendMessage("Invalid stat entered");
                     return true;
                 }
@@ -119,7 +117,7 @@ public class StatCommand implements CommandExecutor {
             }
 
         } catch (Exception e) {
-            BeardStat.handleError(new BeardStatRuntimeException("/stats threw an error", e, true));
+            this.plugin.handleError(new BeardStatRuntimeException("/stats threw an error", e, true));
         }
 
         // TODO: FINISH UP

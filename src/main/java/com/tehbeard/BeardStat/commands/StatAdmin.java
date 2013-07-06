@@ -3,9 +3,9 @@ package com.tehbeard.BeardStat.commands;
 import me.tehbeard.utils.commands.ArgumentPack;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 
 /**
@@ -15,9 +15,11 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  * @author James
  * 
  */
-public class StatAdmin implements CommandExecutor {
+public class StatAdmin extends BeardStatCommand {
 
-    private final PlayerStatManager manager;
+    public StatAdmin(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(playerStatManager, plugin);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
@@ -25,7 +27,7 @@ public class StatAdmin implements CommandExecutor {
 
         if (arguments.size() == 1) {
             if (arguments.getFlag("a")) {
-                final String name = arguments.get(0);
+                //final String name = arguments.get(0);
 
                 /*
                  * new Conversation(BeardStat.self(), (Conversable) sender, new
@@ -44,14 +46,6 @@ public class StatAdmin implements CommandExecutor {
         }
 
         return false;
-    }
-
-    /**
-     * @param manager
-     */
-    public StatAdmin(PlayerStatManager manager) {
-        super();
-        this.manager = manager;
     }
 
 }

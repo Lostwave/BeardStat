@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.tehbeard.BeardStat.BeardStat;
@@ -23,13 +22,14 @@ import com.tehbeard.BeardStat.utils.StatisticMetadata;
  * @author James
  * 
  */
-public class playedCommand implements CommandExecutor {
+public class playedCommand extends BeardStatCommand {
+
+    public playedCommand(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(playerStatManager, plugin);
+    }
 
     private PlayerStatManager playerStatManager;
-
-    public playedCommand(PlayerStatManager playerStatManager) {
-        this.playerStatManager = playerStatManager;
-    }
+    private BeardStat         plugin;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
@@ -71,7 +71,7 @@ public class playedCommand implements CommandExecutor {
                         getPlayedString(stat.getValue())));
             }
         } catch (Exception e) {
-            BeardStat.handleError(new BeardStatRuntimeException("An error occured running /played", e, true));
+            this.plugin.handleError(new BeardStatRuntimeException("An error occured running /played", e, true));
         }
 
         return true;
