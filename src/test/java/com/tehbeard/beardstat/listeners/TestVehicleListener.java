@@ -49,9 +49,9 @@ public class TestVehicleListener {
         when(this.manager.getPlayerBlobASync(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
 
         BeardStat plugin = mock(BeardStat.class);
-        //when(plugin.printDebugCon(anyString()))
-        
-        this.listener = new StatVehicleListener(this.blacklist, this.manager,plugin);
+        // when(plugin.printDebugCon(anyString()))
+
+        this.listener = new StatVehicleListener(this.blacklist, this.manager, plugin);
     }
 
     @Test

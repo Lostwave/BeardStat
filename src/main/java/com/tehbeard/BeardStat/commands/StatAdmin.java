@@ -27,7 +27,7 @@ public class StatAdmin extends BeardStatCommand {
 
         if (arguments.size() == 1) {
             if (arguments.getFlag("a")) {
-                //final String name = arguments.get(0);
+                // final String name = arguments.get(0);
 
                 /*
                  * new Conversation(BeardStat.self(), (Conversable) sender, new

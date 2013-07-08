@@ -44,10 +44,11 @@ public class StatVehicleListener extends StatListener {
 
             from = event.getFrom();
             to = event.getTo();
-            this.plugin.printDebugCon("Vehicle move fired!");
+            getPlugin().printDebugCon("Vehicle move fired!");
             if (from.getWorld().equals(to.getWorld())) {
                 if (from.distance(to) < 10) {
-                    Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(player.getName());
+                    Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+                            player.getName());
                     promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, to.getWorld().getName(),
                             "vehicle", event.getVehicle().getType().toString().toLowerCase().replace("_", ""),
                             (int) Math.ceil(from.distance(to))));

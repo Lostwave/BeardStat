@@ -54,7 +54,7 @@ public class TestBlockListener {
         this.manager = mock(PlayerStatManager.class);
         when(this.manager.getPlayerBlobASync(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
 
-        this.listener = new StatBlockListener(this.blacklist, this.manager,null);
+        this.listener = new StatBlockListener(this.blacklist, this.manager, null);
 
     }
 

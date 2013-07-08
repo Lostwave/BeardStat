@@ -34,17 +34,16 @@ public class StatCraftListener extends StatListener {
             final ItemStack is = event.getRecipe().getResult();
             final int preAmount = getItemCount(inv, is);
 
-            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), new Runnable() {
 
                 @Override
                 public void run() {
                     int made = getItemCount(inv, is) - preAmount;
                     // String item =
                     // is.getType().toString().toLowerCase().replace("_","");
-                    MetaDataCapture.saveMetaDataMaterialStat(
-                            StatCraftListener.this.playerStatManager.getPlayerBlobASync(p.getName()),
-                            BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", is.getType(),
-                            is.getDurability(), made);
+                    MetaDataCapture.saveMetaDataMaterialStat(StatCraftListener.this.getPlayerStatManager()
+                            .getPlayerBlobASync(p.getName()), BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(),
+                            "crafting", is.getType(), is.getDurability(), made);
                 }
 
             });
@@ -53,7 +52,7 @@ public class StatCraftListener extends StatListener {
             /**
              * if MetaDataable, make the item string correct
              */
-            MetaDataCapture.saveMetaDataMaterialStat(this.playerStatManager.getPlayerBlobASync(p.getName()),
+            MetaDataCapture.saveMetaDataMaterialStat(this.getPlayerStatManager().getPlayerBlobASync(p.getName()),
                     BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", event.getRecipe().getResult()
                             .getType(), event.getRecipe().getResult().getDurability(), amount);
 

@@ -18,9 +18,9 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  */
 public abstract class StatListener implements Listener {
 
-    protected final List<String>      worlds;
-    protected final PlayerStatManager playerStatManager;
-    protected final BeardStat         plugin;
+    private final List<String>      worlds;
+    private final PlayerStatManager playerStatManager;
+    private final BeardStat         plugin;
 
     /**
      * @param worlds
@@ -46,6 +46,14 @@ public abstract class StatListener implements Listener {
 
     protected boolean shouldTrack(Player p, World w) {
         return shouldTrackPlayer(p) && !isBlacklistedWorld(w);
+    }
+
+    protected BeardStat getPlugin() {
+        return this.plugin;
+    }
+
+    public PlayerStatManager getPlayerStatManager() {
+        return this.playerStatManager;
     }
 
 }

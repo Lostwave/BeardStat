@@ -109,7 +109,7 @@ public class StatEntityListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(player.getName());
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
 
         // Total damage
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, category[idx], "total", amount));
@@ -131,10 +131,10 @@ public class StatEntityListener extends StatListener {
         }
 
         if ((attacker instanceof Player) && (attacked instanceof Player)) {
-            Promise<EntityStatBlob> attackerBlob = this.playerStatManager.getPlayerBlobASync(((Player) attacker)
-                    .getName());
-            Promise<EntityStatBlob> attackedBlob = this.playerStatManager.getPlayerBlobASync(((Player) attacked)
-                    .getName());
+            Promise<EntityStatBlob> attackerBlob = this.getPlayerStatManager().getPlayerBlobASync(
+                    ((Player) attacker).getName());
+            Promise<EntityStatBlob> attackedBlob = this.getPlayerStatManager().getPlayerBlobASync(
+                    ((Player) attacked).getName());
 
             attackerBlob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, category[0], "pvp", 1));
             attackedBlob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, category[1], "pvp", 1));
@@ -145,7 +145,8 @@ public class StatEntityListener extends StatListener {
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
 
         if ((event.isCancelled() == false) && (event.getEntity() instanceof Player)
-                && !this.worlds.contains(event.getEntity().getWorld().getName())) {
+                && !isBlacklistedWorld(event.getEntity().getWorld())) {
+
             String world = event.getEntity().getWorld().getName();
             int amount = (int) Math.floor(event.getAmount());
             RegainReason reason = event.getRegainReason();
@@ -155,7 +156,7 @@ public class StatEntityListener extends StatListener {
                 return;
             }
 
-            Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(player.getName());
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "stats", "damagehealed",
                     amount));
             if (reason != RegainReason.CUSTOM) {
@@ -168,13 +169,14 @@ public class StatEntityListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
         if ((event.isCancelled() == false) && (event.getOwner() instanceof Player)
-                && !this.worlds.contains(event.getEntity().getWorld().getName())) {
+                && !isBlacklistedWorld(event.getEntity().getWorld())) {
             if (event.isCancelled() || !shouldTrack((Player) event.getOwner(), ((Entity) event.getOwner()).getWorld())) {
                 return;
             }
 
             String world = event.getEntity().getWorld().getName();
-            Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(event.getOwner().getName());
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+                    event.getOwner().getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "stats", "tame"
                     + event.getEntity().getType().toString().toLowerCase().replace("_", ""), 1));
         }
@@ -199,7 +201,7 @@ public class StatEntityListener extends StatListener {
 
                 String world = event.getEntity().getWorld().getName();
 
-                Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(p.getName());
+                Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(p.getName());
                 promiseblob
                         .onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions", "splashhit", 1));
                 // added per potion details
@@ -228,7 +230,7 @@ public class StatEntityListener extends StatListener {
 
             String world = event.getEntity().getWorld().getName();
 
-            Promise<EntityStatBlob> promiseblob = this.playerStatManager.getPlayerBlobASync(p.getName());
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(p.getName());
             // total shots fired
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow", "shots", 1));
 
