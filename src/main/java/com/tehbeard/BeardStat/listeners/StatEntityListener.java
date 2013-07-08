@@ -74,7 +74,7 @@ public class StatEntityListener extends StatListener {
         Entity attacked = event.getEntity();
         String world = attacked.getWorld().getName();
         DamageCause cause = event.getCause();
-        int amount = forceOne ? 1 : event.getDamage();
+        int amount = forceOne ? 1 : (int) Math.floor(event.getDamage());
         Entity attacker = null;
         Projectile projectile = null;
         // grab the attacker if one exists.
@@ -147,7 +147,7 @@ public class StatEntityListener extends StatListener {
         if ((event.isCancelled() == false) && (event.getEntity() instanceof Player)
                 && !this.worlds.contains(event.getEntity().getWorld().getName())) {
             String world = event.getEntity().getWorld().getName();
-            int amount = event.getAmount();
+            int amount = (int) Math.floor(event.getAmount());
             RegainReason reason = event.getRegainReason();
             Player player = (Player) event.getEntity();
 

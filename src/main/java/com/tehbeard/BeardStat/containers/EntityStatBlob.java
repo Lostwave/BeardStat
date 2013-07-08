@@ -99,7 +99,7 @@ public class EntityStatBlob implements VariableProvider {
                 @Override
                 public int getValue() {
                     if (Bukkit.getPlayer(getName()) != null) {
-                        this.lastHealth = Bukkit.getPlayer(getName()).getHealth();
+                        this.lastHealth = (int) Math.floor(Bukkit.getPlayer(getName()).getHealth());
                     }
                     return this.lastHealth;
                 }
