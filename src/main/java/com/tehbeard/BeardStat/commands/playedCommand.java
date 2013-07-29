@@ -28,9 +28,6 @@ public class playedCommand extends BeardStatCommand {
         super(playerStatManager, plugin);
     }
 
-    private PlayerStatManager playerStatManager;
-    private BeardStat         plugin;
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
