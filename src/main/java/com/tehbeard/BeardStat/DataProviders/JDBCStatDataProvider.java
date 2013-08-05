@@ -341,7 +341,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private void cacheStatistics() throws SQLException {
         ResultSet rs = this.getStatistics.executeQuery();
         while (rs.next()) {
-            new StatisticMetadata(rs.getInt(1), rs.getString(2), rs.getString(3), Formatting.valueOf(rs.getString(4)));
+            new StatisticMetadata(rs.getInt(1), rs.getString(2).toLowerCase(), rs.getString(3), Formatting.valueOf(rs.getString(4)));
         }
     }
 
@@ -359,7 +359,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         StatisticMetadata meta = StatisticMetadata.getMeta(name);
         if (meta == null) {
             this.plugin.printDebugCon("Recording new component: " + name);
-            this.saveStatistic.setString(1, name);
+            this.saveStatistic.setString(1, name.toLowerCase());
             this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See
                                                                                     // if
                                                                                     // we
