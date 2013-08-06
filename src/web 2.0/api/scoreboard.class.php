@@ -108,10 +108,10 @@ Class SScoreboad{
    //TODO - ADD REGEX SUPPORT TO SCOREBOARDS
    
   
-   $did = array_value(arr_regex($domainLookup,$entry->domain),"domainId");
-   $wid = array_value(arr_regex($worldLookup,$entry->world),"worldId");
-   $cid = array_value(arr_regex($categoryLookup,$entry->cat),"categoryId");
-   $sid = array_value(arr_regex($statisticLookup,$entry->stat),"statisticId");
+   $did = "(" . implode(",",idLookupTable($domainLookup,$entry->domain,"domainId")) . ")";
+   $wid = "(" . implode(",",idLookupTable($worldLookup,$entry->world,"worldId")) . ")";
+   $cid = "(" . implode(",",idLookupTable($categoryLookup,$entry->cat,"categoryId")) . ")";
+   $sid = "(" . implode(",",idLookupTable($statisticLookup,$entry->stat,"statisticId")) . ")";
    
    $cache["data"] = $statisticLookup[(isset($entry->alias)? $entry->alias : $entry->stat)];//Quick cache of the lookup table;
    $cache["lbl"] = $entry->label;
@@ -119,14 +119,14 @@ Class SScoreboad{
    
    $s = <<<SQL
       LEFT JOIN (
-      $[PREFIX]_value as vk$id
+      SUM($[PREFIX]_value) as vk$id
       )
        ON (
        vk$id.entityId             = vkp.`entityId` AND
-       vk$id.`domainId`           = $did AND
-       vk$id.`worldId`            = $wid AND
-       vk$id.`categoryId`         = $cid AND
-       vk$id.`statisticId`        = $sid
+       vk$id.`domainId`           IN $did AND
+       vk$id.`worldId`            IN $wid AND
+       vk$id.`categoryId`         IN $cid AND
+       vk$id.`statisticId`        IN $sid
        )
 SQL;
    $sqlJoin .= $s . "\n";

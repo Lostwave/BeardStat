@@ -44,6 +44,20 @@ function arr_regex($array,$regex){
   }
  }
 }
+
+/**
+* Lookup list of id's from a lookup table that match a regex expression
+*
+*/
+function idLookupTable($array,$regex,$key){
+  $res = [];
+  foreach($array as $k=>$v){
+  if(preg_match('/' . $regex . '/', $k)){
+   $res[] = $v[$key];
+  }
+ }
+  return $res;
+}
 /**
  * Format stat
  * @param string $stat
