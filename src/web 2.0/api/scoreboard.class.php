@@ -147,7 +147,7 @@ SQL;
   $sql = str_replace("$[PREFIX]", BS_DB_PREFIX,$sql);
   
   global $bs_db;
-  echo $sql;
+  
   $bs_db->real_query($sql ." LIMIT 10");
   
   $res = $bs_db->store_result();
