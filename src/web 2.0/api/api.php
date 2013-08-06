@@ -37,20 +37,20 @@ function array_value($array, $key) {
  * @param unknown $regex
  * @return unknown
  */
-function arr_regex($array,$regex){
+/*function arr_regex($array,$regex){
  foreach($array as $k=>$v){
   if(preg_match('/' . $regex . '/', $k)){
    return $v;
   }
  }
-}
+}*/
 
 /**
 * Lookup list of id's from a lookup table that match a regex expression
 *
 */
 function idLookupTable($array,$regex,$key){
-  $res = [];
+  $res = array();
   foreach($array as $k=>$v){
   if(preg_match('/' . $regex . '/', $k)){
    $res[] = $v[$key];
@@ -78,4 +78,10 @@ function formatStat($stat,$value){
  }
  return number_format($value);
 }
+
+function startsWith($haystack, $needle)
+{
+    return !strncmp($haystack, $needle, strlen($needle));
+}
+
 ?>

@@ -103,15 +103,18 @@ Class SScoreboad{
   $sqlOrder = array(); 
   $id = 0;
   foreach($selectedScoreboard->data as $entry){
-   //{"label":"diamonds mined","domain":".*","world":".*","cat":"blockdestroy","stat":"diamondore"}
-   $sqlSelect .= ",\n vk$id.`value` as `" . $entry->label . "`";
-   //TODO - ADD REGEX SUPPORT TO SCOREBOARDS
-   
   
-   $did = "(" . implode(",",idLookupTable($domainLookup,$entry->domain,"domainId")) . ")";
-   $wid = "(" . implode(",",idLookupTable($worldLookup,$entry->world,"worldId")) . ")";
-   $cid = "(" . implode(",",idLookupTable($categoryLookup,$entry->cat,"categoryId")) . ")";
-   $sid = "(" . implode(",",idLookupTable($statisticLookup,$entry->stat,"statisticId")) . ")";
+   //{"label":"diamonds mined","domain":".*","world":".*","cat":"blockdestroy","stat":"diamondore"}
+
+   //Generate expressions for join selection
+   $didQuery = $this->_generate_sql_expression($domainLookup,$entry->domain,"domainId");
+   $widQuery = $this->_generate_sql_expression($worldLookup,$entry->world,"worldId");
+   $cidQuery = $this->_generate_sql_expression($categoryLookup,$entry->cat,"categoryId");
+   $sidQuery = $this->_generate_sql_expression($statisticLookup,$entry->stat,"statisticId");
+
+   $singular = startsWith($didQuery,"=") && startsWith($widQuery,"=") && startsWith($cidQuery,"=") && startsWith($sidQuery,"=");
+   $sqlSelect .= ",\n SUM(" . ($singular ? "DISTINCT " : "") . "vk$id.`value`) as `" . $entry->label . "`";
+
    
    $cache["data"] = $statisticLookup[(isset($entry->alias)? $entry->alias : $entry->stat)];//Quick cache of the lookup table;
    $cache["lbl"] = $entry->label;
@@ -119,14 +122,14 @@ Class SScoreboad{
    
    $s = <<<SQL
       LEFT JOIN (
-      SUM($[PREFIX]_value) as vk$id
+      $[PREFIX]_value as vk$id
       )
        ON (
        vk$id.entityId             = vkp.`entityId` AND
-       vk$id.`domainId`           IN $did AND
-       vk$id.`worldId`            IN $wid AND
-       vk$id.`categoryId`         IN $cid AND
-       vk$id.`statisticId`        IN $sid
+       vk$id.`domainId`           $didQuery AND
+       vk$id.`worldId`            $widQuery AND
+       vk$id.`categoryId`         $cidQuery AND
+       vk$id.`statisticId`        $sidQuery
        )
 SQL;
    $sqlJoin .= $s . "\n";
@@ -144,6 +147,7 @@ SQL;
   $sql = str_replace("$[PREFIX]", BS_DB_PREFIX,$sql);
   
   global $bs_db;
+  echo $sql;
   $bs_db->real_query($sql ." LIMIT 10");
   
   $res = $bs_db->store_result();
@@ -229,6 +233,26 @@ SQL;
   return $this->title;
  }
  
+
+ function _generate_sql_expression($lookupTable,$searchKey,$key){
+  if(startsWith($searchKey,"$")){
+    $table = idLookupTable($lookupTable,substr($searchKey,1),$key);
+  }
+  else
+  {
+  $table = $lookupTable[$searchKey][$key];
+  }
+   if(count($table) == 0){throw new exception("No table entry found for searchKey " . $searchKey);}
+   if(count($table) == 1 ){
+     return "= " . $table[0];
+   }
+   else
+   {
+     return "IN (" . implode(",",$table) . ")";
+   }
+ }
 }
+
+
 
 ?>
