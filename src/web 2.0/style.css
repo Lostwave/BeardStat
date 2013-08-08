@@ -1,0 +1,26 @@
+.head-small{
+width:16px;
+height:16px;
+}
+.head{
+width:32px;
+height:32px;
+}
+.head-big{
+  width:64px;
+  height:64px;
+}
+.head-huge{
+  width:96px;
+  height:96px;
+}
+.footer{
+	font-size:10px;
+	margin:auto;
+	text-align: center;
+	width:700px;
+}
+.heart{
+	width:32px;
+	height:32px;
+}

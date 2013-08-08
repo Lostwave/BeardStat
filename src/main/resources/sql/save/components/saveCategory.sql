@@ -1,0 +1,1 @@
+INSERT INTO `${PREFIX}_category` (category) VALUES (?);

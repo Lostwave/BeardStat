@@ -1,0 +1,1 @@
+INSERT INTO `${PREFIX}_statistic` (statistic,name,formatting) VALUES (?,?,?);

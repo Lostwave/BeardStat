@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>me.tehbeard</groupId>
+	<groupId>com.tehbeard</groupId>
 	<artifactId>BeardStat</artifactId>
-	<version>0.5.4</version>
+	<version>0.6.2-RC-1</version>
 	<packaging>jar</packaging>
 	<name>BeardStat</name>
 
@@ -11,7 +11,7 @@
 		<project.plugin.flavour>Ambrosia</project.plugin.flavour>
 		<project.plugin.version>${project.version}-${project.plugin.flavour}</project.plugin.version>
 		<project.config.version>3</project.config.version>
-		<project.database.version>1.0.0</project.database.version>
+		<project.database.version>3</project.database.version>
 	</properties>
 
 	<repositories>
@@ -25,13 +25,12 @@
 			<url>http://dev.escapecraft.com/maven/</url>
 		</repository>
 
-		<!--<repository>
-			<snapshots />
-			<id>snapshots</id>
-			<name>deferred-snapshot</name>
-			<url>https://maven.dragonzone.net/artifactory/libs-snapshot</url>
-		</repository>-->
-
+		<!--<repository> <snapshots /> <id>snapshots</id> <name>deferred-snapshot</name> 
+			<url>https://maven.dragonzone.net/artifactory/libs-snapshot</url> </repository> -->
+		<repository>
+			<id>mcStats</id>
+			<url>http://repo.mcstats.org/content/repositories/public</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -45,27 +44,39 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.4.7-R1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>me.tehbeard</groupId>
-			<artifactId>Vocalise</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.6.1-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>me.tehbeard</groupId>
 			<artifactId>utils</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.3</version>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		
-        
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.4.9</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.4.9</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mcstats.bukkit</groupId>
+			<artifactId>metrics</artifactId>
+			<version>R7</version>
+		</dependency>
 	</dependencies>
 
 	<distributionManagement>
@@ -89,6 +100,12 @@
 			</extension>
 		</extensions>
 		<resources>
+
+			<resource>
+				<targetPath>./sql</targetPath>
+				<directory>${basedir}/src/main/resources/sql</directory>
+			</resource>
+
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
@@ -98,6 +115,8 @@
 					<include>config.yml</include>
 					<include>interactive.yml</include>
 					<include>messages.lang</include>
+					<include>metadata.txt</include>
+
 				</includes>
 			</resource>
 
@@ -152,6 +171,7 @@
 								<includes>
 									<include>me.tehbeard:Vocalise</include>
 									<include>me.tehbeard:utils</include>
+									<include>org.mcstats.bukkit:metrics</include>
 									<!-- <include>net.dragonzone:Deferred</include> -->
 								</includes>
 
@@ -160,15 +180,19 @@
 							<relocations>
 								<relocation>
 									<pattern>me.tehbeard.vocalise</pattern>
-									<shadedPattern>me.tehbeard.BeardStat.vocalise</shadedPattern>
+									<shadedPattern>com.tehbeard.BeardStat.vocalise</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>me.tehbeard.utils</pattern>
-									<shadedPattern>me.tehbeard.BeardStat.utils</shadedPattern>
+									<shadedPattern>com.tehbeard.BeardStat.utils</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>net.dragonzone:Deferred</pattern>
-									<shadedPattern>me.tehbeard.BeardStat.utils.deferred</shadedPattern>
+									<shadedPattern>com.tehbeard.BeardStat.utils.deferred</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.mcstats</pattern>
+									<shadedPattern>com.tehbeard.BeardStat.utils</shadedPattern>
 								</relocation>
 							</relocations>
 							<minimizeJar>true</minimizeJar>

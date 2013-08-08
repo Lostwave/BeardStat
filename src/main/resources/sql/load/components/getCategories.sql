@@ -1,0 +1,1 @@
+SELECT * FROM `${PREFIX}_category`;

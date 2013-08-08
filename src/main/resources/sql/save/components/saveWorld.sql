@@ -1,0 +1,1 @@
+INSERT INTO `${PREFIX}_world` (world,name) VALUES (?,?);

@@ -1,3 +1,35 @@
+0.6.2
+=============
+* Public release of web ui, Admin panel coming soon(tm)
+* Added metadata update script, provides automatically generated human readable names
+* bug fixes
+* Disabled interactive stat mode temporarily, should be back in next release.
+* /stats -s now uses :: as delimiter, accepts regex
+  /stats -s kills::total
+* Some refactoring to make maintaining easier
+0.6.1
+=============
+* New web interface for stats
+  * Includes scoreboards, which can display and order by multiple stats
+  * Has an installer to quickly setup the config file.
+* Entities can now be hidden on a scoreboard (can be set by sql, will be via admin area in later release)
+* Statistic and category metadata, providing localized/human readable names for stats.
+* StatEntity type unlocked, accepts any 16 char string (player is reserved) 
+* Fixes to SQLite driver code
+* Disabled custom stats, will come back in next version once update the expression parser.
+
+0.6 
+=============
+* Now track stats by domain (plugin) and world
+* Add ability for other entities that can hold stats (currently player,plugin or group)
+* Metadata can now be configured by an external file, metadata.txt 
+
+
+0.5 - Ambrosia
+==============
+* Asyncronize data access
+* bug fixes
+
 0.4.8 - Ice Cream release
 =========================
 * Custom stats can now be saved to the database

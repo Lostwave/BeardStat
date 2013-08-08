@@ -14,10 +14,12 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 /**
- * A generic representation of a simplified java {@link Method}, which takes a single argument and returns a single
- * value. This is useful for creating handlers (like with {@link Callable}), but that can accept an object which
- * contains various parameters to be passed to the called code. This allows this interface to function more like a
- * closure, instead of requiring that all parameters be captures provided by the code creating the closure.
+ * A generic representation of a simplified java {@link Method}, which takes a
+ * single argument and returns a single value. This is useful for creating
+ * handlers (like with {@link Callable}), but that can accept an object which
+ * contains various parameters to be passed to the called code. This allows this
+ * interface to function more like a closure, instead of requiring that all
+ * parameters be captures provided by the code creating the closure.
  * 
  * @author Bryan Harclerode
  * @param <Return>

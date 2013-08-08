@@ -4,12 +4,14 @@ stats:
   configversion: ${project.config.version}
   trackcreativemode: false
   database:
+    sql_db_version: ${project.database.version}
     type: "sqlite"
     host: "localhost"
     username: "Beardstats"
     password: "changeme"
     database: "stats"
     table: "stats"
+    prefix: "stats"
     port: 3306
   blacklist:
     - creative
@@ -25,9 +27,5 @@ stats:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
-customstats:
-  - "comp.kd = $kills.total - $deaths.total"
-savedcustomstats:
-  - "comp.pk = $kills.player - $deaths.player"
 customformats:
   - "stats.move:%1$s metres" 

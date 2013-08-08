@@ -1,0 +1,41 @@
+CREATE TABLE IF NOT EXISTS `stats_entity` ( 
+    entityId INTEGER        PRIMARY KEY AUTOINCREMENT,
+    name     VARCHAR( 32 )  NOT NULL,
+    type     VARCHAR( 16 )  NOT NULL,
+    `scoreboardhide` BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT uni UNIQUE ( name, type ) 
+);
+CREATE TABLE IF NOT EXISTS `stats_domain` ( 
+    domainId INTEGER        PRIMARY KEY AUTOINCREMENT,
+    domain   VARCHAR( 32 )  NOT NULL,
+    name     VARCHAR( 32 )  NOT NULL,
+    CONSTRAINT 'uni' UNIQUE ( domain ) 
+);
+CREATE TABLE IF NOT EXISTS `stats_world`(
+  `worldId` INTEGER PRIMARY KEY AUTOINCREMENT, 
+  `world` VARCHAR(32) NOT NULL,  
+   name     VARCHAR( 32 )  NOT NULL,
+  CONSTRAINT uni UNIQUE (`world`)
+);
+CREATE TABLE IF NOT EXISTS `stats_category`(
+  `categoryId` INTEGER PRIMARY KEY AUTOINCREMENT, 
+  `category` varchar(32) NOT NULL,  
+  `statwrapper` VARCHAR( 32 )  NOT NULL DEFAULT '%s',
+  CONSTRAINT uni UNIQUE (`category`)
+);
+CREATE TABLE IF NOT EXISTS `stats_statistic`(
+  `statisticId` INTEGER PRIMARY KEY AUTOINCREMENT, 
+  `statistic` varchar(32) NOT NULL,  
+  `name` VARCHAR( 32 ),
+  `formatting` VARCHAR(16) NOT NULL DEFAULT 'none',
+  CONSTRAINT uni UNIQUE (`statistic`)
+);
+CREATE TABLE IF NOT EXISTS `stats_value` (
+  `entityId`    INTEGER NOT NULL,
+  `domainId`    INTEGER NOT NULL,
+  `worldId`     INTEGER NOT NULL,  
+  `categoryId`  INTEGER NOT NULL,  
+  `statisticId` INTEGER NOT NULL,  
+  `value`       INTEGER NOT NULL,
+  CONSTRAINT uni UNIQUE (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`) ON CONFLICT REPLACE 
+  );

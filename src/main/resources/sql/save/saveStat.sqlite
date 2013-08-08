@@ -1,0 +1,1 @@
+INSERT OR REPLACE INTO `${PREFIX}_value` values (?,?,?,?,?,?);

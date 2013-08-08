@@ -1,0 +1,75 @@
+#Migrating to yggdrasil format;
+#Creating entity table;
+CREATE TABLE stats_entity ( 
+    entityId INTEGER        PRIMARY KEY AUTOINCREMENT,
+    name     VARCHAR( 32 )  NOT NULL,
+    type     VARCHAR( 16 )  NOT NULL,
+    CONSTRAINT uni UNIQUE ( name, type ) 
+);
+
+#Populating entity table;
+INSERT INTO `stats_entity` (`name`,`type`) SELECT `player`,'player' as `type` FROM `stats` GROUP BY `player`;
+#Creating domain table and initialising default domain;
+CREATE TABLE stats_domain ( 
+    domainId INTEGER        PRIMARY KEY AUTOINCREMENT,
+    domain   VARCHAR( 32 )  NOT NULL,
+    CONSTRAINT 'uni' UNIQUE ( domain ) 
+);
+
+INSERT INTO `stats_domain` (`domain`) VALUES ('default');
+#Creating world table;
+CREATE TABLE IF NOT EXISTS `stats_world`(
+  `worldId` INTEGER PRIMARY KEY AUTOINCREMENT, 
+  `world` VARCHAR(32) NOT NULL,  
+  CONSTRAINT uni UNIQUE (`world`)
+);
+#Creating __imported__ world for stat migration;
+INSERT INTO `stats_world` (`world`) VALUES ('__imported__');
+#Creating category table;
+CREATE TABLE IF NOT EXISTS `stats_category`(
+  `categoryId` INTEGER PRIMARY KEY AUTOINCREMENT, 
+  `category` varchar(32) NOT NULL,  
+  CONSTRAINT uni UNIQUE (`category`)
+);
+#Populating category table;
+INSERT INTO `stats_category` (`category`) SELECT DISTINCT(`category`) from stats;
+#Creating Statistic table;
+CREATE TABLE IF NOT EXISTS `stats_statistic`(
+  `statisticId` INTEGER PRIMARY KEY AUTOINCREMENT, 
+  `statistic` varchar(32) NOT NULL,  
+  CONSTRAINT uni UNIQUE (`statistic`)
+);
+#Populating statistic table;
+INSERT INTO `stats_statistic` (`statistic`) SELECT DISTINCT(`stat`) from stats;
+#Creating value table
+CREATE TABLE IF NOT EXISTS `stats_value` (
+  `entityId`    INTEGER NOT NULL,
+  `domainId`    INTEGER NOT NULL,
+  `worldId`     INTEGER NOT NULL,  
+  `categoryId`  INTEGER NOT NULL,  
+  `statisticId` INTEGER NOT NULL,  
+  `value`       INTEGER NOT NULL,
+  CONSTRAINT uni UNIQUE (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`) ON CONFLICT REPLACE 
+  );
+#Populating value table, WARNING: THIS WILL TAKE A LONG TIME WITH LARGE DATABASES;
+INSERT into `stats_value`
+SELECT  
+`entityId` , 
+1 as `domain` , 
+1  as `world` ,  
+`categoryId` ,  
+`statisticId` ,  
+ `value` 
+FROM  
+`stats` ,  
+`stats_entity`,
+`stats_category`,
+`stats_statistic`
+
+WHERE  
+`player` = `name` AND 
+`type` =  'player' AND
+`stats_category`.`category` = `stats`.`category` AND
+`stats_statistic`.`statistic` = `stats`.`stat`
+;
+#Migration to yggdrasil format complete;

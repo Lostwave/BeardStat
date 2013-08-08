@@ -1,0 +1,1 @@
+INSERT INTO `${PREFIX}_entity` (`name`,`type`,`scoreboardhide`) VALUES(?,?,false);

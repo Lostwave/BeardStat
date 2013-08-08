@@ -1,5 +1,5 @@
 name: BeardStat
-main: me.tehbeard.BeardStat.BeardStat
+main: com.tehbeard.BeardStat.BeardStat
 version: ${project.plugin.version}-${describe}
 authors: [Tehbeard]
 commands:
@@ -21,6 +21,7 @@ commands:
         description: View last time a player was on
         usage: /laston [player]
         aliases: [blaston]
+        permission: stat.command.laston
     beardstatdebug:
         description: Print debug information
         usage: /<command>

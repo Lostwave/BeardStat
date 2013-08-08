@@ -1,0 +1,1 @@
+SELECT `name` from `${PREFIX}_entity` WHERE `type`=?;
