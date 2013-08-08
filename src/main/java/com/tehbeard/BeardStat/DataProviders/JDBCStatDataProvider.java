@@ -104,6 +104,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         checkAndMakeTable();
         prepareStatements();
 
+        updateMetadata();
+
+        cacheComponents();
+    }
+
+    private void updateMetadata() throws SQLException {
         String mcver = this.plugin.getConfig().getString("general.mcver");
         String implver = Bukkit.getVersion();
 
@@ -120,8 +126,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             this.plugin.saveConfig();
 
         }
-
-        cacheComponents();
+        
     }
 
     /**
