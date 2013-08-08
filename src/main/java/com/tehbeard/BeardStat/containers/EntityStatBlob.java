@@ -25,16 +25,10 @@ public class EntityStatBlob implements VariableProvider {
 
     private static Set<DynamicStat> dynamicStats = new HashSet<DynamicStat>();
 
-    public static void addDynamic(String statName,String expr){
-        boolean archive = false;
-        String tmp = statName;
-        if(tmp.startsWith("@")){
-            tmp = tmp.substring(1);
-            archive = true;
-        }
-
+    public static void addDynamic(String statName,String expr,boolean archive){
+        
         Stack<String> stack = new Stack<String>();
-        for (String s : tmp.split("\\:\\:")) {
+        for (String s : statName.split("\\:\\:")) {
             stack.add(s);
         }
 

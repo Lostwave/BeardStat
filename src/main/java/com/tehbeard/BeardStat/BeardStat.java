@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -29,6 +31,7 @@ import com.tehbeard.BeardStat.commands.StatAdmin;
 import com.tehbeard.BeardStat.commands.StatCommand;
 import com.tehbeard.BeardStat.commands.StatPageCommand;
 import com.tehbeard.BeardStat.commands.playedCommand;
+import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.StatBlockListener;
@@ -166,7 +169,12 @@ public class BeardStat extends JavaPlugin {
         printCon("initializing composite stats");
         try {
             // Load the dynamic stats from file
-            loadDynamicStatConfiguration();
+            File customStats = new File(getDataFolder(),"customstat.properties");
+            if(customStats.exists()){loadDynamicStatConfiguration(customStats,false);}
+            
+            File savedCustomStats = new File(getDataFolder(),"savedcustomstat.properties");
+            if(savedCustomStats.exists()){loadDynamicStatConfiguration(savedCustomStats,false);}
+            
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error loading dynamic stats or custom formats", e, true));
         }
@@ -358,26 +366,24 @@ public class BeardStat extends JavaPlugin {
     /**
      * Load custom stats from config custom stats use a formula to manipulate
      * other stats.
+     * @throws IOException 
+     * @throws FileNotFoundException 
      */
-    private void loadDynamicStatConfiguration() {
+    private void loadDynamicStatConfiguration(File f,boolean archive) throws FileNotFoundException, IOException {
         printCon(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
-        /*
-         * for (String cstat : getConfig().getStringList("customstats")) {
-         * 
-         * String[] i = cstat.split("\\=");
-         * EntityStatBlob.addDynamicStat(i[0].trim(), i[1].trim());
-         * 
-         * }
-         * 
-         * for (String cstat : getConfig().getStringList("savedcustomstats")) {
-         * 
-         * String[] i = cstat.split("\\=");
-         * EntityStatBlob.addDynamicSavedStat(i[0].trim(), i[1].trim());
-         * 
-         * }
-         */
+
+        Properties prop = new Properties();
+        prop.load(new FileInputStream(f));
+
+        for( Entry<Object, Object> e : prop.entrySet()){
+            String statName = (String) e.getKey();
+            String expr     = (String) e.getValue();
+            EntityStatBlob.addDynamic(statName, expr,archive);
+        }
+
 
     }
+
 
     /**
      * Load a data provider from config
