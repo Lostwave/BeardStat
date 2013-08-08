@@ -1,17 +1,18 @@
 package com.tehbeard.BeardStat.containers;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import me.tehbeard.utils.expressions.VariableProvider;
 
-import org.bukkit.Bukkit;
-
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.BeardStatRuntimeException;
 
 /**
  * Represents a collection of statistics bound to an entity Currently only used
@@ -22,148 +23,43 @@ import com.tehbeard.BeardStat.BeardStat;
  */
 public class EntityStatBlob implements VariableProvider {
 
-    private static Map<String, String> dynamics      = new HashMap<String, String>();
+    private static Set<DynamicStat> dynamicStats = new HashSet<DynamicStat>();
 
-    private static Map<String, String> dynamicsSaved = new HashMap<String, String>();
+    public static void addDynamic(String statName,String expr){
+        boolean archive = false;
+        String tmp = statName;
+        if(tmp.startsWith("@")){
+            tmp = tmp.substring(1);
+            archive = true;
+        }
 
-    public static void addDynamicStat(String stat, String expr) {
-        dynamics.put(stat, expr);
+        Stack<String> stack = new Stack<String>();
+        for (String s : tmp.split("\\:\\:")) {
+            stack.add(s);
+        }
+
+        String stat   = !stack.isEmpty() ? stack.pop() : null;
+        String cat    = !stack.isEmpty() ? stack.pop() : null;
+        String world  = !stack.isEmpty() ? stack.pop() : BeardStat.GLOBAL_WORLD;
+        String domain = !stack.isEmpty() ? stack.pop() : BeardStat.DEFAULT_DOMAIN;
+        if(stat == null || cat == null){
+            throw new BeardStatRuntimeException("Invalid stat name provided [" + statName + "]", new IllegalArgumentException(), false);
+        }
+
+
+        dynamicStats.add(new DynamicStat(domain, world, cat, stat, expr,archive));
     }
 
-    public static void addDynamicSavedStat(String stat, String expr) {
-        dynamicsSaved.put(stat, expr);
-    }
 
     private void addDynamics() {
         if (this.type.equals(BeardStat.PLAYER_TYPE)) {
-            for (Entry<String, String> entry : dynamics.entrySet()) {
+            for (DynamicStat ds : dynamicStats) {
 
-                String[] parts = entry.getKey().split("\\::");
-
-                String domain = BeardStat.DEFAULT_DOMAIN;
-                String world = BeardStat.GLOBAL_WORLD;
-                String cat = null;
-                String stat = null;
-                if (parts.length == 2) {
-                    // BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
-                    // - TODO: FEEX
-                    cat = parts[0];
-                    stat = parts[1];
-                } else if (parts.length == 4) {
-                    domain = parts[0];
-                    world = parts[1];
-                    cat = parts[2];
-                    stat = parts[3];
-                }
-                addStat(new DynamicStat(domain, world, cat, stat, entry.getValue()));
+                addStat(ds.duplicateForPlayer(this));
             }
+            
             // Add health status
-            addStat(new IStat() {
-
-                private int lastHealth = 20;
-
-                @Override
-                public void setWorld(String world) {
-                }
-
-                @Override
-                public void setValue(int value) {
-
-                }
-
-                @Override
-                public void setOwner(EntityStatBlob playerStatBlob) {
-
-                }
-
-                @Override
-                public void setDomain(String domain) {
-
-                }
-
-                @Override
-                public boolean isArchive() {
-                    return true;
-                }
-
-                @Override
-                public void incrementStat(int i) {
-                }
-
-                @Override
-                public String getWorld() {
-
-                    return BeardStat.GLOBAL_WORLD;// Bukkit.getPlayer(getName()).getWorld().getName();
-                }
-
-                @Override
-                public int getValue() {
-                    if (Bukkit.getPlayer(getName()) != null) {
-                        this.lastHealth = (int) Math.floor(Bukkit.getPlayer(getName()).getHealth());
-                    }
-                    return this.lastHealth;
-                }
-
-                @Override
-                public String getStatistic() {
-                    return "health";
-                }
-
-                @Override
-                public EntityStatBlob getOwner() {
-                    return null;
-                }
-
-                @Override
-                public String getDomain() {
-                    return BeardStat.DEFAULT_DOMAIN;
-                }
-
-                @Override
-                public String getCategory() {
-                    return "status";
-                }
-
-                @Override
-                public void decrementStat(int i) {
-                }
-
-                @Override
-                public void clearArchive() {
-                }
-
-                @Override
-                public void archive() {
-                }
-
-                @Override
-                public IStat clone() {
-                    return new StaticStat(getDomain(), getWorld(), getCategory(), getStatistic(), getValue());
-                }
-            });
-        }
-
-        // dynamics that will be saved to database
-        for (Entry<String, String> entry : dynamicsSaved.entrySet()) {
-
-            String[] parts = entry.getKey().split("\\::");
-
-            String domain = BeardStat.DEFAULT_DOMAIN;
-            String world = BeardStat.GLOBAL_WORLD;
-            String cat = null;
-            String stat = null;
-            if (parts.length == 2) {
-                // BeardStat.printDebugCon("Old dynamic stat found, adding to global world");
-                // - TODO: FEEX
-                cat = parts[0];
-                stat = parts[1];
-            } else if (parts.length == 4) {
-                domain = parts[0];
-                world = parts[1];
-                cat = parts[2];
-                stat = parts[3];
-            }
-            addStat(new DynamicStat(domain, world, cat, stat, entry.getValue(), true));
+            addStat(new HealthStat(this));
         }
     }
 
@@ -348,18 +244,13 @@ public class EntityStatBlob implements VariableProvider {
         blob.stats.clear();
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
-                // BeardStat.printDebugCon("Archiving stat " + stat.getDomain()
-                // + "::" + stat.getWorld() + "::" + stat.getCategory() + "::" +
-                // stat.getStatistic() + " = " + stat.getValue()); - TODO: FEEX
                 IStat is = stat.clone();
                 if (is != null) {
-                    // BeardStat.printDebugCon("Stat added");
                     blob.addStat(is);
                     stat.clearArchive();
                 }
             }
         }
-        // BeardStat.printDebugCon("End cloning");
         return blob;
     }
 

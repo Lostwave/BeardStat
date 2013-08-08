@@ -113,4 +113,10 @@ public class DynamicStat implements IStat {
         return new StaticStat(this.domain, this.world, this.category, this.statistic, getValue());
 
     }
+    
+    public IStat duplicateForPlayer(EntityStatBlob owner){
+        DynamicStat ns = new DynamicStat(domain, world, category, statistic, expr, archive);
+        ns.setOwner(owner);
+        return ns;
+    }
 }
