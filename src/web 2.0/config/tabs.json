@@ -7,7 +7,7 @@
    "headingName":"General Statistics",
    "display":[
    {"domain":"default","world":".*","cat":"stats","stat":"playedfor"},
-   {"domain":"default","world":".*","cat":"stats","stat":"lastlogin"},
+   {"domain":"default","world":"__global__","cat":"stats","stat":"lastlogin"},
    {"domain":"default","world":".*","cat":"stats","stat":"move"},
    {"domain":"default","world":".*","cat":"vehicle","stat":"boat"},
    {"domain":"default","world":".*","cat":"vehicle","stat":"minecart"},
