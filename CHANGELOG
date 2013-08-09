@@ -1,3 +1,7 @@
+0.6.3
+=============
+* Support for custom stats returns
+* Admin web ui?
 0.6.2
 =============
 * Public release of web ui, Admin panel coming soon(tm)
