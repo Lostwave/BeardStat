@@ -8,7 +8,6 @@ include 'templates/header.php';
 	if(file_exists('api/config.php')){
 	 die("<p>Existing config detected installed disabled, delete api/config.php to use installer</p><p>Please delete this installer file asap to prevent security issues in the future.</p>");
 	}
-
 	if(!isset($_POST['host'])){
 ?>
 	<form class="form-horizontal" action="installer.php" method="post">
@@ -56,11 +55,48 @@ include 'templates/header.php';
 }
 else
 {
+	//Check connectivity
+ 	$db = new = mysqli(
+ 	$_POST['host'],
+ 	$_POST['user'],
+ 	$_POST['pass'],
+ 	$_POST['db'],
+ 	$_POST['port']
+ 	);
+ 	
+ 	if($db->connect_errno > 0){
+    die('Unable to connect to database [' . $bs_db->connect_error . ']');
+  }
+  else
+  {
+  	echo "Connection to database established.";
+  }
+
+  $res = $db->real_query("SHOW TABLES");
+  if ($res === false) {throw new Exception("Database Error [{$bs_db->errno}] {$bs_db->error}");}
+  $prefix = $_POST['prefix'] . "_";
+  $tCount = 0;
+  while($r = $res->fetch_array()){
+    if(!strncmp($r[0], $prefix, strlen($prefix))){
+    	echo "Table " . $r[0] . " found<br/>";
+    	$tCount ++;
+    }
+  }
+  $res->free();
+  if($tCount == 0){
+ 	  die("Could not find table with prefix " + $_POST['prefix']);
+  }
+  else
+  {
+  	echo "" . $tCount . "/6 tables found<br/>";
+  }
+
+ //Write out to file
  $configPage = file_get_contents("api/config.php.defaults");
- 
  foreach($_POST as $k => $v){
    $configPage = str_replace('${' . $k . '}', $v, $configPage);
  }
+
  if(file_put_contents("api/config.php", $configPage)===false){
    echo "<p> Failed to write to config file! Please save the section below as api/config.php, or configure the permissions to allow write access to api/</p>";
    echo "<pre>";
@@ -69,14 +105,11 @@ else
  } 
  else
  {
-  echo "<p>Config successfully written,</p>";
+ 	 echo "<p>Configuration completed.</p>";
  }
 }
 ?>
-
-
 </div>
-
 <?php 
 include 'templates/footer.php';
 ?>
