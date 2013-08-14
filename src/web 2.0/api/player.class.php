@@ -71,9 +71,7 @@ SQL;
   //echo $sql;//DEBUG
   $bs_db->real_query($sql);
   $res = $bs_db->store_result();
-  if (!$res) {
-   throw new Exception("Database Error [{$bs_db->errno}] {$bs_db->error}");
-  }
+  if ($res === false) {throw new Exception("Database Error [{$bs_db->errno}] {$bs_db->error}");}
   while($row = $res->fetch_assoc()){
    $domain = $row['domain'];
    $world = $row['world'];

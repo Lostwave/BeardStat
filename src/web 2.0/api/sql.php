@@ -10,6 +10,7 @@ function getLookup($element,$key){
  $e = $bs_db->real_escape_string($element);
  $bs_db->real_query("SELECT * FROM " . BS_DB_PREFIX . "_" . $e);
  $res = $bs_db->store_result();
+ if ($res === false) {throw new Exception("Database Error [{$bs_db->errno}] {$bs_db->error}");}
  while($r = $res->fetch_assoc()){
   $a[$r[$key]]=$r;
  }
