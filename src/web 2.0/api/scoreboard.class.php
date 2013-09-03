@@ -95,7 +95,7 @@ Class SScoreboad{
    
 }
 
-function loadFromData($selectedScoreboard){ 
+function loadFromData($selectedScoreboard,$limit=10){ 
   $this->title = $selectedScoreboard->title;
 
   $type = "player";//TODO - Make selectable in future
@@ -155,7 +155,7 @@ SQL;
   
   global $bs_db;
   
-  $bs_db->real_query($sql ." LIMIT 10");
+  $bs_db->real_query($sql ." LIMIT " . $limit);
   
   $res = $bs_db->store_result();
 
