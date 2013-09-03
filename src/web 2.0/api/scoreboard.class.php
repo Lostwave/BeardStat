@@ -77,11 +77,6 @@ Class SScoreboad{
   */
  function load($page){
   
-  $domainLookup    = getLookup("domain", "domain");
-  $worldLookup     = getLookup("world", "world");
-  $categoryLookup  = getLookup("category", "category");
-  $statisticLookup = getLookup("statistic", "statistic");
-  
   foreach($this->scoreboards as $scoreboard){
    if($scoreboard->id == $page){
     $selectedScoreboard = $scoreboard;
@@ -91,11 +86,16 @@ Class SScoreboad{
   if(!isset($selectedScoreboard)){
    die('no scoreboard selected');
   }
-  loadFromData($selectedScoreboard);
+  $this->loadFromData($selectedScoreboard);
    
 }
 
 function loadFromData($selectedScoreboard,$limit=10){ 
+  $domainLookup    = getLookup("domain", "domain");
+  $worldLookup     = getLookup("world", "world");
+  $categoryLookup  = getLookup("category", "category");
+  $statisticLookup = getLookup("statistic", "statistic");
+
   $this->title = $selectedScoreboard->title;
 
   $type = "player";//TODO - Make selectable in future

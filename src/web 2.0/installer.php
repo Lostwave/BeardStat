@@ -56,7 +56,7 @@ include 'templates/header.php';
 else
 {
 	//Check connectivity
- 	$db = new = mysqli(
+ 	$db = new mysqli(
  	$_POST['host'],
  	$_POST['user'],
  	$_POST['pass'],
@@ -65,17 +65,21 @@ else
  	);
  	
  	if($db->connect_errno > 0){
-    die('Unable to connect to database [' . $bs_db->connect_error . ']');
+    die('Unable to connect to database [' . mysqli_connect_error() . ']');
   }
   else
   {
   	echo "Connection to database established.";
   }
 
-  $res = $db->real_query("SHOW TABLES");
-  if ($res === false) {throw new Exception("Database Error [{$bs_db->errno}] {$bs_db->error}");}
+
+  if (!$db->real_query("SHOW TABLES")) {throw new Exception("Database Error [{$db->errno}] {$db->error}");}
   $prefix = $_POST['prefix'] . "_";
   $tCount = 0;
+  $res = $db->store_result();
+
+  echo "<h3>Checking for BeardStat tables</h3>";
+  echo "<pre>";
   while($r = $res->fetch_array()){
     if(!strncmp($r[0], $prefix, strlen($prefix))){
     	echo "Table " . $r[0] . " found<br/>";
@@ -90,7 +94,7 @@ else
   {
   	echo "" . $tCount . "/6 tables found<br/>";
   }
-
+   echo "</pre>";
  //Write out to file
  $configPage = file_get_contents("api/config.php.defaults");
  foreach($_POST as $k => $v){
@@ -98,7 +102,7 @@ else
  }
 
  if(file_put_contents("api/config.php", $configPage)===false){
-   echo "<p> Failed to write to config file! Please save the section below as api/config.php, or configure the permissions to allow write access to api/</p>";
+   echo "<p> Failed to write to config file! Please save the section below as api/config.php, or configure files permissions to allow write access for the web server to " . dirname(__FILE__) . "/config </p>";
    echo "<pre>";
    echo htmlspecialchars($configPage);
    echo "</pre>";
