@@ -252,7 +252,7 @@ SQL;
   }
    if(count($table) == 0){throw new exception("No table entry found for searchKey " . $searchKey);}
    if(count($table) == 1 ){
-     return "= " . $table[0];
+     return "= " . $table;
    }
    else
    {
