@@ -3,7 +3,7 @@ include 'api/api.php';
 define('BS_TITLE', "Scoreboards");
 include 'templates/header.php';
 
-$score = new SScoreboad('config/scoreboards.json'); 
+$score = new SScoreboard('config/scoreboards.json'); 
 if(isset($_GET['board'])){
 $score->load($_GET['board']);
 ?>

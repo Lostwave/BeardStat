@@ -20,7 +20,7 @@ include 'templates/header.php';
 <h1>Scoreboards</h1>
 <p>Find out who's got too much time to play, and who's most likely to fall of a ledge.</p>
 <?php 
-$score = new SScoreboad('config/scoreboards.json');
+$score = new SScoreboard('config/scoreboards.json');
 include 'templates/scoreboard-select.php';
 ?>
 </div>

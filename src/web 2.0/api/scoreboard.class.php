@@ -5,7 +5,7 @@
  * @author James
  *
  */
-Class SScoreboad{
+Class SScoreboard{
 
  
  /**
