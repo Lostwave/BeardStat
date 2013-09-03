@@ -153,6 +153,7 @@ SQL;
   }
   $sql = str_replace("$[PREFIX]", BS_DB_PREFIX,$sql);
   
+  $this->last_sql = $sql;
   global $bs_db;
   
   $bs_db->real_query($sql ." LIMIT " . $limit);
