@@ -38,7 +38,9 @@ Class SScoreboad{
   * @param string $file
   */
  function __construct($file){
-  $this->scoreboards = json_decode(file_get_contents($file));
+  if($file != null){
+    $this->scoreboards = json_decode(file_get_contents($file));
+  }
  }
  
  /**
@@ -83,14 +85,19 @@ Class SScoreboad{
   foreach($this->scoreboards as $scoreboard){
    if($scoreboard->id == $page){
     $selectedScoreboard = $scoreboard;
-    $this->title = $selectedScoreboard->title;
     break;
    }
   }
   if(!isset($selectedScoreboard)){
    die('no scoreboard selected');
   }
+  loadFromData($selectedScoreboard);
    
+}
+
+function loadFromData($selectedScoreboard){ 
+  $this->title = $selectedScoreboard->title;
+
   $type = "player";//TODO - Make selectable in future
 
   $sqlSelect = "$[PREFIX]_entity.`name` as `player`";
