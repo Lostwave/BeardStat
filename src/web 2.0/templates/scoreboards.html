@@ -21,6 +21,12 @@ $(function(){
     })
   });
 });
+function loadData(data){
+  angular.element("body").scope().scoreboards = data;
+  angular.element("body").scope().$apply();
+}
+//TODO - SAVE
+//ALSO - STRIP ORDER DATA FOR NONE CLAUSE
 </script>
 <title>Scoreboards</title>
 </head>
@@ -62,7 +68,12 @@ $(function(){
         <td><input list="cats" class="input-medium" type="text" ng-model="entry.cat"></td>
         <td><input list="stats" class="input-medium" type="text" ng-model="entry.stat"></td>
         <td><input class="input-small" type="text" ng-model="entry.order.idx"></td>
-        <td><input class="input-small" type="text" ng-model="entry.order.type"></td>
+        <td><select class="input-small" ng-model="entry.order.type">
+              <option value="NONE">None</option>
+              <option value="ASC">Asc</option>
+              <option value="DESC">Desc</option>
+            </select>
+        </td>
         
       </tr>
     </table>
