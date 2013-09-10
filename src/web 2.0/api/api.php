@@ -8,8 +8,29 @@ $bs_db = new mysqli(BS_DB_HOST,BS_DB_USER,BS_DB_PASS,BS_DB_DB,BS_DB_PORT);
 if($bs_db->connect_errno > 0){
     die('Unable to connect to database [' . $bs_db->connect_error . ']');
 }
+
+/**
+ * grab all data from a table, used for local lookup
+ * @param string $element
+ * @param string $key
+ * @return multitype:
+ */
+function getLookup($element,$key){
+ global $bs_db;
+ $e = $bs_db->real_escape_string($element);
+ $bs_db->real_query("SELECT * FROM " . BS_DB_PREFIX . "_" . $e);
+ $res = $bs_db->store_result();
+
+ if ($res === false) {throw new Exception("Database Error [{$bs_db->errno}] {$bs_db->error}");}
+
+ while($r = $res->fetch_assoc()){
+  $a[$r[$key]]=$r;
+ }
+ $res->free();
+ return $a;
+}
+
 include_once BEARDSTAT_API_DIR . 'formating.php';
-include_once BEARDSTAT_API_DIR . 'sql.php';
 include_once BEARDSTAT_API_DIR . 'player.class.php';
 include_once BEARDSTAT_API_DIR . 'scoreboard.class.php';
 include_once BEARDSTAT_API_DIR . 'tabs.class.php';
