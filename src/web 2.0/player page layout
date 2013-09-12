@@ -1,0 +1,31 @@
+<!--
+Directive info: http://www.benlesh.com/2012/11/angular-js-directive-basics.html
+contenteditable info: http://docs.angularjs.org/guide/forms
+Module info: http://docs.angularjs.org/guide/module
+
+AngularJS directives
+stat-tab             :: tabs on a page, hold a title + headings
+stat-heading         :: heading on a page
+stat-heading-control :: remove, up/down this heading segment
+stat-entry           :: Table row for a stat entry, domain, world, cat, stat, controls (up/down/remove)
+-->
+
+<stat-tab>
+  <h2 contenteditable ng-model="tabName"></h2>
+  
+  <stat-heading>
+    <stat-heading-control/>
+    <h3 contenteditable ng-model="headingName"></h3>
+
+    <table class="table table-striped">
+      <stat-entry>{[Table Row]}</stat-entry>
+      ...
+    </table>
+    <button ng-click="newEntry()">Add entry</button>
+
+  </stat-heading>
+  ...
+  <button ng-click="newEntry()">Add heading</button>
+</stat-tab>
+...
+<button ng-click="newTab()">Add tab</button>
