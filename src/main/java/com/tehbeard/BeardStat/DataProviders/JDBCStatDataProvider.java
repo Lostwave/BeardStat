@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.MatchResult;
 
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
@@ -28,6 +29,8 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.utils.StatisticMetadata;
 import com.tehbeard.BeardStat.utils.StatisticMetadata.Formatting;
+import com.tehbeard.utils.misc.CallbackMatcher;
+import com.tehbeard.utils.misc.CallbackMatcher.Callback;
 
 /**
  * base class for JDBC based data providers Allows easy development of data
@@ -172,7 +175,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             try {
 
                 for (curVersion = installedVersion + 1; curVersion <= latestVersion; curVersion++) {
-
+                    
                     String[] sql = this.plugin
                             .readSQL(this.type, "sql/maintenence/migration/migrate." + curVersion, this.tblPrefix)
                             .replaceAll("\\$\\{OLD_TBL\\}", this.plugin.getConfig().getString("stats.database.table"))
@@ -626,5 +629,47 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             checkConnection();
         }
         return list;
+    }
+    
+    /**
+     * Execute a script
+     * @param scriptName name of script (sql/load/loadEntity)
+     * @param keys (list of non-standard keys ${KEY_NAME} to replace)
+     * 
+     * Scripts support # for status comments
+     * and #!/script/path/here to execute subscripts
+     * @throws SQLException
+     */
+    public void executeScript(String scriptName,final Map<String,String> keys) throws SQLException{
+        CallbackMatcher matcher = new CallbackMatcher("\\$\\{([A-Za-z0-9_]*)\\}");
+        
+        String[] sqlStatements = this.plugin.readSQL(this.type, scriptName, this.tblPrefix).split("\\;");
+        for (String s : sqlStatements) {
+            String statement = matcher.replaceMatches(s, new Callback() {
+                
+                @Override
+                public String foundMatch(MatchResult result) {
+                    if(keys.containsKey(result.group(1))){
+                        return keys.get(result.group(1));
+                    }
+                    return "";
+                }
+            });
+            
+            if (statement.startsWith("#!")){
+                String subScript = statement.substring(2);
+                Bukkit.getConsoleSender().sendMessage(
+                        ChatColor.YELLOW + "Executing : " + subScript);
+                executeScript(subScript, keys);
+                continue;
+            }else if (statement.startsWith("#")) {
+                Bukkit.getConsoleSender().sendMessage(
+                        ChatColor.YELLOW + "Status : " + statement.substring(1));
+            } else {
+                this.conn.prepareStatement(statement).execute();
+            }
+        }
+
+        
     }
 }
