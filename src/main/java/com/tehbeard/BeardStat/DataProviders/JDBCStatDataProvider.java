@@ -40,10 +40,9 @@ import com.tehbeard.utils.misc.CallbackMatcher.Callback;
  * 
  */
 public abstract class JDBCStatDataProvider implements IStatDataProvider {
-
+    
+    //Database connection
     protected Connection                    conn;
-
-    // protected static PreparedStatement prepGetPlayerStat;
 
     // Load components
     protected PreparedStatement             getDomains;
@@ -83,8 +82,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private Map<String, Integer>            domains              = new HashMap<String, Integer>();
     private Map<String, Integer>            worlds               = new HashMap<String, Integer>();
     private Map<String, Integer>            categories           = new HashMap<String, Integer>();
-
-    // private WorkQueue loadQueue = new WorkQueue(1);
+    
+    //Write queue
     private ExecutorService                 loadQueue            = Executors.newSingleThreadExecutor();
 
     protected BeardStat                     plugin;
