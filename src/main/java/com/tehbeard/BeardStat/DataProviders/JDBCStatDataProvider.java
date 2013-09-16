@@ -118,18 +118,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         if (!implver.equals(mcver)) {
             this.plugin.printCon("Different version to last boot! Running built in metadata script.");
-            String sql[] = this.plugin.readSQL(this.type, "sql/maintenence/updateMetadata", this.tblPrefix)
-                    .split("\\;");
-            PreparedStatement updateMetadata;
-            for (String s : sql) {
-                updateMetadata = this.conn.prepareStatement(s);
-                updateMetadata.execute();
-            }
+
+            executeScript("sql/maintenence/updateMetadata");
+
             this.plugin.getConfig().set("general.mcver", implver);
             this.plugin.saveConfig();
-
         }
-        
     }
 
     /**
@@ -168,37 +162,26 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             }
             this.conn.setAutoCommit(false);
 
-            // Begin ze migration
-            PreparedStatement migrate;
 
-            int curVersion = 0;
+            int migrateToVersion = 0;
             try {
 
-                for (curVersion = installedVersion + 1; curVersion <= latestVersion; curVersion++) {
-                    
-                    String[] sql = this.plugin
-                            .readSQL(this.type, "sql/maintenence/migration/migrate." + curVersion, this.tblPrefix)
-                            .replaceAll("\\$\\{OLD_TBL\\}", this.plugin.getConfig().getString("stats.database.table"))
-                            .split("\\;");
-                    for (String s : sql) {
-                        if (s.startsWith("#")) {
-                            Bukkit.getConsoleSender().sendMessage(
-                                    ChatColor.YELLOW + "Migration status : " + s.substring(1));
-                        } else {
-                            migrate = this.conn.prepareStatement(s);
-                            migrate.execute();
-                        }
-                    }
+                for (migrateToVersion = installedVersion + 1; migrateToVersion <= latestVersion; migrateToVersion++) {
+
+                    Map<String,String> k = new HashMap<String, String>();
+                    k.put("OLD_TBL", this.plugin.getConfig().getString("stats.database.table",""));
+
+                    executeScript("sql/maintenence/migration/migrate." + migrateToVersion,k);
 
                     this.conn.commit();
-                    this.plugin.getConfig().set("stats.database.sql_db_version", curVersion);
+                    this.plugin.getConfig().set("stats.database.sql_db_version", migrateToVersion);
                     this.plugin.saveConfig();
 
                 }
 
             } catch (SQLException e) {
                 this.plugin.printCon("An error occured while migrating the database, initiating rollback to version "
-                        + (curVersion - 1));
+                        + (migrateToVersion - 1));
                 this.plugin.printCon("Begining database error dump");
                 // plugin.mysqlError(e);
                 this.conn.rollback();
@@ -264,13 +247,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         this.plugin.printCon("Constructing table as needed.");
 
         try {
+            executeScript("sql/maintenence/create.tables");
 
-            String[] creates = this.plugin.readSQL(this.type, "sql/maintenence/create.tables", this.tblPrefix)
-                    .replaceAll("\n|\r", "").split(";");
-            for (String sql : creates) {
-                this.plugin.printDebugCon(sql);
-                this.conn.prepareStatement(sql).execute();
-            }
         } catch (SQLException e) {
             this.plugin.mysqlError(e);
         }
@@ -283,47 +261,28 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         try {
             this.plugin.printDebugCon("Preparing statements");
 
-            this.loadEntity = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/load/getEntity",
-                    this.tblPrefix));
-            this.loadEntityData = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/load/getEntityData",
-                    this.tblPrefix));
+            this.loadEntity = getStatementFromScript("sql/load/getEntity");
+            this.loadEntityData = getStatementFromScript("sql/load/getEntityData");
 
             // Load components
-            this.getDomains = this.conn.prepareStatement(this.plugin.readSQL(this.type,
-                    "sql/load/components/getDomains", this.tblPrefix));
-            this.getWorlds = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/load/components/getWorlds",
-                    this.tblPrefix));
-            this.getCategories = this.conn.prepareStatement(this.plugin.readSQL(this.type,
-                    "sql/load/components/getCategories", this.tblPrefix));
-            this.getStatistics = this.conn.prepareStatement(this.plugin.readSQL(this.type,
-                    "sql/load/components/getStatistics", this.tblPrefix));
+            this.getDomains    = getStatementFromScript("sql/load/components/getDomains");
+            this.getWorlds     = getStatementFromScript("sql/load/components/getWorlds");
+            this.getCategories = getStatementFromScript("sql/load/components/getCategories");
+            this.getStatistics = getStatementFromScript("sql/load/components/getStatistics");
 
             // save components
-            this.saveDomain = this.conn.prepareStatement(
-                    this.plugin.readSQL(this.type, "sql/save/components/saveDomain", this.tblPrefix),
-                    Statement.RETURN_GENERATED_KEYS);
-            this.saveWorld = this.conn.prepareStatement(
-                    this.plugin.readSQL(this.type, "sql/save/components/saveWorld", this.tblPrefix),
-                    Statement.RETURN_GENERATED_KEYS);
-            this.saveCategory = this.conn.prepareStatement(
-                    this.plugin.readSQL(this.type, "sql/save/components/saveCategory", this.tblPrefix),
-                    Statement.RETURN_GENERATED_KEYS);
-            this.saveStatistic = this.conn.prepareStatement(
-                    this.plugin.readSQL(this.type, "sql/save/components/saveStatistic", this.tblPrefix),
-                    Statement.RETURN_GENERATED_KEYS);
+            this.saveDomain = getStatementFromScript("sql/save/components/saveDomain",Statement.RETURN_GENERATED_KEYS);
+            this.saveWorld = getStatementFromScript("sql/save/components/saveWorld", Statement.RETURN_GENERATED_KEYS);
+            this.saveCategory = getStatementFromScript("sql/save/components/saveCategory",Statement.RETURN_GENERATED_KEYS);
+            this.saveStatistic = getStatementFromScript("sql/save/components/saveStatistic", Statement.RETURN_GENERATED_KEYS);
 
             // save to db
-            this.saveEntity = this.conn.prepareStatement(
-                    this.plugin.readSQL(this.type, "sql/save/saveEntity", this.tblPrefix),
-                    Statement.RETURN_GENERATED_KEYS);
-            this.saveEntityData = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/save/saveStat",
-                    this.tblPrefix));
+            this.saveEntity = getStatementFromScript("sql/save/saveEntity", Statement.RETURN_GENERATED_KEYS);
+            this.saveEntityData = getStatementFromScript("sql/save/saveStat");
 
             // Maintenance
-            this.keepAlive = this.conn.prepareStatement(this.plugin.readSQL(this.type, "sql/maintenence/keepAlive",
-                    this.tblPrefix));
-            this.listEntities = this.conn.prepareStatement(this.plugin.readSQL(this.type,
-                    "sql/maintenence/listEntities", this.tblPrefix));
+            this.keepAlive = getStatementFromScript("sql/maintenence/keepAlive");
+            this.listEntities = getStatementFromScript("sql/maintenence/listEntities");
             // deleteEntity =
             // conn.prepareStatement(plugin.readSQL(type,"sql/maintenence/deletePlayerFully",
             // tblPrefix));
@@ -369,16 +328,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             this.plugin.printDebugCon("Recording new component: " + name);
             this.saveStatistic.setString(1, name.toLowerCase());
             this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See
-                                                                                    // if
-                                                                                    // we
-                                                                                    // can
-                                                                                    // generate
-                                                                                    // a
-                                                                                    // localized
-                                                                                    // name
-                                                                                    // for
-                                                                                    // this
-                                                                                    // ourselves.
+            // if
+            // we
+            // can
+            // generate
+            // a
+            // localized
+            // name
+            // for
+            // this
+            // ourselves.
             this.saveStatistic.setString(3, Formatting.none.toString().toLowerCase());
             this.saveStatistic.execute();
             ResultSet rs = this.saveStatistic.getGeneratedKeys();
@@ -400,7 +359,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 statement.setString(2, name);
             } catch (Exception e) {
             }// TODO - Need to seperate out each element to it's own getId
-             // system I think :/
+            // system I think :/
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
             rs.next();
@@ -444,9 +403,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     if (!rs.next()) {
                         if (!create) {
                             promise.reject(new NoRecordFoundException());// Fail
-                                                                         // out
-                                                                         // here
-                                                                         // instead.
+                            // out
+                            // here
+                            // instead.
                             return;
                         }
 
@@ -516,66 +475,66 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     private Runnable flush = new Runnable() {
 
-                               @Override
-                               public void run() {
-                                   synchronized (JDBCStatDataProvider.this.writeCache) {
-                                       try {
-                                           JDBCStatDataProvider.this.keepAlive.execute();
-                                       } catch (SQLException e1) {
-                                       }
+        @Override
+        public void run() {
+            synchronized (JDBCStatDataProvider.this.writeCache) {
+                try {
+                    JDBCStatDataProvider.this.keepAlive.execute();
+                } catch (SQLException e1) {
+                }
 
-                                       if (!checkConnection()) {
-                                           Bukkit.getConsoleSender()
-                                                   .sendMessage(
-                                                           ChatColor.RED
-                                                                   + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
-                                       } else {
-                                           JDBCStatDataProvider.this.plugin.printDebugCon("Saving to database");
-                                           for (Entry<String, EntityStatBlob> entry : JDBCStatDataProvider.this.writeCache
-                                                   .entrySet()) {
-                                               try {
-                                                   EntityStatBlob pb = entry.getValue();
+                if (!checkConnection()) {
+                    Bukkit.getConsoleSender()
+                    .sendMessage(
+                            ChatColor.RED
+                            + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
+                } else {
+                    JDBCStatDataProvider.this.plugin.printDebugCon("Saving to database");
+                    for (Entry<String, EntityStatBlob> entry : JDBCStatDataProvider.this.writeCache
+                            .entrySet()) {
+                        try {
+                            EntityStatBlob pb = entry.getValue();
 
-                                                   JDBCStatDataProvider.this.saveEntityData.clearBatch();
-                                                   for (IStat stat : pb.getStats()) {
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(1,
-                                                               pb.getEntityID());
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(
-                                                               2,
-                                                               getComponentId(JDBCStatDataProvider.this.domains,
-                                                                       JDBCStatDataProvider.this.saveDomain,
-                                                                       stat.getDomain()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(
-                                                               3,
-                                                               getComponentId(JDBCStatDataProvider.this.worlds,
-                                                                       JDBCStatDataProvider.this.saveWorld,
-                                                                       stat.getWorld()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(
-                                                               4,
-                                                               getComponentId(JDBCStatDataProvider.this.categories,
-                                                                       JDBCStatDataProvider.this.saveCategory,
-                                                                       stat.getCategory()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(5,
-                                                               getStatisticId(stat.getStatistic()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(6,
-                                                               stat.getValue());
+                            JDBCStatDataProvider.this.saveEntityData.clearBatch();
+                            for (IStat stat : pb.getStats()) {
+                                JDBCStatDataProvider.this.saveEntityData.setInt(1,
+                                        pb.getEntityID());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(
+                                        2,
+                                        getComponentId(JDBCStatDataProvider.this.domains,
+                                                JDBCStatDataProvider.this.saveDomain,
+                                                stat.getDomain()));
+                                JDBCStatDataProvider.this.saveEntityData.setInt(
+                                        3,
+                                        getComponentId(JDBCStatDataProvider.this.worlds,
+                                                JDBCStatDataProvider.this.saveWorld,
+                                                stat.getWorld()));
+                                JDBCStatDataProvider.this.saveEntityData.setInt(
+                                        4,
+                                        getComponentId(JDBCStatDataProvider.this.categories,
+                                                JDBCStatDataProvider.this.saveCategory,
+                                                stat.getCategory()));
+                                JDBCStatDataProvider.this.saveEntityData.setInt(5,
+                                        getStatisticId(stat.getStatistic()));
+                                JDBCStatDataProvider.this.saveEntityData.setInt(6,
+                                        stat.getValue());
 
-                                                       JDBCStatDataProvider.this.saveEntityData.addBatch();
-                                                   }
-                                                   JDBCStatDataProvider.this.saveEntityData.executeBatch();
+                                JDBCStatDataProvider.this.saveEntityData.addBatch();
+                            }
+                            JDBCStatDataProvider.this.saveEntityData.executeBatch();
 
-                                               } catch (SQLException e) {
-                                                   JDBCStatDataProvider.this.plugin.mysqlError(e);
-                                                   checkConnection();
-                                               }
-                                           }
-                                           JDBCStatDataProvider.this.plugin.printDebugCon("Clearing write cache");
-                                           JDBCStatDataProvider.this.writeCache.clear();
-                                       }
-                                   }
+                        } catch (SQLException e) {
+                            JDBCStatDataProvider.this.plugin.mysqlError(e);
+                            checkConnection();
+                        }
+                    }
+                    JDBCStatDataProvider.this.plugin.printDebugCon("Clearing write cache");
+                    JDBCStatDataProvider.this.writeCache.clear();
+                }
+            }
 
-                               }
-                           };
+        }
+    };
 
     @Override
     public void flushSync() {
@@ -630,7 +589,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         }
         return list;
     }
-    
+
     /**
      * Execute a script
      * @param scriptName name of script (sql/load/loadEntity)
@@ -640,13 +599,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * and #!/script/path/here to execute subscripts
      * @throws SQLException
      */
+    public void executeScript(String scriptName)  throws SQLException{
+        executeScript(scriptName,new HashMap<String, String>());
+    }
     public void executeScript(String scriptName,final Map<String,String> keys) throws SQLException{
         CallbackMatcher matcher = new CallbackMatcher("\\$\\{([A-Za-z0-9_]*)\\}");
-        
+
         String[] sqlStatements = this.plugin.readSQL(this.type, scriptName, this.tblPrefix).split("\\;");
         for (String s : sqlStatements) {
             String statement = matcher.replaceMatches(s, new Callback() {
-                
+
                 @Override
                 public String foundMatch(MatchResult result) {
                     if(keys.containsKey(result.group(1))){
@@ -655,7 +617,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     return "";
                 }
             });
-            
+
             if (statement.startsWith("#!")){
                 String subScript = statement.substring(2);
                 Bukkit.getConsoleSender().sendMessage(
@@ -670,6 +632,14 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             }
         }
 
-        
+
+    }
+
+    public PreparedStatement getStatementFromScript(String scriptName,int flags) throws SQLException{
+        return this.conn.prepareStatement(this.plugin.readSQL(this.type, scriptName,this.tblPrefix),flags);
+    }
+
+    public PreparedStatement getStatementFromScript(String scriptName) throws SQLException{
+        return this.conn.prepareStatement(this.plugin.readSQL(this.type, scriptName,this.tblPrefix));
     }
 }
