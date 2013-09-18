@@ -96,6 +96,7 @@ public class HumanReadbleOutputGenerator {
         return out;
     }
 
+    @SuppressWarnings("deprecation")
     public static String getDataBasedName(Material m, byte data) {
         MaterialData md = m.getNewData(data);
         try {
