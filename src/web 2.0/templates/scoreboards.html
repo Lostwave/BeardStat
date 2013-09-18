@@ -13,7 +13,7 @@ $(function(){
   $("datalist").each(function(idx){
     t = this;
     //Do JSON get for each datalist
-    $.JSON("getData.php?id=" + $(this).attr("id"),function(data){
+    $.getJSON("getData.php?id=" + $(this).attr("id"),function(data){
       //Loop and put in place
       for(x in data){
         t.append('<option value="' + x + '">');
