@@ -107,7 +107,14 @@ public class StatisticMetadata {
     public static String formatStat(String name, int value) {
         return getMeta(name) == null ? "" + value : getMeta(name).formatStat(value);
     }
-
+    
+    
+    /**
+     * Return the localized name,
+     * Checks the database, then the generator, and finally falls back to the inputted name
+     * @param name
+     * @return
+     */
     public static String localizedName(String name) {
         String genMetaName = HumanReadbleOutputGenerator.getNameOf(name);
         StatisticMetadata nameMeta = getMeta(name);
