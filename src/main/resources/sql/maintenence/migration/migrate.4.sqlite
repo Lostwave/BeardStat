@@ -1,0 +1,19 @@
+#Migrating to yggdrasil 1.2;
+#Moving current tables
+ALTER TABLE  `stats_statistic` RENAME TO 'old_statistic'; 
+ALTER TABLE  `stats_world`     RENAME TO 'old_world';
+ALTER TABLE  `stats_category`  RENAME TO 'old_category';
+ALTER TABLE  `stats_domain`    RENAME TO 'old_domain';
+#Building new tables
+#!sql/maintenence/create.tables
+#Reintegrating data
+INSERT INTO `stats_statistic` SELECT * FROM 'old_statistic'; 
+INSERT INTO `stats_world`     SELECT * FROM 'old_world';
+INSERT INTO `stats_category`  SELECT * FROM 'old_category';
+INSERT INTO `stats_domain`    SELECT * FROM 'old_domain';
+#Cleaning up
+DROP TABLE 'old_statistic'; 
+DROP TABLE 'old_world';
+DROP TABLE 'old_category';
+DROP TABLE 'old_domain';
+#Done migrating
