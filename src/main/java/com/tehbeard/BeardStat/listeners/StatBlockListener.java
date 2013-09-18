@@ -21,6 +21,7 @@ public class StatBlockListener extends StatListener {
         super(worlds, playerStatManager, plugin);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
@@ -36,6 +37,7 @@ public class StatBlockListener extends StatListener {
 
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {

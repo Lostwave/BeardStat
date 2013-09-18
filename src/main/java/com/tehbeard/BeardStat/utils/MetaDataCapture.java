@@ -37,6 +37,7 @@ public class MetaDataCapture {
         });
     }
 
+    @SuppressWarnings("deprecation")
     public static void readData(InputStream is) {
         Scanner s = new Scanner(is);
 

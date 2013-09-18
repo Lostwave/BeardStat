@@ -70,6 +70,7 @@ public class TestBlockListener {
         return new Byte[] { 0 };
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPlayerPlaceBlockTrackedWorld() {
 
@@ -119,6 +120,7 @@ public class TestBlockListener {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPlayerPlaceBlockUnTrackedWorld() {
 

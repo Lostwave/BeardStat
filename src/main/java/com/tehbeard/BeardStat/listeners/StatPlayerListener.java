@@ -357,6 +357,7 @@ public class StatPlayerListener extends StatListener {
 
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
@@ -512,6 +513,7 @@ public class StatPlayerListener extends StatListener {
 
             // processs base effect if nessecary
             if (stats.size() == 0) {
+                @SuppressWarnings("deprecation")
                 Collection<PotionEffect> potion = Potion.getBrewer().getEffectsFromDamage(
                         event.getItem().getDurability());
 
