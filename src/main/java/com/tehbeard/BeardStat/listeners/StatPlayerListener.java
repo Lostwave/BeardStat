@@ -530,22 +530,16 @@ public class StatPlayerListener extends StatListener {
         }
 
     }
-    
-    @EventHandler(priority = EventPriority.MONITOR,ignoreCancelled=true)
-    public void onLeash(PlayerLeashEntityEvent event){
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onLeash(PlayerLeashEntityEvent event) {
         if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
             return;
         }
         Player player = event.getPlayer();
         Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
 
-        MetaDataCapture.saveMetaDataEntityStat(
-                promiseblob, 
-                BeardStat.DEFAULT_DOMAIN, 
-                player.getWorld().getName(), 
-                "leash", 
-                event.getEntity(), 
-                1
-                );
+        MetaDataCapture.saveMetaDataEntityStat(promiseblob, BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(),
+                "leash", event.getEntity(), 1);
     }
 }
