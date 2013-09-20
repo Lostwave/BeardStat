@@ -13,7 +13,7 @@ if(!IS_AUTHED){
  include '../templates/header.php';
  ?>
 <form action="login.php" method="POST">
-	password:<input type="password" name="pw"><br>
+	password: <input type="password" name="pw"><br/>
 	<input type="submit" value="login">
 </form>
 <?php
