@@ -3,9 +3,9 @@ package com.tehbeard.BeardStat.containers;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -25,25 +25,24 @@ public class EntityStatBlob implements VariableProvider {
 
     private static Set<DynamicStat> dynamicStats = new HashSet<DynamicStat>();
 
-    public static void addDynamic(String statName,String expr,boolean archive){
-        
+    public static void addDynamic(String statName, String expr, boolean archive) {
+
         Stack<String> stack = new Stack<String>();
         for (String s : statName.split("\\:\\:")) {
             stack.add(s);
         }
 
-        String stat   = !stack.isEmpty() ? stack.pop() : null;
-        String cat    = !stack.isEmpty() ? stack.pop() : null;
-        String world  = !stack.isEmpty() ? stack.pop() : BeardStat.GLOBAL_WORLD;
+        String stat = !stack.isEmpty() ? stack.pop() : null;
+        String cat = !stack.isEmpty() ? stack.pop() : null;
+        String world = !stack.isEmpty() ? stack.pop() : BeardStat.GLOBAL_WORLD;
         String domain = !stack.isEmpty() ? stack.pop() : BeardStat.DEFAULT_DOMAIN;
-        if(stat == null || cat == null){
-            throw new BeardStatRuntimeException("Invalid stat name provided [" + statName + "]", new IllegalArgumentException(), false);
+        if ((stat == null) || (cat == null)) {
+            throw new BeardStatRuntimeException("Invalid stat name provided [" + statName + "]",
+                    new IllegalArgumentException(), false);
         }
 
-
-        dynamicStats.add(new DynamicStat(domain, world, cat, stat, expr,archive));
+        dynamicStats.add(new DynamicStat(domain, world, cat, stat, expr, archive));
     }
-
 
     private void addDynamics() {
         if (this.type.equals(BeardStat.PLAYER_TYPE)) {
@@ -51,7 +50,7 @@ public class EntityStatBlob implements VariableProvider {
 
                 addStat(ds.duplicateForPlayer(this));
             }
-            
+
             // Add health status
             addStat(new HealthStat(this));
         }

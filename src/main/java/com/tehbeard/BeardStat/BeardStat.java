@@ -169,12 +169,16 @@ public class BeardStat extends JavaPlugin {
         printCon("initializing composite stats");
         try {
             // Load the dynamic stats from file
-            File customStats = new File(getDataFolder(),"customstat.properties");
-            if(customStats.exists()){loadDynamicStatConfiguration(customStats,false);}
-            
-            File savedCustomStats = new File(getDataFolder(),"savedcustomstat.properties");
-            if(savedCustomStats.exists()){loadDynamicStatConfiguration(savedCustomStats,false);}
-            
+            File customStats = new File(getDataFolder(), "customstat.properties");
+            if (customStats.exists()) {
+                loadDynamicStatConfiguration(customStats, false);
+            }
+
+            File savedCustomStats = new File(getDataFolder(), "savedcustomstat.properties");
+            if (savedCustomStats.exists()) {
+                loadDynamicStatConfiguration(savedCustomStats, false);
+            }
+
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error loading dynamic stats or custom formats", e, true));
         }
@@ -366,24 +370,23 @@ public class BeardStat extends JavaPlugin {
     /**
      * Load custom stats from config custom stats use a formula to manipulate
      * other stats.
-     * @throws IOException 
-     * @throws FileNotFoundException 
+     * 
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    private void loadDynamicStatConfiguration(File f,boolean archive) throws FileNotFoundException, IOException {
+    private void loadDynamicStatConfiguration(File f, boolean archive) throws FileNotFoundException, IOException {
         printCon(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
 
         Properties prop = new Properties();
         prop.load(new FileInputStream(f));
 
-        for( Entry<Object, Object> e : prop.entrySet()){
+        for (Entry<Object, Object> e : prop.entrySet()) {
             String statName = (String) e.getKey();
-            String expr     = (String) e.getValue();
-            EntityStatBlob.addDynamic(statName, expr,archive);
+            String expr = (String) e.getValue();
+            EntityStatBlob.addDynamic(statName, expr, archive);
         }
 
-
     }
-
 
     /**
      * Load a data provider from config

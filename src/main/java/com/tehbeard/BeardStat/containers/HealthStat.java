@@ -5,12 +5,12 @@ import org.bukkit.Bukkit;
 import com.tehbeard.BeardStat.BeardStat;
 
 public class HealthStat implements IStat {
-    
-    public HealthStat(EntityStatBlob owner){
+
+    public HealthStat(EntityStatBlob owner) {
         this.owner = owner;
     }
 
-    private int lastHealth = 20;
+    private int            lastHealth = 20;
     private EntityStatBlob owner;
 
     @Override
@@ -49,8 +49,8 @@ public class HealthStat implements IStat {
 
     @Override
     public int getValue() {
-        if (Bukkit.getPlayer(owner.getName()) != null) {
-            this.lastHealth = (int) Math.floor(Bukkit.getPlayer(owner.getName()).getHealth());
+        if (Bukkit.getPlayer(this.owner.getName()) != null) {
+            this.lastHealth = (int) Math.floor(Bukkit.getPlayer(this.owner.getName()).getHealth());
         }
         return this.lastHealth;
     }
@@ -62,7 +62,7 @@ public class HealthStat implements IStat {
 
     @Override
     public EntityStatBlob getOwner() {
-        return owner;
+        return this.owner;
     }
 
     @Override
