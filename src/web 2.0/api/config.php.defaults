@@ -9,5 +9,5 @@ define('BS_DB_DB',"${db}");
 define('BS_DB_PORT',${port});
 define('BS_DB_PREFIX',"${prefix}");
 define('BS_FORMAT_DATE','D, jS M Y');//see php date() command for formatting details
-//define('BS_PW','omnomnom');//Admin console password - NOT IN THIS RELEASE
+define('BS_PW','${adminpassword}');//Admin console password 
 ?>

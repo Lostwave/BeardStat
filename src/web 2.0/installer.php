@@ -44,6 +44,12 @@ include 'templates/header.php';
 				<input type="text" name="prefix">
 			</div>
 		</div>
+    <div class="control-group">
+      <label class="control-label">Admin password:</label>
+      <div class="controls">
+        <input type="password" name="adminpassword">
+      </div>
+    </div>
 		<div class="control-group">
 			<div class="controls">
 				<button type="submit" class="btn btn-primary">Configure Web
