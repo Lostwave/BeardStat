@@ -25,6 +25,14 @@ $(function(){
     })
   });
 });
+
+
+function loadDataAjax(){
+  $.getJSON('../config/scoreboards.json',function(data){
+    loadData(data);
+  });
+}
+
 /*
 * Load scoreboard data manually
 */
@@ -32,6 +40,14 @@ function loadData(data){
   angular.element("body").scope().scoreboards = data;
   angular.element("body").scope().$apply();
 }
+
+function saveData(){
+  $.ajax('rest.php?id=scoreboards',{
+    'data': JSON.stringify(angular.toJson(angular.element("body").scope().scoreboards)), 
+    'type': 'POST',
+    'processData': false,
+    'contentType': 'application/json' //typically 'application/x-www-form-urlencoded', but the service you are calling may expect 'text/json'... check with the service to see what they expect as content-type in the HTTP header.
+});
 //TODO - SAVE
 //ALSO - STRIP ORDER DATA FOR NONE CLAUSE
 </script>
