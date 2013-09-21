@@ -6,7 +6,8 @@ include 'session.php';
 if(!IS_AUTHED){
  if(isset($_POST['pw']) && $_POST['pw'] === BS_PW){
   $_SESSION['authed'] = true;
-  header("location","index.php");
+  header("Location: index.php");
+  die();
  }
  
  define('BS_TITLE','login');
@@ -21,6 +22,6 @@ include '../templates/footer.php';
 }
 else
 {
- header("location","index.php");
+ header("Location: index.php");
 }
 ?>

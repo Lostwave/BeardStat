@@ -18,20 +18,29 @@ $(function(){
   */
   $("datalist").each(function(idx,ele){
     id = $(ele).attr("id");
-    $.getJSON("getData.php?id=" + id,function(data){
+    $.ajax({
+  dataType: "json",
+  url: "getData.php?id=" + id,
+  cache: false,
+  success: function(data){
       for(x in data){
         //console.log(id + " :: " + x);
         $(ele).append('<option value="' + x + '">');
       }
-    })
+    }
   });
+});
 });
 
 
 function loadDataAjax(){
-  $.getJSON('../config/scoreboards.json',function(data){
+  $.ajax({
+    dataType:"json",
+    url: '../config/scoreboards.json',
+    cache: false,
+    success: function(data){
     loadData(data);
-  });
+  }});
 }
 
 /*
@@ -43,11 +52,15 @@ function loadData(data){
 }
 
 function saveData(){
+  console.log("our side");
+  console.log(angular.toJson(angular.element("body").scope().scoreboards,true));
   $.ajax('rest.php?id=scoreboards',{
-    'data': JSON.stringify(angular.toJson(angular.element("body").scope().scoreboards)), 
+    'data': angular.toJson(angular.element("body").scope().scoreboards,true), 
     'type': 'POST',
     'processData': false,
+    success: function(data){console.log(data);},
     'contentType': 'application/json' //typically 'application/x-www-form-urlencoded', but the service you are calling may expect 'text/json'... check with the service to see what they expect as content-type in the HTTP header.
+
   });
 }
 //TODO - SAVE
