@@ -1,6 +1,6 @@
 <?php
 require 'session.php';
-require 'api/api.php';
+require '../api/api.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,11 +16,12 @@ $(function(){
   /*
   * Fill all the auto-complete datalists
   */
-  $("datalist").each(function(idx){
-    t = this;
-    $.getJSON("getData.php?id=" + $(this).attr("id"),function(data){
+  $("datalist").each(function(idx,ele){
+    id = $(ele).attr("id");
+    $.getJSON("getData.php?id=" + id,function(data){
       for(x in data){
-        t.append('<option value="' + x + '">');
+        //console.log(id + " :: " + x);
+        $(ele).append('<option value="' + x + '">');
       }
     })
   });
@@ -47,7 +48,8 @@ function saveData(){
     'type': 'POST',
     'processData': false,
     'contentType': 'application/json' //typically 'application/x-www-form-urlencoded', but the service you are calling may expect 'text/json'... check with the service to see what they expect as content-type in the HTTP header.
-});
+  });
+}
 //TODO - SAVE
 //ALSO - STRIP ORDER DATA FOR NONE CLAUSE
 </script>
@@ -55,14 +57,8 @@ function saveData(){
 </head>
 <body ng-app>
 <datalist id="domain">
-  <option value="default"/>
-  <option value="spleefIt"/>
-  <option value="beardach"/>
 </datalist>
 <datalist id="world">
-  <option value="survival"/>
-  <option value="nether"/>
-  <option value="tolteca"/>
 </datalist>
 <datalist id="category">
 </datalist>

@@ -1,6 +1,6 @@
 <?php
 require 'session.php';
-require 'api/api.php';
+require '../api/api.php';
 //Provide data table for admin pages
 if(!isset($_chk)){
 $_chk = $_GET['id'];
