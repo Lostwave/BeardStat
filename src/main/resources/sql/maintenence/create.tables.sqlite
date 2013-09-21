@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS `stats_entity` (
     entityId INTEGER        PRIMARY KEY AUTOINCREMENT,
     name     VARCHAR( 64 )  NOT NULL,
     type     VARCHAR( 16 )  NOT NULL,
-    `scoreboardhide` BOOLEAN NOT NULL DEFAULT FALSE,
+    `scoreboardhide` BOOLEAN NOT NULL DEFAULT 0,
     CONSTRAINT uni UNIQUE ( name, type ) 
 );
 CREATE TABLE IF NOT EXISTS `stats_domain` ( 
