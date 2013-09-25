@@ -330,7 +330,7 @@ public class BeardStat extends JavaPlugin {
         logger.severe("=========================================");
         logger.severe("|             DATABASE ERROR            |");
         logger.severe("=========================================");
-        logger.severe("An error occured while trying to connect to the BeardStat database");
+        logger.severe("");
         logger.severe("Mysql error code: " + e.getErrorCode());
 
         switch (e.getErrorCode()) {
