@@ -206,9 +206,7 @@ public class StatEntityListener extends StatListener {
                         .onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions", "splashhit", 1));
                 // added per potion details
                 for (PotionEffect potionEffect : potion.getEffects()) {
-                    String effect = potionEffect.getType().toString().toLowerCase().replaceAll("_", "");
-                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions", "splash"
-                            + effect, 1));
+                    MetaDataCapture.saveMetadataPotionStat(promiseblob, BeardStat.DEFAULT_DOMAIN, world, "potions", potionEffect, 1);
                 }
             }
         }

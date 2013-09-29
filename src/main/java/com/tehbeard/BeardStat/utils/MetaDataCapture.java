@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
+import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
@@ -79,7 +80,7 @@ public class MetaDataCapture {
 
     public static void saveMetaDataEntityStat(Promise<EntityStatBlob> blob, String domain, String world,
             String category, Entity entity, int value) {
-        String entityName = entity.getType().toString().toLowerCase().replace("_", "");
+        String entityName = entity.getType().toString().toLowerCase().replaceAll("_", "");
         blob.onResolve(new DelegateIncrement(domain, world, category, entityName, value));
 
         if (entity instanceof Skeleton) {
@@ -94,8 +95,17 @@ public class MetaDataCapture {
             }
         }
     }
+    
+    public static void saveMetadataPotionStat(Promise<EntityStatBlob> blob, String domain, String world,
+    String category, PotionEffect effect, int value) {
+        String effectName = effect.getType().getName().toLowerCase().replaceAll("_", "");
+        String level = "" + effect.getAmplifier();
+        String statName = effectName + "_" + level;
+        
+        blob.onResolve(new DelegateIncrement(domain, world, category, statName , value));
+    }
 
-    public static boolean hasMetaData(Material mat) {
+    public static boolean hasMetaDataMaterial(Material mat) {
         return mats.containsKey(mat);
 
     }

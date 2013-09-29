@@ -1,6 +1,5 @@
 package com.tehbeard.BeardStat.listeners;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -102,7 +101,7 @@ public class StatPlayerListener extends StatListener {
 
                 if (!params.getValue().hasStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "firstlogin")) {
                     params.getValue().getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "firstlogin")
-                            .setValue((int) (event.getPlayer().getFirstPlayed() / 1000L));
+                    .setValue((int) (event.getPlayer().getFirstPlayed() / 1000L));
 
                 }
 
@@ -137,7 +136,7 @@ public class StatPlayerListener extends StatListener {
         MetaDataCapture.saveMetaDataMaterialStat(
                 this.getPlayerStatManager().getPlayerBlobASync(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
                 event.getPlayer().getWorld().getName(), "itemdrop", event.getItemDrop().getItemStack().getType(), event
-                        .getItemDrop().getItemStack().getDurability(), event.getItemDrop().getItemStack().getAmount());
+                .getItemDrop().getItemStack().getDurability(), event.getItemDrop().getItemStack().getAmount());
 
     }
 
@@ -218,7 +217,7 @@ public class StatPlayerListener extends StatListener {
         MetaDataCapture.saveMetaDataMaterialStat(
                 this.getPlayerStatManager().getPlayerBlobASync(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
                 event.getPlayer().getWorld().getName(), "itempickup", event.getItem().getItemStack().getType(), event
-                        .getItem().getItemStack().getDurability(), event.getItem().getItemStack().getAmount());
+                .getItem().getItemStack().getDurability(), event.getItem().getItemStack().getAmount());
 
     }
 
@@ -504,30 +503,31 @@ public class StatPlayerListener extends StatListener {
 
             // process meta potions
             PotionMeta meta = (PotionMeta) event.getItem().getItemMeta();
-            List<String> stats = new ArrayList<String>();
             if (meta != null) {
                 for (PotionEffect effect : meta.getCustomEffects()) {
-                    stats.add(effect.getType().getName().toLowerCase().replaceAll("_", "") + effect.getAmplifier());
+                    MetaDataCapture.saveMetadataPotionStat(
+                            promiseblob,BeardStat.DEFAULT_DOMAIN, 
+                            player.getWorld().getName(),
+                            "consume", 
+                            effect, 1);
                 }
+                return;
             }
 
             // processs base effect if nessecary
-            if (stats.size() == 0) {
-                @SuppressWarnings("deprecation")
-                Collection<PotionEffect> potion = Potion.getBrewer().getEffectsFromDamage(
-                        event.getItem().getDurability());
+            @SuppressWarnings("deprecation")
+            Collection<PotionEffect> potion = Potion.getBrewer().getEffectsFromDamage(
+                    event.getItem().getDurability());
 
-                for (PotionEffect pe : potion) {
-                    pe.getType().getName().toLowerCase().replaceAll("_", "");
-
-                }
+            for (PotionEffect effect : potion) {
+                MetaDataCapture.saveMetadataPotionStat(
+                        promiseblob,BeardStat.DEFAULT_DOMAIN, 
+                        player.getWorld().getName(),
+                        "consume", 
+                        effect, 1);
             }
-            for (String s : stats) {
-                promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(),
-                        "consume", "potion" + s, 1));
-            }
-
         }
+
 
     }
 

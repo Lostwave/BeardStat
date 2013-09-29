@@ -59,7 +59,7 @@ public class TestBlockListener {
     }
 
     public Byte[] genUniqueSubIds(Material mat) {
-        if (MetaDataCapture.hasMetaData(mat)) {
+        if (MetaDataCapture.hasMetaDataMaterial(mat)) {
             EntryInfo info = MetaDataCapture.mats.get(mat);
             Set<Byte> bytes = new HashSet<Byte>();
             for (byte i = (byte) info.min; i <= info.max; i++) {
@@ -109,7 +109,7 @@ public class TestBlockListener {
                 System.out.println("Testing " + matName);
 
                 String statId = matName;
-                if (MetaDataCapture.hasMetaData(m)) {
+                if (MetaDataCapture.hasMetaDataMaterial(m)) {
                     statId = matName + "_" + ((int) b);
                 }
                 stat = this.blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "blockcreate", statId);
@@ -158,7 +158,7 @@ public class TestBlockListener {
                 System.out.println("Testing " + matName);
 
                 String statId = matName;
-                if (MetaDataCapture.hasMetaData(m)) {
+                if (MetaDataCapture.hasMetaDataMaterial(m)) {
                     statId = matName + "_" + ((int) b);
                 }
                 stat = this.blob.getStat(BeardStat.DEFAULT_DOMAIN, bob.getWorld().getName(), "blockcreate", statId);
