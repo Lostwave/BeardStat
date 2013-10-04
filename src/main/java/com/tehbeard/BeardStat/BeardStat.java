@@ -268,7 +268,7 @@ public class BeardStat extends JavaPlugin {
             getConfig().options().copyDefaults(true);
         }
         // update config if nessecary
-        if (getConfig().getInt("stats.configversion", 0) < Integer.parseInt("${project.config.version}")) {
+        if (getConfig().getInt("stats.configversion", 0) < getConfig().getDefaults().getInt("stats.configversion")) {
 
             printCon("Updating config to include newest configuration options");
             getConfig().set("stats.configversion", null);
