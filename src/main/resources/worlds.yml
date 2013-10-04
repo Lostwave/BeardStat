@@ -1,0 +1,5 @@
+worlds:
+  default:
+    survival: true
+    creative: false
+    adventure: false

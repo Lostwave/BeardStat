@@ -7,9 +7,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import net.dragonzone.promise.Deferred;
@@ -26,18 +24,19 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.WorldManager;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.StatBlockListener;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
+import org.bukkit.GameMode;
 
 @RunWith(PowerMockRunner.class)
 public class TestBlockListener {
 
     private PlayerStatManager manager;
-    private List<String>      blacklist = new ArrayList<String>();
     private StatBlockListener listener;
 
     private EntityStatBlob    blob;
@@ -47,15 +46,15 @@ public class TestBlockListener {
 
         // Create test blob
         this.blob = new EntityStatBlob("bob", 0, "player");
-        // world blacklist
-        this.blacklist.add("blacklisted");
 
         // Mock manager to return our blob
         this.manager = mock(PlayerStatManager.class);
         when(this.manager.getPlayerBlobASync(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
 
-        this.listener = new StatBlockListener(this.blacklist, this.manager, null);
-
+        this.listener = new StatBlockListener(this.manager, null);
+        BeardStat.worldManager = new WorldManager();
+        BeardStat.worldManager.addWorld("blacklisted",false,false,false);
+        BeardStat.worldManager.addWorld("overworld",true,true,true);
     }
 
     public Byte[] genUniqueSubIds(Material mat) {
@@ -81,6 +80,7 @@ public class TestBlockListener {
         when(mockWorld.getName()).thenReturn("overworld");
 
         when(bob.getWorld()).thenReturn(mockWorld);
+        when(bob.getGameMode()).thenReturn(GameMode.SURVIVAL);
 
         Block block = mock(Block.class);
 

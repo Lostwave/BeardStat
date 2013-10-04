@@ -16,13 +16,13 @@ import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatCraftListener extends StatListener {
 
-    public StatCraftListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
-        super(worlds, playerStatManager, plugin);
+    public StatCraftListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super( playerStatManager, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCraftItem(CraftItemEvent event) {
-        if (event.isCancelled() || !shouldTrack((Player) event.getWhoClicked(), event.getWhoClicked().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer((Player) event.getWhoClicked())) {
             return;
         }
 

@@ -17,16 +17,17 @@ import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatBlockListener extends StatListener {
 
-    public StatBlockListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
-        super(worlds, playerStatManager, plugin);
+    public StatBlockListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(playerStatManager, plugin);
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
+        
 
         Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
                 event.getPlayer().getName());
@@ -40,7 +41,7 @@ public class StatBlockListener extends StatListener {
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 

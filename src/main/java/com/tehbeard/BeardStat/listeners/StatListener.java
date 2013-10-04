@@ -18,7 +18,6 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  */
 public abstract class StatListener implements Listener {
 
-    private final List<String>      worlds;
     private final PlayerStatManager playerStatManager;
     private final BeardStat         plugin;
 
@@ -27,25 +26,17 @@ public abstract class StatListener implements Listener {
      * @param playerStatManager
      * @param plugin
      */
-    public StatListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
-        this.worlds = worlds;
+    public StatListener( PlayerStatManager playerStatManager, BeardStat plugin) {
         this.playerStatManager = playerStatManager;
         this.plugin = plugin;
     }
 
     protected boolean shouldTrackPlayer(Player player) {
-        if (player.getGameMode() != GameMode.CREATIVE) {
-            return true;
-        }
-        return this.plugin.getConfig().getBoolean("stats.trackcreativemode", false);
+        return BeardStat.worldManager.shouldTrack(player);
     }
-
-    protected boolean isBlacklistedWorld(World w) {
-        return this.worlds.contains(w.getName());
-    }
-
-    protected boolean shouldTrack(Player p, World w) {
-        return shouldTrackPlayer(p) && !isBlacklistedWorld(w);
+    
+    protected boolean isBlacklistedWorld(World world){
+        return BeardStat.worldManager.isBlackListed(world);
     }
 
     protected BeardStat getPlugin() {

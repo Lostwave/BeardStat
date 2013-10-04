@@ -42,6 +42,8 @@ import com.tehbeard.BeardStat.listeners.StatVehicleListener;
 import com.tehbeard.BeardStat.utils.HumanReadbleOutputGenerator;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
+import me.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * BeardStat Statistic's tracking for the gentleman server
@@ -61,7 +63,10 @@ public class BeardStat extends JavaPlugin {
 
     private int                saveTaskId;
     private PlayerStatManager  playerStatManager;
-
+    
+    public static StatConfiguration configuration;
+    
+    public static WorldManager worldManager;
     /**
      * Returns the stat manager for use by other plugins
      * 
@@ -87,7 +92,7 @@ public class BeardStat extends JavaPlugin {
      */
     public void printDebugCon(String line) {
 
-        if (getConfig().getBoolean("general.debug", false)) {
+        if (configuration.debugMode) {
             printCon("[DEBUG] " + line);
         }
     }
@@ -145,17 +150,16 @@ public class BeardStat extends JavaPlugin {
             handleError(new BeardStatRuntimeException("An error occured while loading or updating the config", e, false));
             return;
         }
+        
+        configuration = new StatConfiguration();
+        new YamlConfigInjector((getConfig())).inject(configuration);
+        
+        worldManager = new WorldManager(YamlConfiguration.loadConfiguration(new File(getDataFolder(),"worlds.yml")).getConfigurationSection("worlds"));
 
         // setup our data provider, fail out if it's not found
         printCon("Connecting to database");
-        printCon("Using " + getConfig().getString("stats.database.type") + " Adpater");
-        if (getConfig().getString("stats.database.type") == null) {
-            printCon("INVALID ADAPTER SELECTED");
-            getPluginLoader().disablePlugin(this);
-            return;
-        }
-
-        IStatDataProvider db = getProvider(getConfig().getConfigurationSection("stats.database"));
+        printCon("Using " + configuration.dbType + " Adpater");
+        IStatDataProvider db = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.database")));
 
         if (db == null) {
             printCon(" Error loading database, disabling plugin");
@@ -188,12 +192,11 @@ public class BeardStat extends JavaPlugin {
         // register event listeners
         // get blacklist, then start and register each type of listener
         try {
-            List<String> worldList = getConfig().getStringList("stats.blacklist");
-            StatBlockListener sbl = new StatBlockListener(worldList, this.playerStatManager, this);
-            StatPlayerListener spl = new StatPlayerListener(worldList, this.playerStatManager, this);
-            StatEntityListener sel = new StatEntityListener(worldList, this.playerStatManager, this);
-            StatVehicleListener svl = new StatVehicleListener(worldList, this.playerStatManager, this);
-            StatCraftListener scl = new StatCraftListener(worldList, this.playerStatManager, this);
+            StatBlockListener sbl = new StatBlockListener( this.playerStatManager, this);
+            StatPlayerListener spl = new StatPlayerListener( this.playerStatManager, this);
+            StatEntityListener sel = new StatEntityListener( this.playerStatManager, this);
+            StatVehicleListener svl = new StatVehicleListener( this.playerStatManager, this);
+            StatCraftListener scl = new StatCraftListener( this.playerStatManager, this);
             getServer().getPluginManager().registerEvents(sbl, this);
             getServer().getPluginManager().registerEvents(spl, this);
             getServer().getPluginManager().registerEvents(sel, this);
@@ -394,21 +397,22 @@ public class BeardStat extends JavaPlugin {
      * @param config
      * @return
      */
-    private IStatDataProvider getProvider(ConfigurationSection config) {
+    private IStatDataProvider getDataProvider(DatabaseConfiguration config) {
         IStatDataProvider db = null;
         // MySQL provider
-        if (config.getString("type").equalsIgnoreCase("mysql")) {
+        if (config.databaseType.equalsIgnoreCase("mysql")) {
             try {
-                db = new MysqlStatDataProvider(this, config.getString("host"), config.getInt("port", 3306),
-                        config.getString("database"), config.getString("prefix"), config.getString("username"),
-                        config.getString("password"));
+                db = new MysqlStatDataProvider(this, 
+                        config.host, config.port,
+                        config.database, config.tablePrefix, 
+                        config.username, config.password);
             } catch (SQLException e) {
                 mysqlError(e);
                 db = null;
             }
         }
         // SQLite provider
-        if (config.getString("type").equalsIgnoreCase("sqlite")) {
+        if (config.databaseType.equalsIgnoreCase("sqlite")) {
             try {
                 db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString());
             } catch (SQLException e) {
@@ -419,7 +423,7 @@ public class BeardStat extends JavaPlugin {
         }
 
         // In memory provider
-        if (config.getString("type").equalsIgnoreCase("memory")) {
+        if (config.databaseType.equalsIgnoreCase("memory")) {
             try {
                 db = new SQLiteStatDataProvider(this, ":memory:");
             } catch (SQLException e) {
@@ -429,14 +433,14 @@ public class BeardStat extends JavaPlugin {
         }
 
         // File provider, kept for alert message, remove in 0.7
-        if (config.getString("type").equalsIgnoreCase("file")) {
+        if (config.databaseType.equalsIgnoreCase("file")) {
             printCon("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
         }
 
         // transfer provider, calls method again to load handlers for transfer
-        if (config.getString("type").equalsIgnoreCase("transfer")) {
-            IStatDataProvider _old = getProvider(getConfig().getConfigurationSection("stats.transfer.old"));
-            IStatDataProvider _new = getProvider(getConfig().getConfigurationSection("stats.transfer.new"));
+        if (config.databaseType.equalsIgnoreCase("transfer")) {
+            IStatDataProvider _old = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.old")));
+            IStatDataProvider _new = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.new")));
             printCon("Initiating transfer of stats, this may take a while");
             new TransferDataProvider(this, _old, _new);
             db = _new;
@@ -516,5 +520,11 @@ public class BeardStat extends JavaPlugin {
         e.printStackTrace();
         printCon("");
         printCon("=========");
+    }
+    
+        public DatabaseConfiguration getDatabaseConfiguration(ConfigurationSection section){
+        DatabaseConfiguration dbc = new DatabaseConfiguration();
+        new YamlConfigInjector(section).inject(dbc);
+        return dbc;
     }
 }

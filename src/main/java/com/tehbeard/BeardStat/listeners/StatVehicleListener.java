@@ -17,8 +17,8 @@ import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 
 public class StatVehicleListener extends StatListener {
 
-    public StatVehicleListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
-        super(worlds, playerStatManager, plugin);
+    public StatVehicleListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(playerStatManager, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -66,13 +66,13 @@ import com.tehbeard.BeardStat.utils.MetaDataCapture;
  */
 public class StatPlayerListener extends StatListener {
 
-    public StatPlayerListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
-        super(worlds, playerStatManager, plugin);
+    public StatPlayerListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+        super( playerStatManager, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerAnimation(PlayerAnimationEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -129,7 +129,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -142,7 +142,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerFish(PlayerFishEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -180,7 +180,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -210,7 +210,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -250,7 +250,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -263,7 +263,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -276,7 +276,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -338,7 +338,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void shearEvent(PlayerShearEntityEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -359,7 +359,7 @@ public class StatPlayerListener extends StatListener {
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -411,7 +411,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerExp(PlayerExpChangeEvent event) {
-        if (!shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (!shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -427,7 +427,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerExpLevel(PlayerLevelChangeEvent event) {
-        if (!shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (!shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -447,7 +447,7 @@ public class StatPlayerListener extends StatListener {
     public void onEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
 
-        if (event.isCancelled() || !shouldTrack(event.getEnchanter(), event.getEnchanter().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getEnchanter())) {
             return;
         }
 
@@ -486,7 +486,7 @@ public class StatPlayerListener extends StatListener {
     public void onNom(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
 
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
 
@@ -533,7 +533,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeash(PlayerLeashEntityEvent event) {
-        if (event.isCancelled() || !shouldTrack(event.getPlayer(), event.getPlayer().getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
         Player player = event.getPlayer();

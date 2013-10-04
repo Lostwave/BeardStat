@@ -24,25 +24,24 @@ import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.WorldManager;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.listeners.StatVehicleListener;
+import org.bukkit.GameMode;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 public class TestVehicleListener {
 
-    private PlayerStatManager   manager;
-    private List<String>        blacklist = new ArrayList<String>();
+    private PlayerStatManager manager;
     private StatVehicleListener listener;
-
-    private EntityStatBlob      blob;
+    private EntityStatBlob blob;
 
     @Before
     public void setup() {
         // Create test blob
         this.blob = new EntityStatBlob("bob", 0, "player");
-        // world blacklist
-        this.blacklist.add("blacklisted");
 
         // Mock manager to return our blob
         this.manager = mock(PlayerStatManager.class);
@@ -50,8 +49,9 @@ public class TestVehicleListener {
 
         BeardStat plugin = mock(BeardStat.class);
         // when(plugin.printDebugCon(anyString()))
-
-        this.listener = new StatVehicleListener(this.blacklist, this.manager, plugin);
+        BeardStat.worldManager = new WorldManager();
+        BeardStat.worldManager.addWorld("blacklisted", false, false, false);
+        this.listener = new StatVehicleListener(this.manager, plugin);
     }
 
     @Test
@@ -68,6 +68,8 @@ public class TestVehicleListener {
 
         Player bob = mock(Player.class);
         when(bob.getName()).thenReturn("bob");
+        when(bob.getWorld()).thenReturn(world);
+        when(bob.getGameMode()).thenReturn(GameMode.SURVIVAL);
 
         when(v.getPassenger()).thenReturn(bob);
 

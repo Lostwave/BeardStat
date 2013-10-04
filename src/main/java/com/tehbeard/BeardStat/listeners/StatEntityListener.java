@@ -31,8 +31,8 @@ import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatEntityListener extends StatListener {
 
-    public StatEntityListener(List<String> worlds, PlayerStatManager playerStatManager, BeardStat plugin) {
-        super(worlds, playerStatManager, plugin);
+    public StatEntityListener( PlayerStatManager playerStatManager, BeardStat plugin) {
+        super(playerStatManager, plugin);
     }
 
     private final String[] DAMAGELBLS = { "damagedealt", "damagetaken" };
@@ -105,7 +105,7 @@ public class StatEntityListener extends StatListener {
             return;
         }// kill if no player involved
 
-        if (event.isCancelled() || !shouldTrack(player, player.getWorld())) {
+        if (event.isCancelled() || !shouldTrackPlayer(player)) {
             return;
         }
 
@@ -152,7 +152,7 @@ public class StatEntityListener extends StatListener {
             RegainReason reason = event.getRegainReason();
             Player player = (Player) event.getEntity();
 
-            if (!shouldTrack(player, player.getWorld())) {
+            if (!shouldTrackPlayer(player)) {
                 return;
             }
 
@@ -170,7 +170,7 @@ public class StatEntityListener extends StatListener {
     public void onEntityTame(EntityTameEvent event) {
         if ((event.isCancelled() == false) && (event.getOwner() instanceof Player)
                 && !isBlacklistedWorld(event.getEntity().getWorld())) {
-            if (event.isCancelled() || !shouldTrack((Player) event.getOwner(), ((Entity) event.getOwner()).getWorld())) {
+            if (event.isCancelled() || !shouldTrackPlayer((Player) event.getOwner())) {
                 return;
             }
 
