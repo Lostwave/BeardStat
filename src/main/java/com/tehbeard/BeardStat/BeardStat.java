@@ -154,7 +154,9 @@ public class BeardStat extends JavaPlugin {
         configuration = new StatConfiguration();
         new YamlConfigInjector((getConfig())).inject(configuration);
         
-        worldManager = new WorldManager(YamlConfiguration.loadConfiguration(new File(getDataFolder(),"worlds.yml")).getConfigurationSection("worlds"));
+        File worldsFile = new File(getDataFolder(),"worlds.yml");
+        saveResource("worlds.yml",false);
+        worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
 
         // setup our data provider, fail out if it's not found
         printCon("Connecting to database");
