@@ -13,3 +13,14 @@ stats:
     table: "stats"
     prefix: "stats"
     port: 3306
+pages:
+    default:
+      - "blocks placed:stats.totalblockcreate"
+      - "blocks broken:stats.totalblockdestroy"
+      - "kills:kills.total"
+      - "deaths:deaths.total"
+      - "killdeath:comp.kd"
+    archery:
+      - "total shots:bow.shots"
+      - "fire shots:bow.fireshots"
+      - "Epirus bow shots:bow.infiniteshots"
