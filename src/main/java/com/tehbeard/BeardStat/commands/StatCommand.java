@@ -99,16 +99,18 @@ public class StatCommand extends BeardStatCommand {
                     return true;
                 }
                 if (vector.size() > 1) {
+                    sender.sendMessage(LanguagePack.getMsg("command.stat.stat",
+                            StatisticMetadata.localizedName(vector.getStatistic()) + " total",
+                            StatisticMetadata.formatStat(vector.getStatistic(), vector.getValue())));
                     // command.stat.stat.world
-                    Iterator<IStat> it = vector.iterator();
-                    while (it.hasNext()) {
-                        IStat iStat = it.next();
+                    for(IStat iStat : vector) {
 
                         sender.sendMessage(LanguagePack.getMsg("command.stat.stat.world", iStat.getWorld(),
                                 StatisticMetadata.localizedName(iStat.getStatistic()),
                                 StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())));
-                        return true;
+                        
                     }
+                    return true;
 
                 }
 
