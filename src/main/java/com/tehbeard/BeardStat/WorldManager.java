@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
  * @author James
  */
 public class WorldManager {
-    private WorldData defaultWorld = new WorldData();
+    private WorldData defaultWorld = new WorldData(true,false,false);
     Map<String,WorldData> worlds = new HashMap<String, WorldData>();
 
     public WorldManager() {
@@ -62,6 +62,8 @@ public class WorldManager {
     
     
     public WorldManager(ConfigurationSection section){
+        
+        if(section!=null){
         Set<String> keys = section.getKeys(false);
         
         for(String key : keys){
@@ -71,6 +73,7 @@ public class WorldManager {
             if(key.equalsIgnoreCase("default")){
                 defaultWorld = d;
             }
+        }
         }
     }
     
