@@ -42,6 +42,7 @@ import com.tehbeard.BeardStat.listeners.StatVehicleListener;
 import com.tehbeard.BeardStat.utils.HumanReadbleOutputGenerator;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
+import java.util.logging.Level;
 import me.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -155,7 +156,6 @@ public class BeardStat extends JavaPlugin {
         new YamlConfigInjector((getConfig())).inject(configuration);
         
         File worldsFile = new File(getDataFolder(),"worlds.yml");
-        saveResource("worlds.yml",false);
         worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
 
         // setup our data provider, fail out if it's not found
@@ -259,26 +259,38 @@ public class BeardStat extends JavaPlugin {
      */
     private void updateConfig() {
 
-        // convert old world lists over to blacklist (introduced. 0.4.7 - Honey)
-        if (getConfig().contains("stats.worlds")) {
-            printCon("Moving blacklist to new location");
-            getConfig().set("stats.blacklist", getConfig().getStringList("stats.worlds"));
-            getConfig().set("stats.worlds", null);
-        }
-
-        // Standard defaults updater
-        if (!new File(getDataFolder(), "config.yml").exists()) {
-            printCon("Writing default config file to disk.");
-            getConfig().set("stats.configversion", null);
-            getConfig().options().copyDefaults(true);
-        }
+        //Write out config files as needed.
+        saveResource("config.yml",false);   
+        saveResource("worlds.yml",false);
+        
         // update config if nessecary
         if (getConfig().getInt("stats.configversion", 0) < getConfig().getDefaults().getInt("stats.configversion")) {
 
             printCon("Updating config to include newest configuration options");
             getConfig().set("stats.configversion", null);
+            getConfig().getDefaults().set("stats.database.sql_db_version", null);
             getConfig().options().copyDefaults(true);
 
+        }
+        
+        
+        
+        if(getConfig().contains("stats.blacklist")){
+            try {
+            printCon("Moving blacklist to worlds.yml");
+            File worldsFile = new File(getDataFolder(),"worlds.yml");
+            YamlConfiguration worldCfg = YamlConfiguration.loadConfiguration(worldsFile);
+            for(String world : getConfig().getStringList("stats.blacklist")){
+                worldCfg.set("worlds." + world + ".survival", false);
+                worldCfg.set("worlds." + world + ".creative", false);
+                worldCfg.set("worlds." + world + ".adventure", false);
+            }
+            
+                worldCfg.save( worldsFile);
+            } catch (IOException ex) {
+                Logger.getLogger(BeardStat.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            getConfig().set("stats.blacklist",null);
         }
 
         saveConfig();
