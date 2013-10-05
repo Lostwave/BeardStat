@@ -182,7 +182,7 @@ public class BeardStat extends JavaPlugin {
 
             File savedCustomStats = new File(getDataFolder(), "savedcustomstat.properties");
             if (savedCustomStats.exists()) {
-                loadDynamicStatConfiguration(savedCustomStats, false);
+                loadDynamicStatConfiguration(savedCustomStats, true);
             }
 
         } catch (Exception e) {
