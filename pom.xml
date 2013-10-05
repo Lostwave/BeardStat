@@ -110,14 +110,6 @@
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
 				<directory>${basedir}/src/main/resources/</directory>
-				<includes>
-					<include>plugin.yml</include>
-					<include>config.yml</include>
-					<include>interactive.yml</include>
-					<include>messages.lang</include>
-					<include>metadata.txt</include>
-
-				</includes>
 			</resource>
 
 			<!--<resource>
