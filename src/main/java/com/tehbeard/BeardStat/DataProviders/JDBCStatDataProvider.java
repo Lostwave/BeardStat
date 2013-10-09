@@ -327,7 +327,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         StatisticMetadata meta = StatisticMetadata.getMeta(name);
         if (meta == null) {
             this.plugin.printDebugCon("Recording new component: " + name);
-            String truncatedName = name.substring(0, 64).toLowerCase();
+            String truncatedName = name.toLowerCase();
+            if(truncatedName.length() > 64){
+                truncatedName = truncatedName.substring(0, 64);
+            }
             this.saveStatistic.setString(1, truncatedName);
             this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See
             // if we can generate a localized name for this stat
