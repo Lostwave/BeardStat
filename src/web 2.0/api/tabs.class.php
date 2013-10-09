@@ -120,7 +120,13 @@ Class StatTabs{
   {
    $name = '[[' . $this->the_entry()->stat . ']]';
   }
-  return sprintf(StatTabs::$catLookup[$this->the_entry()->cat]["statwrapper"],$name);
+  if(isset(StatTabs::$catLookup[$this->the_entry()->cat])){
+    return sprintf(StatTabs::$catLookup[$this->the_entry()->cat]["statwrapper"],$name);
+  }
+  else
+  {
+    return $name;
+  }
  }
  
  

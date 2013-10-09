@@ -22,7 +22,7 @@ function getLookup($element,$key){
  $res = $bs_db->store_result();
 
  if ($res === false) {throw new Exception("Database Error [{$bs_db->errno}] {$bs_db->error}");}
-
+ $a = array();
  while($r = $res->fetch_assoc()){
   $a[$r[$key]]=$r;
  }
