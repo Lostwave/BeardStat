@@ -43,6 +43,22 @@ function loadDataAjax(){
   }});
 }
 
+function listCtrl($scope){
+  $scope.tmpl = {};
+  $scope.tmpl.scoreboard = {
+    id:"newId",
+    data: []
+  };
+  $scope.scoreboards = [];
+  $scope.addScoreboard = function(){
+    $scope.scoreboards.push(JSON.parse(JSON.stringify($scope.tmpl.scoreboard)));
+  }
+
+  $scope.addScoreboardField = function(idx){
+    $scope.scoreboards[idx].data.push({});
+  }
+}
+
 /*
 * Load scoreboard data manually
 */
@@ -68,7 +84,7 @@ function saveData(){
 </script>
 <title>Scoreboards</title>
 </head>
-<body ng-app>
+<body ng-app ng-controller="listCtrl">
 <datalist id="domain">
 </datalist>
 <datalist id="world">
@@ -79,6 +95,7 @@ function saveData(){
 </datalist>
 <div class="container">
 <div class="row">
+  <button ng-click="addScoreboard()">Add Item</button>
   <div ng-repeat="scoreboard in scoreboards">
     <h3>{{scoreboard.title}}</h3>
     id: <input type="text" ng-model="scoreboard.id"><br>
@@ -108,6 +125,7 @@ function saveData(){
         
       </tr>
     </table>
+    <button ng-click="addScoreboardField($index)">Add Field</button>
     <hr>
   </div>
 </div>
