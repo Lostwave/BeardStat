@@ -75,11 +75,19 @@ public class LastOnCommand extends BeardStatCommand {
         if (blob != null) {
             sFirst = (blob.getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, PLAYEDCAT, FIRSTPLAYEDSTAT)
                     .getValue());
+            if(sFirst == 0){
+                sFirst = (blob.getStat(BeardStat.DEFAULT_DOMAIN, "__imported__", PLAYEDCAT, FIRSTPLAYEDSTAT)
+                    .getValue());
+            }
             // multiply by 1000 to convert to milliseconds
             sFirst *= 1000;
 
             sLast = (blob.getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, PLAYEDCAT, LASTPLAYEDSTAT)
                     .getValue());
+            if(sLast == 0){
+                sLast = (blob.getStat(BeardStat.DEFAULT_DOMAIN, "__imported__", PLAYEDCAT, LASTPLAYEDSTAT)
+                    .getValue());
+            }
             // multiply by 1000 to convert to milliseconds
             sLast *= 1000;
         }
