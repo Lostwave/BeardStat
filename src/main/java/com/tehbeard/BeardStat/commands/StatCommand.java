@@ -1,6 +1,5 @@
 package com.tehbeard.BeardStat.commands;
 
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.regex.PatternSyntaxException;
 
@@ -19,7 +18,7 @@ import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 import com.tehbeard.BeardStat.utils.LanguagePack;
-import com.tehbeard.BeardStat.utils.StatisticMetadata;
+import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
 
 /**
  * Show stats for a player,
@@ -94,20 +93,20 @@ public class StatCommand extends BeardStatCommand {
                     IStat iStat = vector.iterator().next();
 
                     sender.sendMessage(LanguagePack.getMsg("command.stat.stat",
-                            StatisticMetadata.localizedName(iStat.getStatistic()),
-                            StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())));
+                            playerStatManager.getLocalizedStatisticName(iStat.getStatistic()),
+                            playerStatManager.formatStat(iStat.getStatistic(), iStat.getValue())));
                     return true;
                 }
                 if (vector.size() > 1) {
                     sender.sendMessage(LanguagePack.getMsg("command.stat.stat",
-                            StatisticMetadata.localizedName(vector.getStatistic()) + " total",
-                            StatisticMetadata.formatStat(vector.getStatistic(), vector.getValue())));
+                            playerStatManager.getLocalizedStatisticName(vector.getStatistic()) + " total",
+                            playerStatManager.formatStat(vector.getStatistic(), vector.getValue())));
                     // command.stat.stat.world
                     for(IStat iStat : vector) {
 
                         sender.sendMessage(LanguagePack.getMsg("command.stat.stat.world", iStat.getWorld(),
-                                StatisticMetadata.localizedName(iStat.getStatistic()),
-                                StatisticMetadata.formatStat(iStat.getStatistic(), iStat.getValue())));
+                                playerStatManager.getLocalizedStatisticName(iStat.getStatistic()),
+                                playerStatManager.formatStat(iStat.getStatistic(), iStat.getValue())));
                         
                     }
                     return true;

@@ -24,69 +24,65 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.DataProviders.metadata.CategoryMeta;
+import com.tehbeard.BeardStat.DataProviders.metadata.DomainMeta;
 import com.tehbeard.BeardStat.NoRecordFoundException;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
-import com.tehbeard.BeardStat.utils.StatisticMetadata;
-import com.tehbeard.BeardStat.utils.StatisticMetadata.Formatting;
+import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
+import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta.Formatting;
+import com.tehbeard.BeardStat.DataProviders.metadata.WorldMeta;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * base class for JDBC based data providers Allows easy development of data
  * providers that make use of JDBC
- * 
+ *
  * @author James
- * 
+ *
  */
 public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     // Database connection
-    protected Connection                    conn;
-
+    protected Connection conn;
     // Load components
-    protected PreparedStatement             getDomains;
-    protected PreparedStatement             getWorlds;
-    protected PreparedStatement             getCategories;
-    protected PreparedStatement             getStatistics;
-
+    protected PreparedStatement loadDomainsList;
+    protected PreparedStatement loadWorldsList;
+    protected PreparedStatement loadCategoriesList;
+    protected PreparedStatement loadStatisticsList;
     // save components
-    protected PreparedStatement             saveDomain;
-    protected PreparedStatement             saveWorld;
-    protected PreparedStatement             saveCategory;
-    protected PreparedStatement             saveStatistic;
-
+    protected PreparedStatement saveDomain;
+    protected PreparedStatement saveWorld;
+    protected PreparedStatement saveCategory;
+    protected PreparedStatement saveStatistic;
     // Load data from db
-    protected PreparedStatement             loadEntity;
-    protected PreparedStatement             loadEntityData;
-
+    protected PreparedStatement loadEntity;
+    protected PreparedStatement loadEntityData;
     // save to db
-    protected PreparedStatement             saveEntity;
-    protected PreparedStatement             saveEntityData;
-
+    protected PreparedStatement saveEntity;
+    protected PreparedStatement saveEntityData;
     // Maintenance
-    protected PreparedStatement             keepAlive;
-    protected PreparedStatement             listEntities;
-    protected PreparedStatement             deleteEntity;
-    protected PreparedStatement             createTable;
-
-    private HashMap<String, EntityStatBlob> writeCache           = new HashMap<String, EntityStatBlob>();
-
+    protected PreparedStatement keepAlive;
+    protected PreparedStatement listEntities;
+    protected PreparedStatement deleteEntity;
+    protected PreparedStatement createTable;
+    private HashMap<String, EntityStatBlob> writeCache = new HashMap<String, EntityStatBlob>();
     // default connection related configuration
-    protected String                        connectionUrl        = "";
-    protected Properties                    connectionProperties = new Properties();
-    protected String                        tblPrefix            = "stats";
-    private String                          type                 = "sql";
-
+    protected String connectionUrl = "";
+    protected Properties connectionProperties = new Properties();
+    protected String tblPrefix = "stats";
+    private String type = "sql";
     // ID Cache
-    private Map<String, Integer>            domains              = new HashMap<String, Integer>();
-    private Map<String, Integer>            worlds               = new HashMap<String, Integer>();
-    private Map<String, Integer>            categories           = new HashMap<String, Integer>();
-
+    private Map<String, DomainMeta> domainMetaMap = new HashMap<String, DomainMeta>();
+    private HashMap<String, WorldMeta> worldMetaMap = new HashMap<String, WorldMeta>();
+    private HashMap<String, CategoryMeta> categoryMetaMap = new HashMap<String, CategoryMeta>();
+    private HashMap<String, StatisticMeta> statisticMetaMap = new HashMap<String, StatisticMeta>();
     // Write queue
-    private ExecutorService                 loadQueue            = Executors.newSingleThreadExecutor();
-
-    protected BeardStat                     plugin;
+    private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
+    protected BeardStat plugin;
 
     public JDBCStatDataProvider(BeardStat plugin, String type, String driverClass) {
         this.type = type;
@@ -129,7 +125,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * checks config in data folder against default (current versions config) If
      * version conflicts it will attempt to run migration scripts sequentially
      * to upgrade
-     * 
+     *
      * @throws SQLException
      */
     private void checkForMigration() throws SQLException {
@@ -195,7 +191,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     /**
      * Connection to the database.
-     * 
+     *
      * @throws SQLException
      */
     private void createConnection() {
@@ -214,7 +210,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     /**
-     * 
+     *
      * @return
      */
     private synchronized boolean checkConnection() {
@@ -235,9 +231,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             this.conn = null;
             return false;
         } catch (AbstractMethodError e) {
-
         }
-        this.plugin.printDebugCon(("Checking is " + this.conn) != null ? "up" : "down");
+
         return this.conn != null;
     }
 
@@ -263,10 +258,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             this.loadEntityData = getStatementFromScript("sql/load/getEntityData");
 
             // Load components
-            this.getDomains = getStatementFromScript("sql/load/components/getDomains");
-            this.getWorlds = getStatementFromScript("sql/load/components/getWorlds");
-            this.getCategories = getStatementFromScript("sql/load/components/getCategories");
-            this.getStatistics = getStatementFromScript("sql/load/components/getStatistics");
+            this.loadDomainsList = getStatementFromScript("sql/load/components/getDomains");
+            this.loadWorldsList = getStatementFromScript("sql/load/components/getWorlds");
+            this.loadCategoriesList = getStatementFromScript("sql/load/components/getCategories");
+            this.loadStatisticsList = getStatementFromScript("sql/load/components/getStatistics");
 
             // save components
             this.saveDomain = getStatementFromScript("sql/save/components/saveDomain", Statement.RETURN_GENERATED_KEYS);
@@ -296,79 +291,53 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     private void cacheComponents() {
         try {
-            cacheComponent(this.domains, this.getDomains);
-            cacheComponent(this.worlds, this.getWorlds);
-            cacheComponent(this.categories, this.getCategories);
-            cacheStatistics();
+            //Domains
+            ResultSet rs = loadDomainsList.executeQuery();
+            while (rs.next()) {
+                DomainMeta dm = new DomainMeta(
+                        rs.getInt("domainId"),
+                        rs.getString("domain"));
+                domainMetaMap.put(rs.getString("domain"), dm);
+            }
+            rs.close();
+
+            //Worlds
+            rs = loadWorldsList.executeQuery();
+            while (rs.next()) {
+                WorldMeta wm = new WorldMeta(
+                        rs.getInt("worldId"),
+                        rs.getString("world"),
+                        rs.getString("name"));
+                worldMetaMap.put(rs.getString("world"), wm);
+            }
+            rs.close();
+
+            //Worlds
+            rs = loadCategoriesList.executeQuery();
+            while (rs.next()) {
+                CategoryMeta cm = new CategoryMeta(
+                        rs.getInt("categoryId"),
+                        rs.getString("category"),
+                        rs.getString("statwrapper"));
+                categoryMetaMap.put(rs.getString("category"), cm);
+            }
+            rs.close();
+
+            //Worlds
+            rs = loadStatisticsList.executeQuery();
+            while (rs.next()) {
+                StatisticMeta sm = new StatisticMeta(
+                        rs.getInt("statisticId"),
+                        rs.getString("statistic"),
+                        rs.getString("name"),
+                        Formatting.valueOf(rs.getString("formatting")));
+                statisticMetaMap.put(rs.getString("statistic"), sm);
+            }
+            rs.close();
+
         } catch (SQLException e) {
             this.plugin.mysqlError(e);
         }
-    }
-
-    private void cacheStatistics() throws SQLException {
-        ResultSet rs = this.getStatistics.executeQuery();
-        while (rs.next()) {
-            new StatisticMetadata(rs.getInt(1), rs.getString(2).toLowerCase(), rs.getString(3), Formatting.valueOf(rs
-                    .getString(4)));
-        }
-    }
-
-    private void cacheComponent(Map<String, Integer> mapTo, PreparedStatement statement) throws SQLException {
-        ResultSet rs = statement.executeQuery();
-        while (rs.next()) {
-            mapTo.put(rs.getString(2), rs.getInt(1));
-        }
-
-        rs.close();
-    }
-
-    private int getStatisticId(String name) throws SQLException {
-
-        StatisticMetadata meta = StatisticMetadata.getMeta(name);
-        if (meta == null) {
-            this.plugin.printDebugCon("Recording new component: " + name);
-            String truncatedName = name.toLowerCase();
-            if(truncatedName.length() > 64){
-                truncatedName = truncatedName.substring(0, 64);
-            }
-            this.saveStatistic.setString(1, truncatedName);
-            this.saveStatistic.setString(2, StatisticMetadata.localizedName(name)); // See
-            // if we can generate a localized name for this stat
-            this.saveStatistic.setString(3, Formatting.none.toString().toLowerCase());
-            this.saveStatistic.execute();
-            ResultSet rs = this.saveStatistic.getGeneratedKeys();
-            rs.next();
-            meta = new StatisticMetadata(rs.getInt(1), name, name, Formatting.none);
-            rs.close();
-        }
-
-        return meta.getId();
-
-    }
-
-    private int getComponentId(Map<String, Integer> mapTo, PreparedStatement statement, String name)
-            throws SQLException {
-        if (!mapTo.containsKey(name)) {
-            this.plugin.printDebugCon("Recording new component: " + name);
-            String truncatedName = name.toLowerCase();
-            if(truncatedName.length() > 64){
-                truncatedName = truncatedName.substring(0, 64);
-            }
-            statement.setString(1, truncatedName);
-            try {
-                statement.setString(2, name);
-            } catch (Exception e) {
-            }// TODO - Need to seperate out each element to it's own getId
-             // system I think :/
-            statement.execute();
-            ResultSet rs = statement.getGeneratedKeys();
-            rs.next();
-            mapTo.put(name, rs.getInt(1));
-            rs.close();
-            this.plugin.printDebugCon(name + " : " + mapTo.get(name));
-        }
-
-        return mapTo.get(name);
     }
 
     @Override
@@ -382,7 +351,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
         Runnable run = new Runnable() {
-
             @Override
             public void run() {
                 try {
@@ -472,69 +440,56 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         }
 
     }
-
     private Runnable flush = new Runnable() {
+        @Override
+        public void run() {
+            synchronized (JDBCStatDataProvider.this.writeCache) {
+                try {
+                    JDBCStatDataProvider.this.keepAlive.execute();
+                } catch (SQLException e1) {
+                }
 
-                               @Override
-                               public void run() {
-                                   synchronized (JDBCStatDataProvider.this.writeCache) {
-                                       try {
-                                           JDBCStatDataProvider.this.keepAlive.execute();
-                                       } catch (SQLException e1) {
-                                       }
+                if (!checkConnection()) {
+                    Bukkit.getConsoleSender()
+                            .sendMessage(
+                            ChatColor.RED
+                            + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
+                } else {
+                    JDBCStatDataProvider.this.plugin.printDebugCon("Saving to database");
+                    for (Entry<String, EntityStatBlob> entry : JDBCStatDataProvider.this.writeCache
+                            .entrySet()) {
+                        try {
+                            EntityStatBlob pb = entry.getValue();
 
-                                       if (!checkConnection()) {
-                                           Bukkit.getConsoleSender()
-                                                   .sendMessage(
-                                                           ChatColor.RED
-                                                                   + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
-                                       } else {
-                                           JDBCStatDataProvider.this.plugin.printDebugCon("Saving to database");
-                                           for (Entry<String, EntityStatBlob> entry : JDBCStatDataProvider.this.writeCache
-                                                   .entrySet()) {
-                                               try {
-                                                   EntityStatBlob pb = entry.getValue();
+                            JDBCStatDataProvider.this.saveEntityData.clearBatch();
+                            for (IStat stat : pb.getStats()) {
+                                JDBCStatDataProvider.this.saveEntityData.setInt(1,
+                                        pb.getEntityID());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getDomain(stat.getDomain()).getDbId());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getWorld(stat.getWorld()).getDbId());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getCategory(stat.getCategory()).getDbId());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getStatistic(stat.getStatistic()).getDbId());
+                                
+                                
+                                JDBCStatDataProvider.this.saveEntityData.setInt(6,
+                                        stat.getValue());
 
-                                                   JDBCStatDataProvider.this.saveEntityData.clearBatch();
-                                                   for (IStat stat : pb.getStats()) {
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(1,
-                                                               pb.getEntityID());
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(
-                                                               2,
-                                                               getComponentId(JDBCStatDataProvider.this.domains,
-                                                                       JDBCStatDataProvider.this.saveDomain,
-                                                                       stat.getDomain()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(
-                                                               3,
-                                                               getComponentId(JDBCStatDataProvider.this.worlds,
-                                                                       JDBCStatDataProvider.this.saveWorld,
-                                                                       stat.getWorld()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(
-                                                               4,
-                                                               getComponentId(JDBCStatDataProvider.this.categories,
-                                                                       JDBCStatDataProvider.this.saveCategory,
-                                                                       stat.getCategory()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(5,
-                                                               getStatisticId(stat.getStatistic()));
-                                                       JDBCStatDataProvider.this.saveEntityData.setInt(6,
-                                                               stat.getValue());
+                                JDBCStatDataProvider.this.saveEntityData.addBatch();
+                            }
+                            JDBCStatDataProvider.this.saveEntityData.executeBatch();
 
-                                                       JDBCStatDataProvider.this.saveEntityData.addBatch();
-                                                   }
-                                                   JDBCStatDataProvider.this.saveEntityData.executeBatch();
+                        } catch (SQLException e) {
+                            JDBCStatDataProvider.this.plugin.mysqlError(e);
+                            checkConnection();
+                        }
+                    }
+                    JDBCStatDataProvider.this.plugin.printDebugCon("Clearing write cache");
+                    JDBCStatDataProvider.this.writeCache.clear();
+                }
+            }
 
-                                               } catch (SQLException e) {
-                                                   JDBCStatDataProvider.this.plugin.mysqlError(e);
-                                                   checkConnection();
-                                               }
-                                           }
-                                           JDBCStatDataProvider.this.plugin.printDebugCon("Clearing write cache");
-                                           JDBCStatDataProvider.this.writeCache.clear();
-                                       }
-                                   }
-
-                               }
-                           };
+        }
+    };
 
     @Override
     public void flushSync() {
@@ -592,14 +547,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     /**
      * Execute a script
-     * 
-     * @param scriptName
-     *            name of script (sql/load/loadEntity)
-     * @param keys
-     *            (list of non-standard keys ${KEY_NAME} to replace)
-     * 
-     *            Scripts support # for status comments and #!/script/path/here
-     *            to execute subscripts
+     *
+     * @param scriptName name of script (sql/load/loadEntity)
+     * @param keys (list of non-standard keys ${KEY_NAME} to replace)
+     *
+     * Scripts support # for status comments and #!/script/path/here to execute
+     * subscripts
      * @throws SQLException
      */
     public void executeScript(String scriptName) throws SQLException {
@@ -612,7 +565,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         String[] sqlStatements = this.plugin.readSQL(this.type, scriptName, this.tblPrefix).split("\\;");
         for (String s : sqlStatements) {
             String statement = matcher.replaceMatches(s, new Callback() {
-
                 @Override
                 public String foundMatch(MatchResult result) {
                     if (keys.containsKey(result.group(1))) {
@@ -642,5 +594,91 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     public PreparedStatement getStatementFromScript(String scriptName) throws SQLException {
         return this.conn.prepareStatement(this.plugin.readSQL(this.type, scriptName, this.tblPrefix));
+    }
+
+    @Override
+    public DomainMeta getDomain(String gameTag) {
+        String qGameTag = sanitizeTag(gameTag);
+        if (!domainMetaMap.containsKey(qGameTag)) {
+            try {
+
+                saveDomain.setString(1, qGameTag);
+                saveDomain.execute();
+                ResultSet rs = saveDomain.getGeneratedKeys();
+                rs.next();
+                domainMetaMap.put(gameTag, new DomainMeta(rs.getInt(1), gameTag));
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return domainMetaMap.get(qGameTag);
+    }
+
+    @Override
+    public WorldMeta getWorld(String gameTag) {
+
+        if (!worldMetaMap.containsKey(gameTag)) {
+            try {
+                saveWorld.setString(1, gameTag);
+                saveWorld.setString(2, gameTag.replaceAll("_", " "));
+                saveWorld.execute();
+                ResultSet rs = saveWorld.getGeneratedKeys();
+                rs.next();
+                worldMetaMap.put(gameTag, new WorldMeta(rs.getInt(1), gameTag, gameTag.replaceAll("_", " ")));
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return worldMetaMap.get(gameTag);
+    }
+
+    @Override
+    public CategoryMeta getCategory(String gameTag) {
+       if (!categoryMetaMap.containsKey(gameTag)) {
+            try {
+                saveCategory.setString(1, gameTag);
+                saveCategory.setString(2, gameTag.replaceAll("_", " "));
+                saveCategory.execute();
+                ResultSet rs = saveCategory.getGeneratedKeys();
+                rs.next();
+                categoryMetaMap.put(gameTag, new CategoryMeta(rs.getInt(1), gameTag, gameTag.replaceAll("_", " ")));
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return categoryMetaMap.get(gameTag);
+    }
+
+    @Override
+    public StatisticMeta getStatistic(String gameTag) {
+        if (!statisticMetaMap.containsKey(gameTag)) {
+            try {
+                saveStatistic.setString(1, gameTag);
+                saveStatistic.setString(2, gameTag.replaceAll("_", " "));
+                saveStatistic.execute();
+                ResultSet rs = saveStatistic.getGeneratedKeys();
+                rs.next();
+                statisticMetaMap.put(gameTag, new StatisticMeta(rs.getInt(1), gameTag, gameTag.replaceAll("_", " "), Formatting.none));
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return statisticMetaMap.get(gameTag);
+    }
+
+    private String sanitizeTag(String gameTag) {
+        String truncatedName = gameTag.toLowerCase();
+        if (truncatedName.length() > 64) {
+            truncatedName = truncatedName.substring(0, 64);
+        }
+        return truncatedName;
     }
 }

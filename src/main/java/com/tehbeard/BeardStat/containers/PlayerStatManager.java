@@ -16,18 +16,19 @@ import org.bukkit.command.CommandSender;
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager.ManagerRecord;
+import org.bukkit.Statistic;
 
 /**
  * Provides a cache between backend storage and the stats plugin/listeners
- * 
+ *
  * @author James
- * 
+ *
  */
 public class PlayerStatManager implements CommandExecutor {
 
-    private HashMap<String, Promise<EntityStatBlob>> cache           = new HashMap<String, Promise<EntityStatBlob>>();
-    private IStatDataProvider                        backendDatabase = null;
-    private BeardStat                                plugin;
+    private HashMap<String, Promise<EntityStatBlob>> cache = new HashMap<String, Promise<EntityStatBlob>>();
+    private IStatDataProvider backendDatabase = null;
+    private BeardStat plugin;
 
     public PlayerStatManager(BeardStat plugin, IStatDataProvider database) {
         this.backendDatabase = database;
@@ -107,13 +108,10 @@ public class PlayerStatManager implements CommandExecutor {
 
     /**
      * Gets a blob from the database or cache.
-     * 
-     * @param name
-     *            name of blob
-     * @param type
-     *            type of blob, use {@link BeardStat.PLAYER_TYPE} for players
-     * @param create
-     *            whether to create the blob or not if it's not found
+     *
+     * @param name name of blob
+     * @param type type of blob, use {@link BeardStat.PLAYER_TYPE} for players
+     * @param create whether to create the blob or not if it's not found
      * @return
      */
     public Promise<EntityStatBlob> getBlob(String name, String type, boolean create) {
@@ -124,11 +122,10 @@ public class PlayerStatManager implements CommandExecutor {
         if (!this.cache.containsKey(cacheKey)) {
             Promise<EntityStatBlob> promise = this.backendDatabase.pullStatBlob(name, type, create);
             this.cache.put(cacheKey, promise);// Pre-emptively cache the
-                                              // promise, defer removing to on
-                                              // error.
+            // promise, defer removing to on
+            // error.
 
             Delegate<Void, Promise<EntityStatBlob>> killCache = new Delegate<Void, Promise<EntityStatBlob>>() {
-
                 @Override
                 public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
                     if (params.getValue() == null) {
@@ -147,10 +144,10 @@ public class PlayerStatManager implements CommandExecutor {
     /**
      * Asyncronously retrieves a players Stat Blob, or create one if it doesn't
      * exist
-     * 
+     *
      * @param name
      * @return a promise object that will later contain the stat blob or return
-     *         an error
+     * an error
      */
     public Promise<EntityStatBlob> getPlayerBlobASync(String name) {
         return getBlob(name, BeardStat.PLAYER_TYPE, true);
@@ -159,7 +156,7 @@ public class PlayerStatManager implements CommandExecutor {
     /**
      * Returns a stat blob immediately, halting the calling thread until it is
      * returned.
-     * 
+     *
      * @param name
      * @return
      */
@@ -169,9 +166,8 @@ public class PlayerStatManager implements CommandExecutor {
 
     /**
      * Finds a player's stat blob, but does not try to make it
-     * 
-     * @param name
-     *            player to find
+     *
+     * @param name player to find
      * @return The player's stat blob or a null if not found
      */
     public Promise<EntityStatBlob> findPlayerBlobASync(final String name) {
@@ -180,7 +176,7 @@ public class PlayerStatManager implements CommandExecutor {
 
     /**
      * returns a player blob without creating it.
-     * 
+     *
      * @param name
      * @return
      */
@@ -220,4 +216,11 @@ public class PlayerStatManager implements CommandExecutor {
         return true;
     }
 
+    public String getLocalizedStatisticName(String gameTag) {
+        return this.backendDatabase.getStatistic(gameTag).getLocalizedName();
+    }
+
+    public String formatStat(String gameTag, int value) {
+        return this.backendDatabase.getStatistic(gameTag).formatStat(value);
+    }
 }

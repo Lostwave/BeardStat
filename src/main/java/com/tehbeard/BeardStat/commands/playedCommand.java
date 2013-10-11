@@ -14,7 +14,7 @@ import com.tehbeard.BeardStat.containers.OnlineTimeManager;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 import com.tehbeard.BeardStat.utils.LanguagePack;
-import com.tehbeard.BeardStat.utils.StatisticMetadata;
+import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
 
 /**
  * /played - Show users playtime /played name - show player of name
@@ -74,10 +74,10 @@ public class playedCommand extends BeardStatCommand {
         return true;
     }
 
-    public static String getPlayedString(int seconds) {
+    public String getPlayedString(int seconds) {
 
         if (seconds > 0) {
-            return StatisticMetadata.formatStat("playedfor", seconds);
+            return playerStatManager.formatStat("playedfor", seconds);
         }
 
         return LanguagePack.getMsg("command.played.zero");

@@ -5,6 +5,10 @@ import java.util.List;
 import net.dragonzone.promise.Promise;
 
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.DataProviders.metadata.CategoryMeta;
+import com.tehbeard.BeardStat.DataProviders.metadata.DomainMeta;
+import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
+import com.tehbeard.BeardStat.DataProviders.metadata.WorldMeta;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 
@@ -100,6 +104,26 @@ public class TransferDataProvider implements IStatDataProvider {
     public void flushSync() {
         this.newProvider.flushSync();
 
+    }
+
+    @Override
+    public DomainMeta getDomain(String gameTag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public WorldMeta getWorld(String gameTag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public CategoryMeta getCategory(String gameTag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public StatisticMeta getStatistic(String gameTag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

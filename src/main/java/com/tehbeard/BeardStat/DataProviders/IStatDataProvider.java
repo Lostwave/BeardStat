@@ -1,5 +1,6 @@
 package com.tehbeard.BeardStat.DataProviders;
 
+import com.tehbeard.BeardStat.DataProviders.metadata.*;
 import java.util.List;
 
 import net.dragonzone.promise.Promise;
@@ -9,28 +10,27 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
 /**
  * Provides push/pull service for getting and saving stats to a backend storage
  * system.
- * 
+ *
  * @author James
- * 
+ *
  */
 public interface IStatDataProvider {
 
     /**
      * Pull the players stats from the database.
-     * 
-     * @param player
-     *            Player to pull stats for. Creates a new object if non exists
+     *
+     * @param player Player to pull stats for. Creates a new object if non
+     * exists
      * @return a PlayerStatBlob containing all stats for a player
      */
     public Promise<EntityStatBlob> pullStatBlob(String player, String type);
 
     /**
      * Pull the players stats from the database.
-     * 
-     * @param player
-     *            Player to pull stats for. Creates a new object if non exists
-     * @param create
-     *            wether to create the player object
+     *
+     * @param player Player to pull stats for. Creates a new object if non
+     * exists
+     * @param create wether to create the player object
      * @return a PlayerStatBlob containing all stats for a player
      */
     public Promise<EntityStatBlob> pullStatBlob(String player, String type, boolean create);
@@ -38,9 +38,8 @@ public interface IStatDataProvider {
     /**
      * Push all stats for this player to the database. This may happen
      * immediately or at some point in the future
-     * 
-     * @param player
-     *            StatBlob to push to the database
+     *
+     * @param player StatBlob to push to the database
      */
     public void pushStatBlob(EntityStatBlob player);
 
@@ -58,25 +57,31 @@ public interface IStatDataProvider {
 
     /**
      * Deletes all stats for a player as stored in the database
-     * 
-     * @param player
-     *            Player to delete stats of
+     *
+     * @param player Player to delete stats of
      */
     public void deleteStatBlob(String player);
 
     /**
      * Has a stat blob for a player
-     * 
-     * @param player
-     *            player name
+     *
+     * @param player player name
      * @return blob exists
      */
     public boolean hasStatBlob(String player);
 
     /**
      * List of players held by provider
-     * 
+     *
      * @return
      */
     public List<String> getStatBlobsHeld();
+
+    public DomainMeta getDomain(String gameTag);
+
+    public WorldMeta getWorld(String gameTag);
+
+    public CategoryMeta getCategory(String gameTag);
+
+    public StatisticMeta getStatistic(String gameTag);
 }
