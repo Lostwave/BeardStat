@@ -350,7 +350,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             throws SQLException {
         if (!mapTo.containsKey(name)) {
             this.plugin.printDebugCon("Recording new component: " + name);
-            String truncatedName = name.substring(0, 64);
+            String truncatedName = name.toLowerCase();
+            if(truncatedName.length() > 64){
+                truncatedName = truncatedName.substring(0, 64);
+            }
             statement.setString(1, truncatedName);
             try {
                 statement.setString(2, name);
