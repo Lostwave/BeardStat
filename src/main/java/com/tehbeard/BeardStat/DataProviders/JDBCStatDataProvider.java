@@ -105,6 +105,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         executeScript("sql/maintenence/metadata/category");
         executeScript("sql/maintenence/metadata/statistic");
+        executeScript("sql/maintenence/metadata/staticstats");
         
 
         cacheComponents();
