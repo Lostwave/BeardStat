@@ -32,6 +32,7 @@ import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
 import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.BeardStat.DataProviders.metadata.WorldMeta;
+import com.tehbeard.BeardStat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
 import java.util.logging.Level;
@@ -102,23 +103,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         checkAndMakeTable();
         prepareStatements();
 
-        updateMetadata();
+        executeScript("sql/maintenence/updateMetadata");
 
         cacheComponents();
-    }
-
-    private void updateMetadata() throws SQLException {
-        String mcver = this.plugin.getConfig().getString("general.mcver");
-        String implver = Bukkit.getVersion();
-
-        if (!implver.equals(mcver)) {
-            this.plugin.printCon("Different version to last boot! Running built in metadata script.");
-
-            executeScript("sql/maintenence/updateMetadata");
-
-            this.plugin.getConfig().set("general.mcver", implver);
-            this.plugin.saveConfig();
-        }
     }
 
     /**
@@ -465,12 +452,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                             for (IStat stat : pb.getStats()) {
                                 JDBCStatDataProvider.this.saveEntityData.setInt(1,
                                         pb.getEntityID());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getDomain(stat.getDomain()).getDbId());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getWorld(stat.getWorld()).getDbId());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getCategory(stat.getCategory()).getDbId());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2,getStatistic(stat.getStatistic()).getDbId());
-                                
-                                
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getWorld(stat.getWorld()).getDbId());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getCategory(stat.getCategory()).getDbId());
+                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getStatistic(stat.getStatistic()).getDbId());
+
+
                                 JDBCStatDataProvider.this.saveEntityData.setInt(6,
                                         stat.getValue());
 
@@ -638,7 +625,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     @Override
     public CategoryMeta getCategory(String gameTag) {
-       if (!categoryMetaMap.containsKey(gameTag)) {
+        if (!categoryMetaMap.containsKey(gameTag)) {
             try {
                 saveCategory.setString(1, gameTag);
                 saveCategory.setString(2, gameTag.replaceAll("_", " "));
@@ -660,7 +647,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (!statisticMetaMap.containsKey(gameTag)) {
             try {
                 saveStatistic.setString(1, gameTag);
-                saveStatistic.setString(2, gameTag.replaceAll("_", " "));
+                saveStatistic.setString(2, HumanNameGenerator.getNameOf(gameTag));
                 saveStatistic.execute();
                 ResultSet rs = saveStatistic.getGeneratedKeys();
                 rs.next();
