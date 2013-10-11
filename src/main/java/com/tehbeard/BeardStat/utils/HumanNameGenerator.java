@@ -151,6 +151,10 @@ public class HumanNameGenerator {
     private static final String INSERT_STATEMENT = "INSERT IGNORE INTO ${PREFIX}_statistic (statistic,name) VALUES (\"%s\",\"%s\");";
 
     private static void writeInsert(Writer out,Map<String,String> data) throws IOException{
+        out.write("INSERT IGNORE INTO ${PREFIX}_domain (domain) VALUES (\"default\");\n");
+        out.write("INSERT IGNORE INTO ${PREFIX}_world (world,name) VALUES (\"__global__\",\"Global\");\n");
+        out.write("");
+        
         for(Entry<String,String> entry : data.entrySet()){
             String gameTag = entry.getKey();
             String localized = entry.getValue();

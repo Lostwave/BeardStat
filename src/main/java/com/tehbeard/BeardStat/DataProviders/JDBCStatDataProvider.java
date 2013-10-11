@@ -103,7 +103,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         checkAndMakeTable();
         prepareStatements();
 
-        executeScript("sql/maintenence/updateMetadata");
+        executeScript("sql/maintenence/metadata/category");
+        executeScript("sql/maintenence/metadata/statistic");
+        
 
         cacheComponents();
     }
