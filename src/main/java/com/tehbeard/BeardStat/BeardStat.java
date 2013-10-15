@@ -342,12 +342,16 @@ public class BeardStat extends JavaPlugin {
      * 
      * @param e
      */
-    public void mysqlError(SQLException e) {
+    public void mysqlError(SQLException e,String script) {
         Logger logger = getLogger();
         logger.severe("=========================================");
         logger.severe("|             DATABASE ERROR            |");
         logger.severe("=========================================");
         logger.severe("");
+        if(script != null){
+            logger.severe("Caused by script: " + script);
+            logger.severe("");
+        }
         logger.severe("Mysql error code: " + e.getErrorCode());
 
         switch (e.getErrorCode()) {
@@ -421,7 +425,7 @@ public class BeardStat extends JavaPlugin {
                         config.database, config.tablePrefix, 
                         config.username, config.password);
             } catch (SQLException e) {
-                mysqlError(e);
+                mysqlError(e,null);
                 db = null;
             }
         }
