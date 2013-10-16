@@ -48,6 +48,9 @@ import java.util.logging.Logger;
  */
 public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
+    /**
+     * SQL SCRIPT NAME BLOCK
+     */
     public static final String SQL_METADATA_CATEGORY = "sql/maintenence/metadata/category";
     public static final String SQL_METADATA_STATISTIC = "sql/maintenence/metadata/statistic";
     public static final String SQL_METADATA_STATIC_STATS = "sql/maintenence/metadata/staticstats";
@@ -66,6 +69,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_SAVE_STAT = "sql/save/saveStat";
     public static final String SQL_KEEP_ALIVE = "sql/maintenence/keepAlive";
     public static final String SQL_LIST_ENTITIES = "sql/maintenence/listEntities";
+    
     // Database connection
     protected Connection conn;
     // Load components
@@ -97,23 +101,31 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private String type = "sql";
     // ID Cache
     private Map<String, DomainMeta> domainMetaMap = new HashMap<String, DomainMeta>();
-    private HashMap<String, WorldMeta> worldMetaMap = new HashMap<String, WorldMeta>();
-    private HashMap<String, CategoryMeta> categoryMetaMap = new HashMap<String, CategoryMeta>();
-    private HashMap<String, StatisticMeta> statisticMetaMap = new HashMap<String, StatisticMeta>();
+    private Map<String, WorldMeta> worldMetaMap = new HashMap<String, WorldMeta>();
+    private Map<String, CategoryMeta> categoryMetaMap = new HashMap<String, CategoryMeta>();
+    private Map<String, StatisticMeta> statisticMetaMap = new HashMap<String, StatisticMeta>();
     // Write queue
     private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
     protected BeardStat plugin;
 
-    public JDBCStatDataProvider(BeardStat plugin, String type, String driverClass) {
+    public JDBCStatDataProvider(BeardStat plugin, String type, String driverClass) throws ClassNotFoundException {
         this.type = type;
         this.plugin = plugin;
-        try {
-            Class.forName(driverClass);// load driver
-        } catch (ClassNotFoundException e) {
-            plugin.printCon("JDBC " + driverClass + "Library not found!");
-        }
+        Class.forName(driverClass);// load driver
     }
 
+    /**
+     * Boots up the data provider, this entails:
+     * <ol>
+     * <li>Open connection</li>
+     * <li>Migration check</li>
+     * <li>Create tables</li>
+     * <li>Load SQL statements</li>
+     * <li>Update metadata tables</li>
+     * <li>Cache data as needed</li>
+     * </ol>
+     * @throws BeardStatRuntimeException 
+     */
     protected void initialise() throws BeardStatRuntimeException {
         createConnection();
 
@@ -207,8 +219,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     /**
-     * Connection to the database.
-     *
+     * Connects to the database
      * @throws SQLException
      */
     private void createConnection() {
@@ -227,7 +238,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     /**
-     *
+     * Returns true if connection is still there.
      * @return
      */
     private synchronized boolean checkConnection() {
@@ -253,12 +264,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         return this.conn != null;
     }
 
+    /**
+     * Constructs the tables.
+     */
     protected void checkAndMakeTable() {
         this.plugin.printCon("Constructing table as needed.");
-
         executeScript(SQL_CREATE_TABLES);
-
-
     }
 
     /**
@@ -300,6 +311,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     }
 
+    /**
+     * Cache entries for quicker resolvement on our end.
+     */
     private void cacheComponents() {
         ResultSet rs;
         try {
@@ -460,6 +474,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         }
 
     }
+    /**
+     * Runner used to flush to database async.
+     */
     private Runnable flush = new Runnable() {
         @Override
         public void run() {
@@ -565,6 +582,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         return list;
     }
 
+    public void executeScript(String scriptName) {
+        executeScript(scriptName, new HashMap<String, String>());
+    }
+
     /**
      * Execute a script
      *
@@ -575,10 +596,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * subscripts
      * @throws SQLException
      */
-    public void executeScript(String scriptName) {
-        executeScript(scriptName, new HashMap<String, String>());
-    }
-
     public void executeScript(String scriptName, final Map<String, String> keys) {
         CallbackMatcher matcher = new CallbackMatcher("\\$\\{([A-Za-z0-9_]*)\\}");
 
