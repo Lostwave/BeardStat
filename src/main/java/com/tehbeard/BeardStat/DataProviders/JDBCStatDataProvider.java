@@ -108,10 +108,14 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
     protected BeardStat plugin;
 
-    public JDBCStatDataProvider(BeardStat plugin, String type, String driverClass) throws ClassNotFoundException {
-        this.type = type;
-        this.plugin = plugin;
-        Class.forName(driverClass);// load driver
+    public JDBCStatDataProvider(BeardStat plugin, String type, String driverClass) {
+        try {
+            this.type = type;
+            this.plugin = plugin;
+            Class.forName(driverClass);// load driver
+        } catch (ClassNotFoundException ex) {
+            throw new BeardStatRuntimeException("Could not locate driver library.", ex, false);
+        }
     }
 
     /**

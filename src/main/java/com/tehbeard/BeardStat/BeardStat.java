@@ -48,29 +48,26 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * BeardStat Statistic's tracking for the gentleman server
- * 
+ *
  * @author James
- * 
+ *
  */
 public class BeardStat extends JavaPlugin {
 
     public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
-    public static final String PERM_COMMAND_STAT_OTHER   = "command.stat.other";
-
+    public static final String PERM_COMMAND_STAT_OTHER = "command.stat.other";
     // Default values for domain and world
-    public static final String DEFAULT_DOMAIN            = "default";
-    public static final String GLOBAL_WORLD              = "__global__";
-    public static final String PLAYER_TYPE               = "player";
-
-    private int                saveTaskId;
-    private PlayerStatManager  playerStatManager;
-    
+    public static final String DEFAULT_DOMAIN = "default";
+    public static final String GLOBAL_WORLD = "__global__";
+    public static final String PLAYER_TYPE = "player";
+    private int saveTaskId;
+    private PlayerStatManager playerStatManager;
     public static StatConfiguration configuration;
-    
     public static WorldManager worldManager;
+
     /**
      * Returns the stat manager for use by other plugins
-     * 
+     *
      * @return
      */
     public PlayerStatManager getStatManager() {
@@ -79,7 +76,7 @@ public class BeardStat extends JavaPlugin {
 
     /**
      * Print to console
-     * 
+     *
      * @param line
      */
     public void printCon(String line) {
@@ -88,7 +85,7 @@ public class BeardStat extends JavaPlugin {
 
     /**
      * Print to console if debug mode is active
-     * 
+     *
      * @param line
      */
     public void printDebugCon(String line) {
@@ -151,11 +148,11 @@ public class BeardStat extends JavaPlugin {
             handleError(new BeardStatRuntimeException("An error occured while loading or updating the config", e, false));
             return;
         }
-        
+
         configuration = new StatConfiguration();
         new YamlConfigInjector((getConfig())).inject(configuration);
-        
-        File worldsFile = new File(getDataFolder(),"worlds.yml");
+
+        File worldsFile = new File(getDataFolder(), "worlds.yml");
         worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
 
         // setup our data provider, fail out if it's not found
@@ -194,11 +191,11 @@ public class BeardStat extends JavaPlugin {
         // register event listeners
         // get blacklist, then start and register each type of listener
         try {
-            StatBlockListener sbl = new StatBlockListener( this.playerStatManager, this);
-            StatPlayerListener spl = new StatPlayerListener( this.playerStatManager, this);
-            StatEntityListener sel = new StatEntityListener( this.playerStatManager, this);
-            StatVehicleListener svl = new StatVehicleListener( this.playerStatManager, this);
-            StatCraftListener scl = new StatCraftListener( this.playerStatManager, this);
+            StatBlockListener sbl = new StatBlockListener(this.playerStatManager, this);
+            StatPlayerListener spl = new StatPlayerListener(this.playerStatManager, this);
+            StatEntityListener sel = new StatEntityListener(this.playerStatManager, this);
+            StatVehicleListener svl = new StatVehicleListener(this.playerStatManager, this);
+            StatCraftListener scl = new StatCraftListener(this.playerStatManager, this);
             getServer().getPluginManager().registerEvents(sbl, this);
             getServer().getPluginManager().registerEvents(spl, this);
             getServer().getPluginManager().registerEvents(sel, this);
@@ -239,13 +236,11 @@ public class BeardStat extends JavaPlugin {
             metrics = new Metrics(this);
             metrics.createGraph("Database Type").addPlotter(
                     new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
-
-                        @Override
-                        public int getValue() {
-                            return 1;
-                        }
-
-                    });// record database type
+                @Override
+                public int getValue() {
+                    return 1;
+                }
+            });// record database type
 
             metrics.start();
         } catch (Exception e) {
@@ -260,9 +255,9 @@ public class BeardStat extends JavaPlugin {
     private void updateConfig() {
 
         //Write out config files as needed.
-        saveResource("config.yml",false);   
-        saveResource("worlds.yml",false);
-        
+        saveResource("config.yml", false);
+        saveResource("worlds.yml", false);
+
         // update config if nessecary
         if (getConfig().getInt("stats.configversion", 0) < getConfig().getDefaults().getInt("stats.configversion")) {
 
@@ -272,25 +267,25 @@ public class BeardStat extends JavaPlugin {
             getConfig().options().copyDefaults(true);
 
         }
-        
-        
-        
-        if(getConfig().contains("stats.blacklist")){
+
+
+
+        if (getConfig().contains("stats.blacklist")) {
             try {
-            printCon("Moving blacklist to worlds.yml");
-            File worldsFile = new File(getDataFolder(),"worlds.yml");
-            YamlConfiguration worldCfg = YamlConfiguration.loadConfiguration(worldsFile);
-            for(String world : getConfig().getStringList("stats.blacklist")){
-                worldCfg.set("worlds." + world + ".survival", false);
-                worldCfg.set("worlds." + world + ".creative", false);
-                worldCfg.set("worlds." + world + ".adventure", false);
-            }
-            
-                worldCfg.save( worldsFile);
+                printCon("Moving blacklist to worlds.yml");
+                File worldsFile = new File(getDataFolder(), "worlds.yml");
+                YamlConfiguration worldCfg = YamlConfiguration.loadConfiguration(worldsFile);
+                for (String world : getConfig().getStringList("stats.blacklist")) {
+                    worldCfg.set("worlds." + world + ".survival", false);
+                    worldCfg.set("worlds." + world + ".creative", false);
+                    worldCfg.set("worlds." + world + ".adventure", false);
+                }
+
+                worldCfg.save(worldsFile);
             } catch (IOException ex) {
                 Logger.getLogger(BeardStat.class.getName()).log(Level.SEVERE, null, ex);
             }
-            getConfig().set("stats.blacklist",null);
+            getConfig().set("stats.blacklist", null);
         }
 
         saveConfig();
@@ -308,9 +303,9 @@ public class BeardStat extends JavaPlugin {
 
     /**
      * Flush cache of player stats to database at regular intervals
-     * 
+     *
      * @author James
-     * 
+     *
      */
     public class DbFlusher implements Runnable {
 
@@ -326,7 +321,6 @@ public class BeardStat extends JavaPlugin {
                 printCon("flush completed");
             }
         }
-
     }
 
     public static void sendNoPermissionError(CommandSender sender) {
@@ -339,40 +333,40 @@ public class BeardStat extends JavaPlugin {
 
     /**
      * Attempt to parse MySQL error codes to help users
-     * 
+     *
      * @param e
      */
-    public void mysqlError(SQLException e,String script) {
+    public void mysqlError(SQLException e, String script) {
         Logger logger = getLogger();
         logger.severe("=========================================");
         logger.severe("|             DATABASE ERROR            |");
         logger.severe("=========================================");
         logger.severe("");
-        if(script != null){
+        if (script != null) {
             logger.severe("Caused by script: " + script);
             logger.severe("");
         }
         logger.severe("Mysql error code: " + e.getErrorCode());
 
         switch (e.getErrorCode()) {
-        case 1042:
-            logger.severe("Cannot find hostname provided, check spelling of hostname in config file");
-            break;
-        case 1044:
-        case 1045:
-            logger.severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
-            break;
-        case 1049:
-            logger.severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
-            break;
+            case 1042:
+                logger.severe("Cannot find hostname provided, check spelling of hostname in config file");
+                break;
+            case 1044:
+            case 1045:
+                logger.severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
+                break;
+            case 1049:
+                logger.severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
+                break;
 
-        default:
-            logger.severe("Error code ["
-                    + e.getErrorCode()
-                    + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
-            logger.severe("Exception Detail:");
-            logger.severe(e.getMessage());
-            break;
+            default:
+                logger.severe("Error code ["
+                        + e.getErrorCode()
+                        + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
+                logger.severe("Exception Detail:");
+                logger.severe(e.getMessage());
+                break;
         }
 
         // dump stack trace if in verbose mode
@@ -391,7 +385,7 @@ public class BeardStat extends JavaPlugin {
     /**
      * Load custom stats from config custom stats use a formula to manipulate
      * other stats.
-     * 
+     *
      * @throws IOException
      * @throws FileNotFoundException
      */
@@ -411,7 +405,7 @@ public class BeardStat extends JavaPlugin {
 
     /**
      * Load a data provider from config
-     * 
+     *
      * @param config
      * @return
      */
@@ -420,12 +414,14 @@ public class BeardStat extends JavaPlugin {
         // MySQL provider
         if (config.databaseType.equalsIgnoreCase("mysql")) {
             try {
-                db = new MysqlStatDataProvider(this, 
+                db = new MysqlStatDataProvider(this,
                         config.host, config.port,
-                        config.database, config.tablePrefix, 
+                        config.database, config.tablePrefix,
                         config.username, config.password);
+            } catch (BeardStatRuntimeException e) {
+                handleError(e);
             } catch (SQLException e) {
-                mysqlError(e,null);
+                mysqlError(e, null);
                 db = null;
             }
         }
@@ -433,6 +429,8 @@ public class BeardStat extends JavaPlugin {
         if (config.databaseType.equalsIgnoreCase("sqlite")) {
             try {
                 db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString());
+            } catch (BeardStatRuntimeException e) {
+                handleError(e);
             } catch (SQLException e) {
                 e.printStackTrace();
                 db = null;
@@ -444,6 +442,8 @@ public class BeardStat extends JavaPlugin {
         if (config.databaseType.equalsIgnoreCase("memory")) {
             try {
                 db = new SQLiteStatDataProvider(this, ":memory:");
+            } catch (BeardStatRuntimeException e) {
+                handleError(e);
             } catch (SQLException e) {
                 e.printStackTrace();
                 db = null;
@@ -468,14 +468,11 @@ public class BeardStat extends JavaPlugin {
 
     /**
      * Utility method to load SQL commands from files in JAR
-     * 
-     * @param type
-     *            extension of file to load, if not found will try load sql type
-     *            (which is the type for MySQL syntax)
-     * @param filename
-     *            file to load, minus extension
-     * @param prefix
-     *            table prefix, replaces ${PREFIX} in loaded files
+     *
+     * @param type extension of file to load, if not found will try load sql
+     * type (which is the type for MySQL syntax)
+     * @param filename file to load, minus extension
+     * @param prefix table prefix, replaces ${PREFIX} in loaded files
      * @return SQL commands loaded from file.
      */
     public String readSQL(String type, String filename, String prefix) {
@@ -497,7 +494,7 @@ public class BeardStat extends JavaPlugin {
     /**
      * Handle an error, if it's a {@link BeardStatRuntimeException} it will try
      * to kill BeardStat if the error is non-recoverable
-     * 
+     *
      * @param e
      */
     public void handleError(Exception e) {
@@ -524,7 +521,7 @@ public class BeardStat extends JavaPlugin {
 
     /**
      * Print out information related to unknown errors
-     * 
+     *
      * @param e
      */
     private void handleUnknownError(Exception e) {
@@ -539,8 +536,8 @@ public class BeardStat extends JavaPlugin {
         printCon("");
         printCon("=========");
     }
-    
-        public DatabaseConfiguration getDatabaseConfiguration(ConfigurationSection section){
+
+    public DatabaseConfiguration getDatabaseConfiguration(ConfigurationSection section) {
         DatabaseConfiguration dbc = new DatabaseConfiguration();
         new YamlConfigInjector(section).inject(dbc);
         return dbc;
