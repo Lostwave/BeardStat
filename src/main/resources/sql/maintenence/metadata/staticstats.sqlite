@@ -1,6 +1,6 @@
-INSERT OR IGNORE INTO ${PREFIX}_statistic (name,formatting,statistic) VALUES("play time","time","playedfor");
-INSERT OR IGNORE INTO ${PREFIX}_statistic (name,formatting,statistic) VALUES("last login","timestamp","lastlogin");
-INSERT OR IGNORE INTO ${PREFIX}_statistic (name,formatting,statistic) VALUES("first login","timestamp","firstlogin");
-INSERT OR IGNORE INTO ${PREFIX}_statistic (name,formatting,statistic) VALUES("last logout","timestamp","lastlogout");
-INSERT OR IGNORE INTO ${PREFIX}_statistic (name,formatting,statistic) VALUES("blocks placed","none","totalblockcreate");
-INSERT OR IGNORE INTO ${PREFIX}_statistic (name,formatting,statistic) VALUES("blocks mined","none","totalblockdestroy");
+INSERT OR IGNORE INTO stats_statistic (name,formatting,statistic) VALUES("play time","time","playedfor");
+INSERT OR IGNORE INTO stats_statistic (name,formatting,statistic) VALUES("last login","timestamp","lastlogin");
+INSERT OR IGNORE INTO stats_statistic (name,formatting,statistic) VALUES("first login","timestamp","firstlogin");
+INSERT OR IGNORE INTO stats_statistic (name,formatting,statistic) VALUES("last logout","timestamp","lastlogout");
+INSERT OR IGNORE INTO stats_statistic (name,formatting,statistic) VALUES("blocks placed","none","totalblockcreate");
+INSERT OR IGNORE INTO stats_statistic (name,formatting,statistic) VALUES("blocks mined","none","totalblockdestroy");
