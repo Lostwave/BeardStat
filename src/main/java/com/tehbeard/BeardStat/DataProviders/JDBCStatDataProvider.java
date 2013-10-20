@@ -311,8 +311,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         // tblPrefix));
 
         this.plugin.printDebugCon("Set player stat statement created");
-        this.plugin.printCon("Initaised MySQL Data Provider.");
-
     }
 
     /**

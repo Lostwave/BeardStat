@@ -23,5 +23,11 @@ class StatConfiguration {
     
     @InjectConfig("stats.database.type")
     public String dbType;
+
+    @Override
+    public String toString() {
+        return "StatConfiguration{" + "debugMode=" + debugMode + ", verboseMode=" + verboseMode + ", configVersion=" + configVersion + ", dbType=" + dbType + '}';
+    }
+    
     
 }
