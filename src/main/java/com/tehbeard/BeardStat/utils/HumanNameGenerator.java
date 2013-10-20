@@ -40,7 +40,14 @@ public class HumanNameGenerator {
     private static Map<String, String>                        mapping;
 
     public static String getNameOf(String key) {
-        return mapping.get(key);
+        if(mapping.containsKey(key)){
+            return mapping.get(key);
+        }
+        else
+        {
+            //key not found, return key instead.
+            return key;
+        }
     }
 
     static {
