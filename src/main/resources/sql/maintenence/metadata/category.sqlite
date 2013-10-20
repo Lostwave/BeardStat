@@ -1,4 +1,4 @@
-INSERT OR IGNORE INTO `stats_category` (`statwrapper`,`category`) VALUES ('%s placed',"blockcreate");;
+INSERT OR IGNORE INTO `stats_category` (`statwrapper`,`category`) VALUES ('%s placed',"blockcreate");
 INSERT OR IGNORE INTO `stats_category` (`statwrapper`,`category`) VALUES ('%s mined' , "blockdestroy");
 INSERT OR IGNORE INTO `stats_category` (`statwrapper`,`category`) VALUES ('to %s' , "damagedealt");
 INSERT OR IGNORE INTO `stats_category` (`statwrapper`,`category`) VALUES ('from %s' , "damagetaken");

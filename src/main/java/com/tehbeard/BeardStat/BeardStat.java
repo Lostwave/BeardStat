@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
@@ -148,10 +147,12 @@ public class BeardStat extends JavaPlugin {
             handleError(new BeardStatRuntimeException("An error occured while loading or updating the config", e, false));
             return;
         }
-
+        reloadConfig();
+        getConfig();
         configuration = new StatConfiguration();
-        new YamlConfigInjector((getConfig())).inject(configuration);
-
+        new YamlConfigInjector(getConfig()).inject(configuration);
+        printDebugCon(configuration.toString());
+        
         File worldsFile = new File(getDataFolder(), "worlds.yml");
         worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
 
@@ -236,11 +237,11 @@ public class BeardStat extends JavaPlugin {
             metrics = new Metrics(this);
             metrics.createGraph("Database Type").addPlotter(
                     new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });// record database type
+                        @Override
+                        public int getValue() {
+                            return 1;
+                        }
+                    });// record database type
 
             metrics.start();
         } catch (Exception e) {
@@ -267,8 +268,6 @@ public class BeardStat extends JavaPlugin {
             getConfig().options().copyDefaults(true);
 
         }
-
-
 
         if (getConfig().contains("stats.blacklist")) {
             try {
