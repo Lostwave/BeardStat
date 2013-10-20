@@ -43,6 +43,12 @@ function loadDataAjax(){
   }});
 }
 
+$(function(){
+  console.log("Loading scoreboard data.");
+  loadDataAjax();
+  console.log("Done.");
+});
+
 function listCtrl($scope){
   $scope.tmpl = {};
   $scope.tmpl.scoreboard = {
@@ -76,7 +82,6 @@ function saveData(){
     'processData': false,
     success: function(data){console.log(data);},
     'contentType': 'application/json' //typically 'application/x-www-form-urlencoded', but the service you are calling may expect 'text/json'... check with the service to see what they expect as content-type in the HTTP header.
-
   });
 }
 //TODO - SAVE
@@ -108,6 +113,7 @@ function saveData(){
         <th>Statistic</th>
         <th>Order</th>
         <th>ASC/DESC</th>
+        <th></th>
       </tr>
       <tr ng-repeat="entry in scoreboard.data">
         <td><input class="input-medium" type="text" ng-model="entry.label"></td>
@@ -122,7 +128,7 @@ function saveData(){
               <option value="DESC">Desc</option>
             </select>
         </td>
-        
+        <td><button>Up</button><button>down</button><button>Remove</button></td>
       </tr>
     </table>
     <button ng-click="addScoreboardField($index)">Add Field</button>
