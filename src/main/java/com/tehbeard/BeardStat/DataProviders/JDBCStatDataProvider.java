@@ -395,17 +395,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             public void run() {
                 try {
                     if (!checkConnection()) {
-                        JDBCStatDataProvider.this.plugin.printCon("Database connection error!");
+                        plugin.printCon("Database connection error!");
                         promise.reject(new SQLException("Error connecting to database"));
                         return;
                     }
                     long t1 = (new Date()).getTime();
 
                     // Ok, try to get entity from database
-                    JDBCStatDataProvider.this.loadEntity.setString(1, player);
-                    JDBCStatDataProvider.this.loadEntity.setString(2, type);
+                    loadEntity.setString(1, player);
+                    loadEntity.setString(2, type);
 
-                    ResultSet rs = JDBCStatDataProvider.this.loadEntity.executeQuery();
+                    ResultSet rs = loadEntity.executeQuery();
                     EntityStatBlob pb = null;
 
                     if (!rs.next()) {
@@ -420,10 +420,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         // No player found! Let's create an entry for them!
                         rs.close();
                         rs = null;
-                        JDBCStatDataProvider.this.saveEntity.setString(1, player);
-                        JDBCStatDataProvider.this.saveEntity.setString(2, type);
-                        JDBCStatDataProvider.this.saveEntity.executeUpdate();
-                        rs = JDBCStatDataProvider.this.saveEntity.getGeneratedKeys();
+                        saveEntity.setString(1, player);
+                        saveEntity.setString(2, type);
+                        saveEntity.executeUpdate();
+                        rs = saveEntity.getGeneratedKeys();
                         rs.next();// load player id
 
                     }
@@ -434,11 +434,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     rs = null;
 
                     // load all stats data
-                    JDBCStatDataProvider.this.loadEntityData.setInt(1, pb.getEntityID());
-                    JDBCStatDataProvider.this.loadEntityData.setInt(1, pb.getEntityID());
-                    JDBCStatDataProvider.this.plugin.printDebugCon("executing "
-                            + JDBCStatDataProvider.this.loadEntityData);
-                    rs = JDBCStatDataProvider.this.loadEntityData.executeQuery();
+                    loadEntityData.setInt(1, pb.getEntityID());
+                    loadEntityData.setInt(1, pb.getEntityID());
+                    plugin.printDebugCon("executing "
+                            + loadEntityData);
+                    rs = loadEntityData.executeQuery();
 
                     while (rs.next()) {
                         // `domain`,`world`,`category`,`statistic`,`value`
@@ -448,12 +448,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     }
                     rs.close();
 
-                    JDBCStatDataProvider.this.plugin.printDebugCon("time taken to retrieve: "
+                    plugin.printDebugCon("time taken to retrieve: "
                             + ((new Date()).getTime() - t1) + " Milliseconds");
 
                     promise.resolve(pb);
                 } catch (SQLException e) {
-                    JDBCStatDataProvider.this.plugin.mysqlError(e,SQL_LOAD_ENTITY_DATA);
+                    plugin.mysqlError(e,SQL_LOAD_ENTITY_DATA);
                     promise.reject(e);
                 }
            }
@@ -484,9 +484,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private Runnable flush = new Runnable() {
         @Override
         public void run() {
-            synchronized (JDBCStatDataProvider.this.writeCache) {
+            synchronized (writeCache) {
                 try {
-                    JDBCStatDataProvider.this.keepAlive.execute();
+                    keepAlive.execute();
                 } catch (SQLException e1) {
                 }
 
@@ -496,36 +496,36 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                             ChatColor.RED
                             + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
                 } else {
-                    JDBCStatDataProvider.this.plugin.printDebugCon("Saving to database");
-                    for (Entry<String, EntityStatBlob> entry : JDBCStatDataProvider.this.writeCache
+                    plugin.printDebugCon("Saving to database");
+                    for (Entry<String, EntityStatBlob> entry : writeCache
                             .entrySet()) {
                         try {
                             EntityStatBlob pb = entry.getValue();
 
-                            JDBCStatDataProvider.this.saveEntityData.clearBatch();
+                            saveEntityData.clearBatch();
                             for (IStat stat : pb.getStats()) {
-                                JDBCStatDataProvider.this.saveEntityData.setInt(1,
+                                saveEntityData.setInt(1,
                                         pb.getEntityID());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getWorld(stat.getWorld()).getDbId());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getCategory(stat.getCategory()).getDbId());
-                                JDBCStatDataProvider.this.saveEntityData.setInt(2, getStatistic(stat.getStatistic()).getDbId());
+                                saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
+                                saveEntityData.setInt(2, getWorld(stat.getWorld()).getDbId());
+                                saveEntityData.setInt(2, getCategory(stat.getCategory()).getDbId());
+                                saveEntityData.setInt(2, getStatistic(stat.getStatistic()).getDbId());
 
 
-                                JDBCStatDataProvider.this.saveEntityData.setInt(6,
+                                saveEntityData.setInt(6,
                                         stat.getValue());
 
-                                JDBCStatDataProvider.this.saveEntityData.addBatch();
+                                saveEntityData.addBatch();
                             }
-                            JDBCStatDataProvider.this.saveEntityData.executeBatch();
+                            saveEntityData.executeBatch();
 
                         } catch (SQLException e) {
-                            JDBCStatDataProvider.this.plugin.mysqlError(e,SQL_SAVE_STAT);
+                            plugin.mysqlError(e,SQL_SAVE_STAT);
                             checkConnection();
                         }
                     }
-                    JDBCStatDataProvider.this.plugin.printDebugCon("Clearing write cache");
-                    JDBCStatDataProvider.this.writeCache.clear();
+                    plugin.printDebugCon("Clearing write cache");
+                    writeCache.clear();
                 }
             }
 
