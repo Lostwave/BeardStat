@@ -505,9 +505,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                 saveEntityData.setInt(1,
                                         pb.getEntityID());
                                 saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
-                                saveEntityData.setInt(2, getWorld(stat.getWorld()).getDbId());
-                                saveEntityData.setInt(2, getCategory(stat.getCategory()).getDbId());
-                                saveEntityData.setInt(2, getStatistic(stat.getStatistic()).getDbId());
+                                saveEntityData.setInt(3, getWorld(stat.getWorld()).getDbId());
+                                saveEntityData.setInt(4, getCategory(stat.getCategory()).getDbId());
+                                saveEntityData.setInt(5, getStatistic(stat.getStatistic()).getDbId());
 
 
                                 saveEntityData.setInt(6,
@@ -675,6 +675,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         if (!worldMetaMap.containsKey(gameTag)) {
             try {
+                plugin.printDebugCon("Creating world entry " + gameTag);
                 saveWorld.setString(1, gameTag);
                 saveWorld.setString(2, gameTag.replaceAll("_", " "));
                 saveWorld.execute();
