@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS `stats_entity` (
 CREATE TABLE IF NOT EXISTS `stats_domain` ( 
     domainId INTEGER        PRIMARY KEY AUTOINCREMENT,
     domain   VARCHAR( 64 )  NOT NULL,
-    name     VARCHAR( 32 )  NOT NULL,
     CONSTRAINT 'uni' UNIQUE ( domain ) 
 );
 CREATE TABLE IF NOT EXISTS `stats_world`(
