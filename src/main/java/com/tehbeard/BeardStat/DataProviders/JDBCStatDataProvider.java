@@ -36,8 +36,8 @@ import com.tehbeard.BeardStat.DataProviders.metadata.WorldMeta;
 import com.tehbeard.BeardStat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
+import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * base class for JDBC based data providers Allows easy development of data
@@ -69,7 +69,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_SAVE_STAT = "sql/save/saveStat";
     public static final String SQL_KEEP_ALIVE = "sql/maintenence/keepAlive";
     public static final String SQL_LIST_ENTITIES = "sql/maintenence/listEntities";
-    
     // Database connection
     protected Connection conn;
     // Load components
@@ -128,7 +127,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * <li>Update metadata tables</li>
      * <li>Cache data as needed</li>
      * </ol>
-     * @throws BeardStatRuntimeException 
+     *
+     * @throws BeardStatRuntimeException
      */
     protected void initialise() throws BeardStatRuntimeException {
         createConnection();
@@ -224,6 +224,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     /**
      * Connects to the database
+     *
      * @throws SQLException
      */
     private void createConnection() {
@@ -243,6 +244,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     /**
      * Returns true if connection is still there.
+     *
      * @return
      */
     private synchronized boolean checkConnection() {
@@ -451,10 +453,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                     promise.resolve(pb);
                 } catch (SQLException e) {
-                    plugin.mysqlError(e,SQL_LOAD_ENTITY_DATA);
+                    plugin.mysqlError(e, SQL_LOAD_ENTITY_DATA);
                     promise.reject(e);
                 }
-           }
+            }
         };
 
         this.loadQueue.execute(run);
@@ -497,28 +499,31 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     plugin.printDebugCon("Saving to database");
                     for (Entry<String, EntityStatBlob> entry : writeCache
                             .entrySet()) {
-                        try {
-                            EntityStatBlob pb = entry.getValue();
 
+                        EntityStatBlob pb = entry.getValue();
+                        IStat stat = null;
+                        try {
                             saveEntityData.clearBatch();
-                            for (IStat stat : pb.getStats()) {
-                                saveEntityData.setInt(1,
-                                        pb.getEntityID());
+                            for (Iterator<IStat> it = pb.getStats().iterator(); it.hasNext();) {
+                                stat  = it.next();
+                                saveEntityData.setInt(1, pb.getEntityID());
                                 saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
                                 saveEntityData.setInt(3, getWorld(stat.getWorld()).getDbId());
                                 saveEntityData.setInt(4, getCategory(stat.getCategory()).getDbId());
                                 saveEntityData.setInt(5, getStatistic(stat.getStatistic()).getDbId());
-
-
-                                saveEntityData.setInt(6,
-                                        stat.getValue());
-
+                                saveEntityData.setInt(6, stat.getValue());
                                 saveEntityData.addBatch();
                             }
                             saveEntityData.executeBatch();
 
                         } catch (SQLException e) {
-                            plugin.mysqlError(e,SQL_SAVE_STAT);
+                            plugin.getLogger().log(Level.WARNING, "entity id: {0} :: {1}", new Object[]{pb.getName(), pb.getEntityID()});
+                            plugin.getLogger().log(Level.WARNING, "domain: {0} :: {1}", new Object[]{stat.getDomain(), getDomain(stat.getDomain()).getDbId()});
+                            plugin.getLogger().log(Level.WARNING, "world: {0} :: {1}", new Object[]{stat.getWorld(), getWorld(stat.getWorld()).getDbId()});
+                            plugin.getLogger().log(Level.WARNING, "category: {0} :: {1}", new Object[]{stat.getCategory(), getCategory(stat.getCategory()).getDbId()});
+                            plugin.getLogger().log(Level.WARNING, "statistic: {0} :: {1}", new Object[]{stat.getStatistic(), getStatistic(stat.getStatistic()).getDbId()});
+                            plugin.getLogger().log(Level.WARNING, "Value: {0}", stat.getValue());
+                            plugin.mysqlError(e, SQL_SAVE_STAT);
                             checkConnection();
                         }
                     }
@@ -663,7 +668,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 domainMetaMap.put(gameTag, new DomainMeta(rs.getInt(1), gameTag));
                 rs.close();
             } catch (SQLException ex) {
-                plugin.mysqlError(ex,SQL_SAVE_DOMAIN);
+                plugin.mysqlError(ex, SQL_SAVE_DOMAIN);
             }
         }
 
@@ -684,7 +689,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 worldMetaMap.put(gameTag, new WorldMeta(rs.getInt(1), gameTag, gameTag.replaceAll("_", " ")));
                 rs.close();
             } catch (SQLException ex) {
-                plugin.mysqlError(ex,SQL_SAVE_WORLD);
+                plugin.mysqlError(ex, SQL_SAVE_WORLD);
             }
         }
 
@@ -703,7 +708,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 categoryMetaMap.put(gameTag, new CategoryMeta(rs.getInt(1), gameTag, gameTag.replaceAll("_", " ")));
                 rs.close();
             } catch (SQLException ex) {
-               plugin.mysqlError(ex,SQL_SAVE_CATEGORY);
+                plugin.mysqlError(ex, SQL_SAVE_CATEGORY);
             }
         }
 
@@ -723,7 +728,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 statisticMetaMap.put(gameTag, new StatisticMeta(rs.getInt(1), gameTag, gameTag.replaceAll("_", " "), Formatting.none));
                 rs.close();
             } catch (SQLException ex) {
-                plugin.mysqlError(ex,SQL_SAVE_STATISTIC);
+                plugin.mysqlError(ex, SQL_SAVE_STATISTIC);
             }
         }
 
