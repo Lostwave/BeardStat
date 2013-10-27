@@ -3,7 +3,7 @@ package com.tehbeard.BeardStat.commands;
 import java.util.Stack;
 import java.util.regex.PatternSyntaxException;
 
-import me.tehbeard.utils.commands.ArgumentPack;
+import com.tehbeard.utils.commands.ArgumentPack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,7 +18,6 @@ import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 import com.tehbeard.BeardStat.utils.LanguagePack;
-import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
 
 /**
  * Show stats for a player,

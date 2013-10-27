@@ -9,7 +9,7 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import me.tehbeard.utils.expressions.VariableProvider;
+import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
@@ -245,6 +245,11 @@ public class EntityStatBlob implements VariableProvider {
             }
         }
         return blob;
+    }
+
+    @Override
+    public int[] resolveReference(String array) {
+        throw new UnsupportedOperationException("Array support not yet available."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

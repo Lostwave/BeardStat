@@ -1,6 +1,6 @@
 package com.tehbeard.BeardStat.commands;
 
-import me.tehbeard.utils.commands.ArgumentPack;
+import com.tehbeard.utils.commands.ArgumentPack;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

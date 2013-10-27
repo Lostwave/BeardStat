@@ -42,7 +42,7 @@ import com.tehbeard.BeardStat.utils.HumanNameGenerator;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 import java.util.logging.Level;
-import me.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
+import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**

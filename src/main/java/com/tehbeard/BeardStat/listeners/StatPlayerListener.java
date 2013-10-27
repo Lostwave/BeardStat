@@ -145,7 +145,8 @@ public class StatPlayerListener extends StatListener {
         if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-
+        
+        //TODO : FIX FISHING.
         Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),

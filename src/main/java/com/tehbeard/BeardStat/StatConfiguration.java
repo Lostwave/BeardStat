@@ -4,7 +4,7 @@
  */
 package com.tehbeard.BeardStat;
 
-import me.tehbeard.utils.syringe.configInjector.InjectConfig;
+import com.tehbeard.utils.syringe.configInjector.InjectConfig;
 
 /**
  *

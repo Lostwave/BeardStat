@@ -1,6 +1,6 @@
 package com.tehbeard.BeardStat.containers;
 
-import me.tehbeard.utils.expressions.InFixExpression;
+import com.tehbeard.utils.expressions.InFixExpression;
 
 /**
  * Dynamic player stats generated from composites of other player stats. A
