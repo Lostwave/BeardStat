@@ -248,6 +248,10 @@ public class BeardStat extends JavaPlugin {
             handleError(new BeardStatRuntimeException("Metrics threw an error during startup", null, true));
         }
         printCon("BeardStat Loaded");
+        
+        printCon("Hacking the gibson");
+        
+        BeardStatUUID.hackTheGibson(this);
     }
 
     /**

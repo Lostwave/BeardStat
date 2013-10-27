@@ -27,7 +27,7 @@ import org.bukkit.Statistic;
 public class PlayerStatManager implements CommandExecutor {
 
     private HashMap<String, Promise<EntityStatBlob>> cache = new HashMap<String, Promise<EntityStatBlob>>();
-    private IStatDataProvider backendDatabase = null;
+    public IStatDataProvider backendDatabase = null;
     private BeardStat plugin;
 
     public PlayerStatManager(BeardStat plugin, IStatDataProvider database) {
