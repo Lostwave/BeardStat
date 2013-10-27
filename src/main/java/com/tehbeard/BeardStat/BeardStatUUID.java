@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class BeardStatUUID {
     
     private static HttpProfileRepository repo = new HttpProfileRepository();
-    public static final int MAX_PER_REQUEST = 64;
+    public static final int MAX_PER_REQUEST = 64 * 2;
     
     public static Map<String, String> getUUIDS(String... players) {
         Map<String, String> mapping = new HashMap<String, String>();
@@ -66,12 +66,16 @@ public class BeardStatUUID {
                 toGet[k] = names.get(i + k);
             }
             Map<String, String> map = getUUIDS(toGet);
-            System.out.println("found " + map.size() + "/1000 entries");
+            System.out.println("found " + map.size() + "/" + MAX_PER_REQUEST + " entries");
             for (Entry<String, String> e : map.entrySet()) {
                 //System.out.println(e.getKey() + " = " + e.getValue());
             }
         }
         plugin.printCon("UUIDs gotten: Took " + (System.currentTimeMillis() - t) + " milliseconds");
         
+    }
+    
+    public static void main(String[] args){
+        System.out.println(getUUIDS("Tehbeard").get("Tehbeard"));
     }
 }

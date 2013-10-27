@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` (
   `name` char(32) NOT NULL,  
   `type` enum('player','plugin','group') NOT NULL, 
   `scoreboardhide` BOOLEAN NOT NULL DEFAULT false,
+  `uuid` CHAR( 32 ) UNIQUE,
   PRIMARY KEY (`entityId`),
   UNIQUE KEY `chkName` (`name`,`type`)
   ) 
