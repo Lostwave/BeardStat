@@ -53,9 +53,9 @@ public class BeardStatUUID {
      * @param plugin
      */
     public static void hackTheGibson(BeardStat plugin) {
-        IStatDataProvider provider = plugin.getStatManager().backendDatabase;
+        
         plugin.printCon("Getting player names");
-        ProviderQueryResult[] result = provider.queryDatabase(new ProviderQuery(null,IStatDataProvider.PLAYER_TYPE,null,false));
+        ProviderQueryResult[] result = plugin.getStatManager().queryDatabase(new ProviderQuery(null,IStatDataProvider.PLAYER_TYPE,null,false));
         plugin.printCon("" + result.length +" entries found");
         long t = System.currentTimeMillis();
         for (int i = 0; i < result.length; i += MAX_PER_REQUEST) {

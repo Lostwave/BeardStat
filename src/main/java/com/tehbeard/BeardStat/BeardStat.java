@@ -30,8 +30,8 @@ import com.tehbeard.BeardStat.commands.StatCommand;
 import com.tehbeard.BeardStat.commands.StatPageCommand;
 import com.tehbeard.BeardStat.commands.playedCommand;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.OnlineTimeManager;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.OnlineTimeManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.listeners.StatBlockListener;
 import com.tehbeard.BeardStat.listeners.StatCraftListener;
 import com.tehbeard.BeardStat.listeners.StatEntityListener;
@@ -58,7 +58,7 @@ public class BeardStat extends JavaPlugin {
     public static final String DEFAULT_DOMAIN = "default";
     public static final String GLOBAL_WORLD = "__global__";
     private int saveTaskId;
-    private PlayerStatManager playerStatManager;
+    private EntityStatManager statManager;
     public static StatConfiguration configuration;
     public static WorldManager worldManager;
 
@@ -67,8 +67,8 @@ public class BeardStat extends JavaPlugin {
      *
      * @return
      */
-    public PlayerStatManager getStatManager() {
-        return this.playerStatManager;
+    public EntityStatManager getStatManager() {
+        return this.statManager;
     }
 
     /**
@@ -100,10 +100,10 @@ public class BeardStat extends JavaPlugin {
          */
         printCon("Stopping auto flusher");
         getServer().getScheduler().cancelTask(this.saveTaskId);
-        if (this.playerStatManager != null) {
+        if (this.statManager != null) {
             printCon("Flushing cache to database");
-            this.playerStatManager.saveCache();
-            this.playerStatManager.flush();
+            this.statManager.saveCache();
+            this.statManager.flush();
             printCon("Cache flushed to database");
         }
     }
@@ -166,7 +166,7 @@ public class BeardStat extends JavaPlugin {
         }
 
         // start the player manager
-        this.playerStatManager = new PlayerStatManager(this, db);
+        this.statManager = new EntityStatManager(this, db);
 
         printCon("initializing composite stats");
         try {
@@ -190,11 +190,11 @@ public class BeardStat extends JavaPlugin {
         // register event listeners
         // get blacklist, then start and register each type of listener
         try {
-            StatBlockListener sbl = new StatBlockListener(this.playerStatManager, this);
-            StatPlayerListener spl = new StatPlayerListener(this.playerStatManager, this);
-            StatEntityListener sel = new StatEntityListener(this.playerStatManager, this);
-            StatVehicleListener svl = new StatVehicleListener(this.playerStatManager, this);
-            StatCraftListener scl = new StatCraftListener(this.playerStatManager, this);
+            StatBlockListener sbl = new StatBlockListener(this.statManager, this);
+            StatPlayerListener spl = new StatPlayerListener(this.statManager, this);
+            StatEntityListener sel = new StatEntityListener(this.statManager, this);
+            StatVehicleListener svl = new StatVehicleListener(this.statManager, this);
+            StatCraftListener scl = new StatCraftListener(this.statManager, this);
             getServer().getPluginManager().registerEvents(sbl, this);
             getServer().getPluginManager().registerEvents(spl, this);
             getServer().getPluginManager().registerEvents(sel, this);
@@ -213,12 +213,12 @@ public class BeardStat extends JavaPlugin {
 
         printCon("Loading commands");
         try {
-            getCommand("stats").setExecutor(new StatCommand(this.playerStatManager, this));
-            getCommand("played").setExecutor(new playedCommand(this.playerStatManager, this));
-            getCommand("statpage").setExecutor(new StatPageCommand(this.playerStatManager, this));
-            getCommand("laston").setExecutor(new LastOnCommand(this.playerStatManager, this));
-            getCommand("beardstatdebug").setExecutor(this.playerStatManager);
-            getCommand("statadmin").setExecutor(new StatAdmin(this.playerStatManager, this));
+            getCommand("stats").setExecutor(new StatCommand(this.statManager, this));
+            getCommand("played").setExecutor(new playedCommand(this.statManager, this));
+            getCommand("statpage").setExecutor(new StatPageCommand(this.statManager, this));
+            getCommand("laston").setExecutor(new LastOnCommand(this.statManager, this));
+            getCommand("beardstatdebug").setExecutor(this.statManager);
+            getCommand("statadmin").setExecutor(new StatAdmin(this.statManager, this));
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error registering commands", e, false));
         }
@@ -316,8 +316,8 @@ public class BeardStat extends JavaPlugin {
                 printCon("Flushing to database.");
             }
 
-            BeardStat.this.playerStatManager.saveCache();
-            BeardStat.this.playerStatManager.flush();
+            BeardStat.this.statManager.saveCache();
+            BeardStat.this.statManager.flush();
             if (getConfig().getBoolean("general.verbose", false)) {
                 printCon("flush completed");
             }

@@ -25,13 +25,13 @@ import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatEntityListener extends StatListener {
 
-    public StatEntityListener( PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatEntityListener( EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -109,7 +109,7 @@ public class StatEntityListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(player.getName());
 
         // Total damage
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, category[idx], "total", amount));
@@ -131,9 +131,9 @@ public class StatEntityListener extends StatListener {
         }
 
         if ((attacker instanceof Player) && (attacked instanceof Player)) {
-            Promise<EntityStatBlob> attackerBlob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> attackerBlob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     ((Player) attacker).getName());
-            Promise<EntityStatBlob> attackedBlob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> attackedBlob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     ((Player) attacked).getName());
 
             attackerBlob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, category[0], "pvp", 1));
@@ -156,7 +156,7 @@ public class StatEntityListener extends StatListener {
                 return;
             }
 
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(player.getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "stats", "damagehealed",
                     amount));
             if (reason != RegainReason.CUSTOM) {
@@ -175,7 +175,7 @@ public class StatEntityListener extends StatListener {
             }
 
             String world = event.getEntity().getWorld().getName();
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     event.getOwner().getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "stats", "tame"
                     + event.getEntity().getType().toString().toLowerCase().replace("_", ""), 1));
@@ -201,7 +201,7 @@ public class StatEntityListener extends StatListener {
 
                 String world = event.getEntity().getWorld().getName();
 
-                Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(p.getName());
+                Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(p.getName());
                 promiseblob
                         .onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions", "splashhit", 1));
                 // added per potion details
@@ -228,7 +228,7 @@ public class StatEntityListener extends StatListener {
 
             String world = event.getEntity().getWorld().getName();
 
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(p.getName());
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(p.getName());
             // total shots fired
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "bow", "shots", 1));
 

@@ -10,7 +10,7 @@ import com.tehbeard.utils.syringe.configInjector.InjectConfig;
  *
  * @author James
  */
-class StatConfiguration {
+public class StatConfiguration {
     
     @InjectConfig("general.debug")
     public boolean debugMode;

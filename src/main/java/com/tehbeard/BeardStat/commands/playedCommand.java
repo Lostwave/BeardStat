@@ -8,13 +8,13 @@ import org.bukkit.command.CommandSender;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
+import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
-import com.tehbeard.BeardStat.containers.OnlineTimeManager;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.OnlineTimeManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 import com.tehbeard.BeardStat.utils.LanguagePack;
-import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
 
 /**
  * /played - Show users playtime /played name - show player of name
@@ -24,7 +24,7 @@ import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
  */
 public class playedCommand extends BeardStatCommand {
 
-    public playedCommand(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public playedCommand(EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -52,7 +52,7 @@ public class playedCommand extends BeardStatCommand {
 
             // Grab player blob and format out stat
             // TODO: async this
-            blob = this.playerStatManager.getPlayerBlob(selectedPlayer.getName());
+            blob = this.playerStatManager.getBlobByNameType(selectedPlayer.getName(), IStatDataProvider.PLAYER_TYPE).getValue();
             if (blob == null) {
                 sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));
                 return true;

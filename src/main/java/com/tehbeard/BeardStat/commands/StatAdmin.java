@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 
 /**
  * Stat admin /statadmin -a tehbeard - reset all stats for person, clears all
@@ -17,7 +17,7 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  */
 public class StatAdmin extends BeardStatCommand {
 
-    public StatAdmin(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatAdmin(EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
     }
 

@@ -27,7 +27,7 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.WorldManager;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.listeners.StatVehicleListener;
 import org.bukkit.GameMode;
 import static org.mockito.Mockito.when;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 public class TestVehicleListener {
 
-    private PlayerStatManager manager;
+    private EntityStatManager manager;
     private StatVehicleListener listener;
     private EntityStatBlob blob;
 
@@ -45,8 +45,8 @@ public class TestVehicleListener {
         this.blob = new EntityStatBlob("bob", 0, IStatDataProvider.PLAYER_TYPE,null);
 
         // Mock manager to return our blob
-        this.manager = mock(PlayerStatManager.class);
-        when(this.manager.getPlayerBlobASync(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
+        this.manager = mock(EntityStatManager.class);
+        when(this.manager.getOrCreatePlayerStatBlob(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
 
         BeardStat plugin = mock(BeardStat.class);
         // when(plugin.printDebugCon(anyString()))

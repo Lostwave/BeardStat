@@ -11,13 +11,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatBlockListener extends StatListener {
 
-    public StatBlockListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatBlockListener(EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -29,7 +29,7 @@ public class StatBlockListener extends StatListener {
         }
         
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "stats", "totalblockcreate", 1));
@@ -45,7 +45,7 @@ public class StatBlockListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "stats", "totalblockdestroy", 1));

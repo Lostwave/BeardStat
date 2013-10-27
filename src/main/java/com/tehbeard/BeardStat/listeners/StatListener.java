@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 
 /**
  * Base listener for stats, adds helper methods
@@ -18,7 +18,7 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  */
 public abstract class StatListener implements Listener {
 
-    private final PlayerStatManager playerStatManager;
+    private final EntityStatManager playerStatManager;
     private final BeardStat         plugin;
 
     /**
@@ -26,7 +26,7 @@ public abstract class StatListener implements Listener {
      * @param playerStatManager
      * @param plugin
      */
-    public StatListener( PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatListener( EntityStatManager playerStatManager, BeardStat plugin) {
         this.playerStatManager = playerStatManager;
         this.plugin = plugin;
     }
@@ -43,7 +43,7 @@ public abstract class StatListener implements Listener {
         return this.plugin;
     }
 
-    public PlayerStatManager getPlayerStatManager() {
+    public EntityStatManager getPlayerStatManager() {
         return this.playerStatManager;
     }
 

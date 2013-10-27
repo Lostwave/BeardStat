@@ -12,12 +12,12 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 
 public class StatVehicleListener extends StatListener {
 
-    public StatVehicleListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatVehicleListener(EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -47,7 +47,7 @@ public class StatVehicleListener extends StatListener {
             getPlugin().printDebugCon("Vehicle move fired!");
             if (from.getWorld().equals(to.getWorld())) {
                 if (from.distance(to) < 10) {
-                    Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+                    Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                             player.getName());
                     promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, to.getWorld().getName(),
                             "vehicle", event.getVehicle().getType().toString().toLowerCase().replace("_", ""),

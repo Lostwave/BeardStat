@@ -11,8 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 
 /**
  * Implements last on feature, figures out when a user was last online
@@ -22,7 +23,7 @@ import com.tehbeard.BeardStat.containers.PlayerStatManager;
  */
 public class LastOnCommand extends BeardStatCommand {
 
-    public LastOnCommand(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public LastOnCommand(EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -40,7 +41,7 @@ public class LastOnCommand extends BeardStatCommand {
             player = Bukkit.getOfflinePlayer(args[0]);
             name = args[0];
 
-            blob = this.playerStatManager.findPlayerBlob(args[0]);
+            blob = this.playerStatManager.getBlobByNameType(args[0], IStatDataProvider.PLAYER_TYPE).getValue();
         } else if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED
@@ -51,7 +52,7 @@ public class LastOnCommand extends BeardStatCommand {
             player = Bukkit.getOfflinePlayer(sender.getName());
             if (player != null) {
                 name = player.getName();
-                blob = this.playerStatManager.findPlayerBlob(name);
+                blob = this.playerStatManager.getBlobByNameType(name, IStatDataProvider.PLAYER_TYPE).getValue();
             }
         }
 

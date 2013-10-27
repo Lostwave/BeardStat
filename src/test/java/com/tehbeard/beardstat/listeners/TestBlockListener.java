@@ -28,7 +28,7 @@ import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.WorldManager;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.listeners.StatBlockListener;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
@@ -37,7 +37,7 @@ import org.bukkit.GameMode;
 @RunWith(PowerMockRunner.class)
 public class TestBlockListener {
 
-    private PlayerStatManager manager;
+    private EntityStatManager manager;
     private StatBlockListener listener;
 
     private EntityStatBlob    blob;
@@ -49,8 +49,8 @@ public class TestBlockListener {
         this.blob = new EntityStatBlob("bob", 0, IStatDataProvider.PLAYER_TYPE,null);
 
         // Mock manager to return our blob
-        this.manager = mock(PlayerStatManager.class);
-        when(this.manager.getPlayerBlobASync(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
+        this.manager = mock(EntityStatManager.class);
+        when(this.manager.getOrCreatePlayerStatBlob(anyString())).thenReturn(new Deferred<EntityStatBlob>(this.blob));
 
         this.listener = new StatBlockListener(this.manager, null);
         BeardStat.worldManager = new WorldManager();

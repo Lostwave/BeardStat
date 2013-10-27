@@ -13,9 +13,10 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
+import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.containers.StatVector;
 import com.tehbeard.BeardStat.utils.LanguagePack;
 
@@ -27,7 +28,7 @@ import com.tehbeard.BeardStat.utils.LanguagePack;
  */
 public class StatCommand extends BeardStatCommand {
 
-    public StatCommand(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatCommand(EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
         // TODO Auto-generated constructor stub
     }
@@ -71,7 +72,7 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.findPlayerBlob(player);
+                EntityStatBlob blob = this.playerStatManager.getBlobByNameType(player, IStatDataProvider.PLAYER_TYPE).getValue();
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
                     return true;

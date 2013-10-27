@@ -14,7 +14,8 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 
 /**
  * Display a statpage
@@ -26,7 +27,7 @@ public class StatPageCommand extends BeardStatCommand {
 
     private Map<String, List<String>> pages;
 
-    public StatPageCommand(PlayerStatManager statManager, BeardStat plugin) {
+    public StatPageCommand(EntityStatManager statManager, BeardStat plugin) {
         super(statManager, plugin);
 
         this.pages = new HashMap<String, List<String>>();
@@ -76,7 +77,7 @@ public class StatPageCommand extends BeardStatCommand {
                                         + p[0]
                                         + ": "
                                         + ChatColor.WHITE
-                                        + this.playerStatManager.getPlayerBlob(playername)
+                                        + this.playerStatManager.getBlobByNameType(playername, IStatDataProvider.PLAYER_TYPE).getValue()
                                                 .getStats(BeardStat.DEFAULT_DOMAIN, "*", cat, stat).getValue());
                             }
                         }

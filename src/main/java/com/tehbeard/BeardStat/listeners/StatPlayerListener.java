@@ -51,9 +51,9 @@ import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.OnlineTimeManager;
-import com.tehbeard.BeardStat.containers.OnlineTimeManager.ManagerRecord;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.OnlineTimeManager;
+import com.tehbeard.BeardStat.manager.OnlineTimeManager.ManagerRecord;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
 import com.tehbeard.BeardStat.listeners.defer.DelegateSet;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
@@ -66,7 +66,7 @@ import com.tehbeard.BeardStat.utils.MetaDataCapture;
  */
 public class StatPlayerListener extends StatListener {
 
-    public StatPlayerListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatPlayerListener(EntityStatManager playerStatManager, BeardStat plugin) {
         super( playerStatManager, plugin);
     }
 
@@ -78,7 +78,7 @@ public class StatPlayerListener extends StatListener {
 
         String world = event.getPlayer().getWorld().getName();
         if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     event.getPlayer().getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "stats", "armswing", 1));
 
@@ -88,7 +88,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "login",
                 1));
@@ -117,7 +117,7 @@ public class StatPlayerListener extends StatListener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
             int len = event.getMessage().length();
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     event.getPlayer().getName());
 
             String world = event.getPlayer().getWorld().getName();
@@ -134,7 +134,7 @@ public class StatPlayerListener extends StatListener {
         }
 
         MetaDataCapture.saveMetaDataMaterialStat(
-                this.getPlayerStatManager().getPlayerBlobASync(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
+                this.getPlayerStatManager().getOrCreatePlayerStatBlob(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
                 event.getPlayer().getWorld().getName(), "itemdrop", event.getItemDrop().getItemStack().getType(), event
                 .getItemDrop().getItemStack().getDurability(), event.getItemDrop().getItemStack().getAmount());
 
@@ -147,7 +147,7 @@ public class StatPlayerListener extends StatListener {
         }
         
         //TODO : FIX FISHING.
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "stats", "fishcaught", 1));
@@ -157,7 +157,7 @@ public class StatPlayerListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         if (event.isCancelled() == false) {
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     event.getPlayer().getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld()
                     .getName(), "stats", "kicks", 1));
@@ -171,7 +171,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "lastlogout",
                 (int) ((new Date()).getTime() / 1000L)));
@@ -198,7 +198,7 @@ public class StatPlayerListener extends StatListener {
             if (from.getWorld().equals(to.getWorld())) {
                 final double distance = from.distance(to);
                 if (distance < 8) {
-                    Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+                    Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                             event.getPlayer().getName());
 
                     promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, from.getWorld().getName(),
@@ -216,7 +216,7 @@ public class StatPlayerListener extends StatListener {
         }
 
         MetaDataCapture.saveMetaDataMaterialStat(
-                this.getPlayerStatManager().getPlayerBlobASync(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
+                this.getPlayerStatManager().getOrCreatePlayerStatBlob(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
                 event.getPlayer().getWorld().getName(), "itempickup", event.getItem().getItemStack().getType(), event
                 .getItem().getItemStack().getDurability(), event.getItem().getItemStack().getAmount());
 
@@ -225,7 +225,7 @@ public class StatPlayerListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPortal(PlayerPortalEvent event) {
         if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     event.getPlayer().getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld()
                     .getName(), "stats", "portal", 1));
@@ -237,7 +237,7 @@ public class StatPlayerListener extends StatListener {
         if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
             final TeleportCause teleportCause = event.getCause();
 
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                     event.getPlayer().getName());
             if (teleportCause == TeleportCause.ENDER_PEARL) {
                 promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld()
@@ -255,7 +255,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "stats", "fill" + event.getBucket().toString().toLowerCase().replace("_", ""), 1));
@@ -268,7 +268,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "stats", "empty" + event.getBucket().toString().toLowerCase().replace("_", ""), 1));
@@ -284,7 +284,7 @@ public class StatPlayerListener extends StatListener {
         Material material = event.getPlayer().getItemInHand().getType();
         Entity rightClicked = event.getRightClicked();
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
 
         if ((material == Material.BUCKET) && (rightClicked instanceof Cow)) {
@@ -343,7 +343,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         if (event.getEntity() instanceof Sheep) {
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld()
@@ -369,7 +369,7 @@ public class StatPlayerListener extends StatListener {
         Block clickedBlock = event.getClickedBlock();
         Result result = event.useItemInHand();
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
 
         if ((item != null) && (action != null) && (clickedBlock != null)) {
@@ -417,7 +417,7 @@ public class StatPlayerListener extends StatListener {
         }
 
         Player player = event.getPlayer();
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "exp", "lifetimexp", event.getAmount()));
@@ -432,7 +432,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(), "exp",
                 "currentlvl", event.getNewLevel()));
@@ -453,7 +453,7 @@ public class StatPlayerListener extends StatListener {
         }
 
         if ((event.isCancelled() == false) && !isBlacklistedWorld(player.getWorld())) {
-            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
+            Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(player.getName());
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getEnchanter().getWorld()
                     .getName(), "enchant", "total", 1));
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getEnchanter().getWorld()
@@ -470,7 +470,7 @@ public class StatPlayerListener extends StatListener {
         if (timeRecord.world == null) {
             return;
         }
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player);
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(player);
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor",
                 timeRecord.sessionTime()));
         OnlineTimeManager.wipeRecord(player);
@@ -491,7 +491,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(player.getName());
 
         if (event.getItem().getType().isEdible()) {
             String stat = "food" + event.getItem().getType().toString().toLowerCase().replaceAll("_", "");
@@ -538,7 +538,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
         Player player = event.getPlayer();
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getPlayerBlobASync(player.getName());
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(player.getName());
 
         MetaDataCapture.saveMetaDataEntityStat(promiseblob, BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(),
                 "leash", event.getEntity(), 1);

@@ -18,7 +18,7 @@ public class TestPlayerStatBlob {
      */
     @Before
     public void setup() {
-        this.blob = new EntityStatBlob("name", 101, "");
+        this.blob = new EntityStatBlob("name", 101, "",null);
     }
 
     /*

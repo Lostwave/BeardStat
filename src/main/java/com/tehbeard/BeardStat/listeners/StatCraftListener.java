@@ -11,12 +11,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.PlayerStatManager;
+import com.tehbeard.BeardStat.manager.EntityStatManager;
 import com.tehbeard.BeardStat.utils.MetaDataCapture;
 
 public class StatCraftListener extends StatListener {
 
-    public StatCraftListener(PlayerStatManager playerStatManager, BeardStat plugin) {
+    public StatCraftListener(EntityStatManager playerStatManager, BeardStat plugin) {
         super( playerStatManager, plugin);
     }
 
@@ -42,7 +42,7 @@ public class StatCraftListener extends StatListener {
                     // String item =
                     // is.getType().toString().toLowerCase().replace("_","");
                     MetaDataCapture.saveMetaDataMaterialStat(StatCraftListener.this.getPlayerStatManager()
-                            .getPlayerBlobASync(p.getName()), BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(),
+                            .getOrCreatePlayerStatBlob(p.getName()), BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(),
                             "crafting", is.getType(), is.getDurability(), made);
                 }
 
@@ -52,7 +52,7 @@ public class StatCraftListener extends StatListener {
             /**
              * if MetaDataable, make the item string correct
              */
-            MetaDataCapture.saveMetaDataMaterialStat(this.getPlayerStatManager().getPlayerBlobASync(p.getName()),
+            MetaDataCapture.saveMetaDataMaterialStat(this.getPlayerStatManager().getOrCreatePlayerStatBlob(p.getName()),
                     BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", event.getRecipe().getResult()
                             .getType(), event.getRecipe().getResult().getDurability(), amount);
 
