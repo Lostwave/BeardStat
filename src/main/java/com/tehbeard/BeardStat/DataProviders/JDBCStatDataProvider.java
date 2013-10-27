@@ -47,7 +47,7 @@ import net.dragonzone.promise.Deferred;
  * @author James
  *
  */
-public class JDBCStatDataProvider implements IStatDataProvider {
+public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     /**
      * SQL SCRIPT NAME BLOCK
@@ -756,5 +756,10 @@ public class JDBCStatDataProvider implements IStatDataProvider {
             truncatedName = truncatedName.substring(0, 64);
         }
         return truncatedName;
+    }
+
+    @Override
+    public EntityStatBlob pullEntityBlobDirect(ProviderQuery query) {
+        return pullEntityBlob(query).getValue();
     }
 }
