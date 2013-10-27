@@ -24,7 +24,6 @@ import org.mcstats.Metrics.Plotter;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
 import com.tehbeard.BeardStat.DataProviders.SQLiteStatDataProvider;
-import com.tehbeard.BeardStat.DataProviders.TransferDataProvider;
 import com.tehbeard.BeardStat.commands.LastOnCommand;
 import com.tehbeard.BeardStat.commands.StatAdmin;
 import com.tehbeard.BeardStat.commands.StatCommand;
@@ -58,7 +57,6 @@ public class BeardStat extends JavaPlugin {
     // Default values for domain and world
     public static final String DEFAULT_DOMAIN = "default";
     public static final String GLOBAL_WORLD = "__global__";
-    public static final String PLAYER_TYPE = "player";
     private int saveTaskId;
     private PlayerStatManager playerStatManager;
     public static StatConfiguration configuration;
@@ -460,11 +458,12 @@ public class BeardStat extends JavaPlugin {
 
         // transfer provider, calls method again to load handlers for transfer
         if (config.databaseType.equalsIgnoreCase("transfer")) {
-            IStatDataProvider _old = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.old")));
+            throw new UnsupportedOperationException("NOT IMPLEMENTED YET");//TODO - FIX
+            /*IStatDataProvider _old = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.old")));
             IStatDataProvider _new = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.new")));
             printCon("Initiating transfer of stats, this may take a while");
             new TransferDataProvider(this, _old, _new);
-            db = _new;
+            db = _new;*/
         }
         return db;
     }

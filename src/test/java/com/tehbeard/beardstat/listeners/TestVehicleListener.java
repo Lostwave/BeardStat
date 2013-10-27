@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.WorldManager;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.PlayerStatManager;
@@ -41,7 +42,7 @@ public class TestVehicleListener {
     @Before
     public void setup() {
         // Create test blob
-        this.blob = new EntityStatBlob("bob", 0, "player");
+        this.blob = new EntityStatBlob("bob", 0, IStatDataProvider.PLAYER_TYPE,null);
 
         // Mock manager to return our blob
         this.manager = mock(PlayerStatManager.class);

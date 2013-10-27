@@ -6,6 +6,7 @@ import java.util.List;
 import net.dragonzone.promise.Promise;
 
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import java.util.UUID;
 
 /**
  * Provides push/pull service for getting and saving stats to a backend storage
@@ -15,67 +16,60 @@ import com.tehbeard.BeardStat.containers.EntityStatBlob;
  *
  */
 public interface IStatDataProvider {
+    
+    public static final String PLAYER_TYPE =  "player";
+    public static final String GROUP_TYPE =   "group";
+    public static final String FACTION_TYPE = "faction";
+    public static final String ALLIANCE_TYPE = "alliance";
+    public static final String WORLD_TYPE = "world";
+    public static final String PLUGIN_TYPE = "plugin";
 
+    
     /**
-     * Pull the players stats from the database.
-     *
-     * @param player Player to pull stats for. Creates a new object if non
-     * exists
-     * @return a PlayerStatBlob containing all stats for a player
+     * Pulls a entity out of the database
+     * @param query
+     * @return 
      */
-    public Promise<EntityStatBlob> pullStatBlob(String player, String type);
-
+    public Promise<EntityStatBlob> pullEntityBlob(ProviderQuery query);
+    
     /**
-     * Pull the players stats from the database.
-     *
-     * @param player Player to pull stats for. Creates a new object if non
-     * exists
-     * @param create wether to create the player object
-     * @return a PlayerStatBlob containing all stats for a player
+     * Pushes the entity into the database, this may not happen if the entity is queued and something stops the queue from being processed.
+     * @param blob 
      */
-    public Promise<EntityStatBlob> pullStatBlob(String player, String type, boolean create);
-
+    public void pushEntityBlob(EntityStatBlob blob);
+    
     /**
-     * Push all stats for this player to the database. This may happen
-     * immediately or at some point in the future
-     *
-     * @param player StatBlob to push to the database
+     * Checks if the database contains a blob matching this one.
+     * @param query
+     * @return 
      */
-    public void pushStatBlob(EntityStatBlob player);
-
+    public boolean hasEntityBlob(ProviderQuery query);
+    
     /**
-     * Forces the DataProvider to flush data to the backend, in the case of a
-     * second level cache or queue.
+     * Deletes a blob matching this one.
+     * @param blob
+     * @return 
      */
-    public void flush();
+    public boolean deleteEntityBlob(EntityStatBlob blob);
+    
 
     /**
-     * Forces the DataProvider to flush data to the backend, in the case of a
-     * second level cache. Execution must block the caller until completion
+     * Queries database for entities
+     * @param query
+     * @return 
+     */
+    public ProviderQueryResult[] queryDatabase(ProviderQuery query);
+
+    /**
+     * Flushes immediately to the database
      */
     public void flushSync();
 
     /**
-     * Deletes all stats for a player as stored in the database
-     *
-     * @param player Player to delete stats of
+     * Flush any cached data to the backend now, can do so in a seperate thread.
      */
-    public void deleteStatBlob(String player);
-
-    /**
-     * Has a stat blob for a player
-     *
-     * @param player player name
-     * @return blob exists
-     */
-    public boolean hasStatBlob(String player);
-
-    /**
-     * List of players held by provider
-     *
-     * @return
-     */
-    public List<String> getStatBlobsHeld();
+    public void flush();
+    
 
     public DomainMeta getDomain(String gameTag);
 

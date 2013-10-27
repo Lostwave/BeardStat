@@ -1,1 +1,1 @@
-INSERT INTO `${PREFIX}_entity` (`name`,`type`,`scoreboardhide`) VALUES(?,?,0);
+INSERT INTO `${PREFIX}_entity` (`name`,`type`,`scoreboardhide`,`uuid`) VALUES(?,?,0,?);

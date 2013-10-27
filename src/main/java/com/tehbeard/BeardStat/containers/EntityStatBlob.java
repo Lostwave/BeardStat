@@ -13,6 +13,8 @@ import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
+import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
+import java.util.UUID;
 
 /**
  * Represents a collection of statistics bound to an entity Currently only used
@@ -45,7 +47,7 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     private void addDynamics() {
-        if (this.type.equals(BeardStat.PLAYER_TYPE)) {
+        if (this.type.equals(IStatDataProvider.PLAYER_TYPE)) {
             for (DynamicStat ds : dynamicStats) {
 
                 addStat(ds.duplicateForPlayer(this));
@@ -61,6 +63,7 @@ public class EntityStatBlob implements VariableProvider {
     private int                entityId;
     private String             name;
     private String             type;
+    private UUID               uuid;
 
     public String getName() {
         return this.name;
@@ -77,10 +80,11 @@ public class EntityStatBlob implements VariableProvider {
      * @param ID
      *            playerID in database
      */
-    public EntityStatBlob(String name, int entityId, String type) {
+    public EntityStatBlob(String name, int entityId, String type,UUID uuid) {
         this.name = name;
         this.entityId = entityId;
         this.type = type;
+        this.uuid = uuid;
         addDynamics();
     }
 
@@ -233,7 +237,7 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     public EntityStatBlob cloneForArchive() {
-        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type);
+        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type,new UUID(uuid.getMostSignificantBits(),uuid.getLeastSignificantBits()));
         blob.stats.clear();
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
@@ -250,6 +254,10 @@ public class EntityStatBlob implements VariableProvider {
     @Override
     public int[] resolveReference(String array) {
         throw new UnsupportedOperationException("Array support not yet available."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public UUID getUUID(){
+        return uuid;
     }
 
 }

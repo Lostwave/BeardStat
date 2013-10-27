@@ -16,7 +16,6 @@ import org.bukkit.command.CommandSender;
 import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
 import com.tehbeard.BeardStat.containers.OnlineTimeManager.ManagerRecord;
-import org.bukkit.Statistic;
 
 /**
  * Provides a cache between backend storage and the stats plugin/listeners
@@ -69,7 +68,7 @@ public class PlayerStatManager implements CommandExecutor {
                 // record time for player
                 EntityStatBlob blob = entry.getValue().getValue();
 
-                if (blob.getType().equals(BeardStat.PLAYER_TYPE)) {
+                if (blob.getType().equals(IStatDataProvider.PLAYER_TYPE)) {
                     String entityName = blob.getName();
                     ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
 

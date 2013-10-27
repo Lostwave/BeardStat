@@ -6,10 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -17,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.MatchResult;
 
-import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
 
 import org.bukkit.Bukkit;
@@ -27,17 +23,22 @@ import com.tehbeard.BeardStat.BeardStat;
 import com.tehbeard.BeardStat.BeardStatRuntimeException;
 import com.tehbeard.BeardStat.DataProviders.metadata.CategoryMeta;
 import com.tehbeard.BeardStat.DataProviders.metadata.DomainMeta;
-import com.tehbeard.BeardStat.NoRecordFoundException;
 import com.tehbeard.BeardStat.containers.EntityStatBlob;
 import com.tehbeard.BeardStat.containers.IStat;
 import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
 import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.BeardStat.DataProviders.metadata.WorldMeta;
+import com.tehbeard.BeardStat.NoRecordFoundException;
 import com.tehbeard.BeardStat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
+import net.dragonzone.promise.Deferred;
 
 /**
  * base class for JDBC based data providers Allows easy development of data
@@ -46,7 +47,7 @@ import java.util.logging.Level;
  * @author James
  *
  */
-public abstract class JDBCStatDataProvider implements IStatDataProvider {
+public class JDBCStatDataProvider implements IStatDataProvider {
 
     /**
      * SQL SCRIPT NAME BLOCK
@@ -82,7 +83,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected PreparedStatement saveCategory;
     protected PreparedStatement saveStatistic;
     // Load data from db
-    protected PreparedStatement loadEntity;
     protected PreparedStatement loadEntityData;
     // save to db
     protected PreparedStatement saveEntity;
@@ -97,7 +97,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected String connectionUrl = "";
     protected Properties connectionProperties = new Properties();
     protected String tblPrefix = "stats";
-    private String type = "sql";
+    private String scriptSuffix = "sql";
     // ID Cache
     private Map<String, DomainMeta> domainMetaMap = new HashMap<String, DomainMeta>();
     private Map<String, WorldMeta> worldMetaMap = new HashMap<String, WorldMeta>();
@@ -107,9 +107,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
     protected BeardStat plugin;
 
-    public JDBCStatDataProvider(BeardStat plugin, String type, String driverClass) {
+    public JDBCStatDataProvider(BeardStat plugin, String scriptSuffix, String driverClass) {
         try {
-            this.type = type;
+            this.scriptSuffix = scriptSuffix;
             this.plugin = plugin;
             Class.forName(driverClass);// load driver
         } catch (ClassNotFoundException ex) {
@@ -284,7 +284,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected void prepareStatements() {
         this.plugin.printDebugCon("Preparing statements");
 
-        this.loadEntity = getStatementFromScript(SQL_LOAD_ENTITY);
         this.loadEntityData = getStatementFromScript(SQL_LOAD_ENTITY_DATA);
 
         // Load components
@@ -381,12 +380,64 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public Promise<EntityStatBlob> pullStatBlob(String player, String type) {
-        return pullStatBlob(player, type, true);
+    public ProviderQueryResult[] queryDatabase(ProviderQuery query) {
+        if (query.name == null && query.type == null && query.uuid == null) {
+            throw new IllegalStateException("Invalid ProviderQuery passed.");
+        }
+        String sql = "SELECT `entityId`,`name`,`type`,`uuid` FROM `${PREFIX}_entity` WHERE ";
+        boolean addAnd = false;
+        if (query.name != null) {
+            sql += "`name`=? ";
+            addAnd = true;
+        }
+        if (query.type != null) {
+            if (addAnd) {
+                sql += "AND ";
+            }
+            sql += "`type`=? ";
+            addAnd = true;
+        }
+        if (query.uuid != null) {
+            if (addAnd) {
+                sql += "AND ";
+            }
+            sql += "`uuid`=? ";
+        }
+        try {
+            PreparedStatement qryStmt = conn.prepareStatement(sql);
+            int colId = 1;
+            if (query.name != null) {
+                qryStmt.setString(colId, query.name);
+                colId++;
+            }
+            if (query.type != null) {
+                qryStmt.setString(colId, query.type);
+                colId++;
+            }
+            if (query.uuid != null) {
+                qryStmt.setString(colId, query.uuid.toString());
+                colId++;
+            }
+            ResultSet rs = qryStmt.executeQuery();
+            List<ProviderQueryResult> results = new ArrayList<ProviderQueryResult>();
+            while (rs.next()) {
+                results.add(new ProviderQueryResult(
+                        rs.getInt("entityId"),
+                        rs.getString("name"),
+                        rs.getString("type"),
+                        rs.getString("uuid") == null ? null : UUID.fromString(rs.getString("uuid"))));
+            }
+            rs.close();
+            return results.toArray(new ProviderQueryResult[0]);
+
+        } catch (SQLException e) {
+            plugin.mysqlError(e, "AUTOGEN: " + sql);
+        }
+        return new ProviderQueryResult[0];
     }
 
     @Override
-    public Promise<EntityStatBlob> pullStatBlob(final String player, final String type, final boolean create) {
+    public Promise<EntityStatBlob> pullEntityBlob(final ProviderQuery query) {
 
         final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
@@ -400,49 +451,44 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         return;
                     }
                     long t1 = (new Date()).getTime();
+                    ProviderQueryResult[] results = queryDatabase(query);
+                    if (results.length > 1) {
+                        throw new IllegalStateException("Invalid Query provided, more than one entity returned.");
+                    }
+                    EntityStatBlob esb = null;
+                    ResultSet rs;
+                    
+                    if (results.length == 1){
+                        //Load pb
+                    }else if(results.length == 0 && query.create) {
 
-                    // Ok, try to get entity from database
-                    loadEntity.setString(1, player);
-                    loadEntity.setString(2, type);
-
-                    ResultSet rs = loadEntity.executeQuery();
-                    EntityStatBlob pb = null;
-
-                    if (!rs.next()) {
-                        if (!create) {
-                            promise.reject(new NoRecordFoundException());// Fail
-                            // out
-                            // here
-                            // instead.
-                            return;
-                        }
-
-                        // No player found! Let's create an entry for them!
-                        rs.close();
-                        rs = null;
-                        saveEntity.setString(1, player);
-                        saveEntity.setString(2, type);
+                        saveEntity.setString(1, query.name);
+                        saveEntity.setString(2, query.type);
+                        saveEntity.setString(3, query.uuid == null ? "" : query.uuid.toString());
                         saveEntity.executeUpdate();
                         rs = saveEntity.getGeneratedKeys();
                         rs.next();// load player id
 
+                        // make the player object, close out result set.
+                        esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.uuid);
+                        rs.close();
+                        rs = null;
+                    }
+                    //Didn't get a esb, kill it.
+                    if(esb == null){
+                        promise.reject(new NoRecordFoundException());
+                        return;
                     }
 
-                    // make the player object, close out result set.
-                    pb = new EntityStatBlob(player, rs.getInt(1), "player");
-                    rs.close();
-                    rs = null;
-
                     // load all stats data
-                    loadEntityData.setInt(1, pb.getEntityID());
-                    loadEntityData.setInt(1, pb.getEntityID());
+                    loadEntityData.setInt(1, esb.getEntityID());
                     plugin.printDebugCon("executing "
                             + loadEntityData);
                     rs = loadEntityData.executeQuery();
 
                     while (rs.next()) {
                         // `domain`,`world`,`category`,`statistic`,`value`
-                        IStat ps = pb.getStat(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                        IStat ps = esb.getStat(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
                         ps.setValue(rs.getInt(5));
                         ps.clearArchive();
                     }
@@ -451,7 +497,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     plugin.printDebugCon("time taken to retrieve: "
                             + ((new Date()).getTime() - t1) + " Milliseconds");
 
-                    promise.resolve(pb);
+                    promise.resolve(esb);
                 } catch (SQLException e) {
                     plugin.mysqlError(e, SQL_LOAD_ENTITY_DATA);
                     promise.reject(e);
@@ -466,7 +512,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public void pushStatBlob(EntityStatBlob player) {
+    public boolean hasEntityBlob(ProviderQuery query) {
+        return queryDatabase(query).length > 1;
+    }
+
+    @Override
+    public boolean deleteEntityBlob(EntityStatBlob blob) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void pushEntityBlob(EntityStatBlob player) {
 
         synchronized (this.writeCache) {
 
@@ -505,7 +561,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         try {
                             saveEntityData.clearBatch();
                             for (Iterator<IStat> it = pb.getStats().iterator(); it.hasNext();) {
-                                stat  = it.next();
+                                stat = it.next();
                                 saveEntityData.setInt(1, pb.getEntityID());
                                 saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
                                 saveEntityData.setInt(3, getWorld(stat.getWorld()).getDbId());
@@ -548,47 +604,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         new Thread(this.flush).start();
     }
 
-    @Override
-    public void deleteStatBlob(String player) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean hasStatBlob(String player) {
-        try {
-            this.loadEntity.clearParameters();
-            this.loadEntity.setString(1, player);
-            this.loadEntity.setString(2, "player");
-
-            ResultSet rs = this.loadEntity.executeQuery();
-            boolean found = rs.next();
-            rs.close();
-            return found;
-
-        } catch (SQLException e) {
-            checkConnection();
-        }
-        return false;
-    }
-
-    @Override
-    public List<String> getStatBlobsHeld() {
-        List<String> list = new ArrayList<String>();
-        try {
-            this.listEntities.setString(1, "player");
-
-            ResultSet rs = this.listEntities.executeQuery();
-            while (rs.next()) {
-                list.add(rs.getString(1));
-            }
-            rs.close();
-
-        } catch (SQLException e) {
-            checkConnection();
-        }
-        return list;
-    }
-
     public void executeScript(String scriptName) {
         executeScript(scriptName, new HashMap<String, String>());
     }
@@ -606,7 +621,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public void executeScript(String scriptName, final Map<String, String> keys) {
         CallbackMatcher matcher = new CallbackMatcher("\\$\\{([A-Za-z0-9_]*)\\}");
 
-        String[] sqlStatements = this.plugin.readSQL(this.type, scriptName, this.tblPrefix).split("\\;");
+        String[] sqlStatements = this.plugin.readSQL(this.scriptSuffix, scriptName, this.tblPrefix).split("\\;");
         for (String s : sqlStatements) {
             String statement = matcher.replaceMatches(s, new Callback() {
                 @Override
@@ -639,7 +654,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     public PreparedStatement getStatementFromScript(String scriptName, int flags) {
         try {
-            return this.conn.prepareStatement(this.plugin.readSQL(this.type, scriptName, this.tblPrefix), flags);
+            return this.conn.prepareStatement(this.plugin.readSQL(this.scriptSuffix, scriptName, this.tblPrefix), flags);
         } catch (SQLException ex) {
             this.plugin.mysqlError(ex, scriptName);
             throw new BeardStatRuntimeException("Failed to create SQL statement for a script", ex, false);
@@ -648,7 +663,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     public PreparedStatement getStatementFromScript(String scriptName) {
         try {
-            return this.conn.prepareStatement(this.plugin.readSQL(this.type, scriptName, this.tblPrefix));
+            return this.conn.prepareStatement(this.plugin.readSQL(this.scriptSuffix, scriptName, this.tblPrefix));
         } catch (SQLException ex) {
             this.plugin.mysqlError(ex, scriptName);
             throw new BeardStatRuntimeException("Failed to create SQL statement for a script", ex, false);
