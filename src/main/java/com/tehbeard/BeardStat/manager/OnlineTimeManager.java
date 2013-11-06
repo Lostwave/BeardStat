@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.manager;
+package com.tehbeard.beardstat.manager;
 
 import java.util.Collection;
 import java.util.HashMap;

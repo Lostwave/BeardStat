@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.containers;
+package com.tehbeard.beardstat.containers;
 
 import java.util.ArrayList;
 import java.util.Iterator;

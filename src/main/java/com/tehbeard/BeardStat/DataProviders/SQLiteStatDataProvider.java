@@ -1,8 +1,8 @@
-package com.tehbeard.BeardStat.DataProviders;
+package com.tehbeard.beardstat.DataProviders;
 
 import java.sql.SQLException;
 
-import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.beardstat.BeardStat;
 
 public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 

@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.listeners;
+package com.tehbeard.beardstat.listeners;
 
 import java.util.List;
 
@@ -23,11 +23,11 @@ import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.potion.PotionEffect;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
-import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
-import com.tehbeard.BeardStat.utils.MetaDataCapture;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
+import com.tehbeard.beardstat.utils.MetaDataCapture;
 
 public class StatEntityListener extends StatListener {
 

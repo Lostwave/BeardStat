@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tehbeard.BeardStat;
+package com.tehbeard.beardstat;
 
 import java.util.HashMap;
 import java.util.Map;

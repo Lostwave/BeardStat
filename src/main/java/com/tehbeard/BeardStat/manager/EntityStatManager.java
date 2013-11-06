@@ -2,17 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tehbeard.BeardStat.manager;
+package com.tehbeard.beardstat.manager;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
-import com.tehbeard.BeardStat.DataProviders.ProviderQuery;
-import com.tehbeard.BeardStat.DataProviders.ProviderQueryResult;
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.listeners.defer.DeferAddNameType;
-import com.tehbeard.BeardStat.listeners.defer.DeferAddUUID;
-import com.tehbeard.BeardStat.listeners.defer.DeferRemoveBlob;
-import com.tehbeard.BeardStat.manager.OnlineTimeManager.ManagerRecord;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
+import com.tehbeard.beardstat.DataProviders.ProviderQuery;
+import com.tehbeard.beardstat.DataProviders.ProviderQueryResult;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.listeners.defer.DeferAddNameType;
+import com.tehbeard.beardstat.listeners.defer.DeferAddUUID;
+import com.tehbeard.beardstat.listeners.defer.DeferRemoveBlob;
+import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;

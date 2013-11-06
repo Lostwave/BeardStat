@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.commands;
+package com.tehbeard.beardstat.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,10 +10,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.manager.EntityStatManager;
 
 /**
  * Implements last on feature, figures out when a user was last online

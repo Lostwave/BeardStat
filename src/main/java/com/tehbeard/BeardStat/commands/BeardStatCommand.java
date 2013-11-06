@@ -1,9 +1,9 @@
-package com.tehbeard.BeardStat.commands;
+package com.tehbeard.beardstat.commands;
 
 import org.bukkit.command.CommandExecutor;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.manager.EntityStatManager;
 
 public abstract class BeardStatCommand implements CommandExecutor {
 

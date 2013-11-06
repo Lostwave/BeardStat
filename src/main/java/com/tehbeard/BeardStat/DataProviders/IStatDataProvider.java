@@ -1,11 +1,11 @@
-package com.tehbeard.BeardStat.DataProviders;
+package com.tehbeard.beardstat.DataProviders;
 
-import com.tehbeard.BeardStat.DataProviders.metadata.*;
+import com.tehbeard.beardstat.DataProviders.metadata.*;
 import java.util.List;
 
 import net.dragonzone.promise.Promise;
 
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
 import java.util.UUID;
 
 /**

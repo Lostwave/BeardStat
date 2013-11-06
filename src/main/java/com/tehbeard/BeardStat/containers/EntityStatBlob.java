@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.containers;
+package com.tehbeard.beardstat.containers;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 
 import com.tehbeard.utils.expressions.VariableProvider;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStatRuntimeException;
+import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
 import java.util.UUID;
 
 /**

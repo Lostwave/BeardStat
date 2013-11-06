@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.commands;
+package com.tehbeard.beardstat.commands;
 
 import java.util.Stack;
 import java.util.regex.PatternSyntaxException;
@@ -11,14 +11,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.IStat;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
-import com.tehbeard.BeardStat.containers.StatVector;
-import com.tehbeard.BeardStat.utils.LanguagePack;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStatRuntimeException;
+import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.containers.IStat;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.containers.StatVector;
+import com.tehbeard.beardstat.utils.LanguagePack;
 
 /**
  * Show stats for a player,

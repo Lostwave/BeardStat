@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.containers;
+package com.tehbeard.beardstat.containers;
 
 /**
  * Represents a stat

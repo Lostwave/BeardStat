@@ -1,12 +1,12 @@
-package com.tehbeard.BeardStat.commands;
+package com.tehbeard.beardstat.commands;
 
 import com.tehbeard.utils.commands.ArgumentPack;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.manager.EntityStatManager;
 
 /**
  * Stat admin /statadmin -a tehbeard - reset all stats for person, clears all

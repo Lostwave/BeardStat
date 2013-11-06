@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.listeners;
+package com.tehbeard.beardstat.listeners;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.manager.EntityStatManager;
 
 /**
  * Base listener for stats, adds helper methods

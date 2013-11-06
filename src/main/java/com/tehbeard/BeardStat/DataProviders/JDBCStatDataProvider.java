@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.DataProviders;
+package com.tehbeard.beardstat.DataProviders;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,17 +19,17 @@ import net.dragonzone.promise.Promise;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.BeardStatRuntimeException;
-import com.tehbeard.BeardStat.DataProviders.metadata.CategoryMeta;
-import com.tehbeard.BeardStat.DataProviders.metadata.DomainMeta;
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.containers.IStat;
-import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta;
-import com.tehbeard.BeardStat.DataProviders.metadata.StatisticMeta.Formatting;
-import com.tehbeard.BeardStat.DataProviders.metadata.WorldMeta;
-import com.tehbeard.BeardStat.NoRecordFoundException;
-import com.tehbeard.BeardStat.utils.HumanNameGenerator;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStatRuntimeException;
+import com.tehbeard.beardstat.DataProviders.metadata.CategoryMeta;
+import com.tehbeard.beardstat.DataProviders.metadata.DomainMeta;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.containers.IStat;
+import com.tehbeard.beardstat.DataProviders.metadata.StatisticMeta;
+import com.tehbeard.beardstat.DataProviders.metadata.StatisticMeta.Formatting;
+import com.tehbeard.beardstat.DataProviders.metadata.WorldMeta;
+import com.tehbeard.beardstat.NoRecordFoundException;
+import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
 import java.util.ArrayList;

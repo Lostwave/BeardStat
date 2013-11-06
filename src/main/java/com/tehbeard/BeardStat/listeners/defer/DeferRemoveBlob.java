@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tehbeard.BeardStat.listeners.defer;
+package com.tehbeard.beardstat.listeners.defer;
 
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
 import java.util.HashMap;
 import java.util.Map;
 import net.dragonzone.promise.Delegate;

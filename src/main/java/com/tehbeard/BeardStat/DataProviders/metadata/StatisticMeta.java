@@ -1,12 +1,12 @@
-package com.tehbeard.BeardStat.DataProviders.metadata;
+package com.tehbeard.beardstat.DataProviders.metadata;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tehbeard.BeardStat.commands.formatters.StatFormatter;
-import com.tehbeard.BeardStat.utils.HumanNameGenerator;
-import com.tehbeard.BeardStat.utils.LanguagePack;
+import com.tehbeard.beardstat.commands.formatters.StatFormatter;
+import com.tehbeard.beardstat.utils.HumanNameGenerator;
+import com.tehbeard.beardstat.utils.LanguagePack;
 
 public class StatisticMeta {
 

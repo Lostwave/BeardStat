@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.utils;
+package com.tehbeard.beardstat.utils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,7 +29,7 @@ import org.bukkit.material.WoodenStep;
 import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionType;
 
-import com.tehbeard.BeardStat.utils.MetaDataCapture.EntryInfo;
+import com.tehbeard.beardstat.utils.MetaDataCapture.EntryInfo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;

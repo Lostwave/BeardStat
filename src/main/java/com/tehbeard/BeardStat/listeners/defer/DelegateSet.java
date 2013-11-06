@@ -1,9 +1,9 @@
-package com.tehbeard.BeardStat.listeners.defer;
+package com.tehbeard.beardstat.listeners.defer;
 
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
 
 /**
  * Delegate setting a stat's value to a later date

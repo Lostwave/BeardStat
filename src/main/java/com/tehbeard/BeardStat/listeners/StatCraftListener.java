@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.listeners;
+package com.tehbeard.beardstat.listeners;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.tehbeard.BeardStat.BeardStat;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
-import com.tehbeard.BeardStat.utils.MetaDataCapture;
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.utils.MetaDataCapture;
 
 public class StatCraftListener extends StatListener {
 

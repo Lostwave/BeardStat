@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.containers;
+package com.tehbeard.beardstat.containers;
 
 /**
  * Concrete implementation of a player stat. This is the default type for stats,

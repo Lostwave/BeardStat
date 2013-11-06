@@ -1,5 +1,5 @@
 name: BeardStat
-main: com.tehbeard.BeardStat.BeardStat
+main: com.tehbeard.beardstat.BeardStat
 version: ${project.plugin.version}-${describe}
 authors: [Tehbeard]
 commands:

@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat;
+package com.tehbeard.beardstat;
 
 /**
  * Represents an error that might occur during the operation of BeardStat.

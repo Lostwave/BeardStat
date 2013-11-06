@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat;
+package com.tehbeard.beardstat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,25 +21,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Plotter;
 
-import com.tehbeard.BeardStat.DataProviders.IStatDataProvider;
-import com.tehbeard.BeardStat.DataProviders.MysqlStatDataProvider;
-import com.tehbeard.BeardStat.DataProviders.SQLiteStatDataProvider;
-import com.tehbeard.BeardStat.commands.LastOnCommand;
-import com.tehbeard.BeardStat.commands.StatAdmin;
-import com.tehbeard.BeardStat.commands.StatCommand;
-import com.tehbeard.BeardStat.commands.StatPageCommand;
-import com.tehbeard.BeardStat.commands.playedCommand;
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.manager.OnlineTimeManager;
-import com.tehbeard.BeardStat.manager.EntityStatManager;
-import com.tehbeard.BeardStat.listeners.StatBlockListener;
-import com.tehbeard.BeardStat.listeners.StatCraftListener;
-import com.tehbeard.BeardStat.listeners.StatEntityListener;
-import com.tehbeard.BeardStat.listeners.StatPlayerListener;
-import com.tehbeard.BeardStat.listeners.StatVehicleListener;
-import com.tehbeard.BeardStat.utils.HumanNameGenerator;
-import com.tehbeard.BeardStat.utils.LanguagePack;
-import com.tehbeard.BeardStat.utils.MetaDataCapture;
+import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
+import com.tehbeard.beardstat.DataProviders.MysqlStatDataProvider;
+import com.tehbeard.beardstat.DataProviders.SQLiteStatDataProvider;
+import com.tehbeard.beardstat.commands.LastOnCommand;
+import com.tehbeard.beardstat.commands.StatAdmin;
+import com.tehbeard.beardstat.commands.StatCommand;
+import com.tehbeard.beardstat.commands.StatPageCommand;
+import com.tehbeard.beardstat.commands.playedCommand;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.manager.OnlineTimeManager;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.listeners.StatBlockListener;
+import com.tehbeard.beardstat.listeners.StatCraftListener;
+import com.tehbeard.beardstat.listeners.StatEntityListener;
+import com.tehbeard.beardstat.listeners.StatPlayerListener;
+import com.tehbeard.beardstat.listeners.StatVehicleListener;
+import com.tehbeard.beardstat.utils.HumanNameGenerator;
+import com.tehbeard.beardstat.utils.LanguagePack;
+import com.tehbeard.beardstat.utils.MetaDataCapture;
 import java.util.logging.Level;
 import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -247,9 +247,6 @@ public class BeardStat extends JavaPlugin {
         }
         printCon("BeardStat Loaded");
         
-        printCon("Hacking the gibson");
-        
-        BeardStatUUID.hackTheGibson(this);
     }
 
     /**

@@ -1,8 +1,8 @@
-package com.tehbeard.BeardStat.containers;
+package com.tehbeard.beardstat.containers;
 
 import org.bukkit.Bukkit;
 
-import com.tehbeard.BeardStat.BeardStat;
+import com.tehbeard.beardstat.BeardStat;
 
 public class HealthStat implements IStat {
 

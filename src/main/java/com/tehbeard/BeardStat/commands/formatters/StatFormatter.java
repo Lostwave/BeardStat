@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.commands.formatters;
+package com.tehbeard.beardstat.commands.formatters;
 
 /**
  * interface for formatting a stat

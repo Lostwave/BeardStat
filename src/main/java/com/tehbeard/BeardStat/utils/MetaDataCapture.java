@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.utils;
+package com.tehbeard.beardstat.utils;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -13,8 +13,8 @@ import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
 import org.bukkit.potion.PotionEffect;
 
-import com.tehbeard.BeardStat.containers.EntityStatBlob;
-import com.tehbeard.BeardStat.listeners.defer.DelegateIncrement;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
 
 /**
  * translates a material/entity to the metadata to capture.

@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat;
+package com.tehbeard.beardstat;
 
 public class NoRecordFoundException extends Exception {
 

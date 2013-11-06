@@ -1,4 +1,4 @@
-package com.tehbeard.BeardStat.commands.formatters;
+package com.tehbeard.beardstat.commands.formatters;
 
 /**
  * Uses String.Format to format a stats
