@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.DataProviders;
+package com.tehbeard.beardstat.dataproviders;
 
 import java.sql.SQLException;
 

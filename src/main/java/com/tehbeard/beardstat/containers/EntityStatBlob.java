@@ -13,7 +13,7 @@ import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
-import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import java.util.UUID;
 
 /**

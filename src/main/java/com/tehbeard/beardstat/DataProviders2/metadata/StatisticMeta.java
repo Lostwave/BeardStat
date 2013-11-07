@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.DataProviders.metadata;
+package com.tehbeard.beardstat.dataproviders.metadata;
 
 import java.util.Date;
 import java.util.HashMap;

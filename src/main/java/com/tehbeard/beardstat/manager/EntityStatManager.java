@@ -5,9 +5,9 @@
 package com.tehbeard.beardstat.manager;
 
 import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
-import com.tehbeard.beardstat.DataProviders.ProviderQuery;
-import com.tehbeard.beardstat.DataProviders.ProviderQueryResult;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.ProviderQuery;
+import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.listeners.defer.DeferAddNameType;
 import com.tehbeard.beardstat.listeners.defer.DeferAddUUID;

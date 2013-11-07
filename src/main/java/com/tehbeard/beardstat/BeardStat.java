@@ -21,9 +21,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Plotter;
 
-import com.tehbeard.beardstat.DataProviders.IStatDataProvider;
-import com.tehbeard.beardstat.DataProviders.MysqlStatDataProvider;
-import com.tehbeard.beardstat.DataProviders.SQLiteStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.MysqlStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.SQLiteStatDataProvider;
 import com.tehbeard.beardstat.commands.LastOnCommand;
 import com.tehbeard.beardstat.commands.StatAdmin;
 import com.tehbeard.beardstat.commands.StatCommand;

@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.DataProviders;
+package com.tehbeard.beardstat.dataproviders;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,13 +21,13 @@ import org.bukkit.ChatColor;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
-import com.tehbeard.beardstat.DataProviders.metadata.CategoryMeta;
-import com.tehbeard.beardstat.DataProviders.metadata.DomainMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
-import com.tehbeard.beardstat.DataProviders.metadata.StatisticMeta;
-import com.tehbeard.beardstat.DataProviders.metadata.StatisticMeta.Formatting;
-import com.tehbeard.beardstat.DataProviders.metadata.WorldMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
+import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import com.tehbeard.beardstat.NoRecordFoundException;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;

@@ -1,6 +1,6 @@
-package com.tehbeard.beardstat.DataProviders;
+package com.tehbeard.beardstat.dataproviders;
 
-import com.tehbeard.beardstat.DataProviders.metadata.*;
+import com.tehbeard.beardstat.dataproviders.metadata.*;
 import java.util.List;
 
 import net.dragonzone.promise.Promise;
