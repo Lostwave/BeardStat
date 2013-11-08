@@ -4,7 +4,7 @@
  */
 package com.tehbeard.beardstat.dataproviders;
 
-import java.util.UUID;
+
 
 /**
  *
@@ -14,9 +14,9 @@ public class ProviderQueryResult {
     public final int dbid;
     public final String name;
     public final String type;
-    public final UUID uuid;
+    public final String uuid;
 
-    public ProviderQueryResult(int dbid,String name,String type,UUID uuid){
+    public ProviderQueryResult(int dbid,String name,String type,String uuid){
         this.dbid = dbid;
         this.name = name;
         this.type = type;

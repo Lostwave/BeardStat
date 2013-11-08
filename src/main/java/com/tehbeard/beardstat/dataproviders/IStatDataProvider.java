@@ -6,7 +6,7 @@ import java.util.List;
 import net.dragonzone.promise.Promise;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import java.util.UUID;
+
 
 /**
  * Provides push/pull service for getting and saving stats to a backend storage

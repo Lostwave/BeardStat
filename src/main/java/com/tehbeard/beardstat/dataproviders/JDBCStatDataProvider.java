@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
+
 import java.util.logging.Level;
 import net.dragonzone.promise.Deferred;
 
@@ -425,7 +425,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         rs.getInt("entityId"),
                         rs.getString("name"),
                         rs.getString("type"),
-                        rs.getString("uuid") == null ? null : UUID.nameUUIDFromBytes(rs.getString("uuid").getBytes())));
+                        rs.getString("uuid") == null ? null : rs.getString("uuid")));
             }
             rs.close();
             return results.toArray(new ProviderQueryResult[0]);

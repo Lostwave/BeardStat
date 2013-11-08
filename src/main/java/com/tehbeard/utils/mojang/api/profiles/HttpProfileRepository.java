@@ -8,11 +8,12 @@ import com.tehbeard.utils.mojang.api.http.HttpHeader;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class HttpProfileRepository implements ProfileRepository {
 
@@ -54,15 +55,4 @@ public class HttpProfileRepository implements ProfileRepository {
         return gson.fromJson(response, ProfileSearchResult.class);
     }
 
-    public static void main(String[] args){
-        HttpProfileRepository repo = new HttpProfileRepository();
-        Scanner s = new Scanner(System.in);
-        String name = s.nextLine();
-        System.out.println(UUID.randomUUID());
-        for(Profile result : repo.findProfilesByCriteria(new ProfileCriteria(name, "minecraft"))){
-          System.out.println(result.getName() + " :: " + result.getId());
-          System.out.println(UUID.nameUUIDFromBytes(result.getId().getBytes()));
-        }
-        
-    }
 }

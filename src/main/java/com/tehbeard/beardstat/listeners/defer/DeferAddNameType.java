@@ -7,7 +7,7 @@ package com.tehbeard.beardstat.listeners.defer;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import java.util.Map;
-import java.util.UUID;
+
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
@@ -30,7 +30,7 @@ public class DeferAddNameType implements Delegate<Void, Promise<EntityStatBlob>>
     }
     public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
         if (params.getValue() == null) {
-            UUID uuid = params.getValue().getUUID();
+            String uuid = params.getValue().getString();
             if(uuid != null){
                 cache.put(EntityStatManager.getCacheKey(params.getValue().getName(), params.getValue().getType()),params);
             }

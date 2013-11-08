@@ -14,7 +14,7 @@ import com.tehbeard.utils.expressions.VariableProvider;
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import java.util.UUID;
+
 
 /**
  * Represents a collection of statistics bound to an entity Currently only used
@@ -63,7 +63,7 @@ public class EntityStatBlob implements VariableProvider {
     private int                entityId;
     private String             name;
     private String             type;
-    private UUID               uuid;
+    private String               uuid;
 
     public String getName() {
         return this.name;
@@ -80,7 +80,7 @@ public class EntityStatBlob implements VariableProvider {
      * @param ID
      *            playerID in database
      */
-    public EntityStatBlob(String name, int entityId, String type,UUID uuid) {
+    public EntityStatBlob(String name, int entityId, String type,String uuid) {
         this.name = name;
         this.entityId = entityId;
         this.type = type;
@@ -237,7 +237,7 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     public EntityStatBlob cloneForArchive() {
-        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type,new UUID(uuid.getMostSignificantBits(),uuid.getLeastSignificantBits()));
+        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type,uuid);
         blob.stats.clear();
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
@@ -256,7 +256,7 @@ public class EntityStatBlob implements VariableProvider {
         throw new UnsupportedOperationException("Array support not yet available."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public UUID getUUID(){
+    public String getString(){
         return uuid;
     }
 

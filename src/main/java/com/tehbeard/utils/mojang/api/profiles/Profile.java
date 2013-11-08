@@ -1,6 +1,6 @@
 package com.tehbeard.utils.mojang.api.profiles;
 
-import java.util.UUID;
+
 
 public class Profile {
     private String id;
@@ -20,14 +20,5 @@ public class Profile {
 
     public void setName(String name) {
         this.name = name;
-    }
-    
-    /**
-     * Generates a UUID from the returned id
-     * @author Tehbeard
-     * @return 
-     */
-    public UUID getUUID(){
-        return UUID.nameUUIDFromBytes(getId().getBytes());
     }
 }

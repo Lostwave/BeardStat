@@ -20,7 +20,7 @@ import com.tehbeard.utils.mojang.api.profiles.ProfileRepository;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.UUID;
+
 import net.dragonzone.promise.Promise;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -53,16 +53,16 @@ public class EntityStatManager implements CommandExecutor{
     }
     
     public Promise<EntityStatBlob> getOrCreatePlayerStatBlob(String name){
-        UUID uuid = null;
+        String uuid = null;
         Profile[] result = profileRepo.findProfilesByCriteria(new ProfileCriteria(name,"minecraft"));
         if(result.length == 1){
-            uuid = result[0].getUUID();
+            uuid = result[0].getId();
         }
         
-        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, uuid);//TODO - FIX UUID IN FUTURE.
+        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, uuid);//TODO - FIX String IN FUTURE.
     }
 
-    public Promise<EntityStatBlob> getOrCreateBlob(String name, String type, UUID uuid) {
+    public Promise<EntityStatBlob> getOrCreateBlob(String name, String type, String uuid) {
         return getBlob(name, type, uuid, true);
     }
 
@@ -71,11 +71,11 @@ public class EntityStatManager implements CommandExecutor{
     }
     
 
-    private Promise<EntityStatBlob> getBlob(String name, String type, UUID uuid, boolean create) {
+    private Promise<EntityStatBlob> getBlob(String name, String type, String uuid, boolean create) {
         final String cacheKey = getCacheKey(name, type);
         if (!typeNameCache.containsKey(cacheKey)) {
 
-            //Pull from database, preemptively cache name/type, cache UUID on completion.
+            //Pull from database, preemptively cache name/type, cache String on completion.
             Promise<EntityStatBlob> dbValue = backendDatabase.pullEntityBlob(new ProviderQuery(name, type, uuid, create));
 
             typeNameCache.put(cacheKey, dbValue);// Pre-emptively cache the promise, defer removing to on error.
@@ -87,11 +87,11 @@ public class EntityStatManager implements CommandExecutor{
         return typeNameCache.get(cacheKey);
     }
 
-    public Promise<EntityStatBlob> getBlobByUUID(UUID uuid) {
+    public Promise<EntityStatBlob> getBlobByString(String uuid) {
 
         if (!uuidCache.containsKey(uuid.toString())) {
 
-            //Pull from database, preemptively cache name/type, cache UUID on completion.
+            //Pull from database, preemptively cache name/type, cache String on completion.
             Promise<EntityStatBlob> dbValue = backendDatabase.pullEntityBlob(new ProviderQuery(null, null, uuid, false));
 
             uuidCache.put(uuid.toString(), dbValue);// Pre-emptively cache the promise, defer removing to on error.
