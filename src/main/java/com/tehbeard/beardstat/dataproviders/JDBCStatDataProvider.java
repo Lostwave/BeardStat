@@ -425,7 +425,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         rs.getInt("entityId"),
                         rs.getString("name"),
                         rs.getString("type"),
-                        rs.getString("uuid") == null ? null : UUID.fromString(rs.getString("uuid"))));
+                        rs.getString("uuid") == null ? null : UUID.nameUUIDFromBytes(rs.getString("uuid").getBytes())));
             }
             rs.close();
             return results.toArray(new ProviderQueryResult[0]);

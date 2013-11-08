@@ -13,6 +13,10 @@ import com.tehbeard.beardstat.listeners.defer.DeferAddNameType;
 import com.tehbeard.beardstat.listeners.defer.DeferAddUUID;
 import com.tehbeard.beardstat.listeners.defer.DeferRemoveBlob;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
+import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
+import com.tehbeard.utils.mojang.api.profiles.Profile;
+import com.tehbeard.utils.mojang.api.profiles.ProfileCriteria;
+import com.tehbeard.utils.mojang.api.profiles.ProfileRepository;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -35,6 +39,8 @@ public class EntityStatManager implements CommandExecutor{
     private HashMap<String, Promise<EntityStatBlob>> uuidCache = new HashMap<String, Promise<EntityStatBlob>>();
     private final BeardStat plugin;
     private final IStatDataProvider backendDatabase;
+    
+    private final ProfileRepository profileRepo = new HttpProfileRepository();
 
     public EntityStatManager(BeardStat plugin, IStatDataProvider backendDatabase) {
         this.plugin = plugin;
@@ -47,7 +53,13 @@ public class EntityStatManager implements CommandExecutor{
     }
     
     public Promise<EntityStatBlob> getOrCreatePlayerStatBlob(String name){
-        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, null);//TODO - FIX UUID IN FUTURE.
+        UUID uuid = null;
+        Profile[] result = profileRepo.findProfilesByCriteria(new ProfileCriteria(name,"minecraft"));
+        if(result.length == 1){
+            uuid = result[0].getUUID();
+        }
+        
+        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, uuid);//TODO - FIX UUID IN FUTURE.
     }
 
     public Promise<EntityStatBlob> getOrCreateBlob(String name, String type, UUID uuid) {
