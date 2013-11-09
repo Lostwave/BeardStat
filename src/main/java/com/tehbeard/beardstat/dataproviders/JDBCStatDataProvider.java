@@ -154,10 +154,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * @throws BeardStatRuntimeException
      */
     protected void initialise() throws BeardStatRuntimeException {
+        try{
         createConnection();
 
         checkForMigration();
-
+        
         checkAndMakeTable();
         prepareStatements();
 
@@ -167,6 +168,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 
         cacheComponents();
+        }
+        catch(SQLException ex){
+            throw new BeardStatRuntimeException("Error during init", ex, false);
+        }
     }
 
     /**
@@ -210,10 +215,45 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     Map<String, String> k = new HashMap<String, String>();
                     k.put("OLD_TBL", this.plugin.getConfig().getString("stats.database.table", ""));
 
-                    runCodeFor(migrateToVersion, preUpgrade.class);
-                    executeScript("sql/maintenence/migration/migrate." + migrateToVersion, k);
-                    runCodeFor(migrateToVersion, postUpgrade.class);
+                    //Run premigration method
+                    try {
+                        runCodeFor(migrateToVersion, preUpgrade.class);
+                    } catch (InvocationTargetException ex) {
+                        if (ex.getCause() instanceof SQLException) {
+                            this.plugin.mysqlError((SQLException) ex.getCause(), "@CLASS/PREUPGRADE/" + migrateToVersion);
+                            throw (SQLException) ex.getCause();
+                        }
+                    } catch (IllegalAccessException ex) {
+                        Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new SQLException("IllegalAccessException encountered", ex);
+                    } catch (IllegalArgumentException ex) {
+                        Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new SQLException("IllegalArgumentException encountered", ex);
+                    }
+                    
+                    //Run script
+                    try {
+                        executeScript("sql/maintenence/migration/migrate." + migrateToVersion, k);
+                    } catch (SQLException ex) {
+                        this.plugin.mysqlError(ex, "sql/maintenence/migration/migrate." + migrateToVersion);
+                        throw ex;
+                    }
 
+                    //run post migration method
+                    try {
+                        runCodeFor(migrateToVersion, postUpgrade.class);
+                    } catch (InvocationTargetException ex) {
+                        if (ex.getCause() instanceof SQLException) {
+                            this.plugin.mysqlError((SQLException) ex.getCause(), "@CLASS/PREUPGRADE/" + migrateToVersion);
+                            throw (SQLException) ex.getCause();
+                        }
+                    } catch (IllegalAccessException ex) {
+                        Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new SQLException("IllegalAccessException encountered", ex);
+                    } catch (IllegalArgumentException ex) {
+                        Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new SQLException("IllegalArgumentException encountered", ex);
+                    }
                     this.conn.commit();
                     this.plugin.getConfig().set("stats.database.sql_db_version", migrateToVersion);
                     this.plugin.saveConfig();
@@ -221,9 +261,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 }
 
             } catch (SQLException e) {
+
                 this.plugin.printCon("An error occured while migrating the database, initiating rollback to version "
                         + (migrateToVersion - 1));
-                plugin.mysqlError(e, "sql/maintenence/migration/migrate." + migrateToVersion);
                 try {
                     this.conn.rollback();
                     throw new BeardStatRuntimeException("Failed to migrate database", e, false);
@@ -296,7 +336,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     /**
      * Constructs the tables.
      */
-    protected void checkAndMakeTable() {
+    protected void checkAndMakeTable() throws SQLException {
         this.plugin.printCon("Constructing table as needed.");
         executeScript(SQL_CREATE_TABLES);
     }
@@ -407,7 +447,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (query.name == null && query.type == null && query.uuid == null) {
             throw new IllegalStateException("Invalid ProviderQuery passed.");
         }
-        String sql = "SELECT `entityId`,`name`,`type`,`uuid` FROM `${PREFIX}_entity` WHERE ";
+        String sql = "SELECT `entityId`,`name`,`type`,`uuid` FROM `" + tblPrefix + "_entity` WHERE ";
         boolean addAnd = false;
         if (query.name != null) {
             sql += "`name`=? ";
@@ -627,7 +667,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         new Thread(this.flush).start();
     }
 
-    public void executeScript(String scriptName) {
+    public void executeScript(String scriptName) throws SQLException {
         executeScript(scriptName, new HashMap<String, String>());
     }
 
@@ -640,7 +680,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * Scripts support # for status comments and #!/script/path/here to execute subscripts
      * @throws SQLException
      */
-    public void executeScript(String scriptName, final Map<String, String> keys) {
+    public void executeScript(String scriptName, final Map<String, String> keys) throws SQLException {
         CallbackMatcher matcher = new CallbackMatcher("\\$\\{([A-Za-z0-9_]*)\\}");
 
         String[] sqlStatements = this.plugin.readSQL(this.scriptSuffix, scriptName, this.tblPrefix).split("\\;");
@@ -663,11 +703,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             } else if (statement.startsWith("#")) {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Status : " + statement.substring(1));
             } else {
-                try {
-                    this.conn.prepareStatement(statement).execute();
-                } catch (SQLException e) {
-                    this.plugin.mysqlError(e, scriptName);
-                }
+
+                this.conn.prepareStatement(statement).execute();
+
 
             }
         }
@@ -784,27 +822,25 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public EntityStatBlob pullEntityBlobDirect(ProviderQuery query) {
         return pullEntityBlob(query).getValue();
     }
-    
-    protected void runCodeFor(int version,Class<? extends Annotation> ann){
-        for(Method m : getClass().getMethods()){
-            if(m.isAnnotationPresent(ann)){
-                try {
-                    m.invoke(this);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InvocationTargetException ex) {
-                    Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
-                }
+
+    protected void runCodeFor(int version, Class<? extends Annotation> ann) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        for (Method m : getClass().getMethods()) {
+            if (m.isAnnotationPresent(ann)) {
+                m.invoke(this);
             }
         }
     }
-
     public final static int MAX_UUID_REQUESTS_PER = 2 * 64;
-    
+
+    /**
+     * Add UUIDS for all players
+     *
+     * @throws SQLException
+     */
     @postUpgrade(5)
     public void upgradeWriteUUIDS() throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE `" + tblPrefix + "_entity` SET `uuid`=? WHERE `name`=? and `type`=?");
+        stmt.setString(3, IStatDataProvider.PLAYER_TYPE);
         ProviderQueryResult[] result = queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
         plugin.printCon("Found " + result.length + " player entries, processing in batches of " + MAX_UUID_REQUESTS_PER);
         for (int i = 0; i < result.length; i += MAX_UUID_REQUESTS_PER) {
@@ -813,30 +849,33 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 toGet[k] = result[i + k].name;
             }
             Map<String, String> map = getUUIDS(toGet);
-            System.out.println("found " + map.size() + "/" + MAX_UUID_REQUESTS_PER + " entries");
             for (Entry<String, String> e : map.entrySet()) {
+                stmt.setString(2, e.getKey());
+                stmt.setString(1, e.getValue());
+                stmt.executeUpdate();
                 //System.out.println(e.getKey() + " = " + e.getValue());
             }
+            plugin.printCon("Updated " + map.size() + " entries");
         }
     }
-    
-     private Map<String, String> getUUIDS(String... players) {
+
+    private Map<String, String> getUUIDS(String... players) {
         Map<String, String> mapping = new HashMap<String, String>();
-        
+
         List<ProfileCriteria> criteria = new ArrayList<ProfileCriteria>(players.length);
         for (String player : players) {
             criteria.add(new ProfileCriteria(player, "minecraft"));
         }
-        
+
         Profile[] results = new HttpProfileRepository().findProfilesByCriteria(criteria.toArray(new ProfileCriteria[0]));
         for (Profile profile : results) {
-            
+
             mapping.put(
                     profile.getName(),
                     profile.getId());
         }
-        
-        
+
+
         return mapping;
     }
 }
