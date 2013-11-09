@@ -12,7 +12,7 @@ import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
 /**
- *
+ * Consumes the result of loading a entityStatBlob, adding it to EntityStatManagers cache for name:type searches
  * @author James
  */
 public class DeferAddNameType implements Delegate<Void, Promise<EntityStatBlob>> {

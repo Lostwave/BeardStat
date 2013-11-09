@@ -30,7 +30,6 @@ public class StatCommand extends BeardStatCommand {
 
     public StatCommand(EntityStatManager playerStatManager, BeardStat plugin) {
         super(playerStatManager, plugin);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -121,7 +120,7 @@ public class StatCommand extends BeardStatCommand {
             this.plugin.handleError(new BeardStatRuntimeException("/stats threw an error", e, true));
         }
 
-        // TODO: FINISH UP
+        // TODO: FINISH UP, i think this means check all the options have been added back in?
 
         return true;
     }

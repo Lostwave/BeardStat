@@ -6,6 +6,10 @@ import java.util.List;
 import net.dragonzone.promise.Promise;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 
 /**
@@ -16,6 +20,7 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
  *
  */
 public interface IStatDataProvider {
+    
     
     public static final String PLAYER_TYPE =  "player";
     public static final String GROUP_TYPE =   "group";

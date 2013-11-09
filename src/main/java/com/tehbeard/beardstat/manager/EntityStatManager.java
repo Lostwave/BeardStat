@@ -59,7 +59,7 @@ public class EntityStatManager implements CommandExecutor{
             uuid = result[0].getId();
         }
         
-        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, uuid);//TODO - FIX String IN FUTURE.
+        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, uuid);//TODO - CHECK THIS IS CORRECT
     }
 
     public Promise<EntityStatBlob> getOrCreateBlob(String name, String type, String uuid) {
@@ -94,9 +94,9 @@ public class EntityStatManager implements CommandExecutor{
             //Pull from database, preemptively cache name/type, cache String on completion.
             Promise<EntityStatBlob> dbValue = backendDatabase.pullEntityBlob(new ProviderQuery(null, null, uuid, false));
 
-            uuidCache.put(uuid.toString(), dbValue);// Pre-emptively cache the promise, defer removing to on error.
+            uuidCache.put(uuid, dbValue);// Pre-emptively cache the promise, defer removing to on error.
 
-            dbValue.onReject(new DeferRemoveBlob(uuid.toString(), uuidCache));
+            dbValue.onReject(new DeferRemoveBlob(uuid, uuidCache));
             dbValue.onDone(new DeferAddNameType(uuidCache));
 
         }

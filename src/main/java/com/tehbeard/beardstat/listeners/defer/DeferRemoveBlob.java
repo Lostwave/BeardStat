@@ -5,13 +5,12 @@
 package com.tehbeard.beardstat.listeners.defer;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import java.util.HashMap;
 import java.util.Map;
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;
 
 /**
- *
+ * Consumes the result of loading a entityStatBlob, removing it from the cache it was preemptively added to if an error occurs during loading.
  * @author James
  */
 public class DeferRemoveBlob implements Delegate<Void, Promise<EntityStatBlob>> {

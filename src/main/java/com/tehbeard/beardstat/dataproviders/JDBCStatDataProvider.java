@@ -32,23 +32,46 @@ import com.tehbeard.beardstat.NoRecordFoundException;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
+import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
+import com.tehbeard.utils.mojang.api.profiles.Profile;
+import com.tehbeard.utils.mojang.api.profiles.ProfileCriteria;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.dragonzone.promise.Deferred;
 
 /**
- * base class for JDBC based data providers Allows easy development of data
- * providers that make use of JDBC
+ * base class for JDBC based data providers Allows easy development of data providers that make use of JDBC
  *
  * @author James
  *
  */
 public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface preUpgrade {
+
+        int value();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface postUpgrade {
+
+        int value();
+    }
     /**
      * SQL SCRIPT NAME BLOCK
      */
@@ -147,9 +170,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     /**
-     * checks config in data folder against default (current versions config) If
-     * version conflicts it will attempt to run migration scripts sequentially
-     * to upgrade
+     * checks config in data folder against default (current versions config) If version conflicts it will attempt to run migration scripts sequentially to upgrade
      *
      * @throws SQLException
      */
@@ -189,7 +210,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     Map<String, String> k = new HashMap<String, String>();
                     k.put("OLD_TBL", this.plugin.getConfig().getString("stats.database.table", ""));
 
+                    runCodeFor(migrateToVersion, preUpgrade.class);
                     executeScript("sql/maintenence/migration/migrate." + migrateToVersion, k);
+                    runCodeFor(migrateToVersion, postUpgrade.class);
 
                     this.conn.commit();
                     this.plugin.getConfig().set("stats.database.sql_db_version", migrateToVersion);
@@ -457,10 +480,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     }
                     EntityStatBlob esb = null;
                     ResultSet rs;
-                    
-                    if (results.length == 1){
+
+                    if (results.length == 1) {
                         //Load pb
-                    }else if(results.length == 0 && query.create) {
+                    } else if (results.length == 0 && query.create) {
 
                         saveEntity.setString(1, query.name);
                         saveEntity.setString(2, query.type);
@@ -475,7 +498,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         rs = null;
                     }
                     //Didn't get a esb, kill it.
-                    if(esb == null){
+                    if (esb == null) {
                         promise.reject(new NoRecordFoundException());
                         return;
                     }
@@ -614,8 +637,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * @param scriptName name of script (sql/load/loadEntity)
      * @param keys (list of non-standard keys ${KEY_NAME} to replace)
      *
-     * Scripts support # for status comments and #!/script/path/here to execute
-     * subscripts
+     * Scripts support # for status comments and #!/script/path/here to execute subscripts
      * @throws SQLException
      */
     public void executeScript(String scriptName, final Map<String, String> keys) {
@@ -761,5 +783,60 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     @Override
     public EntityStatBlob pullEntityBlobDirect(ProviderQuery query) {
         return pullEntityBlob(query).getValue();
+    }
+    
+    protected void runCodeFor(int version,Class<? extends Annotation> ann){
+        for(Method m : getClass().getMethods()){
+            if(m.isAnnotationPresent(ann)){
+                try {
+                    m.invoke(this);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InvocationTargetException ex) {
+                    Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+    public final static int MAX_UUID_REQUESTS_PER = 2 * 64;
+    
+    @postUpgrade(5)
+    public void upgradeWriteUUIDS() throws SQLException {
+        ProviderQueryResult[] result = queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
+        plugin.printCon("Found " + result.length + " player entries, processing in batches of " + MAX_UUID_REQUESTS_PER);
+        for (int i = 0; i < result.length; i += MAX_UUID_REQUESTS_PER) {
+            String[] toGet = new String[Math.min(MAX_UUID_REQUESTS_PER, result.length)];
+            for (int k = 0; k < toGet.length; k++) {
+                toGet[k] = result[i + k].name;
+            }
+            Map<String, String> map = getUUIDS(toGet);
+            System.out.println("found " + map.size() + "/" + MAX_UUID_REQUESTS_PER + " entries");
+            for (Entry<String, String> e : map.entrySet()) {
+                //System.out.println(e.getKey() + " = " + e.getValue());
+            }
+        }
+    }
+    
+     private Map<String, String> getUUIDS(String... players) {
+        Map<String, String> mapping = new HashMap<String, String>();
+        
+        List<ProfileCriteria> criteria = new ArrayList<ProfileCriteria>(players.length);
+        for (String player : players) {
+            criteria.add(new ProfileCriteria(player, "minecraft"));
+        }
+        
+        Profile[] results = new HttpProfileRepository().findProfilesByCriteria(criteria.toArray(new ProfileCriteria[0]));
+        for (Profile profile : results) {
+            
+            mapping.put(
+                    profile.getName(),
+                    profile.getId());
+        }
+        
+        
+        return mapping;
     }
 }

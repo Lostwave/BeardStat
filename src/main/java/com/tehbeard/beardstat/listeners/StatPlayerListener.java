@@ -146,7 +146,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
         
-        //TODO : FIX FISHING.
+        //TODO : FIX FISHING. NEED 1.7 API FOR THIS :(
         Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
                 event.getPlayer().getName());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),

@@ -52,7 +52,7 @@ public class StatisticMeta {
     private String     gameTag;
     private String     localizedName;
     private Formatting format;
-    private String     outputStr = "%s"; // TODO - Add support for
+    private String     outputStr = "%s";
 
     public StatisticMeta(int id, String gameTag, String localizedName, Formatting format) {
         this.id = id;
