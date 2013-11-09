@@ -13,7 +13,9 @@ import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
+import com.tehbeard.beardstat.EntityStatBlobLoadEvent;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import org.bukkit.Bukkit;
 
 
 /**
@@ -27,6 +29,7 @@ public class EntityStatBlob implements VariableProvider {
 
     private static Set<DynamicStat> dynamicStats = new HashSet<DynamicStat>();
 
+    @Deprecated
     public static void addDynamic(String statName, String expr, boolean archive) {
 
         Stack<String> stack = new Stack<String>();
@@ -46,6 +49,7 @@ public class EntityStatBlob implements VariableProvider {
         dynamicStats.add(new DynamicStat(domain, world, cat, stat, expr, archive));
     }
 
+    @Deprecated
     private void addDynamics() {
         if (this.type.equals(IStatDataProvider.PLAYER_TYPE)) {
             for (DynamicStat ds : dynamicStats) {
@@ -85,6 +89,8 @@ public class EntityStatBlob implements VariableProvider {
         this.entityId = entityId;
         this.type = type;
         this.uuid = uuid;
+        
+        Bukkit.getPluginManager().callEvent(new EntityStatBlobLoadEvent(this));
         addDynamics();
     }
 
