@@ -29,12 +29,10 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     @Override
     public void generateBackup(File file) {
-        
+        plugin.printCon("Creating backup of database at " + file.toString());
         try {
             FileWriter fw = new FileWriter(file);
             dumpToBuffer(new BufferedWriter(fw));
-            fw.flush();
-            fw.close();
         } catch (IOException ex) {
             Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
