@@ -2,7 +2,6 @@ package com.tehbeard.beardstat.listeners;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import net.dragonzone.promise.Delegate;
 import net.dragonzone.promise.Promise;

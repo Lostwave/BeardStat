@@ -1,7 +1,5 @@
 package com.tehbeard.beardstat.listeners;
 
-import java.util.List;
-
 import net.dragonzone.promise.Promise;
 
 import org.bukkit.Location;

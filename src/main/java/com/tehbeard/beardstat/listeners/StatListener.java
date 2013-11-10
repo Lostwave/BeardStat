@@ -1,8 +1,5 @@
 package com.tehbeard.beardstat.listeners;
 
-import java.util.List;
-
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
