@@ -28,4 +28,6 @@ public class DatabaseConfiguration {
     public String tablePrefix;
     @InjectConfig("port")
     public int port;
+    @InjectConfig("backups")
+    public boolean backups;
 }

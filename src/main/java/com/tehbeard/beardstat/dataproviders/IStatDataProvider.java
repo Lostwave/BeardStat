@@ -1,15 +1,12 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import com.tehbeard.beardstat.dataproviders.metadata.*;
-import java.util.List;
 
 import net.dragonzone.promise.Promise;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.File;
+
 
 
 /**
@@ -90,4 +87,10 @@ public interface IStatDataProvider {
     public CategoryMeta getCategory(String gameTag);
 
     public StatisticMeta getStatistic(String gameTag);
+    
+    /**
+     * backup the database, for MySQL this could be a schema dump.
+     * @param file 
+     */
+    public void generateBackup(File file);
 }

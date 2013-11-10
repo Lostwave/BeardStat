@@ -415,7 +415,7 @@ public class BeardStat extends JavaPlugin {
                 db = new MysqlStatDataProvider(this,
                         config.host, config.port,
                         config.database, config.tablePrefix,
-                        config.username, config.password);
+                        config.username, config.password,config.backups);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {
@@ -426,7 +426,7 @@ public class BeardStat extends JavaPlugin {
         // SQLite provider
         if (config.databaseType.equalsIgnoreCase("sqlite")) {
             try {
-                db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString());
+                db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString(),config.backups);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {
@@ -439,7 +439,7 @@ public class BeardStat extends JavaPlugin {
         // In memory provider
         if (config.databaseType.equalsIgnoreCase("memory")) {
             try {
-                db = new SQLiteStatDataProvider(this, ":memory:");
+                db = new SQLiteStatDataProvider(this, ":memory:",false);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {

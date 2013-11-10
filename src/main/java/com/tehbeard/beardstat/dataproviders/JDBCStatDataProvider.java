@@ -35,6 +35,8 @@ import com.tehbeard.utils.misc.CallbackMatcher.Callback;
 import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
 import com.tehbeard.utils.mojang.api.profiles.Profile;
 import com.tehbeard.utils.mojang.api.profiles.ProfileCriteria;
+import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -58,6 +60,8 @@ import net.dragonzone.promise.Deferred;
  *
  */
 public abstract class JDBCStatDataProvider implements IStatDataProvider {
+
+    private final boolean backups;
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
@@ -133,7 +137,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
     protected BeardStat plugin;
 
-    public JDBCStatDataProvider(BeardStat plugin, String scriptSuffix, String driverClass) {
+    public JDBCStatDataProvider(BeardStat plugin, String scriptSuffix, String driverClass, boolean backups) {
         try {
             this.scriptSuffix = scriptSuffix;
             this.plugin = plugin;
@@ -141,6 +145,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         } catch (ClassNotFoundException ex) {
             throw new BeardStatRuntimeException("Could not locate driver library.", ex, false);
         }
+        this.backups = backups;
     }
 
     /**
@@ -204,6 +209,21 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
             this.plugin.printCon("Updating database to latest version");
             this.plugin.printCon("Your database: " + installedVersion + " latest: " + latestVersion);
+
+            if (backups) {
+                try {
+                    this.plugin.printCon("Creating database backup, if shit hits the fan and the rollback fails, you can use this.");
+                    File f = new File(plugin.getDataFolder(), "backup." + scriptSuffix);
+                    f.delete();
+
+                    f.createNewFile();
+
+                    generateBackup(f);
+                } catch (IOException ex) {
+                    Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
             for (int i = 0; i < 3; i++) {
                 Bukkit.getConsoleSender().sendMessage(
                         ChatColor.RED + "WARNING: DATABASE MIGRATION WILL TAKE A LONG TIME ON LARGE DATABASES.");

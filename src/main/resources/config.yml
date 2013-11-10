@@ -3,7 +3,6 @@ general:
   verbose: false
 stats:
   configversion: ${project.config.version}
-  trackcreativemode: false
   database:
     sql_db_version: ${project.database.version}
     type: "sqlite"
@@ -14,6 +13,7 @@ stats:
     table: "stats"
     prefix: "stats"
     port: 3306
+    backups: true
 pages:
     default:
       - "blocks placed:stats.totalblockcreate"
