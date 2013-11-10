@@ -113,7 +113,7 @@ public class EntityStatManager implements CommandExecutor{
 
             // check if rejected promise, remove from cache silently
             if (entry.getValue().isRejected()) {
-                this.plugin.printCon("Promise[" + entityId + "] was rejected (error?), removing from cache.");// alert
+                this.plugin.getLogger().severe("Promise[" + entityId + "] was rejected (error?), removing from cache.");// alert
                 // debug
                 // dump
                 i.remove();// clear it out
@@ -134,8 +134,7 @@ public class EntityStatManager implements CommandExecutor{
                     ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
 
                     if (timeRecord != null) {
-                        this.plugin.printDebugCon("saving time: [Player : " + entityName + " , world: "
-                                + timeRecord.world + ", time: " + timeRecord.sessionTime() + "]");
+                        this.plugin.getLogger().info("saving time: [Player : " + entityName + " , world: " + timeRecord.world + ", time: " + timeRecord.sessionTime() + "]");
                         if (timeRecord.world != null) {
                             entry.getValue().getValue()
                                     .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
@@ -154,7 +153,7 @@ public class EntityStatManager implements CommandExecutor{
 
             } else {
                 // Nulled player data
-                this.plugin.printCon("Promise[" + entityId + "] had a null value! Removed from cache.");
+                this.plugin.getLogger().warning("Promise[" + entityId + "] had a null value! Removed from cache.");
                 i.remove();
             }
 

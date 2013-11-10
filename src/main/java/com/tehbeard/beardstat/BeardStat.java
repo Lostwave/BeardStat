@@ -71,68 +71,47 @@ public class BeardStat extends JavaPlugin {
         return this.statManager;
     }
 
-    /**
-     * Print to console
-     *
-     * @param line
-     */
-    public void printCon(String line) {
-        getLogger().info(line);
-    }
-
-    /**
-     * Print to console if debug mode is active
-     *
-     * @param line
-     */
-    public void printDebugCon(String line) {
-
-        if (configuration.debugMode) {
-            printCon("[DEBUG] " + line);
-        }
-    }
-
     @Override
     public void onDisable() {
         /*
          * Shut down auto flusher, force cache to be saved, then kill static
          * reference to this plugin
          */
-        printCon("Stopping auto flusher");
+        getLogger().info("Stopping auto flusher");
         getServer().getScheduler().cancelTask(this.saveTaskId);
         if (this.statManager != null) {
-            printCon("Flushing cache to database");
+            getLogger().info("Flushing cache to database");
             this.statManager.saveCache();
             this.statManager.flush();
-            printCon("Cache flushed to database");
+            getLogger().info("Cache flushed to database");
         }
     }
 
     @Override
     public void onEnable() {
 
-        printCon("Starting BeardStat");
+        getLogger().info("Starting BeardStat");
 
         // Read in the metadata file from jar and from data folder
         MetaDataCapture.readData(getResource("metadata.txt"));
         try {
             MetaDataCapture.readData(new FileInputStream(new File(getDataFolder(), "metadata.txt")));
         } catch (FileNotFoundException e) {
-            printCon("No External metadata file detected");
+            getLogger().warning("No External metadata file detected");
         }
         HumanNameGenerator.init();
 
         // load language file from jar and from data folder
         try {
-            printCon("Loading default language pack");
+            getLogger().info("Loading default language pack");
             LanguagePack.load(getResource("messages.lang"));
             File extLangPack = new File(getDataFolder(), "messages.lang");
             if (extLangPack.exists()) {
-                printCon("External language pack detected! Loading...");
+                getLogger().info("External language pack detected! Loading...");
                 LanguagePack.overlay(new FileInputStream(extLangPack));
             }
         } catch (IOException e1) {
-            printCon("Failed to load language pack");
+            getLogger().severe("Failed to load language pack.");
 
         }
 
@@ -149,18 +128,18 @@ public class BeardStat extends JavaPlugin {
         getConfig();
         configuration = new StatConfiguration();
         new YamlConfigInjector(getConfig()).inject(configuration);
-        printDebugCon(configuration.toString());
+        getLogger().config(configuration.toString());
         
         File worldsFile = new File(getDataFolder(), "worlds.yml");
         worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
 
         // setup our data provider, fail out if it's not found
-        printCon("Connecting to database");
-        printCon("Using " + configuration.dbType + " Adpater");
+        getLogger().info("Connecting to database");
+        getLogger().info("Using " + configuration.dbType + " Adpater");
         IStatDataProvider db = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.database")));
 
         if (db == null) {
-            printCon(" Error loading database, disabling plugin");
+            getLogger().severe(" Error loading database, disabling plugin");
             getPluginLoader().disablePlugin(this);
             return;
         }
@@ -168,7 +147,7 @@ public class BeardStat extends JavaPlugin {
         // start the player manager
         this.statManager = new EntityStatManager(this, db);
 
-        printCon("initializing composite stats");
+        getLogger().info("initializing composite stats");
         try {
             // Load the dynamic stats from file
             File customStats = new File(getDataFolder(), "customstat.properties");
@@ -185,7 +164,7 @@ public class BeardStat extends JavaPlugin {
             handleError(new BeardStatRuntimeException("Error loading dynamic stats or custom formats", e, true));
         }
 
-        printCon("Registering events and collectors");
+        getLogger().info("Registering events and collectors");
 
         // register event listeners
         // get blacklist, then start and register each type of listener
@@ -211,7 +190,7 @@ public class BeardStat extends JavaPlugin {
             handleError(new BeardStatRuntimeException("Error starting database flusher", e, false));
         }
 
-        printCon("Loading commands");
+        getLogger().info("Loading commands");
         try {
             getCommand("stats").setExecutor(new StatCommand(this.statManager, this));
             getCommand("played").setExecutor(new playedCommand(this.statManager, this));
@@ -223,7 +202,7 @@ public class BeardStat extends JavaPlugin {
             handleError(new BeardStatRuntimeException("Error registering commands", e, false));
         }
 
-        printCon("loading any players already online");// Fix people being dumb
+        getLogger().info("loading any players already online");// Fix people being dumb
         for (Player player : getServer().getOnlinePlayers()) {
 
             OnlineTimeManager.setRecord(player.getName(), player.getWorld().getName());
@@ -245,7 +224,7 @@ public class BeardStat extends JavaPlugin {
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Metrics threw an error during startup", null, true));
         }
-        printCon("BeardStat Loaded");
+        getLogger().info("BeardStat Loaded");
         
     }
 
@@ -261,7 +240,7 @@ public class BeardStat extends JavaPlugin {
         // update config if nessecary
         if (getConfig().getInt("stats.configversion", 0) < getConfig().getDefaults().getInt("stats.configversion")) {
 
-            printCon("Updating config to include newest configuration options");
+            getLogger().info("Updating config to include newest configuration options");
             getConfig().set("stats.configversion", null);
             getConfig().getDefaults().set("stats.database.sql_db_version", null);
             getConfig().options().copyDefaults(true);
@@ -270,7 +249,7 @@ public class BeardStat extends JavaPlugin {
 
         if (getConfig().contains("stats.blacklist")) {
             try {
-                printCon("Moving blacklist to worlds.yml");
+                getLogger().info("Moving blacklist to worlds.yml");
                 File worldsFile = new File(getDataFolder(), "worlds.yml");
                 YamlConfiguration worldCfg = YamlConfiguration.loadConfiguration(worldsFile);
                 for (String world : getConfig().getStringList("stats.blacklist")) {
@@ -310,13 +289,13 @@ public class BeardStat extends JavaPlugin {
         @Override
         public void run() {
             if (getConfig().getBoolean("general.verbose", false)) {
-                printCon("Flushing to database.");
+                getLogger().info("Flushing to database.");
             }
 
             BeardStat.this.statManager.saveCache();
             BeardStat.this.statManager.flush();
             if (getConfig().getBoolean("general.verbose", false)) {
-                printCon("flush completed");
+                getLogger().info("flush completed");
             }
         }
     }
@@ -388,7 +367,7 @@ public class BeardStat extends JavaPlugin {
      * @throws FileNotFoundException
      */
     private void loadDynamicStatConfiguration(File f, boolean archive) throws FileNotFoundException, IOException {
-        printCon(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
+        getLogger().info(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
 
         Properties prop = new Properties();
         prop.load(new FileInputStream(f));
@@ -450,7 +429,7 @@ public class BeardStat extends JavaPlugin {
 
         // File provider, kept for alert message, remove in 0.7
         if (config.databaseType.equalsIgnoreCase("file")) {
-            printCon("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
+            getLogger().warning("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
         }
 
         // transfer provider, calls method again to load handlers for transfer
@@ -475,7 +454,7 @@ public class BeardStat extends JavaPlugin {
      * @return SQL commands loaded from file.
      */
     public String readSQL(String type, String filename, String prefix) {
-        printDebugCon("Loading SQL: " + filename);
+        getLogger().fine("Loading SQL: " + filename);
         InputStream is = getResource(filename + "." + type);
         if (is == null) {
             is = getResource(filename + ".sql");
@@ -500,15 +479,15 @@ public class BeardStat extends JavaPlugin {
         if (e instanceof BeardStatRuntimeException) {
             BeardStatRuntimeException be = (BeardStatRuntimeException) e;
             if (!be.isRecoverable()) {
-                printCon("WARNING: BeardStat has encountered an error and cannot recover, disabling plugin.");
-                printCon(be.getMessage());
+                getLogger().severe("WARNING: BeardStat has encountered an error and cannot recover, disabling plugin.");
+                getLogger().severe(be.getMessage());
                 if (e != null) {
                     handleUnknownError(e);
                 }
                 Bukkit.getPluginManager().disablePlugin(this);
             } else {
-                printCon("WARNING: BeardStat has encountered an error.");
-                printCon(be.getMessage());
+                getLogger().severe("WARNING: BeardStat has encountered an error.");
+                getLogger().severe(be.getMessage());
                 if (e != null) {
                     handleUnknownError(e);
                 }
@@ -524,16 +503,16 @@ public class BeardStat extends JavaPlugin {
      * @param e
      */
     private void handleUnknownError(Exception e) {
-        printCon("=========");
-        printCon("BeardStat");
-        printCon("=========");
-        printCon("BeardStat encountered an error, please submit the following info + stack trace to the dev bukkit page (http://dev.bukkit.org/server-mods/BeardStat/");
-        printCon("");
-        printCon("BeardStat version: " + getDescription().getVersion());
-        printCon("");
+        getLogger().severe("=========");
+        getLogger().severe("BeardStat");
+        getLogger().severe("=========");
+        getLogger().severe("BeardStat encountered an error, please submit the following info + stack trace to the dev bukkit page (http://dev.bukkit.org/server-mods/BeardStat/");
+        getLogger().severe("");
+        getLogger().severe("BeardStat version: " + getDescription().getVersion());
+        getLogger().severe("");
         e.printStackTrace();
-        printCon("");
-        printCon("=========");
+        getLogger().severe("");
+        getLogger().severe("=========");
     }
 
     public DatabaseConfiguration getDatabaseConfiguration(ConfigurationSection section) {

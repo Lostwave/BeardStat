@@ -44,7 +44,6 @@ public class StatVehicleListener extends StatListener {
 
             from = event.getFrom();
             to = event.getTo();
-            getPlugin().printDebugCon("Vehicle move fired!");
             if (from.getWorld().equals(to.getWorld())) {
                 if (from.distance(to) < 10) {
                     Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
