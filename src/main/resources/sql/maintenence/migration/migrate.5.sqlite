@@ -1,4 +1,4 @@
 #Migrating to yggdrasil 1.2;
-#Moving current tables;
+#Adding uuid field;
 ALTER TABLE  `stats_entity` ADD `uuid`   VARCHAR( 32 );
 #Done;

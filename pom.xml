@@ -11,7 +11,7 @@
         <project.plugin.flavour>Ambrosia</project.plugin.flavour>
         <project.plugin.version>${project.version}-${project.plugin.flavour}</project.plugin.version>
         <project.config.version>4</project.config.version>
-        <project.database.version>5</project.database.version>
+        <project.database.version>6</project.database.version>
     </properties>
 
     <repositories>

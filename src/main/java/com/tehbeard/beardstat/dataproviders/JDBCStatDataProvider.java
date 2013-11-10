@@ -61,16 +61,19 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface preUpgrade {
+    public @interface dbVersion {
 
         int value();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface postUpgrade {
+    public @interface preUpgrade {
+    }
 
-        int value();
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface postUpgrade {
     }
     /**
      * SQL SCRIPT NAME BLOCK
@@ -154,22 +157,21 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      * @throws BeardStatRuntimeException
      */
     protected void initialise() throws BeardStatRuntimeException {
-        try{
-        createConnection();
+        try {
+            createConnection();
 
-        checkForMigration();
-        
-        checkAndMakeTable();
-        prepareStatements();
+            checkForMigration();
 
-        executeScript(SQL_METADATA_CATEGORY);
-        executeScript(SQL_METADATA_STATISTIC);
-        executeScript(SQL_METADATA_STATIC_STATS);
+            checkAndMakeTable();
+            prepareStatements();
+
+            executeScript(SQL_METADATA_CATEGORY);
+            executeScript(SQL_METADATA_STATISTIC);
+            executeScript(SQL_METADATA_STATIC_STATS);
 
 
-        cacheComponents();
-        }
-        catch(SQLException ex){
+            cacheComponents();
+        } catch (SQLException ex) {
             throw new BeardStatRuntimeException("Error during init", ex, false);
         }
     }
@@ -230,7 +232,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         Logger.getLogger(JDBCStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
                         throw new SQLException("IllegalArgumentException encountered", ex);
                     }
-                    
+
                     //Run script
                     try {
                         executeScript("sql/maintenence/migration/migrate." + migrateToVersion, k);
@@ -244,7 +246,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         runCodeFor(migrateToVersion, postUpgrade.class);
                     } catch (InvocationTargetException ex) {
                         if (ex.getCause() instanceof SQLException) {
-                            this.plugin.mysqlError((SQLException) ex.getCause(), "@CLASS/PREUPGRADE/" + migrateToVersion);
+                            this.plugin.mysqlError((SQLException) ex.getCause(), "@CLASS/POSTUPGRADE/" + migrateToVersion);
                             throw (SQLException) ex.getCause();
                         }
                     } catch (IllegalAccessException ex) {
@@ -826,7 +828,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected void runCodeFor(int version, Class<? extends Annotation> ann) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         for (Method m : getClass().getMethods()) {
             if (m.isAnnotationPresent(ann)) {
-                m.invoke(this);
+                if (m.getAnnotation(dbVersion.class).value() == version) {
+                    m.invoke(this);
+                }
             }
         }
     }
@@ -837,8 +841,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      *
      * @throws SQLException
      */
-    @postUpgrade(5)
+    @postUpgrade
+    @dbVersion(6)
     public void upgradeWriteUUIDS() throws SQLException {
+
         PreparedStatement stmt = conn.prepareStatement("UPDATE `" + tblPrefix + "_entity` SET `uuid`=? WHERE `name`=? and `type`=?");
         stmt.setString(3, IStatDataProvider.PLAYER_TYPE);
         ProviderQueryResult[] result = queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
