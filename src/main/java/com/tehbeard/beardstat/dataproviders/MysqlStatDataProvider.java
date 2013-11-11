@@ -29,7 +29,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     @Override
     public void generateBackup(File file) {
-        plugin.getLogger().info("Creating backup of database at " + file.toString());
+        plugin.getLogger().log(Level.INFO, "Creating backup of database at {0}", file.toString());
         try {
             FileWriter fw = new FileWriter(file);
             dumpToBuffer(new BufferedWriter(fw));
@@ -52,7 +52,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             while (rs.next()) {
                 String tbl = rs.getString(1);
                 if(!tbl.startsWith(tblPrefix)){continue;}
-                sb.append(version + "\n");
+                sb.append(version).append("\n");
                 sb.append("\n");
                 sb.append("-- ----------------------------\n")
                         .append("-- Table structure for `").append(tbl)
