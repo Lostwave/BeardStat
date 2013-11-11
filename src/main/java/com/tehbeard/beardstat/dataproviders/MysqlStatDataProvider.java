@@ -5,11 +5,15 @@ import java.sql.SQLException;
 import com.tehbeard.beardstat.BeardStat;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.ResultSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.Deflater;
+import java.util.zip.GZIPOutputStream;
 
 public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
@@ -31,8 +35,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public void generateBackup(File file) {
         plugin.getLogger().log(Level.INFO, "Creating backup of database at {0}", file.toString());
         try {
-            FileWriter fw = new FileWriter(file);
-            dumpToBuffer(new BufferedWriter(fw));
+            FileOutputStream fw = new FileOutputStream(file);
+            GZIPOutputStream gos = new GZIPOutputStream(fw){{def.setLevel(Deflater.BEST_COMPRESSION);}};
+            dumpToBuffer(new BufferedWriter(new OutputStreamWriter(gos)));
         } catch (IOException ex) {
             Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
