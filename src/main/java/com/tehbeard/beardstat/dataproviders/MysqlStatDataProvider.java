@@ -45,12 +45,14 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     private void dumpToBuffer(BufferedWriter buff) {
         try {
+            
+            String version = "-- If restoring to this backup, set stats.database.sql_db_version to : " + this.plugin.getConfig().getInt("stats.database.sql_db_version", 1);
             StringBuilder sb = new StringBuilder();
             ResultSet rs =query("SHOW FULL TABLES WHERE Table_type != 'VIEW'");
             while (rs.next()) {
                 String tbl = rs.getString(1);
                 if(!tbl.startsWith(tblPrefix)){continue;}
-
+                sb.append(version + "\n");
                 sb.append("\n");
                 sb.append("-- ----------------------------\n")
                         .append("-- Table structure for `").append(tbl)
