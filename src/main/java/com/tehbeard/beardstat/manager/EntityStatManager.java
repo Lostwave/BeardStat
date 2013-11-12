@@ -49,13 +49,13 @@ public class EntityStatManager implements CommandExecutor{
     }
     
     public Promise<EntityStatBlob> getOrCreatePlayerStatBlob(String name){
-        String uuid = null;
+        /*String uuid = null;
         Profile[] result = profileRepo.findProfilesByCriteria(new ProfileCriteria(name,"minecraft"));
         if(result.length == 1){
             uuid = result[0].getId();
-        }
+        }*/
         
-        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, uuid);//TODO - CHECK THIS IS CORRECT
+        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, null);//TODO - CHECK THIS IS CORRECT
     }
 
     public Promise<EntityStatBlob> getOrCreateBlob(String name, String type, String uuid) {
@@ -77,7 +77,7 @@ public class EntityStatManager implements CommandExecutor{
             typeNameCache.put(cacheKey, dbValue);// Pre-emptively cache the promise, defer removing to on error.
 
             dbValue.onReject(new DeferRemoveBlob(cacheKey, typeNameCache));
-            dbValue.onDone(new DeferAddUUID(uuidCache));
+            dbValue.onResolve(new DeferAddUUID(uuidCache));
 
         }
         return typeNameCache.get(cacheKey);

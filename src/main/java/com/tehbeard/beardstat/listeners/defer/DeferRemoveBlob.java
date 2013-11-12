@@ -23,9 +23,7 @@ public class DeferRemoveBlob implements Delegate<Void, Promise<EntityStatBlob>> 
         
     }
     public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
-        if (params.getValue() == null) {
             cache.remove(cacheKey);
-        }
         return null;
     }
 }

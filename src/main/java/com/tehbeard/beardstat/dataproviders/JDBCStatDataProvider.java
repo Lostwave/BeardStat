@@ -545,7 +545,19 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     ResultSet rs;
 
                     if (results.length == 1) {
-                        //Load pb
+                        
+                        esb = new EntityStatBlob(results[0].name, results[0].dbid, results[0].type, results[0].type);//Create the damn esb
+                        // load all stats data
+                        loadEntityData.setInt(1, esb.getEntityID());
+                        rs = loadEntityData.executeQuery();
+
+                        while (rs.next()) {
+                            // `domain`,`world`,`category`,`statistic`,`value`
+                            IStat ps = esb.getStat(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                            ps.setValue(rs.getInt(5));
+                            ps.clearArchive();
+                        }
+                        rs.close();
                     } else if (results.length == 0 && query.create) {
 
                         saveEntity.setString(1, query.name);
@@ -558,7 +570,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         // make the player object, close out result set.
                         esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.uuid);
                         rs.close();
-                        rs = null;
                     }
                     //Didn't get a esb, kill it.
                     if (esb == null) {
@@ -566,20 +577,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         return;
                     }
 
-                    // load all stats data
-                    loadEntityData.setInt(1, esb.getEntityID());
-                    plugin.getLogger().config("executing " + loadEntityData);
-                    rs = loadEntityData.executeQuery();
 
-                    while (rs.next()) {
-                        // `domain`,`world`,`category`,`statistic`,`value`
-                        IStat ps = esb.getStat(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
-                        ps.setValue(rs.getInt(5));
-                        ps.clearArchive();
-                    }
-                    rs.close();
 
-                    plugin.getLogger().config("time taken to retrieve: " + ((new Date()).getTime() - t1) + " Milliseconds");
+                    plugin.getLogger().log(Level.CONFIG, "time taken to retrieve: {0} Milliseconds", ((new Date()).getTime() - t1));
 
                     promise.resolve(esb);
                 } catch (SQLException e) {
