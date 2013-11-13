@@ -89,7 +89,7 @@ public interface IStatDataProvider {
     public StatisticMeta getStatistic(String gameTag);
     
     /**
-     * backup the database, for MySQL this could be a schema dump.
+     * backup the database, for MySQL this could be a schema dump. SQLite makes a copy of the db file.
      * @param file 
      */
     public void generateBackup(File file);

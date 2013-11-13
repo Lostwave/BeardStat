@@ -55,7 +55,7 @@ public class EntityStatManager implements CommandExecutor{
             uuid = result[0].getId();
         }*/
         
-        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, null);//TODO - CHECK THIS IS CORRECT
+        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, null);//TODO - GET THIS SOMEHOW IN 1.7
     }
 
     public Promise<EntityStatBlob> getOrCreateBlob(String name, String type, String uuid) {
