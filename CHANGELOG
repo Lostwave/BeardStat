@@ -2,9 +2,12 @@
 =============
 * uuid integration
   * Now supports storing the uuid of a minecraft player with their EntityStatBlob. In the future this will be used instead of player name for getting stat blobs so as to work with mojang's username changing plan.
-* Changes to the API, classes now under com.tehbeard.beardstat
 * Preload stats for current mc version into the database.
 * Access to metadata on keys (domain,world,category,statistic) from ingame.
+* Breaking: API now supports non player entities having stats
+* Breaking: class files now under com.tehbeard.beardstat
+* API now supports querying database for entities by type, name, uuid.
+
 0.6.3
 =============
 * Support for custom stats returns
