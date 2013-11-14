@@ -796,7 +796,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (!categoryMetaMap.containsKey(gameTag)) {
             try {
                 saveCategory.setString(1, gameTag);
-                saveCategory.setString(2, gameTag.replaceAll("_", " "));
                 saveCategory.execute();
                 ResultSet rs = saveCategory.getGeneratedKeys();
                 rs.next();
