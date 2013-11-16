@@ -29,7 +29,7 @@ public class DocumentRegistry {
 
     public static Gson instance() {
         if (gson == null) {
-            gson = builder.registerTypeAdapter(IStatDocument.class, new ClassBasedParser<IStatDocument>(documentCatalogue)).create();
+            gson = builder.registerTypeHierarchyAdapter(IStatDocument.class, new ClassBasedParser<IStatDocument>(documentCatalogue)).create();
         }
         return gson;
     }
