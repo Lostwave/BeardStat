@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `stats_entity` (
     type     VARCHAR( 16 )  NOT NULL,
     `scoreboardhide` BOOLEAN NOT NULL DEFAULT 0,
     `uuid`   VARCHAR( 32 ),
-    CONSTRAINT uni UNIQUE ( name, type ),
+    CONSTRAINT uni UNIQUE ( name, type )
 );
 CREATE TABLE IF NOT EXISTS `stats_domain` ( 
     domainId INTEGER        PRIMARY KEY AUTOINCREMENT,
