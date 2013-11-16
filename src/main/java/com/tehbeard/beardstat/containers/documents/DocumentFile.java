@@ -4,32 +4,30 @@
  */
 package com.tehbeard.beardstat.containers.documents;
 
+import java.sql.Timestamp;
+
 /**
  * Holds metadata for a document
+ *
  * @author James
  */
 public class DocumentFile<T extends IStatDocument> {
-	
+
     private boolean archive = false;
     private final String revision;
     private final String domain;
     private final String key;
     private final T document;
-        
-        /**
-     *
-     * @param revision
-     * @param domain
-     * @param key
-     * @param document
-     */
-    public DocumentFile(String revision,String domain,String key,T document){
+    private final Timestamp dateCreated;
+
+    public DocumentFile(String revision, String domain, String key, T document, Timestamp dateCreated) {
         this.revision = revision;
         this.domain = domain;
         this.key = key;
         this.document = document;
+        this.dateCreated = dateCreated;
 
-        }
+    }
 
     public String getRevision() {
         return revision;
@@ -46,12 +44,20 @@ public class DocumentFile<T extends IStatDocument> {
     public T getDocument() {
         return document;
     }
-	
-    
-    
-	public boolean shouldArchive(){return archive;}
-	public void setArchiveFlag(){archive=true;}
-	public void clearArchiveFlag(){archive=false;}
 
-	
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
+    public boolean shouldArchive() {
+        return archive;
+    }
+
+    public void setArchiveFlag() {
+        archive = true;
+    }
+
+    public void clearArchiveFlag() {
+        archive = false;
+    }
 }

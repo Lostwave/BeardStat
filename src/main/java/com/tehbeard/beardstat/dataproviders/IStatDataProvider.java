@@ -106,6 +106,24 @@ public interface IStatDataProvider {
     public DocumentFile pullDocument(ProviderQuery query, String domain, String key);
 
     /**
+     * Pushes a document into storage
+     * @param query
+     * @param document
+     * @return new DocumentFile with the revision of the stored document
+     * @throws com.tehbeard.beardstat.dataproviders.IStatDataProvider.RevisionMismatchException if revision key passed does not match current (latest) one.
+     */
+    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException;
+    
+    /**
+     * Deletes a document
+     * @param query entity to delete from
+     * @param domain domain key
+     * @param key unique id for document
+     * @param revision specific revision to delete. If passed null deletes all revisions
+     */
+    public void deleteDocument(ProviderQuery query, String domain, String key, String revision);
+
+    /**
      * Returns a list of document keys under a specific domain for a entity.
      * @param query
      * @param domain
@@ -115,8 +133,19 @@ public interface IStatDataProvider {
 
 
     public class RevisionMismatchException extends Exception {
+        private final DocumentFile newFile;
 
-        public RevisionMismatchException() {
+        public DocumentFile getNewFile() {
+            return newFile;
+        }
+
+        
+        /**
+         *
+         * @param newFile
+         */
+        public RevisionMismatchException(DocumentFile newFile) {
+            this.newFile = newFile;
         }
     }
 }
