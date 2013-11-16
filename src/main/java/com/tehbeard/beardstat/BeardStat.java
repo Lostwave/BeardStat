@@ -42,6 +42,7 @@ import com.tehbeard.beardstat.utils.LanguagePack;
 import com.tehbeard.beardstat.utils.MetaDataCapture;
 import java.util.logging.Level;
 import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
+import java.util.logging.Handler;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
@@ -128,7 +129,16 @@ public class BeardStat extends JavaPlugin {
         getConfig();
         configuration = new StatConfiguration();
         new YamlConfigInjector(getConfig()).inject(configuration);
+        
         getLogger().config(configuration.toString());
+        
+        //Hopefully this pleases Diemex
+        Level level = Level.parse(configuration.logLevel);
+        getLogger().setLevel(level);
+        for(Handler handler : getLogger().getHandlers()){
+            handler.setLevel(level);
+        }
+        
         
         File worldsFile = new File(getDataFolder(), "worlds.yml");
         worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
