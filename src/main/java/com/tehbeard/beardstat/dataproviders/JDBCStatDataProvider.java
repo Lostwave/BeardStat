@@ -29,6 +29,7 @@ import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import com.tehbeard.beardstat.NoRecordFoundException;
+import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
@@ -537,16 +538,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         return;
                     }
                     long t1 = (new Date()).getTime();
-                    ProviderQueryResult[] results = queryDatabase(query);
-                    if (results.length > 1) {
-                        throw new IllegalStateException("Invalid Query provided, more than one entity returned.");
-                    }
+                    ProviderQueryResult result = getSingleEntity(query);
                     EntityStatBlob esb = null;
                     ResultSet rs;
 
-                    if (results.length == 1) {
+                    if (result != null) {
                         
-                        esb = new EntityStatBlob(results[0].name, results[0].dbid, results[0].type, results[0].type);//Create the damn esb
+                        esb = new EntityStatBlob(result.name, result.dbid, result.type, result.type);//Create the damn esb
                         // load all stats data
                         loadEntityData.setInt(1, esb.getEntityID());
                         rs = loadEntityData.executeQuery();
@@ -558,7 +556,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                             ps.clearArchive();
                         }
                         rs.close();
-                    } else if (results.length == 0 && query.create) {
+                    } else if (result == null && query.create) {
 
                         saveEntity.setString(1, query.name);
                         saveEntity.setString(2, query.type);
@@ -587,6 +585,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     promise.reject(e);
                 }
             }
+
+            
         };
 
         this.loadQueue.execute(run);
@@ -594,6 +594,14 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         return promise;
 
     }
+    
+    private ProviderQueryResult getSingleEntity(ProviderQuery query) throws IllegalStateException {
+                ProviderQueryResult[] results = queryDatabase(query);
+                if (results.length > 1) {
+                    throw new IllegalStateException("Invalid Query provided, more than one entity returned.");
+                }
+                return results.length == 1 ? results[0] : null;
+            }
 
     @Override
     public boolean hasEntityBlob(ProviderQuery query) {
@@ -900,5 +908,20 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 
         return mapping;
+    }
+    
+    @Override
+    public DocumentFile pullDocument(ProviderQuery query, String domain, String key) {
+        ProviderQueryResult result = getSingleEntity(query);
+        if(result == null){throw new IllegalArgumentException("No entity found.");}
+        
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public String[] getDocumentKeysInDomain(ProviderQuery query, String domain) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

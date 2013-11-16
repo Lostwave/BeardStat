@@ -106,15 +106,6 @@ public interface IStatDataProvider {
     public DocumentFile pullDocument(ProviderQuery query, String domain, String key);
 
     /**
-     * Pushes a document into a domain
-     * @param query provider query to use to locate entity
-     * @param document document to add.
-     * @throws com.tehbeard.beardstat.dataproviders.IStatDataProvider.RevisionMismatchException if a document exists in the domain -> key that has a different revision id.
-     * @return a new DocumentFile containing the new revision id
-     */
-    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException;
-
-    /**
      * Returns a list of document keys under a specific domain for a entity.
      * @param query
      * @param domain
