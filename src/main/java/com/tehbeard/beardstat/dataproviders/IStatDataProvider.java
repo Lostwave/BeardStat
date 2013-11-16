@@ -5,67 +5,68 @@ import com.tehbeard.beardstat.dataproviders.metadata.*;
 import net.dragonzone.promise.Promise;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import java.io.File;
 
-
-
 /**
- * Provides push/pull service for getting and saving stats to a backend storage
- * system.
+ * Provides push/pull service for getting and saving stats to a backend storage system.
  *
  * @author James
  *
  */
 public interface IStatDataProvider {
-    
-    
-    public static final String PLAYER_TYPE =  "player";
-    public static final String GROUP_TYPE =   "group";
+
+    public static final String PLAYER_TYPE = "player";
+    public static final String GROUP_TYPE = "group";
     public static final String FACTION_TYPE = "faction";
     public static final String ALLIANCE_TYPE = "alliance";
     public static final String WORLD_TYPE = "world";
     public static final String PLUGIN_TYPE = "plugin";
 
-    
     /**
      * Pulls a entity out of the database
+     *
      * @param query
-     * @return 
+     * @return
      */
     public Promise<EntityStatBlob> pullEntityBlob(ProviderQuery query);
-    
+
     /**
      * Pulls a entity out of the database directly, may block.
+     *
      * @param query
-     * @return 
+     * @return
      */
     public EntityStatBlob pullEntityBlobDirect(ProviderQuery query);
-    
+
     /**
      * Pushes the entity into the database, this may not happen if the entity is queued and something stops the queue from being processed.
-     * @param blob 
+     *
+     * @param blob
      */
     public void pushEntityBlob(EntityStatBlob blob);
-    
+
     /**
      * Checks if the database contains a blob matching this one.
+     *
      * @param query
-     * @return 
+     * @return
      */
     public boolean hasEntityBlob(ProviderQuery query);
-    
+
     /**
      * Deletes a blob matching this one.
+     *
      * @param blob
-     * @return 
+     * @return
      */
     public boolean deleteEntityBlob(EntityStatBlob blob);
-    
 
     /**
      * Queries database for entities
+     *
      * @param query
-     * @return 
+     * @return
      */
     public ProviderQueryResult[] queryDatabase(ProviderQuery query);
 
@@ -78,7 +79,6 @@ public interface IStatDataProvider {
      * Flush any cached data to the backend now, can do so in a seperate thread.
      */
     public void flush();
-    
 
     public DomainMeta getDomain(String gameTag);
 
@@ -87,10 +87,45 @@ public interface IStatDataProvider {
     public CategoryMeta getCategory(String gameTag);
 
     public StatisticMeta getStatistic(String gameTag);
-    
+
     /**
      * backup the database, for MySQL this could be a schema dump. SQLite makes a copy of the db file.
-     * @param file 
+     *
+     * @param file
      */
     public void generateBackup(File file);
+
+    /**
+     * Pulls a document from the database
+     *
+     * @param domain domain to store document under
+     * @param key id to store document under
+     *
+     * Documents exist under entity -> domain -> id, this composite key uniquely identifies a document
+     */
+    public DocumentFile pullDocument(ProviderQuery query, String domain, String key);
+
+    /**
+     * Pushes a document into a domain
+     * @param query provider query to use to locate entity
+     * @param document document to add.
+     * @throws com.tehbeard.beardstat.dataproviders.IStatDataProvider.RevisionMismatchException if a document exists in the domain -> key that has a different revision id.
+     * @return a new DocumentFile containing the new revision id
+     */
+    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException;
+
+    /**
+     * Returns a list of document keys under a specific domain for a entity.
+     * @param query
+     * @param domain
+     * @return 
+     */
+    public String[] getDocumentKeysInDomain(ProviderQuery query, String domain);
+
+
+    public class RevisionMismatchException extends Exception {
+
+        public RevisionMismatchException() {
+        }
+    }
 }
