@@ -80,19 +80,18 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     @Target(ElementType.METHOD)
     public @interface postUpgrade {
     }
-    /**
-     * SQL SCRIPT NAME BLOCK
-     */
+    
+    //Maintenence scripts
     public static final String SQL_METADATA_CATEGORY = "sql/maintenence/metadata/category";
     public static final String SQL_METADATA_STATISTIC = "sql/maintenence/metadata/statistic";
     public static final String SQL_METADATA_STATIC_STATS = "sql/maintenence/metadata/staticstats";
     public static final String SQL_CREATE_TABLES = "sql/maintenence/create.tables";
     public static final String SQL_KEEP_ALIVE = "sql/maintenence/keepAlive";
-    
+    //Entity scripts
     public static final String SQL_SAVE_ENTITY = "sql/entity/saveEntity";
     public static final String SQL_SAVE_STAT = "sql/entity/saveStat";
     public static final String SQL_LOAD_ENTITY_DATA = "sql/entity/getEntityData";
-    
+    //Component scripts
     public static final String SQL_LOAD_DOMAINS = "sql/components/load/getDomains";
     public static final String SQL_LOAD_WORLDS = "sql/components/load/getWorlds";
     public static final String SQL_LOAD_CATEGORIES = "sql/components/load/getCategories";
@@ -101,7 +100,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_SAVE_WORLD = "sql/components/save/saveWorld";
     public static final String SQL_SAVE_CATEGORY = "sql/components/save/saveCategory";
     public static final String SQL_SAVE_STATISTIC = "sql/components/save/saveStatistic";
-    
     // Database connection
     protected Connection conn;
     // Load components
@@ -542,7 +540,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     ResultSet rs;
 
                     if (result != null) {
-                        
+
                         esb = new EntityStatBlob(result.name, result.dbid, result.type, result.type);//Create the damn esb
                         // load all stats data
                         loadEntityData.setInt(1, esb.getEntityID());
@@ -584,8 +582,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     promise.reject(e);
                 }
             }
-
-            
         };
 
         this.loadQueue.execute(run);
@@ -593,14 +589,14 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         return promise;
 
     }
-    
+
     private ProviderQueryResult getSingleEntity(ProviderQuery query) throws IllegalStateException {
-                ProviderQueryResult[] results = queryDatabase(query);
-                if (results.length > 1) {
-                    throw new IllegalStateException("Invalid Query provided, more than one entity returned.");
-                }
-                return results.length == 1 ? results[0] : null;
-            }
+        ProviderQueryResult[] results = queryDatabase(query);
+        if (results.length > 1) {
+            throw new IllegalStateException("Invalid Query provided, more than one entity returned.");
+        }
+        return results.length == 1 ? results[0] : null;
+    }
 
     @Override
     public boolean hasEntityBlob(ProviderQuery query) {
@@ -908,22 +904,23 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         return mapping;
     }
-    
+
     @Override
     public DocumentFile pullDocument(ProviderQuery query, String domain, String key) {
         ProviderQueryResult result = getSingleEntity(query);
-        if(result == null){throw new IllegalArgumentException("No entity found.");}
-        
-        
+        if (result == null) {
+            throw new IllegalArgumentException("No entity found.");
+        }
+
+
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 
     @Override
     public String[] getDocumentKeysInDomain(ProviderQuery query, String domain) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
