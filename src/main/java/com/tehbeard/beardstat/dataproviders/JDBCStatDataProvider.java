@@ -80,7 +80,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     @Target(ElementType.METHOD)
     public @interface postUpgrade {
     }
-    
     //Maintenence scripts
     public static final String SQL_METADATA_CATEGORY = "sql/maintenence/metadata/category";
     public static final String SQL_METADATA_STATISTIC = "sql/maintenence/metadata/statistic";
@@ -100,7 +99,20 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_SAVE_WORLD = "sql/components/save/saveWorld";
     public static final String SQL_SAVE_CATEGORY = "sql/components/save/saveCategory";
     public static final String SQL_SAVE_STATISTIC = "sql/components/save/saveStatistic";
-    // Database connection
+    //Document meta scripts
+    public static final String SQL_DOC_META_INSERT = "sql/doc/metaInsert";
+    public static final String SQL_DOC_META_LOCK = "sql/doc/metaLock";
+    public static final String SQL_DOC_META_UPDATE = "sql/doc/metaUpdate";
+    public static final String SQL_DOC_META_DELETE = "sql/doc/metaDelete";
+    public static final String SQL_DOC_META_SELECT = "sql/doc/metaSelect";
+    public static final String SQL_DOC_META_POLL = "sql/doc/metaPoll";
+    //Document store scripts
+    public static final String SQL_DOC_STORE_INSERT = "sql/doc/storeInsert";
+    public static final String SQL_DOC_STORE_SELECT = "sql/doc/storeSelect";
+    public static final String SQL_DOC_STORE_POLL = "sql/doc/storePoll";
+    public static final String SQL_DOC_STORE_DELETE = "sql/doc/storeDelete";
+    public static final String SQL_DOC_STORE_PURGE = "sql/doc/storePurge";
+    //Connection
     protected Connection conn;
     // Load components
     protected PreparedStatement loadDomainsList;
@@ -207,7 +219,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             // current version if successful commit
 
             this.plugin.getLogger().info("Updating database to latest version");
-            this.plugin.getLogger().info("Your database: " + installedVersion + " latest: " + latestVersion);
+            this.plugin.getLogger().log(Level.INFO, "Your database: {0} latest: {1}", new Object[]{installedVersion, latestVersion});
 
             if (backups) {
                 try {
@@ -283,8 +295,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
             } catch (SQLException e) {
 
-                this.plugin.getLogger().severe("An error occured while migrating the database, initiating rollback to version "
-                        + (migrateToVersion - 1));
+                this.plugin.getLogger().log(Level.SEVERE, "An error occured while migrating the database, initiating rollback to version {0}", (migrateToVersion - 1));
                 try {
                     this.conn.rollback();
                     throw new BeardStatRuntimeException("Failed to migrate database", e, false);
@@ -868,7 +879,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         PreparedStatement stmt = conn.prepareStatement("UPDATE `" + tblPrefix + "_entity` SET `uuid`=? WHERE `name`=? and `type`=?");
         stmt.setString(3, IStatDataProvider.PLAYER_TYPE);
         ProviderQueryResult[] result = queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
-        plugin.getLogger().info("Found " + result.length + " player entries, processing in batches of " + MAX_UUID_REQUESTS_PER);
+        plugin.getLogger().log(Level.INFO, "Found {0} player entries, processing in batches of {1}", new Object[]{result.length, MAX_UUID_REQUESTS_PER});
         for (int i = 0; i < result.length; i += MAX_UUID_REQUESTS_PER) {
             String[] toGet = new String[Math.min(MAX_UUID_REQUESTS_PER, result.length)];
             for (int k = 0; k < toGet.length; k++) {
@@ -881,7 +892,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 stmt.executeUpdate();
                 //System.out.println(e.getKey() + " = " + e.getValue());
             }
-            plugin.getLogger().info("Updated " + map.size() + " entries");
+            plugin.getLogger().log(Level.INFO, "Updated {0} entries", map.size());
         }
     }
 
