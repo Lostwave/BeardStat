@@ -3,6 +3,7 @@ package com.tehbeard.beardstat.dataproviders;
 import java.sql.SQLException;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

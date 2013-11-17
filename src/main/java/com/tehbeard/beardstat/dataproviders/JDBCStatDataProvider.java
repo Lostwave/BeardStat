@@ -87,20 +87,21 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_METADATA_STATISTIC = "sql/maintenence/metadata/statistic";
     public static final String SQL_METADATA_STATIC_STATS = "sql/maintenence/metadata/staticstats";
     public static final String SQL_CREATE_TABLES = "sql/maintenence/create.tables";
-    public static final String SQL_LOAD_ENTITY = "sql/load/getEntity";
-    public static final String SQL_LOAD_ENTITY_DATA = "sql/load/getEntityData";
-    public static final String SQL_LOAD_DOMAINS = "sql/load/components/getDomains";
-    public static final String SQL_LOAD_WORLDS = "sql/load/components/getWorlds";
-    public static final String SQL_LOAD_CATEGORIES = "sql/load/components/getCategories";
-    public static final String SQL_LOAD_STATISTICS = "sql/load/components/getStatistics";
-    public static final String SQL_SAVE_DOMAIN = "sql/save/components/saveDomain";
-    public static final String SQL_SAVE_WORLD = "sql/save/components/saveWorld";
-    public static final String SQL_SAVE_CATEGORY = "sql/save/components/saveCategory";
-    public static final String SQL_SAVE_STATISTIC = "sql/save/components/saveStatistic";
-    public static final String SQL_SAVE_ENTITY = "sql/save/saveEntity";
-    public static final String SQL_SAVE_STAT = "sql/save/saveStat";
     public static final String SQL_KEEP_ALIVE = "sql/maintenence/keepAlive";
-    public static final String SQL_LIST_ENTITIES = "sql/maintenence/listEntities";
+    
+    public static final String SQL_SAVE_ENTITY = "sql/entity/saveEntity";
+    public static final String SQL_SAVE_STAT = "sql/entity/saveStat";
+    public static final String SQL_LOAD_ENTITY_DATA = "sql/entity/getEntityData";
+    
+    public static final String SQL_LOAD_DOMAINS = "sql/components/load/getDomains";
+    public static final String SQL_LOAD_WORLDS = "sql/components/load/getWorlds";
+    public static final String SQL_LOAD_CATEGORIES = "sql/components/load/getCategories";
+    public static final String SQL_LOAD_STATISTICS = "sql/components/load/getStatistics";
+    public static final String SQL_SAVE_DOMAIN = "sql/components/save/saveDomain";
+    public static final String SQL_SAVE_WORLD = "sql/components/save/saveWorld";
+    public static final String SQL_SAVE_CATEGORY = "sql/components/save/saveCategory";
+    public static final String SQL_SAVE_STATISTIC = "sql/components/save/saveStatistic";
+    
     // Database connection
     protected Connection conn;
     // Load components
@@ -120,7 +121,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected PreparedStatement saveEntityData;
     // Maintenance
     protected PreparedStatement keepAlive;
-    protected PreparedStatement listEntities;
     protected PreparedStatement deleteEntity;
     protected PreparedStatement createTable;
     private HashMap<String, EntityStatBlob> writeCache = new HashMap<String, EntityStatBlob>();
@@ -393,7 +393,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         // Maintenance
         this.keepAlive = getStatementFromScript(SQL_KEEP_ALIVE);
-        this.listEntities = getStatementFromScript(SQL_LIST_ENTITIES);
         // deleteEntity =
         // conn.prepareStatement(plugin.readSQL(type,"sql/maintenence/deletePlayerFully",
         // tblPrefix));
@@ -922,6 +921,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     @Override
     public String[] getDocumentKeysInDomain(ProviderQuery query, String domain) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void deleteDocument(ProviderQuery query, String domain, String key, String revision) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
