@@ -1,24 +1,32 @@
 package com.tehbeard.beardstat.dataproviders;
 
+import com.google.gson.stream.JsonReader;
 import java.sql.SQLException;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
+import com.tehbeard.beardstat.containers.documents.IStatDocument;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.sql.Blob;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
 public class MysqlStatDataProvider extends JDBCStatDataProvider {
-    
+
     //Document meta scripts
     public static final String SQL_DOC_META_INSERT = "sql/doc/meta/metaInsert";
     public static final String SQL_DOC_META_LOCK = "sql/doc/meta/metaLock";
@@ -32,13 +40,14 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public static final String SQL_DOC_STORE_POLL = "sql/doc/store/storePoll";
     public static final String SQL_DOC_STORE_DELETE = "sql/doc/store/storeDelete";
     public static final String SQL_DOC_STORE_PURGE = "sql/doc/store/storePurge";
-    
+    //meta
     private PreparedStatement stmtMetaInsert;
     private PreparedStatement stmtMetaLock;
     private PreparedStatement stmtMetaUpdate;
     private PreparedStatement stmtMetaDelete;
     private PreparedStatement stmtMetaSelect;
     private PreparedStatement stmtMetaPoll;
+    //docs
     private PreparedStatement stmtDocInsert;
     private PreparedStatement stmtDocSelect;
     private PreparedStatement stmtDocPoll;
@@ -58,9 +67,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
         initialise();
     }
-    
+
     @Override
-    protected void prepareStatements(){
+    protected void prepareStatements() {
         super.prepareStatements();
         //Meta
         stmtMetaInsert = getStatementFromScript(SQL_DOC_META_INSERT);
@@ -74,7 +83,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         stmtDocPoll = getStatementFromScript(SQL_DOC_STORE_POLL);
         stmtDocDelete = getStatementFromScript(SQL_DOC_STORE_DELETE);
         stmtDocPurge = getStatementFromScript(SQL_DOC_STORE_PURGE);
-        
+
     }
 
     @Override
@@ -82,27 +91,34 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         plugin.getLogger().log(Level.INFO, "Creating backup of database at {0}", file.toString());
         try {
             FileOutputStream fw = new FileOutputStream(file);
-            GZIPOutputStream gos = new GZIPOutputStream(fw){{def.setLevel(Deflater.BEST_COMPRESSION);}};
+            GZIPOutputStream gos = new GZIPOutputStream(fw) {
+                {
+                    def.setLevel(Deflater.BEST_COMPRESSION);
+                }
+            };
             dumpToBuffer(new BufferedWriter(new OutputStreamWriter(gos)));
         } catch (IOException ex) {
             Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
+
+
     }
-    private ResultSet query(String sql) throws SQLException{
+
+    private ResultSet query(String sql) throws SQLException {
         return conn.prepareStatement(sql).executeQuery();
     }
 
     private void dumpToBuffer(BufferedWriter buff) {
         try {
-            
+
             String version = "-- If restoring to this backup, set stats.database.sql_db_version to : " + this.plugin.getConfig().getInt("stats.database.sql_db_version", 1);
             StringBuilder sb = new StringBuilder();
-            ResultSet rs =query("SHOW FULL TABLES WHERE Table_type != 'VIEW'");
+            ResultSet rs = query("SHOW FULL TABLES WHERE Table_type != 'VIEW'");
             while (rs.next()) {
                 String tbl = rs.getString(1);
-                if(!tbl.startsWith(tblPrefix)){continue;}
+                if (!tbl.startsWith(tblPrefix)) {
+                    continue;
+                }
                 sb.append(version).append("\n");
                 sb.append("\n");
                 sb.append("-- ----------------------------\n")
@@ -164,22 +180,61 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public DocumentFile pullDocument(ProviderQuery query, String domain, String key) {
         ProviderQueryResult result = getSingleEntity(query);
+        DocumentFile file = null;
+
         if (result == null) {
             throw new IllegalArgumentException("No entity found.");
         }
-        
+
         int entityId = result.dbid;
         int domainId = getDomain(domain).getDbId();
-        
-        stmt
-        
 
+        try {
+            conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            conn.setAutoCommit(false);
+            stmtMetaSelect.setInt(1, entityId);
+            stmtMetaSelect.setInt(2, domainId);
+            stmtMetaSelect.setString(3, key);
 
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            ResultSet rs = stmtMetaSelect.executeQuery();
+
+            if (rs.next()) {
+                int docId = rs.getInt("documentId");
+                String curRev = rs.getString("curRevision");
+                rs.close();
+
+                //Get document
+                stmtDocSelect.setInt(1, docId);
+                stmtDocSelect.setString(2, curRev);
+                rs = stmtDocSelect.executeQuery();
+
+                if (rs.next()) {
+                    //`parentRev`, `added`,`document`
+                    String parentRev = rs.getString("parentRev");
+                    Timestamp added = rs.getTimestamp("added");
+                    Blob document = rs.getBlob("document");
+                    
+                    IStatDocument fromJson = DocumentRegistry.instance().fromJson(new JsonReader(new InputStreamReader(document.getBinaryStream())), IStatDocument.class);
+                    
+                    file = new DocumentFile(curRev, parentRev, domain, key, fromJson, added);
+                    
+                }
+                rs.close();
+            } else {
+                rs.close();
+            }
+
+            conn.setAutoCommit(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return file;
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -196,5 +251,4 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public void deleteDocument(ProviderQuery query, String domain, String key, String revision) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }

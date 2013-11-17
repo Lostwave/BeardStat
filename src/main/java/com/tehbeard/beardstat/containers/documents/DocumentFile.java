@@ -15,13 +15,15 @@ public class DocumentFile<T extends IStatDocument> {
 
     private boolean archive = false;
     private final String revision;
+    private final String parentRevision;
     private final String domain;
     private final String key;
     private final T document;
     private final Timestamp dateCreated;
 
-    public DocumentFile(String revision, String domain, String key, T document, Timestamp dateCreated) {
+    public DocumentFile(String revision,String parentRevision, String domain, String key, T document, Timestamp dateCreated) {
         this.revision = revision;
+        this.parentRevision = parentRevision;
         this.domain = domain;
         this.key = key;
         this.document = document;
@@ -60,4 +62,10 @@ public class DocumentFile<T extends IStatDocument> {
     public void clearArchiveFlag() {
         archive = false;
     }
+
+    public String getParentRevision() {
+        return parentRevision;
+    }
+    
+    
 }
