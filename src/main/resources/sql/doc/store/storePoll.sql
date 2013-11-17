@@ -1,0 +1,1 @@
+SELECT `revision`, `parentRev`, `added` from `${PREFIX}_document_store` WHERE `documentId` = ?;

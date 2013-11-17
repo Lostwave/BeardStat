@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,32 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
 public class MysqlStatDataProvider extends JDBCStatDataProvider {
+    
+    //Document meta scripts
+    public static final String SQL_DOC_META_INSERT = "sql/doc/meta/metaInsert";
+    public static final String SQL_DOC_META_LOCK = "sql/doc/meta/metaLock";
+    public static final String SQL_DOC_META_UPDATE = "sql/doc/meta/metaUpdate";
+    public static final String SQL_DOC_META_DELETE = "sql/doc/meta/metaDelete";
+    public static final String SQL_DOC_META_SELECT = "sql/doc/meta/metaSelect";
+    public static final String SQL_DOC_META_POLL = "sql/doc/meta/metaPoll";
+    //Document store scripts
+    public static final String SQL_DOC_STORE_INSERT = "sql/doc/store/storeInsert";
+    public static final String SQL_DOC_STORE_SELECT = "sql/doc/store/storeSelect";
+    public static final String SQL_DOC_STORE_POLL = "sql/doc/store/storePoll";
+    public static final String SQL_DOC_STORE_DELETE = "sql/doc/store/storeDelete";
+    public static final String SQL_DOC_STORE_PURGE = "sql/doc/store/storePurge";
+    
+    private PreparedStatement stmtMetaInsert;
+    private PreparedStatement stmtMetaLock;
+    private PreparedStatement stmtMetaUpdate;
+    private PreparedStatement stmtMetaDelete;
+    private PreparedStatement stmtMetaSelect;
+    private PreparedStatement stmtMetaPoll;
+    private PreparedStatement stmtDocInsert;
+    private PreparedStatement stmtDocSelect;
+    private PreparedStatement stmtDocPoll;
+    private PreparedStatement stmtDocDelete;
+    private PreparedStatement stmtDocPurge;
 
     public MysqlStatDataProvider(BeardStat plugin, String host, int port, String database, String tablePrefix,
             String username, String password, boolean backups) throws SQLException {
@@ -30,6 +57,24 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         this.connectionProperties.put("autoReconnect", "true");
 
         initialise();
+    }
+    
+    @Override
+    protected void prepareStatements(){
+        super.prepareStatements();
+        //Meta
+        stmtMetaInsert = getStatementFromScript(SQL_DOC_META_INSERT);
+        stmtMetaUpdate = getStatementFromScript(SQL_DOC_META_UPDATE);
+        stmtMetaDelete = getStatementFromScript(SQL_DOC_META_DELETE);
+        stmtMetaSelect = getStatementFromScript(SQL_DOC_META_SELECT);
+        stmtMetaPoll = getStatementFromScript(SQL_DOC_META_POLL);
+        //Store
+        stmtDocInsert = getStatementFromScript(SQL_DOC_STORE_INSERT);
+        stmtDocSelect = getStatementFromScript(SQL_DOC_STORE_SELECT);
+        stmtDocPoll = getStatementFromScript(SQL_DOC_STORE_POLL);
+        stmtDocDelete = getStatementFromScript(SQL_DOC_STORE_DELETE);
+        stmtDocPurge = getStatementFromScript(SQL_DOC_STORE_PURGE);
+        
     }
 
     @Override
@@ -118,6 +163,38 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    @Override
+    public DocumentFile pullDocument(ProviderQuery query, String domain, String key) {
+        ProviderQueryResult result = getSingleEntity(query);
+        if (result == null) {
+            throw new IllegalArgumentException("No entity found.");
+        }
+        
+        int entityId = result.dbid;
+        int domainId = getDomain(domain).getDbId();
+        
+        stmt
+        
+
+
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String[] getDocumentKeysInDomain(ProviderQuery query, String domain) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void deleteDocument(ProviderQuery query, String domain, String key, String revision) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

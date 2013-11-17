@@ -1,0 +1,1 @@
+UPDATE `${PREFIX}_document_meta` set `curRevision` = ? where `entityId`=? AND  `domainId` = ? AND `key` = ?;

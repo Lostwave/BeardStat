@@ -99,19 +99,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_SAVE_WORLD = "sql/components/save/saveWorld";
     public static final String SQL_SAVE_CATEGORY = "sql/components/save/saveCategory";
     public static final String SQL_SAVE_STATISTIC = "sql/components/save/saveStatistic";
-    //Document meta scripts
-    public static final String SQL_DOC_META_INSERT = "sql/doc/metaInsert";
-    public static final String SQL_DOC_META_LOCK = "sql/doc/metaLock";
-    public static final String SQL_DOC_META_UPDATE = "sql/doc/metaUpdate";
-    public static final String SQL_DOC_META_DELETE = "sql/doc/metaDelete";
-    public static final String SQL_DOC_META_SELECT = "sql/doc/metaSelect";
-    public static final String SQL_DOC_META_POLL = "sql/doc/metaPoll";
-    //Document store scripts
-    public static final String SQL_DOC_STORE_INSERT = "sql/doc/storeInsert";
-    public static final String SQL_DOC_STORE_SELECT = "sql/doc/storeSelect";
-    public static final String SQL_DOC_STORE_POLL = "sql/doc/storePoll";
-    public static final String SQL_DOC_STORE_DELETE = "sql/doc/storeDelete";
-    public static final String SQL_DOC_STORE_PURGE = "sql/doc/storePurge";
+
     //Connection
     protected Connection conn;
     // Load components
@@ -601,7 +589,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     }
 
-    private ProviderQueryResult getSingleEntity(ProviderQuery query) throws IllegalStateException {
+    protected ProviderQueryResult getSingleEntity(ProviderQuery query) throws IllegalStateException {
         ProviderQueryResult[] results = queryDatabase(query);
         if (results.length > 1) {
             throw new IllegalStateException("Invalid Query provided, more than one entity returned.");
@@ -914,31 +902,5 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 
         return mapping;
-    }
-
-    @Override
-    public DocumentFile pullDocument(ProviderQuery query, String domain, String key) {
-        ProviderQueryResult result = getSingleEntity(query);
-        if (result == null) {
-            throw new IllegalArgumentException("No entity found.");
-        }
-
-
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String[] getDocumentKeysInDomain(ProviderQuery query, String domain) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void deleteDocument(ProviderQuery query, String domain, String key, String revision) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

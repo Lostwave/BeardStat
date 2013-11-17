@@ -1,0 +1,1 @@
+INSERT INTO `${PREFIX}_document_meta` (`entityId`, `domainId`, `key`, `curRevision`) VALUES (?,?,?,?);
