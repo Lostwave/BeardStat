@@ -413,7 +413,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         // SQLite provider
         if (config.databaseType.equalsIgnoreCase("sqlite")) {
             try {
-                db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString(),config.backups);
+                db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString(),config);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {
@@ -426,7 +426,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         // In memory provider
         if (config.databaseType.equalsIgnoreCase("memory")) {
             try {
-                db = new SQLiteStatDataProvider(this, ":memory:",false);
+                db = new SQLiteStatDataProvider(this, ":memory:",config);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {

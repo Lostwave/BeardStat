@@ -3,6 +3,7 @@ package com.tehbeard.beardstat.dataproviders;
 import java.sql.SQLException;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import java.io.File;
 import org.bukkit.util.FileUtil;
@@ -10,9 +11,9 @@ import org.bukkit.util.FileUtil;
 public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     private final String filename;
 
-    public SQLiteStatDataProvider(BeardStat plugin, String filename,boolean backups) throws SQLException {
+    public SQLiteStatDataProvider(BeardStat plugin, String filename, DatabaseConfiguration config) throws SQLException {
 
-        super(plugin, "sqlite", "org.sqlite.JDBC",backups);
+        super(plugin, "sqlite", "org.sqlite.JDBC",config);
 
         this.connectionUrl = String.format("jdbc:sqlite:%s", filename);
         this.tblPrefix = "stats";
