@@ -17,14 +17,13 @@ import java.lang.reflect.Type;
  *
  * @author James
  */
-public class ClassBasedParser<T> implements JsonSerializer<T>,JsonDeserializer<T>{
-    
+public class ClassBasedParser<T> implements JsonSerializer<T>, JsonDeserializer<T> {
+
     private final ClassCatalogue<T> catalogue;
-    
-    public ClassBasedParser(ClassCatalogue<T> catalogue){
+
+    public ClassBasedParser(ClassCatalogue<T> catalogue) {
         this.catalogue = catalogue;
     }
-    
 
     @Override
     public JsonElement serialize(T t, Type type, JsonSerializationContext context) {
@@ -35,13 +34,15 @@ public class ClassBasedParser<T> implements JsonSerializer<T>,JsonDeserializer<T
 
     @Override
     public T deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-        try{
-            return context.deserialize(element, catalogue.get(element.getAsJsonObject().get("_type").getAsString()));
+        try {
+            String id = element.getAsJsonObject().get("_type").getAsString();
+            Class c = catalogue.get(id);
+            if (c != null) {
+                return context.deserialize(element, c);
             }
-            catch (NoClassDefFoundError e){
-                e.printStackTrace();
-            }
-            return null;
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    
 }

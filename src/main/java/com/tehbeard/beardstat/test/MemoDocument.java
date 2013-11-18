@@ -14,10 +14,6 @@ import java.util.List;
 @StatDocument("memo")
 public class MemoDocument implements IStatDocument{
     
-    static{
-        DocumentRegistry.registerDocument(MemoDocument.class);
-    }
-    
     @Expose
     public List<Memo> memos;
     
@@ -53,11 +49,11 @@ public class MemoDocument implements IStatDocument{
         
     }
     
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         MemoDocument doc = new MemoDocument();
         doc.memos.add(new Memo("Tulonsae","Good job on the document system."));
         doc.memos.add(new Memo("comet1","I still no vet."));
         doc.memos.add(new Memo("invoop","Enigma needs more glands."));
         System.out.println(DocumentRegistry.instance().toJson(doc));
-    }
+    }*/
 }

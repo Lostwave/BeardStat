@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.DatabaseConfiguration;
+import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.StatConfiguration;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
@@ -55,9 +56,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     private PreparedStatement stmtDocPurge;
 
     
-    public MysqlStatDataProvider(BeardStat plugin, DatabaseConfiguration config) throws SQLException {
+    public MysqlStatDataProvider(DbPlatform platform, DatabaseConfiguration config) throws SQLException {
 
-        super(plugin, "sql", "com.mysql.jdbc.Driver", config);
+        super(platform, "sql", "com.mysql.jdbc.Driver", config);
         this.connectionUrl = String.format("jdbc:mysql://%s:%s/%s", config.host, config.port, config.database);
         this.connectionProperties.put("user", config.username);
         this.connectionProperties.put("password", config.password);
@@ -197,7 +198,8 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             stmtMetaSelect.setInt(1, entityId);
             stmtMetaSelect.setInt(2, domainId);
             stmtMetaSelect.setString(3, key);
-
+            
+            platform.getLogger().log(Level.FINE, "eid: {0}, domainId: {1}, key: {2}", new Object[]{entityId, domainId, key});
             ResultSet rs = stmtMetaSelect.executeQuery();
 
             if (rs.next()) {
@@ -215,8 +217,12 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                     String parentRev = rs.getString("parentRev");
                     Timestamp added = rs.getTimestamp("added");
                     Blob document = rs.getBlob("document");
+                    JsonReader jsr = new JsonReader(new InputStreamReader(document.getBinaryStream()));
                     
-                    IStatDocument fromJson = DocumentRegistry.instance().fromJson(new JsonReader(new InputStreamReader(document.getBinaryStream())), IStatDocument.class);
+                    
+                    platform.getLogger().fine(new String(document.getBytes(1,(int)document.length())));
+                    
+                    IStatDocument fromJson = DocumentRegistry.instance().fromJson(jsr, IStatDocument.class);
                     
                     file = new DocumentFile(curRev, parentRev, domain, key, fromJson, added);
                     
