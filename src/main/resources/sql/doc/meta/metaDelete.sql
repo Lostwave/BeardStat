@@ -1,1 +1,1 @@
-DELETE FROM `${PREFIX}_document_meta` where `entityId`=? AND  `domainId` = ? AND `key` = ?;
+DELETE FROM `${PREFIX}_document_meta` where `documentId` = ?;
