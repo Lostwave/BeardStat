@@ -1,6 +1,5 @@
 package com.tehbeard.beardstat.dataproviders;
 
-import com.tehbeard.beardstat.BeardStat;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -192,10 +191,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         int installedVersion = config.version;
         
-        BeardStat bs = (BeardStat)this.platform;//TODO - KILL THIS LATER
-        if (!bs.getConfig().isSet("stats.database.sql_db_version")) {
-            bs.getConfig().set("stats.database.sql_db_version", 1);
-            bs.saveConfig();
+        if (!platform.configValueIsSet("stats.database.sql_db_version")) {
+            platform.configValueSet("stats.database.sql_db_version", 1);
+            platform.saveConfig();
             installedVersion = 1;
         }
         
@@ -239,7 +237,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 for (migrateToVersion = installedVersion + 1; migrateToVersion <= config.latestVersion; migrateToVersion++) {
 
                     Map<String, String> k = new HashMap<String, String>();
-                    k.put("OLD_TBL", bs.getConfig().getString("stats.database.table", ""));
 
                     //Run premigration method
                     try {
@@ -281,8 +278,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         throw new SQLException("IllegalArgumentException encountered", ex);
                     }
                     this.conn.commit();
-                    bs.getConfig().set("stats.database.sql_db_version", migrateToVersion);
-                    bs.saveConfig();
+                    platform.configValueSet("stats.database.sql_db_version", migrateToVersion);
+                    platform.saveConfig();
 
                 }
 

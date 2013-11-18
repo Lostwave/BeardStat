@@ -22,5 +22,11 @@ public interface DbPlatform {
     public void mysqlError(SQLException sqlException, String string);
 
     public InputStream getResource(String string);
+
+    public void saveConfig();
+
+    public boolean configValueIsSet(String key);
+
+    public void configValueSet(String key, Object val);
     
 }

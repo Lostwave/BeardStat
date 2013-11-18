@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -53,6 +52,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class BeardStat extends JavaPlugin implements DbPlatform {
 
+    
+    
     public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
     public static final String PERM_COMMAND_STAT_OTHER = "command.stat.other";
     // Default values for domain and world
@@ -286,6 +287,16 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         sender.sendMessage("Command " + commandLabel + " not implemented!");
         return true;
 
+    }
+
+    @Override
+    public boolean configValueIsSet(String key) {
+        return getConfig().isSet(key);
+    }
+
+    @Override
+    public void configValueSet(String key, Object val) {
+        getConfig().set(key,val);
     }
 
     /**
