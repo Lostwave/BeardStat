@@ -20,14 +20,16 @@ public class DocumentFile<T extends IStatDocument> {
     private final String key;
     private final T document;
     private final Timestamp dateCreated;
+    private final int documentId;
 
-    public DocumentFile(String revision, String parentRevision, String domain, String key, T document, Timestamp dateCreated) {
+    public DocumentFile(String revision, String parentRevision, String domain, String key, T document, Timestamp dateCreated,int documentId) {
         this.revision = revision;
         this.parentRevision = parentRevision;
         this.domain = domain;
         this.key = key;
         this.document = document;
         this.dateCreated = dateCreated;
+        this.documentId = documentId;
 
     }
 
@@ -41,14 +43,6 @@ public class DocumentFile<T extends IStatDocument> {
 
     public String getKey() {
         return key;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends IStatDocument> T getDocument(Class<T> cl) {
-        if (cl.isInstance(document)) {
-            return (T) document;
-        }
-        return null;
     }
 
     public Timestamp getDateCreated() {
@@ -70,4 +64,14 @@ public class DocumentFile<T extends IStatDocument> {
     public String getParentRevision() {
         return parentRevision;
     }
+
+    public T getDocument() {
+        return document;
+    }
+
+    public int getDocumentId() {
+        return documentId;
+    }
+    
+    
 }

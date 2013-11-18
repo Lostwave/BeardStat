@@ -1,1 +1,1 @@
-DELETE FROM `${PREFIX}_document_store` WHERE `documentId` = ? and `revision` = ?;
+DELETE FROM `${PREFIX}_document_store` WHERE `storeId` = ?;

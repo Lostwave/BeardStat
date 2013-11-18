@@ -20,6 +20,7 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,13 +72,13 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     protected void prepareStatements() {
         super.prepareStatements();
         //Meta
-        stmtMetaInsert = getStatementFromScript(SQL_DOC_META_INSERT);
+        stmtMetaInsert = getStatementFromScript(SQL_DOC_META_INSERT,Statement.RETURN_GENERATED_KEYS);
         stmtMetaUpdate = getStatementFromScript(SQL_DOC_META_UPDATE);
         stmtMetaDelete = getStatementFromScript(SQL_DOC_META_DELETE);
         stmtMetaSelect = getStatementFromScript(SQL_DOC_META_SELECT);
         stmtMetaPoll = getStatementFromScript(SQL_DOC_META_POLL);
         //Store
-        stmtDocInsert = getStatementFromScript(SQL_DOC_STORE_INSERT);
+        stmtDocInsert = getStatementFromScript(SQL_DOC_STORE_INSERT,Statement.RETURN_GENERATED_KEYS);
         stmtDocSelect = getStatementFromScript(SQL_DOC_STORE_SELECT);
         stmtDocPoll = getStatementFromScript(SQL_DOC_STORE_POLL);
         stmtDocDelete = getStatementFromScript(SQL_DOC_STORE_DELETE);
@@ -217,6 +218,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                     String parentRev = rs.getString("parentRev");
                     Timestamp added = rs.getTimestamp("added");
                     Blob document = rs.getBlob("document");
+                    int storeId = rs.getInt("storeId");
                     JsonReader jsr = new JsonReader(new InputStreamReader(document.getBinaryStream()));
                     
                     
@@ -224,7 +226,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                     
                     IStatDocument fromJson = DocumentRegistry.instance().fromJson(jsr, IStatDocument.class);
                     
-                    file = new DocumentFile(curRev, parentRev, domain, key, fromJson, added);
+                    file = new DocumentFile(curRev, parentRev, domain, key, fromJson, added,storeId);
                     
                 }
                 rs.close();

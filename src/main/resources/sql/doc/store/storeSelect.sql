@@ -1,1 +1,1 @@
-SELECT `parentRev`, `added`,`document` from `${PREFIX}_document_store` WHERE `documentId` = ? and `revision` = ?;
+SELECT `storeId`,`parentRev`, `added`,`document` from `${PREFIX}_document_store` WHERE `documentId` = ? and `revision` = ?;
