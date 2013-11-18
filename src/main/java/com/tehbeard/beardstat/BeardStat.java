@@ -158,27 +158,11 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         // start the player manager
         this.statManager = new EntityStatManager(this, db);
 
-        getLogger().info("initializing composite stats");
-        try {
-            // Load the dynamic stats from file
-            File customStats = new File(getDataFolder(), "customstat.properties");
-            if (customStats.exists()) {
-                loadDynamicStatConfiguration(customStats, false);
-            }
-
-            File savedCustomStats = new File(getDataFolder(), "savedcustomstat.properties");
-            if (savedCustomStats.exists()) {
-                loadDynamicStatConfiguration(savedCustomStats, true);
-            }
-
-        } catch (Exception e) {
-            handleError(new BeardStatRuntimeException("Error loading dynamic stats or custom formats", e, true));
-        }
-
+        getLogger().info("Composite stats disabled until reworked.");
+        
         getLogger().info("Registering events and collectors");
 
         // register event listeners
-        // get blacklist, then start and register each type of listener
         try {
             StatBlockListener sbl = new StatBlockListener(this.statManager, this);
             StatPlayerListener spl = new StatPlayerListener(this.statManager, this);
@@ -376,27 +360,6 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             logger.severe("=========================================");
             logger.severe("             End error dump              ");
             logger.severe("=========================================");
-        }
-
-    }
-
-    /**
-     * Load custom stats from config custom stats use a formula to manipulate
-     * other stats.
-     *
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    private void loadDynamicStatConfiguration(File f, boolean archive) throws FileNotFoundException, IOException {
-        getLogger().info(ChatColor.RED + "Custom stats are currently disabled pending an update to the expressions library.");
-
-        Properties prop = new Properties();
-        prop.load(new FileInputStream(f));
-
-        for (Entry<Object, Object> e : prop.entrySet()) {
-            String statName = (String) e.getKey();
-            String expr = (String) e.getValue();
-            EntityStatBlob.addDynamic(statName, expr, archive);
         }
 
     }

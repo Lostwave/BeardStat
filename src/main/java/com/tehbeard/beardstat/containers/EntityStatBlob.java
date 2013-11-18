@@ -1,103 +1,65 @@
 package com.tehbeard.beardstat.containers;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.EntityStatBlobLoadEvent;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import org.bukkit.Bukkit;
 
-
 /**
- * Represents a collection of statistics bound to an entity Currently only used
- * for Players.
- * 
+ * Represents a collection of statistics bound to an entity Currently only used for Players.
+ *
  * @author James
- * 
+ *
  */
 public class EntityStatBlob implements VariableProvider {
 
-    private static Set<DynamicStat> dynamicStats = new HashSet<DynamicStat>();
-
-    @Deprecated
-    public static void addDynamic(String statName, String expr, boolean archive) {
-
-        Stack<String> stack = new Stack<String>();
-        for (String s : statName.split("\\:\\:")) {
-            stack.add(s);
-        }
-
-        String stat = !stack.isEmpty() ? stack.pop() : null;
-        String cat = !stack.isEmpty() ? stack.pop() : null;
-        String world = !stack.isEmpty() ? stack.pop() : BeardStat.GLOBAL_WORLD;
-        String domain = !stack.isEmpty() ? stack.pop() : BeardStat.DEFAULT_DOMAIN;
-        if ((stat == null) || (cat == null)) {
-            throw new BeardStatRuntimeException("Invalid stat name provided [" + statName + "]",
-                    new IllegalArgumentException(), false);
-        }
-
-        dynamicStats.add(new DynamicStat(domain, world, cat, stat, expr, archive));
-    }
-
-    @Deprecated
-    private void addDynamics() {
-        if (this.type.equals(IStatDataProvider.PLAYER_TYPE)) {
-            for (DynamicStat ds : dynamicStats) {
-
-                addStat(ds.duplicateForPlayer(this));
-            }
-
-            // Add health status
-            addStat(new HealthStat(this));
-        }
-    }
-
     private Map<String, IStat> stats = new ConcurrentHashMap<String, IStat>();
+    private int entityId;
+    private String name;
+    private String type;
+    private String uuid;
 
-    private int                entityId;
-    private String             name;
-    private String             type;
-    private String               uuid;
-
+    /**
+     * The name of the entity this EntityStatBlob is associated with.
+     * @return 
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Returns the internal database id of the entity, not for public use.
+     * @return 
+     */
     public int getEntityID() {
         return this.entityId;
     }
 
     /**
      * 
-     * @param name
-     *            Players name
-     * @param ID
-     *            playerID in database
+     * @param name name of the entity
+     * @param entityId internal database id
+     * @param type
+     * @param uuid 
      */
-    public EntityStatBlob(String name, int entityId, String type,String uuid) {
+    public EntityStatBlob(String name, int entityId, String type, String uuid) {
         this.name = name;
         this.entityId = entityId;
         this.type = type;
         this.uuid = uuid;
-        
-        Bukkit.getPluginManager().callEvent(new EntityStatBlobLoadEvent(this));
-        addDynamics();
     }
 
     /**
-     * add stat
-     * 
-     * @param stat
+     * Adds a IStat object to this EntityStatBlob
+     * @param stat 
      */
     public void addStat(IStat stat) {
         this.stats.put(
@@ -105,12 +67,25 @@ public class EntityStatBlob implements VariableProvider {
                 stat);
         stat.setOwner(this);
     }
+    
+    /**
+     * Returns a stat object from the default (BeardStat) domain, see other getStat() for details.
+     * @param world
+     * @param category
+     * @param statistic
+     * @return 
+     */
+    public IStat getStat(String world, String category, String statistic) {
+        return getStat(BeardStat.DEFAULT_DOMAIN,world,category,statistic);
+    }
 
     /**
-     * Get a players stat, creates new object if not found.
-     * 
-     * @param statistic
-     * @return
+     * Returns a stat object for the supplied coordinates
+     * @param domain domain of the stats,
+     * @param world world name stat is under
+     * @param category category stat is under
+     * @param statistic name of statistic
+     * @return 
      */
     public IStat getStat(String domain, String world, String category, String statistic) {
         IStat psn = this.stats.get(domain + "::" + world + "::" + category + "::" + statistic);
@@ -123,13 +98,10 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     /**
-     * Query this blob for a {@link StatVector}, a {@link StatVector} combines
-     * multiple stats into one easy to access object {@link StatVector} supports
-     * the use of regex, with the shortcut "*" to denote all possible values
-     * (substituted for ".*" in regex engine) Defaults to readonly mode, any
-     * mutators called on this {@link StatVector} will throw
-     * {@link IllegalStateException} if readOnly is true
-     * 
+     * Query this blob for a {@link StatVector}, a {@link StatVector} combines multiple stats into one easy to access object {@link StatVector} supports the use of regex, with the shortcut "*"
+     * to denote all possible values (substituted for ".*" in regex engine) Defaults to readonly mode, any mutators called on this {@link StatVector} will throw {@link IllegalStateException}
+     * if readOnly is true
+     *
      * @param domain
      * @param world
      * @param category
@@ -141,13 +113,10 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     /**
-     * Query this blob for a {@link StatVector}, a {@link StatVector} combines
-     * multiple stats into one easy to access object {@link StatVector} supports
-     * the use of regex, with the shortcut "*" to denote all possible values
-     * (substituted for ".*" in regex engine) Defaults to readonly mode, any
-     * mutators called on this {@link StatVector} will throw
-     * {@link IllegalStateException} if readOnly is true
-     * 
+     * Query this blob for a {@link StatVector}, a {@link StatVector} combines multiple stats into one easy to access object {@link StatVector} supports the use of regex, with the shortcut "*"
+     * to denote all possible values (substituted for ".*" in regex engine) Defaults to readonly mode, any mutators called on this {@link StatVector} will throw {@link IllegalStateException}
+     * if readOnly is true
+     *
      * @param domain
      * @param world
      * @param category
@@ -165,17 +134,13 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     /**
-     * Query this blob for a {@link StatVector}, a {@link StatVector} combines
-     * multiple stats into one easy to access object {@link StatVector} supports
-     * the use of regex, with the shortcut "*" to denote all possible values
-     * (substituted for ".*" in regex engine) Defaults to readonly mode, any
-     * mutators called on this {@link StatVector} will throw
-     * {@link IllegalStateException} if readOnly is true
-     * 
-     * This method differs from other getStats() as it provides direct control
-     * of the final regex expression used, domain,world etc are used to populate
-     * the respective fields of the returned StatVector
-     * 
+     * Query this blob for a {@link StatVector}, a {@link StatVector} combines multiple stats into one easy to access object {@link StatVector} supports the use of regex, with the shortcut "*"
+     * to denote all possible values (substituted for ".*" in regex engine) Defaults to readonly mode, any mutators called on this {@link StatVector} will throw {@link IllegalStateException}
+     * if readOnly is true
+     *
+     * This method differs from other getStats() as it provides direct control of the final regex expression used, domain,world etc are used to populate the respective fields of the returned
+     * StatVector
+     *
      * @param domain
      * @param world
      * @param category
@@ -204,13 +169,21 @@ public class EntityStatBlob implements VariableProvider {
 
     /**
      * Return all the stats!
-     * 
+     *
      * @return
      */
     public Collection<IStat> getStats() {
         return this.stats.values();
     }
 
+    /**
+     * Checks if a stat under these coordinates has been recorded.
+     * @param domain
+     * @param world
+     * @param category
+     * @param statistic
+     * @return 
+     */
     public boolean hasStat(String domain, String world, String category, String statistic) {
         return this.stats.containsKey(domain + "::" + world + "::" + category + "::" + statistic);
 
@@ -238,12 +211,16 @@ public class EntityStatBlob implements VariableProvider {
         return getStats(domain, world, cat, stat).getValue();
     }
 
+    /**
+     * Return the entity type of this EntityStatBlob
+     * @return 
+     */
     public String getType() {
         return this.type;
     }
 
     public EntityStatBlob cloneForArchive() {
-        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type,uuid);
+        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type, uuid);
         blob.stats.clear();
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
@@ -261,9 +238,8 @@ public class EntityStatBlob implements VariableProvider {
     public int[] resolveReference(String array) {
         throw new UnsupportedOperationException("Array support not yet available."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    public String getString(){
+
+    public String getString() {
         return uuid;
     }
-
 }

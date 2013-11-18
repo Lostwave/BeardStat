@@ -22,6 +22,7 @@ import net.dragonzone.promise.Promise;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
+import com.tehbeard.beardstat.EntityStatBlobLoadEvent;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
@@ -55,6 +56,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.dragonzone.promise.Deferred;
+import org.bukkit.Bukkit;
 
 /**
  * base class for JDBC based data providers Allows easy development of data providers that make use of JDBC
@@ -572,9 +574,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         promise.reject(new NoRecordFoundException());
                         return;
                     }
-
-
-
+                    
+                    Bukkit.getPluginManager().callEvent(new EntityStatBlobLoadEvent(esb));
                     platform.getLogger().log(Level.CONFIG, "time taken to retrieve: {0} Milliseconds", ((new Date()).getTime() - t1));
 
                     promise.resolve(esb);
