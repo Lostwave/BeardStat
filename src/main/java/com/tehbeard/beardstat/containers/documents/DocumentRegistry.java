@@ -22,6 +22,13 @@ public class DocumentRegistry {
     public static void registerDocument(Class<? extends IStatDocument> _class) {
         documentCatalogue.addProduct(_class);
     }
+    
+    public static Class<? extends IStatDocument> getSerializeAs(Class<? extends IStatDocument> _class){
+        if(documentCatalogue.get(_class.getAnnotation(StatDocument.class).value()) != null){
+            return IStatDocument.class;
+        }
+        return _class;
+    }
 
     public static void registerDocument(Class<? extends IStatDocument> _class, Object adapater) {
         builder.registerTypeAdapter(_class, adapater);

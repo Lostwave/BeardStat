@@ -4,33 +4,35 @@ import com.google.gson.annotations.Expose;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.containers.documents.StatDocument;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author James
-*/
+ */
 @StatDocument("memo")
-public class MemoDocument implements IStatDocument{
-    
+public class MemoDocument implements IStatDocument {
+
     @Expose
     public List<Memo> memos;
-    
-    public MemoDocument(){
+
+    public MemoDocument() {
         memos = new ArrayList<Memo>();
     }
-    
-    public static class Memo{
+
+    public static class Memo {
+
         @Expose
         private final String from;
         @Expose
         private final String msg;
 
-        public Memo(String from, String msg){
+        public Memo(String from, String msg) {
             this.from = from;
             this.msg = msg;
-            
+
         }
 
         public String getFrom() {
@@ -45,15 +47,11 @@ public class MemoDocument implements IStatDocument{
         public String toString() {
             return "from: " + from + ", " + msg;
         }
-        
-        
     }
     
-    /*public static void main(String[] args){
+    public static void main(String[] args){
+        DocumentRegistry.registerDocument(MemoDocument.class);
         MemoDocument doc = new MemoDocument();
-        doc.memos.add(new Memo("Tulonsae","Good job on the document system."));
-        doc.memos.add(new Memo("comet1","I still no vet."));
-        doc.memos.add(new Memo("invoop","Enigma needs more glands."));
-        System.out.println(DocumentRegistry.instance().toJson(doc));
-    }*/
+        System.out.println(DocumentRegistry.instance().toJson(doc,DocumentRegistry.getSerializeAs(doc.getClass())));
+    }
 }

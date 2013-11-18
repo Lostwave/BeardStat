@@ -1,17 +1,15 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import com.google.gson.stream.JsonReader;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import java.sql.SQLException;
 
-import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
-import com.tehbeard.beardstat.StatConfiguration;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -267,7 +265,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
         try {
             //1) Generate JSON
-            byte[] doc = DocumentRegistry.instance().toJson(document).getBytes();
+            byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
 
             if (doc.length > MAX_DOC_SIZE) {
                 throw new RuntimeException("Document exceeds max size.");
@@ -313,15 +311,15 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 Timestamp tStamp = new Timestamp(System.currentTimeMillis());
                 stmtDocInsert.setTimestamp(4, tStamp);
 
-                stmtDocInsert.setBlob(5, new ByteInputStream(doc, doc.length));
+                stmtDocInsert.setBlob(5, new ByteArrayInputStream(doc));
 
 
-                rs = stmtDocInsert.executeQuery();
+                stmtDocInsert.executeUpdate();
+                rs = stmtDocInsert.getGeneratedKeys();
                 rs.next();
                 int storeId = rs.getInt(1);
                 rs.close();
                 returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp, docId);
-
             } else {
                 rs.close();
 
@@ -331,7 +329,8 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 stmtMetaInsert.setInt(2, domainId);
                 stmtMetaInsert.setString(3, document.getKey());
                 stmtMetaInsert.setString(4, newRevision);
-                rs = stmtMetaInsert.executeQuery();
+                stmtMetaInsert.executeUpdate();
+                rs = stmtMetaInsert.getGeneratedKeys();
                 rs.next();
                 int docId = rs.getInt(1);
                 rs.close();
@@ -343,12 +342,12 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 Timestamp tStamp = new Timestamp(System.currentTimeMillis());
                 stmtDocInsert.setTimestamp(4, tStamp);
 
-                stmtDocInsert.setBlob(5, new ByteInputStream(doc, doc.length));
+                stmtDocInsert.setBlob(5, new ByteArrayInputStream(doc));
                 stmtDocInsert.execute();
 
                 returnDoc = new DocumentFile(newRevision, null, document.getDomain(), document.getKey(), document.getDocument(), tStamp, docId);
             }
-
+            conn.commit();
         } catch (SQLException e) {
             try {
                 platform.mysqlError(e, "push doc");
@@ -360,7 +359,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                conn.commit();
+                
                 conn.setAutoCommit(true);
             } catch (SQLException ex) {
                 Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);

@@ -11,18 +11,22 @@ import java.sql.Timestamp;
  *
  * @author James
  */
-public class DocumentFile<T extends IStatDocument> {
+public class DocumentFile {
 
     private boolean archive = false;
     private final String revision;
     private final String parentRevision;
     private final String domain;
     private final String key;
-    private final T document;
+    private final IStatDocument document;
     private final Timestamp dateCreated;
     private final int documentId;
+    
+    public DocumentFile(String rev, String domain,String key,IStatDocument document){
+        this(rev, null, domain, key, document, null, 0);
+    }
 
-    public DocumentFile(String revision, String parentRevision, String domain, String key, T document, Timestamp dateCreated,int documentId) {
+    public DocumentFile(String revision, String parentRevision, String domain, String key, IStatDocument document, Timestamp dateCreated,int documentId) {
         this.revision = revision;
         this.parentRevision = parentRevision;
         this.domain = domain;
@@ -65,8 +69,8 @@ public class DocumentFile<T extends IStatDocument> {
         return parentRevision;
     }
 
-    public T getDocument() {
-        return document;
+    public <T extends IStatDocument> T getDocument() {
+        return (T)document;
     }
 
     public int getDocumentId() {
