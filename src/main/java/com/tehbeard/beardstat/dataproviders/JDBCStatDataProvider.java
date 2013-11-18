@@ -17,8 +17,8 @@ import java.util.regex.MatchResult;
 
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+//import org.bukkit.Bukkit;
+//import org.bukkit.ChatColor;
 
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
@@ -230,8 +230,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             }
 
             for (int i = 0; i < 3; i++) {
-                Bukkit.getConsoleSender().sendMessage(
-                        ChatColor.RED + "WARNING: DATABASE MIGRATION WILL TAKE A LONG TIME ON LARGE DATABASES.");
+                platform.getLogger().warning("WARNING: DATABASE MIGRATION WILL TAKE A LONG TIME ON LARGE DATABASES.");
             }
             int migrateToVersion = 0;
             try {
@@ -639,10 +638,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 }
 
                 if (!checkConnection()) {
-                    Bukkit.getConsoleSender()
-                            .sendMessage(
-                            ChatColor.RED
-                            + "Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
+                    platform.getLogger().warning("Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
                 } else {
                     platform.getLogger().config("Saving to database");
                     for (Entry<String, EntityStatBlob> entry : writeCache
@@ -726,11 +722,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
             if (statement.startsWith("#!")) {
                 String subScript = statement.substring(2);
-                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Executing : " + subScript);
+                platform.getLogger().log(Level.INFO, "Executing : {0}", subScript);
                 executeScript(subScript, keys);
                 continue;
             } else if (statement.startsWith("#")) {
-                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Status : " + statement.substring(1));
+                platform.getLogger().log(Level.INFO, "Status : {0}", statement.substring(1));
             } else {
 
                 this.conn.prepareStatement(statement).execute();
