@@ -10,8 +10,9 @@ import java.util.regex.Pattern;
 import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.EntityStatBlobLoadEvent;
-import org.bukkit.Bukkit;
+import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import java.util.HashMap;
 
 /**
  * Represents a collection of statistics bound to an entity Currently only used for Players.
@@ -26,6 +27,10 @@ public class EntityStatBlob implements VariableProvider {
     private String name;
     private String type;
     private String uuid;
+    
+    private IStatDataProvider provider;
+    
+    private Map<String,DocumentFile> files = new HashMap<String, DocumentFile>();
 
     /**
      * The name of the entity this EntityStatBlob is associated with.
@@ -50,11 +55,12 @@ public class EntityStatBlob implements VariableProvider {
      * @param type
      * @param uuid 
      */
-    public EntityStatBlob(String name, int entityId, String type, String uuid) {
+    public EntityStatBlob(String name, int entityId, String type, String uuid,IStatDataProvider provider) {
         this.name = name;
         this.entityId = entityId;
         this.type = type;
         this.uuid = uuid;
+        this.provider = provider;
     }
 
     /**
@@ -220,7 +226,7 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     public EntityStatBlob cloneForArchive() {
-        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type, uuid);
+        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type, uuid,provider);
         blob.stats.clear();
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
@@ -239,7 +245,19 @@ public class EntityStatBlob implements VariableProvider {
         throw new UnsupportedOperationException("Array support not yet available."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String getString() {
+    public String getUUID() {
         return uuid;
+    }
+    
+    public DocumentFile getDocument(String domain,String key){
+        String code = domain + "::" + key;
+        if(!files.containsKey(code)){
+            files.put(code,provider.pullDocument(entityId, domain, key));
+        }
+        return files.get(code);
+    }
+    
+    public Collection<DocumentFile> getLoadedFiles(){
+        return files.values();
     }
 }

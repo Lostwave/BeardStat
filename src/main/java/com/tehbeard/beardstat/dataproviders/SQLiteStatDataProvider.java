@@ -29,23 +29,25 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     }
 
     @Override
-    public DocumentFile pullDocument(ProviderQuery query, String domain, String key) {
+    public DocumentFile pullDocument(int entityId, String domain, String key) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException {
+    public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void deleteDocument(ProviderQuery query, String domain, String key, String revision) {
+    public void deleteDocument(int entityId, String domain, String key, String revision) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String[] getDocumentKeysInDomain(ProviderQuery query, String domain) {
+    public String[] getDocumentKeysInDomain(int entityId, String domain) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+   
 
 }

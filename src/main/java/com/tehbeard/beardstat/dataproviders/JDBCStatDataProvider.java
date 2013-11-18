@@ -525,7 +525,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     @Override
     public Promise<EntityStatBlob> pullEntityBlob(final ProviderQuery query) {
-
+        final IStatDataProvider t = this;
         final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
         Runnable run = new Runnable() {
@@ -544,7 +544,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                     if (result != null) {
 
-                        esb = new EntityStatBlob(result.name, result.dbid, result.type, result.type);//Create the damn esb
+                        esb = new EntityStatBlob(result.name, result.dbid, result.type, result.type,t);//Create the damn esb
                         // load all stats data
                         loadEntityData.setInt(1, esb.getEntityID());
                         rs = loadEntityData.executeQuery();
@@ -566,7 +566,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         rs.next();// load player id
 
                         // make the player object, close out result set.
-                        esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.uuid);
+                        esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.uuid,t);
                         rs.close();
                     }
                     //Didn't get a esb, kill it.

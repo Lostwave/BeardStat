@@ -182,15 +182,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     }
 
     @Override
-    public DocumentFile pullDocument(ProviderQuery query, String domain, String key) {
-        ProviderQueryResult result = getSingleEntity(query);
+    public DocumentFile pullDocument(int entityId, String domain, String key) {
         DocumentFile file = null;
 
-        if (result == null) {
-            throw new IllegalArgumentException("No entity found.");
-        }
-
-        int entityId = result.dbid;
         int domainId = getDomain(domain).getDbId();
 
         try {
@@ -253,15 +247,10 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     private final int MAX_DOC_SIZE = 16 * 1024 * 1024;//16mb limit
 
     @Override
-    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException {
+    public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException {
 
-        ProviderQueryResult result = getSingleEntity(query);
-        
+       
         DocumentFile returnDoc = null;
-
-        if (result == null) {
-            throw new IllegalArgumentException("No entity found.");
-        }
 
         try {
             //1) Generate JSON
@@ -278,7 +267,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             //3) lock meta document record, get headrev revision tag
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             conn.setAutoCommit(false);
-            int entityId = result.dbid;
             int domainId = getDomain(document.getDomain()).getDbId();
             stmtMetaSelect.setInt(1, entityId);
             stmtMetaSelect.setInt(2, domainId);
@@ -293,7 +281,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs.close();
 
                 if (!headRev.equalsIgnoreCase(document.getRevision())) {
-                    throw new RevisionMismatchException(pullDocument(query, document.getDomain(), document.getKey()));
+                    throw new RevisionMismatchException(pullDocument(entityId, document.getDomain(), document.getKey()));
                 }
 
                 stmtMetaUpdate.setString(1, newRevision);
@@ -325,7 +313,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
                 //We are inserting a record
                 //`entityId`, `domainId`, `key`, `curRevision`
-                stmtMetaInsert.setInt(1, result.dbid);
+                stmtMetaInsert.setInt(1, entityId);
                 stmtMetaInsert.setInt(2, domainId);
                 stmtMetaInsert.setString(3, document.getKey());
                 stmtMetaInsert.setString(4, newRevision);
@@ -369,12 +357,12 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     }
 
     @Override
-    public String[] getDocumentKeysInDomain(ProviderQuery query, String domain) {
+    public String[] getDocumentKeysInDomain(int entityId, String domain) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
-    public void deleteDocument(ProviderQuery query, String domain, String key, String revision) {
+    public void deleteDocument(int entityId, String domain, String key, String revision) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

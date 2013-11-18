@@ -103,7 +103,7 @@ public interface IStatDataProvider {
      *
      * Documents exist under entity -> domain -> id, this composite key uniquely identifies a document
      */
-    public DocumentFile pullDocument(ProviderQuery query, String domain, String key);
+    public DocumentFile pullDocument(int entityId, String domain, String key);
 
     /**
      * Pushes a document into storage
@@ -112,7 +112,7 @@ public interface IStatDataProvider {
      * @return new DocumentFile with the revision of the stored document
      * @throws com.tehbeard.beardstat.dataproviders.IStatDataProvider.RevisionMismatchException if revision key passed does not match current (latest) one.
      */
-    public DocumentFile pushDocument(ProviderQuery query, DocumentFile document) throws RevisionMismatchException;
+    public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException;
     
     /**
      * Deletes a document
@@ -121,7 +121,7 @@ public interface IStatDataProvider {
      * @param key unique id for document
      * @param revision specific revision to delete. If passed null deletes all revisions
      */
-    public void deleteDocument(ProviderQuery query, String domain, String key, String revision);
+    public void deleteDocument(int entityId, String domain, String key, String revision);
 
     /**
      * Returns a list of document keys under a specific domain for a entity.
@@ -129,7 +129,7 @@ public interface IStatDataProvider {
      * @param domain
      * @return 
      */
-    public String[] getDocumentKeysInDomain(ProviderQuery query, String domain);
+    public String[] getDocumentKeysInDomain(int entityId, String domain);
 
 
     public class RevisionMismatchException extends Exception {
