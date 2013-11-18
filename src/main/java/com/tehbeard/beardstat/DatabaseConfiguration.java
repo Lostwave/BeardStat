@@ -26,4 +26,10 @@ public class DatabaseConfiguration {
     public int port;
     @InjectConfig("backups")
     public boolean backups;
+    
+    public int latestVersion;
+    
+    public DatabaseConfiguration(int latestVersion){
+        this.latestVersion = latestVersion;
+    }
 }

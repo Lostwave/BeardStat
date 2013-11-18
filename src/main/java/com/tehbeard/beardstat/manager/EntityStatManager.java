@@ -195,4 +195,8 @@ public class EntityStatManager implements CommandExecutor{
         return this.backendDatabase.queryDatabase(providerQuery);
     }
     
+    public IStatDataProvider getProvider(){
+        return this.backendDatabase;
+    }
+    
 }

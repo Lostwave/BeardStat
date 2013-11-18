@@ -51,7 +51,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author James
  *
  */
-public class BeardStat extends JavaPlugin {
+public class BeardStat extends JavaPlugin implements DbPlatform {
 
     public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
     public static final String PERM_COMMAND_STAT_OTHER = "command.stat.other";
@@ -402,9 +402,7 @@ public class BeardStat extends JavaPlugin {
         if (config.databaseType.equalsIgnoreCase("mysql")) {
             try {
                 db = new MysqlStatDataProvider(this,
-                        config.host, config.port,
-                        config.database, config.tablePrefix,
-                        config.username, config.password,config.backups);
+                        config);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {
@@ -454,30 +452,7 @@ public class BeardStat extends JavaPlugin {
         return db;
     }
 
-    /**
-     * Utility method to load SQL commands from files in JAR
-     *
-     * @param type extension of file to load, if not found will try load sql
-     * type (which is the type for MySQL syntax)
-     * @param filename file to load, minus extension
-     * @param prefix table prefix, replaces ${PREFIX} in loaded files
-     * @return SQL commands loaded from file.
-     */
-    public String readSQL(String type, String filename, String prefix) {
-        getLogger().fine("Loading SQL: " + filename);
-        InputStream is = getResource(filename + "." + type);
-        if (is == null) {
-            is = getResource(filename + ".sql");
-        }
-        if (is == null) {
-            throw new IllegalArgumentException("No SQL file found with name " + filename);
-        }
-        Scanner scanner = new Scanner(is);
-        String sql = scanner.useDelimiter("\\Z").next().replaceAll("\\Z", "").replaceAll("\\n|\\r", "");
-        scanner.close();
-        return sql.replaceAll("\\$\\{PREFIX\\}", prefix);
-
-    }
+    
 
     /**
      * Handle an error, if it's a {@link BeardStatRuntimeException} it will try
@@ -526,7 +501,7 @@ public class BeardStat extends JavaPlugin {
     }
 
     public DatabaseConfiguration getDatabaseConfiguration(ConfigurationSection section) {
-        DatabaseConfiguration dbc = new DatabaseConfiguration();
+        DatabaseConfiguration dbc = new DatabaseConfiguration(getConfig().getDefaults().getInt("stats.database.sql_db_version"));//assign latest version here to config
         new YamlConfigInjector(section).inject(dbc);
         return dbc;
     }

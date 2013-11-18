@@ -4,14 +4,14 @@ import com.google.gson.stream.JsonReader;
 import java.sql.SQLException;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.DatabaseConfiguration;
+import com.tehbeard.beardstat.StatConfiguration;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -54,15 +54,13 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     private PreparedStatement stmtDocDelete;
     private PreparedStatement stmtDocPurge;
 
-    public MysqlStatDataProvider(BeardStat plugin, String host, int port, String database, String tablePrefix,
-            String username, String password, boolean backups) throws SQLException {
+    
+    public MysqlStatDataProvider(BeardStat plugin, DatabaseConfiguration config) throws SQLException {
 
-        super(plugin, "sql", "com.mysql.jdbc.Driver", backups);
-        this.tblPrefix = tablePrefix;
-
-        this.connectionUrl = String.format("jdbc:mysql://%s:%s/%s", host, port, database);
-        this.connectionProperties.put("user", username);
-        this.connectionProperties.put("password", password);
+        super(plugin, "sql", "com.mysql.jdbc.Driver", config);
+        this.connectionUrl = String.format("jdbc:mysql://%s:%s/%s", config.host, config.port, config.database);
+        this.connectionProperties.put("user", config.username);
+        this.connectionProperties.put("password", config.password);
         this.connectionProperties.put("autoReconnect", "true");
 
         initialise();
@@ -88,7 +86,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     @Override
     public void generateBackup(File file) {
-        plugin.getLogger().log(Level.INFO, "Creating backup of database at {0}", file.toString());
+        platform.getLogger().log(Level.INFO, "Creating backup of database at {0}", file.toString());
         try {
             FileOutputStream fw = new FileOutputStream(file);
             GZIPOutputStream gos = new GZIPOutputStream(fw) {
@@ -111,7 +109,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     private void dumpToBuffer(BufferedWriter buff) {
         try {
 
-            String version = "-- If restoring to this backup, set stats.database.sql_db_version to : " + this.plugin.getConfig().getInt("stats.database.sql_db_version", 1);
+            String version = "-- If restoring to this backup, set stats.database.sql_db_version to : " + config.latestVersion;
             StringBuilder sb = new StringBuilder();
             ResultSet rs = query("SHOW FULL TABLES WHERE Table_type != 'VIEW'");
             while (rs.next()) {
@@ -225,12 +223,19 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 }
                 rs.close();
             } else {
+                platform.getLogger().info("No entry found");
                 rs.close();
             }
 
-            conn.setAutoCommit(true);
+            
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally{
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         return file;
