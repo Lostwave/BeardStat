@@ -935,7 +935,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             is = platform.getResource(filename + ".sql");
         }
         if (is == null) {
-            throw new IllegalArgumentException("No SQL file found with name " + filename + "." + prefix);
+            throw new IllegalArgumentException("No SQL file found with name " + filename + "." + scriptSuffix);
         }
         Scanner scanner = new Scanner(is);
         String sql = scanner.useDelimiter("\\Z").next().replaceAll("\\Z", "").replaceAll("\\n|\\r", "");

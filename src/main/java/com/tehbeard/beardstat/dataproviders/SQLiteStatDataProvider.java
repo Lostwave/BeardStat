@@ -30,7 +30,6 @@ import org.bukkit.util.FileUtil;
 public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
     private final String filename;
-    
     private DocumentDatabase docDB;
     private File docDbFile;
 
@@ -42,12 +41,15 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         config.tablePrefix = "stats";
         initialise();
 
-        try{
-        docDbFile = new File(platform.getDataFolder(),"documents.json.gz");
-        docDbFile.createNewFile();
-        docDB = DocumentRegistry.instance().fromJson(new InputStreamReader(new GZIPInputStream(new FileInputStream(docDbFile))), DocumentDatabase.class);
-        }
-        catch(IOException e){
+        try {
+            docDbFile = new File(platform.getDataFolder(), "documents.json.gz");
+            if (!docDbFile.exists()) {
+                docDB = new DocumentDatabase();
+            } else {
+                docDB = DocumentRegistry.instance().fromJson(new InputStreamReader(new GZIPInputStream(new FileInputStream(docDbFile))), DocumentDatabase.class);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
             throw new BeardStatRuntimeException("Error generating documents database", e, false);
         }
         this.filename = filename;
@@ -63,9 +65,9 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentFile pullDocument(int entityId, String domain, String key) {
         DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(getDomain(domain).getDbId(), key);
         DocRev docRevision = dbEntry.getRevisions().get(dbEntry.getCurrentRevision());
-        
-        return new DocumentFile(dbEntry.getCurrentRevision(), docRevision.parentRev,domain,key,docRevision.document,docRevision.dateAdded);
-        
+
+        return new DocumentFile(dbEntry.getCurrentRevision(), docRevision.parentRev, domain, key, docRevision.document, docRevision.dateAdded);
+
     }
 
     @Override
@@ -75,21 +77,21 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
             //2) Generate new revision tag.
             MessageDigest digest = MessageDigest.getInstance("SHA1");
             String newRevision = byteArrayToHexString(digest.digest(doc));
-            
+
             String currentRevision = document.getRevision();
-            
+
             DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(getDomain(document.getDomain()).getDbId(), document.getKey());
-            
-            if(!currentRevision.equals(dbEntry.getCurrentRevision())){
+
+            if (!currentRevision.equals(dbEntry.getCurrentRevision())) {
                 throw new RevisionMismatchException(pullDocument(entityId, document.getDomain(), document.getKey()));
             }
-            
+
             //Add the revision
-            dbEntry.getRevisions().put(newRevision, new DocRev(currentRevision,document.getDocument()));
+            dbEntry.getRevisions().put(newRevision, new DocRev(currentRevision, document.getDocument()));
             dbEntry.setCurrentRevision(newRevision);
-            
+
             return pullDocument(entityId, document.getDomain(), document.getKey());
-            
+
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(SQLiteStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -105,7 +107,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public String[] getDocumentKeysInDomain(int entityId, String domain) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public void flush() {
         super.flush();

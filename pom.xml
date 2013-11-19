@@ -120,6 +120,12 @@
                 <version>2.2</version>
             </extension>
         </extensions>
+        <testResources>
+            <testResource>
+                <targetPath>./sql</targetPath>
+                <directory>${basedir}/src/main/resources/sql</directory>
+            </testResource>
+        </testResources>
         <resources>
 
             <resource>
