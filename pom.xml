@@ -125,6 +125,13 @@
                 <targetPath>./sql</targetPath>
                 <directory>${basedir}/src/main/resources/sql</directory>
             </testResource>
+            <testResource>
+                <targetPath>.</targetPath>
+                <includes>
+                    <include>mysql.properties</include>
+                </includes>
+                <directory>${basedir}/src/test/resources/</directory>
+            </testResource>
         </testResources>
         <resources>
 

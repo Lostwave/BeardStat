@@ -12,9 +12,7 @@ import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import java.io.File;
 import net.dragonzone.promise.Promise;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -46,7 +44,6 @@ public abstract class IStatDataProviderTest {
         Promise<EntityStatBlob> result = instance.pullEntityBlob(query);
         EntityStatBlob blob = result.getValue();
         assertEquals(blob.getName(), "Tehbeard");
-        // TODO review the generated test code and remove the default call to fail.
         
     }
 
@@ -55,14 +52,12 @@ public abstract class IStatDataProviderTest {
      */
     @Test
     public void testPullEntityBlobDirect() {
-        fail();
+        
         System.out.println("pullEntityBlobDirect");
-        ProviderQuery query = null;
-        EntityStatBlob expResult = null;
+        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
         EntityStatBlob result = instance.pullEntityBlobDirect(query);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(result.getName(), "Tehbeard");
+
     }
 
     /**
@@ -74,7 +69,7 @@ public abstract class IStatDataProviderTest {
         EntityStatBlob blob = null;
         instance.pushEntityBlob(blob);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        fail();
     }
 
     /**
