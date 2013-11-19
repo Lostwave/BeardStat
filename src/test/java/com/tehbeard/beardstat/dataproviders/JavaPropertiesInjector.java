@@ -22,7 +22,11 @@ public class JavaPropertiesInjector extends Injector<Object, InjectConfig> {
     protected void doInject(InjectConfig annotation, Object object, Field field) throws IllegalArgumentException, IllegalAccessException {
         Object value = prop.get(annotation.value());
         if (value != null) {
+            if(int.class.isAssignableFrom(field.getType())){
+                field.set(object, Integer.parseInt("" + value));
+            }
             field.set(object, value);
+            
         }
     }
 }

@@ -32,4 +32,11 @@ public class DatabaseConfiguration {
     public DatabaseConfiguration(int latestVersion){
         this.latestVersion = latestVersion;
     }
+
+    @Override
+    public String toString() {
+        return "DatabaseConfiguration{" + "databaseType=" + databaseType + ", version=" + version + ", host=" + host + ", username=" + username + ", password=" + password + ", database=" + database + ", tablePrefix=" + tablePrefix + ", port=" + port + ", backups=" + backups + ", latestVersion=" + latestVersion + '}';
+    }
+    
+    
 }

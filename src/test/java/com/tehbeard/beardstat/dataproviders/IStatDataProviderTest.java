@@ -35,13 +35,6 @@ public abstract class IStatDataProviderTest {
     public static void tearDownClass() {
     }
     
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of pullEntityBlob method, of class IStatDataProvider.
@@ -49,12 +42,12 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testPullEntityBlob() {
         System.out.println("pullEntityBlob");
-        ProviderQuery query = null;
-        Promise expResult = null;
-        Promise result = instance.pullEntityBlob(query);
-        assertEquals(expResult, result);
+        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        Promise<EntityStatBlob> result = instance.pullEntityBlob(query);
+        EntityStatBlob blob = result.getValue();
+        assertEquals(blob.getName(), "Tehbeard");
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -62,6 +55,7 @@ public abstract class IStatDataProviderTest {
      */
     @Test
     public void testPullEntityBlobDirect() {
+        fail();
         System.out.println("pullEntityBlobDirect");
         ProviderQuery query = null;
         EntityStatBlob expResult = null;
