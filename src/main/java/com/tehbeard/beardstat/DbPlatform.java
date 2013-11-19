@@ -4,6 +4,7 @@
  */
 package com.tehbeard.beardstat;
 
+import com.tehbeard.beardstat.containers.EntityStatBlob;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -28,5 +29,7 @@ public interface DbPlatform {
     public boolean configValueIsSet(String key);
 
     public void configValueSet(String key, Object val);
+
+    public void loadEvent(EntityStatBlob esb);
     
 }

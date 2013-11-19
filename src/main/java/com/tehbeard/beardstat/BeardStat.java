@@ -283,6 +283,11 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         getConfig().set(key,val);
     }
 
+    @Override
+    public void loadEvent(EntityStatBlob esb) {
+        Bukkit.getPluginManager().callEvent(new EntityStatBlobLoadEvent(esb));
+    }
+
     /**
      * Flush cache of player stats to database at regular intervals
      *

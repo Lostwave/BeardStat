@@ -225,7 +225,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 }
                 rs.close();
             } else {
-                platform.getLogger().info("No entry found");
+                platform.getLogger().fine("No document entry found.");
                 rs.close();
             }
 

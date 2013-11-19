@@ -579,7 +579,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         return;
                     }
                     
-                    Bukkit.getPluginManager().callEvent(new EntityStatBlobLoadEvent(esb));
+                    platform.loadEvent(esb);
                     platform.getLogger().log(Level.CONFIG, "time taken to retrieve: {0} Milliseconds", ((new Date()).getTime() - t1));
 
                     promise.resolve(esb);
