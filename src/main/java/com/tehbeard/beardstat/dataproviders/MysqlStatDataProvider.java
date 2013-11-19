@@ -23,6 +23,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
@@ -358,7 +360,22 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     @Override
     public String[] getDocumentKeysInDomain(int entityId, String domain) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            stmtMetaPoll.setInt(1,entityId);
+            stmtMetaPoll.setInt(2, getDomain(domain).getDbId());
+            ResultSet rs = stmtMetaPoll.executeQuery();
+            
+            List<String> keys = new ArrayList<String>();
+            while(rs.next()){
+                keys.add(rs.getString("key"));
+            }
+            rs.close();
+            return keys.toArray(new String[0]);
+        } catch (SQLException ex) {
+            Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
     }
     
     @Override
@@ -366,12 +383,5 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String byteArrayToHexString(byte[] b) {
-        String result = "";
-        for (int i = 0; i < b.length; i++) {
-            result +=
-                    Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
-        }
-        return result;
-    }
+    
 }
