@@ -11,6 +11,7 @@ import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import java.util.HashMap;
 
@@ -27,14 +28,13 @@ public class EntityStatBlob implements VariableProvider {
     private String name;
     private String type;
     private String uuid;
-    
     private IStatDataProvider provider;
-    
-    private Map<String,DocumentFile> files = new HashMap<String, DocumentFile>();
+    private Map<String, DocumentFileRef> files = new HashMap<String, DocumentFileRef>();
 
     /**
      * The name of the entity this EntityStatBlob is associated with.
-     * @return 
+     *
+     * @return
      */
     public String getName() {
         return this.name;
@@ -42,20 +42,21 @@ public class EntityStatBlob implements VariableProvider {
 
     /**
      * Returns the internal database id of the entity, not for public use.
-     * @return 
+     *
+     * @return
      */
     public int getEntityID() {
         return this.entityId;
     }
 
     /**
-     * 
+     *
      * @param name name of the entity
      * @param entityId internal database id
      * @param type
-     * @param uuid 
+     * @param uuid
      */
-    public EntityStatBlob(String name, int entityId, String type, String uuid,IStatDataProvider provider) {
+    public EntityStatBlob(String name, int entityId, String type, String uuid, IStatDataProvider provider) {
         this.name = name;
         this.entityId = entityId;
         this.type = type;
@@ -65,7 +66,8 @@ public class EntityStatBlob implements VariableProvider {
 
     /**
      * Adds a IStat object to this EntityStatBlob
-     * @param stat 
+     *
+     * @param stat
      */
     public void addStat(IStat stat) {
         this.stats.put(
@@ -73,25 +75,27 @@ public class EntityStatBlob implements VariableProvider {
                 stat);
         stat.setOwner(this);
     }
-    
+
     /**
      * Returns a stat object from the default (BeardStat) domain, see other getStat() for details.
+     *
      * @param world
      * @param category
      * @param statistic
-     * @return 
+     * @return
      */
     public IStat getStat(String world, String category, String statistic) {
-        return getStat(BeardStat.DEFAULT_DOMAIN,world,category,statistic);
+        return getStat(BeardStat.DEFAULT_DOMAIN, world, category, statistic);
     }
 
     /**
      * Returns a stat object for the supplied coordinates
+     *
      * @param domain domain of the stats,
      * @param world world name stat is under
      * @param category category stat is under
      * @param statistic name of statistic
-     * @return 
+     * @return
      */
     public IStat getStat(String domain, String world, String category, String statistic) {
         IStat psn = this.stats.get(domain + "::" + world + "::" + category + "::" + statistic);
@@ -184,11 +188,12 @@ public class EntityStatBlob implements VariableProvider {
 
     /**
      * Checks if a stat under these coordinates has been recorded.
+     *
      * @param domain
      * @param world
      * @param category
      * @param statistic
-     * @return 
+     * @return
      */
     public boolean hasStat(String domain, String world, String category, String statistic) {
         return this.stats.containsKey(domain + "::" + world + "::" + category + "::" + statistic);
@@ -219,25 +224,34 @@ public class EntityStatBlob implements VariableProvider {
 
     /**
      * Return the entity type of this EntityStatBlob
-     * @return 
+     *
+     * @return
      */
     public String getType() {
         return this.type;
     }
 
-    public EntityStatBlob cloneForArchive() {
-        EntityStatBlob blob = new EntityStatBlob(this.name, this.entityId, this.type, uuid,provider);
-        blob.stats.clear();
+    public StatBlobRecord cloneForArchive() {
+        StatBlobRecord record = new StatBlobRecord(entityId);
+
         for (IStat stat : this.stats.values()) {
             if (stat.isArchive()) {
                 IStat is = stat.clone();
                 if (is != null) {
-                    blob.addStat(is);
+                    record.stats.add(is);
                     stat.clearArchive();
                 }
             }
         }
-        return blob;
+
+        for (DocumentFileRef ref : files.values()) {
+            if (ref.getRef().shouldArchive()) {
+                record.files.add(ref);
+                ref.getRef().clearArchiveFlag();
+            }
+
+        }
+        return record;
     }
 
     @Override
@@ -248,16 +262,12 @@ public class EntityStatBlob implements VariableProvider {
     public String getUUID() {
         return uuid;
     }
-    
-    public DocumentFile getDocument(String domain,String key){
+
+    public DocumentFile getDocument(String domain, String key) {
         String code = domain + "::" + key;
-        if(!files.containsKey(code)){
-            files.put(code,provider.pullDocument(entityId, domain, key));
+        if (!files.containsKey(code)) {
+            files.put(code, new DocumentFileRef(provider.pullDocument(entityId, domain, key)));
         }
-        return files.get(code);
-    }
-    
-    public Collection<DocumentFile> getLoadedFiles(){
-        return files.values();
+        return files.get(code).getRef();
     }
 }

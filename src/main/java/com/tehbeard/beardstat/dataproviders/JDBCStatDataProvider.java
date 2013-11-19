@@ -31,6 +31,7 @@ import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import com.tehbeard.beardstat.NoRecordFoundException;
+import com.tehbeard.beardstat.containers.StatBlobRecord;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
@@ -123,7 +124,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected PreparedStatement keepAlive;
     protected PreparedStatement deleteEntity;
     protected PreparedStatement createTable;
-    private HashMap<String, EntityStatBlob> writeCache = new HashMap<String, EntityStatBlob>();
     // default connection related configuration
     protected String connectionUrl = "";
     protected Properties connectionProperties = new Properties();
@@ -135,10 +135,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private final Map<String, CategoryMeta> categoryMetaMap = new HashMap<String, CategoryMeta>();
     private final Map<String, StatisticMeta> statisticMetaMap = new HashMap<String, StatisticMeta>();
     // Write queue
+    private HashMap<Integer, StatBlobRecord> writeCache = new HashMap<Integer, StatBlobRecord>();
     private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
+    //Configuration/env
     protected DbPlatform platform;
-    
     protected DatabaseConfiguration config;
+    
 
     public JDBCStatDataProvider(DbPlatform platform, String scriptSuffix, String driverClass, DatabaseConfiguration config) {
         try {
@@ -615,10 +617,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         synchronized (this.writeCache) {
 
-            EntityStatBlob copy = player.cloneForArchive();
+            StatBlobRecord copy = player.cloneForArchive();
 
             if (!this.writeCache.containsKey(player.getName())) {
-                this.writeCache.put(player.getName(), copy);
+                this.writeCache.put(copy.entityId, copy);
             }
         }
 
@@ -639,16 +641,16 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     platform.getLogger().warning("Could not restablish connection, will try again later, WARNING: CACHE WILL GROW WHILE THIS HAPPENS");
                 } else {
                     platform.getLogger().config("Saving to database");
-                    for (Entry<String, EntityStatBlob> entry : writeCache
+                    for (Entry<Integer, StatBlobRecord> entry : writeCache
                             .entrySet()) {
 
-                        EntityStatBlob pb = entry.getValue();
+                        StatBlobRecord pb = entry.getValue();
                         IStat stat = null;
                         try {
                             saveEntityData.clearBatch();
-                            for (Iterator<IStat> it = pb.getStats().iterator(); it.hasNext();) {
+                            for (Iterator<IStat> it = pb.stats.iterator(); it.hasNext();) {
                                 stat = it.next();
-                                saveEntityData.setInt(1, pb.getEntityID());
+                                saveEntityData.setInt(1, pb.entityId);
                                 saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
                                 saveEntityData.setInt(3, getWorld(stat.getWorld()).getDbId());
                                 saveEntityData.setInt(4, getCategory(stat.getCategory()).getDbId());
@@ -659,7 +661,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                             saveEntityData.executeBatch();
 
                         } catch (SQLException e) {
-                            platform.getLogger().log(Level.WARNING, "entity id: {0} :: {1}", new Object[]{pb.getName(), pb.getEntityID()});
+                            platform.getLogger().log(Level.WARNING, "entity id: {0}}", new Object[]{pb.entityId});
                             platform.getLogger().log(Level.WARNING, "domain: {0} :: {1}", new Object[]{stat.getDomain(), getDomain(stat.getDomain()).getDbId()});
                             platform.getLogger().log(Level.WARNING, "world: {0} :: {1}", new Object[]{stat.getWorld(), getWorld(stat.getWorld()).getDbId()});
                             platform.getLogger().log(Level.WARNING, "category: {0} :: {1}", new Object[]{stat.getCategory(), getCategory(stat.getCategory()).getDbId()});
