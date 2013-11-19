@@ -8,6 +8,8 @@ package com.tehbeard.beardstat.containers.documents;
 public class DocumentFileRef {
 
     private DocumentFile ref;
+    
+    private boolean invalid = false;
 
     public DocumentFileRef(DocumentFile file) {
         this.ref = file;
@@ -20,4 +22,14 @@ public class DocumentFileRef {
     public synchronized void setRef(DocumentFile ref) {
         this.ref = ref;
     }
+
+    public boolean isInvalid() {
+        return invalid;
+    }
+
+    public void invalidateRef() {
+        this.invalid = true;
+    }
+    
+    
 }

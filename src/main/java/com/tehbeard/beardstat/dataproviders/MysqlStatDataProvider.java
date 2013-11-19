@@ -220,7 +220,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
                     IStatDocument fromJson = DocumentRegistry.instance().fromJson(jsr, IStatDocument.class);
 
-                    file = new DocumentFile(curRev, parentRev, domain, key, fromJson, added, storeId);
+                    file = new DocumentFile(curRev, parentRev, domain, key, fromJson, added);
 
                 }
                 rs.close();
@@ -307,7 +307,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs.next();
                 int storeId = rs.getInt(1);
                 rs.close();
-                returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp, docId);
+                returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
             } else {
                 rs.close();
 
@@ -333,7 +333,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 stmtDocInsert.setBlob(5, new ByteArrayInputStream(doc));
                 stmtDocInsert.execute();
 
-                returnDoc = new DocumentFile(newRevision, null, document.getDomain(), document.getKey(), document.getDocument(), tStamp, docId);
+                returnDoc = new DocumentFile(newRevision, null, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
             }
             conn.commit();
         } catch (SQLException e) {

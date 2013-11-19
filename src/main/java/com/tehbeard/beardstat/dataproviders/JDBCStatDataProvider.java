@@ -32,6 +32,8 @@ import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import com.tehbeard.beardstat.NoRecordFoundException;
 import com.tehbeard.beardstat.containers.StatBlobRecord;
+import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
@@ -644,13 +646,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     for (Entry<Integer, StatBlobRecord> entry : writeCache
                             .entrySet()) {
 
-                        StatBlobRecord pb = entry.getValue();
+                        StatBlobRecord updateRecord = entry.getValue();
                         IStat stat = null;
                         try {
                             saveEntityData.clearBatch();
-                            for (Iterator<IStat> it = pb.stats.iterator(); it.hasNext();) {
+                            for (Iterator<IStat> it = updateRecord.stats.iterator(); it.hasNext();) {
                                 stat = it.next();
-                                saveEntityData.setInt(1, pb.entityId);
+                                saveEntityData.setInt(1, updateRecord.entityId);
                                 saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
                                 saveEntityData.setInt(3, getWorld(stat.getWorld()).getDbId());
                                 saveEntityData.setInt(4, getCategory(stat.getCategory()).getDbId());
@@ -659,9 +661,22 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                 saveEntityData.addBatch();
                             }
                             saveEntityData.executeBatch();
+                            
+                            for(DocumentFileRef ref : updateRecord.files){
+                                try {
+                                    DocumentFile newDoc = pushDocument(updateRecord.entityId, ref.getRef());
+                                    ref.getRef().invalidateDocument();
+                                    ref.setRef(newDoc);
+                                } catch (RevisionMismatchException ex) {
+                                    ref.invalidateRef();
+                                    platform.getLogger().log(Level.SEVERE, "Document {0}:{1} failed to save.", new Object[]{ref.getRef().getDomain(), ref.getRef().getKey()});
+                                    platform.getLogger().severe("Another process has stored a new revision at this address.");
+                                    platform.getLogger().severe("No Revision Merge strategy found. Changes not saved.");
+                                }
+                            }
 
                         } catch (SQLException e) {
-                            platform.getLogger().log(Level.WARNING, "entity id: {0}}", new Object[]{pb.entityId});
+                            platform.getLogger().log(Level.WARNING, "entity id: {0}}", new Object[]{updateRecord.entityId});
                             platform.getLogger().log(Level.WARNING, "domain: {0} :: {1}", new Object[]{stat.getDomain(), getDomain(stat.getDomain()).getDbId()});
                             platform.getLogger().log(Level.WARNING, "world: {0} :: {1}", new Object[]{stat.getWorld(), getWorld(stat.getWorld()).getDbId()});
                             platform.getLogger().log(Level.WARNING, "category: {0} :: {1}", new Object[]{stat.getCategory(), getCategory(stat.getCategory()).getDbId()});

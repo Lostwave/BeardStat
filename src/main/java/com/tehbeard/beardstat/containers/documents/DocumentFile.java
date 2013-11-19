@@ -20,20 +20,24 @@ public class DocumentFile {
     private final String key;
     private final IStatDocument document;
     private final Timestamp dateCreated;
-    private final int documentId;
+    private boolean isInvalid = false;
+    
+        public DocumentFile(String domain,String key,IStatDocument document){
+            this(null,null,domain,key,document,null);
+        }
+
     
     public DocumentFile(String rev, String domain,String key,IStatDocument document){
-        this(rev, null, domain, key, document, null, 0);
+        this(rev, null, domain, key, document, null);
     }
 
-    public DocumentFile(String revision, String parentRevision, String domain, String key, IStatDocument document, Timestamp dateCreated,int documentId) {
+    public DocumentFile(String revision, String parentRevision, String domain, String key, IStatDocument document, Timestamp dateCreated) {
         this.revision = revision;
         this.parentRevision = parentRevision;
         this.domain = domain;
         this.key = key;
         this.document = document;
         this.dateCreated = dateCreated;
-        this.documentId = documentId;
 
     }
 
@@ -72,10 +76,13 @@ public class DocumentFile {
     public <T extends IStatDocument> T getDocument() {
         return (T)document;
     }
-
-    public int getDocumentId() {
-        return documentId;
+    
+    public synchronized boolean isInvalid(){
+        return isInvalid;
     }
     
+    public synchronized void invalidateDocument(){
+        isInvalid = true;
+    }
     
 }

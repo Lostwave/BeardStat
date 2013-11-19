@@ -12,8 +12,11 @@ import com.tehbeard.utils.expressions.VariableProvider;
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
+import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a collection of statistics bound to an entity Currently only used for Players.
@@ -247,7 +250,6 @@ public class EntityStatBlob implements VariableProvider {
         for (DocumentFileRef ref : files.values()) {
             if (ref.getRef().shouldArchive()) {
                 record.files.add(ref);
-                ref.getRef().clearArchiveFlag();
             }
 
         }
@@ -263,9 +265,37 @@ public class EntityStatBlob implements VariableProvider {
         return uuid;
     }
 
-    public DocumentFile getDocument(String domain, String key) {
+    /**
+     * Accessor method for getting documents associated with a statblob.
+     * IMPORTANT: DocumentFile's are cached internally, DO NOT CACHE EXTERNALLY, DocumentFile's are valid only until a save occurs.
+     * @param domain
+     * @param key
+     * @param docClass class of the document, used for instantiation if no document found. Pass null to not instantiate a document
+     * @return a DocumentFile for a particular revision of the document or null if an error occurs / no document found and docClass is null.
+     */
+    public DocumentFile getDocument(String domain, String key,Class<? extends IStatDocument> docClass) {
         String code = domain + "::" + key;
+        //Load if not cached.
         if (!files.containsKey(code)) {
+            DocumentFile docFile = provider.pullDocument(entityId, domain, key);
+            //New File?
+            if(docFile == null){
+                if(docClass==null){return null;}
+                try {
+                    IStatDocument newDoc = docClass.newInstance();
+                    docFile = new DocumentFile(domain, key, newDoc);
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(EntityStatBlob.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(EntityStatBlob.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
+            }
+            files.put(code, new DocumentFileRef(docFile));
+        }
+        //If invalid, fetch from db
+        if(files.get(code).isInvalid()){
             files.put(code, new DocumentFileRef(provider.pullDocument(entityId, domain, key)));
         }
         return files.get(code).getRef();
