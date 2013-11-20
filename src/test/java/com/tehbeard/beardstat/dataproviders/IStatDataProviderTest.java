@@ -66,10 +66,15 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testPushEntityBlob() {
         System.out.println("pushEntityBlob");
-        EntityStatBlob blob = null;
+        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        EntityStatBlob blob = instance.pullEntityBlobDirect(query);
+        blob.getStat("world", "stats", "playedfor").setValue(500);
         instance.pushEntityBlob(blob);
-        // TODO review the generated test code and remove the default call to fail.
-        fail();
+        instance.flushSync();
+        
+        assertEquals("value was written", 500,instance.pullEntityBlobDirect(query).getStat("world", "stats", "playedfor").getValue());
+        
+        
     }
 
     /**
@@ -78,12 +83,10 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testHasEntityBlob() {
         System.out.println("hasEntityBlob");
-        ProviderQuery query = null;
+        ProviderQuery query = new ProviderQuery("MrRogers", IStatDataProvider.PLAYER_TYPE, null, false);;
         boolean expResult = false;
         boolean result = instance.hasEntityBlob(query);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
