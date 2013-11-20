@@ -163,7 +163,6 @@ public abstract class IStatDataProviderTest {
         assertEquals(gameTag, result.getName());
         assertEquals(StatisticMeta.Formatting.time, result.getFormat());
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
