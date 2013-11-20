@@ -6,6 +6,8 @@ package com.tehbeard.beardstat.dataproviders;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
+import com.tehbeard.beardstat.dataproviders.MemoDocument.Memo;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
@@ -23,16 +25,9 @@ import static org.junit.Assert.*;
  */
 public abstract class IStatDataProviderTest {
     
-    protected IStatDataProvider instance;
+    protected static IStatDataProvider instance;
     
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
+   
 
     /**
      * Test of pullEntityBlob method, of class IStatDataProvider.
@@ -104,7 +99,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testQueryDatabase() {
         System.out.println("queryDatabase");
-        ProviderQuery query = new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false);;
+        ProviderQuery query = new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false);
         ProviderQueryResult[] result = instance.queryDatabase(query);
         assertEquals("5 entries returned",5, result.length);
     }
@@ -183,8 +178,14 @@ public abstract class IStatDataProviderTest {
     public void testPullDocument() {
         
         System.out.println("pullDocument");
-        fail("The test case is a prototype.");
         
+        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        EntityStatBlob result = instance.pullEntityBlobDirect(query);
+        
+        DocumentRegistry.registerDocument(MemoDocument.class);
+        DocumentRegistry.cleanup();
+        result.getDocument("default","memo", MemoDocument.class);
+                
     }
 
     /**
@@ -194,8 +195,16 @@ public abstract class IStatDataProviderTest {
     public void testPushDocument() throws Exception {
         
         System.out.println("pushDocument");
-        fail("The test case is a prototype.");
+        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        EntityStatBlob result = instance.pullEntityBlobDirect(query);
         
+        DocumentRegistry.registerDocument(MemoDocument.class);
+        DocumentRegistry.cleanup();
+        DocumentFile docFile = result.getDocument("default","memo", MemoDocument.class);
+        MemoDocument doc = docFile.getDocument();
+        doc.memos.add(new Memo("invoop","Buying more glands."));
+        docFile.setArchiveFlag();
+        instance.pushDocument(result.getEntityID(), docFile);
     }
 
     /**
@@ -215,7 +224,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGetDocumentKeysInDomain() {
         System.out.println("getDocumentKeysInDomain");
-        fail("The test case is a prototype.");
+        System.out.println("NOT IMPLEMENTED");
     }
 
 }

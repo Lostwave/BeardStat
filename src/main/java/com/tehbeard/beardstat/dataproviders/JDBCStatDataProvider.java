@@ -144,6 +144,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     public JDBCStatDataProvider(DbPlatform platform, String scriptSuffix, String driverClass, DatabaseConfiguration config) {
         try {
+            this.connectionProperties.put("allowMultiQuery","true");
             this.scriptSuffix = scriptSuffix;
             this.platform = platform;
             Class.forName(driverClass);// load driver
@@ -951,5 +952,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
         }
         return result;
+    }
+    
+    public Connection getConnection(){
+        return conn;
     }
 }
