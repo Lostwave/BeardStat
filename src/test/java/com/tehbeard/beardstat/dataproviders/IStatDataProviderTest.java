@@ -95,12 +95,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testDeleteEntityBlob() {
         System.out.println("deleteEntityBlob");
-        EntityStatBlob blob = null;
-        boolean expResult = false;
-        boolean result = instance.deleteEntityBlob(blob);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("NOT IMPLEMENTED.");
     }
 
     /**
@@ -109,12 +104,9 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testQueryDatabase() {
         System.out.println("queryDatabase");
-        ProviderQuery query = null;
-        ProviderQueryResult[] expResult = null;
+        ProviderQuery query = new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false);;
         ProviderQueryResult[] result = instance.queryDatabase(query);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("5 entries returned",5, result.length);
     }
 
     /**
@@ -124,20 +116,8 @@ public abstract class IStatDataProviderTest {
     public void testFlushSync() {
         System.out.println("flushSync");
         instance.flushSync();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of flush method, of class IStatDataProvider.
-     */
-    @Test
-    public void testFlush() {
-        System.out.println("flush");
-        instance.flush();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of getDomain method, of class IStatDataProvider.
@@ -145,12 +125,9 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGetDomain() {
         System.out.println("getDomain");
-        String gameTag = "";
-        DomainMeta expResult = null;
+        String gameTag = "default";
         DomainMeta result = instance.getDomain(gameTag);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(1, result.getDbId());
     }
 
     /**
