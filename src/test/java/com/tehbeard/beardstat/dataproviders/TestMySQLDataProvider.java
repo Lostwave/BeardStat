@@ -8,13 +8,10 @@ import com.tehbeard.beardstat.DatabaseConfiguration;
 import static com.tehbeard.beardstat.dataproviders.IStatDataProviderTest.instance;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.BeforeClass;
 
 /**
