@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.test;
+package com.tehbeard.beardstat.dataproviders;
 
 import com.google.gson.annotations.Expose;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
