@@ -136,12 +136,9 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGetWorld() {
         System.out.println("getWorld");
-        String gameTag = "";
-        WorldMeta expResult = null;
+        String gameTag = "world";
         WorldMeta result = instance.getWorld(gameTag);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("world", result.getGameTag());
     }
 
     /**
@@ -150,12 +147,9 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGetCategory() {
         System.out.println("getCategory");
-        String gameTag = "";
-        CategoryMeta expResult = null;
+        String gameTag = "stats";
         CategoryMeta result = instance.getCategory(gameTag);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(gameTag, result.getGameTag());
     }
 
     /**
@@ -164,10 +158,10 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGetStatistic() {
         System.out.println("getStatistic");
-        String gameTag = "";
-        StatisticMeta expResult = null;
+        String gameTag = "playedfor";
         StatisticMeta result = instance.getStatistic(gameTag);
-        assertEquals(expResult, result);
+        assertEquals(gameTag, result.getName());
+        assertEquals(StatisticMeta.Formatting.time, result.getFormat());
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -178,10 +172,9 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGenerateBackup() {
         System.out.println("generateBackup");
-        File file = null;
+        File file = new File("TestBackup");
         instance.generateBackup(file);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        file.delete();
     }
 
     /**
@@ -189,15 +182,10 @@ public abstract class IStatDataProviderTest {
      */
     @Test
     public void testPullDocument() {
+        
         System.out.println("pullDocument");
-        int entityId = 0;
-        String domain = "";
-        String key = "";
-        DocumentFile expResult = null;
-        DocumentFile result = instance.pullDocument(entityId, domain, key);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -205,14 +193,10 @@ public abstract class IStatDataProviderTest {
      */
     @Test
     public void testPushDocument() throws Exception {
+        
         System.out.println("pushDocument");
-        int entityId = 0;
-        DocumentFile document = null;
-        DocumentFile expResult = null;
-        DocumentFile result = instance.pushDocument(entityId, document);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -220,14 +204,10 @@ public abstract class IStatDataProviderTest {
      */
     @Test
     public void testDeleteDocument() {
+        
         System.out.println("deleteDocument");
-        int entityId = 0;
-        String domain = "";
-        String key = "";
-        String revision = "";
-        instance.deleteDocument(entityId, domain, key, revision);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("NOT IMPLEMENETED.");
+        
     }
 
     /**
@@ -236,12 +216,6 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGetDocumentKeysInDomain() {
         System.out.println("getDocumentKeysInDomain");
-        int entityId = 0;
-        String domain = "";
-        String[] expResult = null;
-        String[] result = instance.getDocumentKeysInDomain(entityId, domain);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
