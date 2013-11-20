@@ -23,21 +23,14 @@ public class TestSQLiteDataProvider extends IStatDataProviderTest  {
      
     @BeforeClass
     public static void setUpClass() throws IOException, SQLException {
-        InputStream is = TestMySQLDataProvider.class.getClassLoader().getResourceAsStream("mysql.properties");
-        if(is == null){
-            System.out.println("WARNING: MYSQL TEST NOT CONFIGURED, TEST SKIPPED.");
-        }
-        Assume.assumeTrue("MySQL test properties configured.", is != null);
         DatabaseConfiguration config = new DatabaseConfiguration(7);
-        Properties properties = new Properties();
-        properties.load(is);
-        new JavaPropertiesInjector(properties).inject(config);
         config.version = config.latestVersion;
+        config.backups = false;
         
         //System.out.println(config);
         instance = new SQLiteStatDataProvider(new TestPlatform(), ":memory:", config);
        
-        String preloadStmt = ((SQLiteStatDataProvider)instance).readSQL("sql","preload",config.tablePrefix);
+        String preloadStmt = ((SQLiteStatDataProvider)instance).readSQL("sqlite","preload",config.tablePrefix);
         for(String s : preloadStmt.split("\\;")){
             try{
            ((SQLiteStatDataProvider)instance).conn.createStatement().execute(s);
