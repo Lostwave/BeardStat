@@ -18,6 +18,7 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.containers.StatVector;
+import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.utils.LanguagePack;
 
 /**
@@ -71,7 +72,7 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.getBlobByNameType(player, IStatDataProvider.PLAYER_TYPE).getValue();
+                EntityStatBlob blob = this.playerStatManager.getBlob(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE,null,false));
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
                     return true;

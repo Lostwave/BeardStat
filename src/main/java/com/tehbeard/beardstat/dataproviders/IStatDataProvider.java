@@ -29,15 +29,7 @@ public interface IStatDataProvider {
      * @param query
      * @return
      */
-    public Promise<EntityStatBlob> pullEntityBlob(ProviderQuery query);
-
-    /**
-     * Pulls a entity out of the database directly, may block.
-     *
-     * @param query
-     * @return
-     */
-    public EntityStatBlob pullEntityBlobDirect(ProviderQuery query);
+    public EntityStatBlob pullEntityBlob(ProviderQuery query);
 
     /**
      * Pushes the entity into the database, this may not happen if the entity is queued and something stops the queue from being processed.

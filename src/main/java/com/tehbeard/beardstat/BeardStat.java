@@ -52,8 +52,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class BeardStat extends JavaPlugin implements DbPlatform {
 
-    
-    
     public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
     public static final String PERM_COMMAND_STAT_OTHER = "command.stat.other";
     // Default values for domain and world
@@ -130,17 +128,17 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         getConfig();
         configuration = new StatConfiguration();
         new YamlConfigInjector(getConfig()).inject(configuration);
-        
+
         getLogger().config(configuration.toString());
-        
+
         //Hopefully this pleases Diemex
         Level level = Level.parse(configuration.logLevel);
         getLogger().setLevel(level);
-        for(Handler handler : getLogger().getHandlers()){
+        for (Handler handler : getLogger().getHandlers()) {
             handler.setLevel(level);
         }
-        
-        
+
+
         File worldsFile = new File(getDataFolder(), "worlds.yml");
         worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
 
@@ -159,7 +157,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         this.statManager = new EntityStatManager(this, db);
 
         getLogger().info("Composite stats disabled until reworked.");
-        
+
         getLogger().info("Registering events and collectors");
 
         // register event listeners
@@ -191,7 +189,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             getCommand("played").setExecutor(new playedCommand(this.statManager, this));
             getCommand("statpage").setExecutor(new StatPageCommand(this.statManager, this));
             getCommand("laston").setExecutor(new LastOnCommand(this.statManager, this));
-            getCommand("beardstatdebug").setExecutor(this.statManager);
+            //getCommand("beardstatdebug").setExecutor(this.statManager);
             getCommand("statadmin").setExecutor(new StatAdmin(this.statManager, this));
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error registering commands", e, false));
@@ -209,18 +207,18 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             metrics = new Metrics(this);
             metrics.createGraph("Database Type").addPlotter(
                     new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
-                        @Override
-                        public int getValue() {
-                            return 1;
-                        }
-                    });// record database type
+                @Override
+                public int getValue() {
+                    return 1;
+                }
+            });// record database type
 
             metrics.start();
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Metrics threw an error during startup", null, true));
         }
         getLogger().info("BeardStat Loaded");
-        
+
     }
 
     /**
@@ -280,7 +278,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
 
     @Override
     public void configValueSet(String key, Object val) {
-        getConfig().set(key,val);
+        getConfig().set(key, val);
     }
 
     @Override
@@ -298,15 +296,11 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
 
         @Override
         public void run() {
-            if (getConfig().getBoolean("general.verbose", false)) {
-                getLogger().info("Flushing to database.");
-            }
-
+            getLogger().config("Flushing to database.");
             BeardStat.this.statManager.saveCache();
             BeardStat.this.statManager.flush();
-            if (getConfig().getBoolean("general.verbose", false)) {
-                getLogger().info("flush completed");
-            }
+            getLogger().config("flush completed");
+
         }
     }
 
@@ -392,7 +386,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         // SQLite provider
         if (config.databaseType.equalsIgnoreCase("sqlite")) {
             try {
-                db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString(),config);
+                db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString(), config);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {
@@ -405,7 +399,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         // In memory provider
         if (config.databaseType.equalsIgnoreCase("memory")) {
             try {
-                db = new SQLiteStatDataProvider(this, ":memory:",config);
+                db = new SQLiteStatDataProvider(this, ":memory:", config);
             } catch (BeardStatRuntimeException e) {
                 handleError(e);
             } catch (SQLException e) {
@@ -423,19 +417,16 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         if (config.databaseType.equalsIgnoreCase("transfer")) {
             throw new UnsupportedOperationException("NOT IMPLEMENTED YET");//TODO - FIX
             /*IStatDataProvider _old = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.old")));
-            IStatDataProvider _new = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.new")));
-            printCon("Initiating transfer of stats, this may take a while");
-            new TransferDataProvider(this, _old, _new);
-            db = _new;*/
+             IStatDataProvider _new = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.new")));
+             printCon("Initiating transfer of stats, this may take a while");
+             new TransferDataProvider(this, _old, _new);
+             db = _new;*/
         }
         return db;
     }
 
-    
-
     /**
-     * Handle an error, if it's a {@link BeardStatRuntimeException} it will try
-     * to kill BeardStat if the error is non-recoverable
+     * Handle an error, if it's a {@link BeardStatRuntimeException} it will try to kill BeardStat if the error is non-recoverable
      *
      * @param e
      */

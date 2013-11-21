@@ -27,8 +27,8 @@ public class StatBlockListener extends StatListener {
         }
         
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
-                event.getPlayer().getName());
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getBlobForPlayerAsync(
+                event.getPlayer());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "stats", "totalblockcreate", 1));
         MetaDataCapture.saveMetaDataMaterialStat(promiseblob, BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld()
@@ -43,8 +43,8 @@ public class StatBlockListener extends StatListener {
             return;
         }
 
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
-                event.getPlayer().getName());
+        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getBlobForPlayerAsync(
+                event.getPlayer());
         promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(),
                 "stats", "totalblockdestroy", 1));
         MetaDataCapture.saveMetaDataMaterialStat(promiseblob, BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld()

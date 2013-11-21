@@ -42,7 +42,7 @@ public class StatCraftListener extends StatListener {
                     // String item =
                     // is.getType().toString().toLowerCase().replace("_","");
                     MetaDataCapture.saveMetaDataMaterialStat(StatCraftListener.this.getPlayerStatManager()
-                            .getOrCreatePlayerStatBlob(p.getName()), BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(),
+                            .getBlobForPlayerAsync(p), BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(),
                             "crafting", is.getType(), is.getDurability(), made);
                 }
 
@@ -52,7 +52,7 @@ public class StatCraftListener extends StatListener {
             /**
              * if MetaDataable, make the item string correct
              */
-            MetaDataCapture.saveMetaDataMaterialStat(this.getPlayerStatManager().getOrCreatePlayerStatBlob(p.getName()),
+            MetaDataCapture.saveMetaDataMaterialStat(this.getPlayerStatManager().getBlobForPlayerAsync(p),
                     BeardStat.DEFAULT_DOMAIN, p.getWorld().getName(), "crafting", event.getRecipe().getResult()
                             .getType(), event.getRecipe().getResult().getDurability(), amount);
 

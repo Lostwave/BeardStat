@@ -14,6 +14,7 @@ import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.containers.StatVector;
+import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.utils.LanguagePack;
 
 /**
@@ -52,7 +53,7 @@ public class playedCommand extends BeardStatCommand {
 
             // Grab player blob and format out stat
             // TODO: async this
-            blob = this.playerStatManager.getBlobByNameType(selectedPlayer.getName(), IStatDataProvider.PLAYER_TYPE).getValue();
+            blob = this.playerStatManager.getBlob(new ProviderQuery(selectedPlayer.getName(), IStatDataProvider.PLAYER_TYPE, null, false));
             if (blob == null) {
                 sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));
                 return true;

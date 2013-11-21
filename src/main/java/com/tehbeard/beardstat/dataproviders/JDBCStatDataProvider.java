@@ -10,11 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.MatchResult;
 
-import net.dragonzone.promise.Promise;
 
 //import org.bukkit.Bukkit;
 //import org.bukkit.ChatColor;
@@ -29,7 +26,6 @@ import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
-import com.tehbeard.beardstat.NoRecordFoundException;
 import com.tehbeard.beardstat.containers.StatBlobRecord;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
@@ -57,7 +53,6 @@ import java.util.Scanner;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.dragonzone.promise.Deferred;
 
 /**
  * base class for JDBC based data providers Allows easy development of data providers that make use of JDBC
@@ -102,7 +97,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_SAVE_WORLD = "sql/components/save/saveWorld";
     public static final String SQL_SAVE_CATEGORY = "sql/components/save/saveCategory";
     public static final String SQL_SAVE_STATISTIC = "sql/components/save/saveStatistic";
-
     //Connection
     protected Connection conn;
     // Load components
@@ -136,15 +130,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private final Map<String, StatisticMeta> statisticMetaMap = new HashMap<String, StatisticMeta>();
     // Write queue
     private HashMap<Integer, StatBlobRecord> writeCache = new HashMap<Integer, StatBlobRecord>();
-    private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
     //Configuration/env
     protected DbPlatform platform;
     protected DatabaseConfiguration config;
-    
 
     public JDBCStatDataProvider(DbPlatform platform, String scriptSuffix, String driverClass, DatabaseConfiguration config) {
         try {
-            this.connectionProperties.put("allowMultiQuery","true");
+            this.connectionProperties.put("allowMultiQuery", "true");
             this.scriptSuffix = scriptSuffix;
             this.platform = platform;
             Class.forName(driverClass);// load driver
@@ -195,13 +187,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     private void checkForMigration() {
 
         int installedVersion = config.version;
-        
+
         if (!platform.configValueIsSet("stats.database.sql_db_version")) {
             platform.configValueSet("stats.database.sql_db_version", 1);
             platform.saveConfig();
             installedVersion = 1;
         }
-        
+
 
         if (installedVersion > config.latestVersion) {
             throw new RuntimeException("database version is higher than the one this version of BeardStat knows, You appear to be running an out of date plugin!");
@@ -477,8 +469,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         String sql = "SELECT `entityId`,`name`,`type`,`uuid` FROM `" + tblPrefix + "_entity` WHERE ";
         boolean addAnd = false;
         if (query.name != null) {
-            sql += "`name`=? ";
-            addAnd = true;
+            if (query.likeName) {
+                sql += "`name` LIKE ? ";
+                addAnd = true;
+            } else {
+                sql += "`name`=? ";
+                addAnd = true;
+            }
         }
         if (query.type != null) {
             if (addAnd) {
@@ -497,7 +494,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             PreparedStatement qryStmt = conn.prepareStatement(sql);
             int colId = 1;
             if (query.name != null) {
-                qryStmt.setString(colId, query.name);
+                String sqlName = (query.likeName ? "%" : "") + query.name + (query.likeName ? "%" : "");
+                qryStmt.setString(colId, sqlName);
                 colId++;
             }
             if (query.type != null) {
@@ -505,7 +503,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 colId++;
             }
             if (query.uuid != null) {
-                qryStmt.setString(colId, query.uuid.toString());
+                qryStmt.setString(colId, query.uuid);
                 colId++;
             }
             ResultSet rs = qryStmt.executeQuery();
@@ -527,72 +525,56 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public Promise<EntityStatBlob> pullEntityBlob(final ProviderQuery query) {
-        final IStatDataProvider t = this;
-        final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
-
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (!checkConnection()) {
-                        platform.getLogger().info("Database connection error!");
-                        promise.reject(new SQLException("Error connecting to database"));
-                        return;
-                    }
-                    long t1 = (new Date()).getTime();
-                    ProviderQueryResult result = getSingleEntity(query);
-                    EntityStatBlob esb = null;
-                    ResultSet rs;
-
-                    if (result != null) {
-
-                        esb = new EntityStatBlob(result.name, result.dbid, result.type, result.type,t);//Create the damn esb
-                        // load all stats data
-                        loadEntityData.setInt(1, esb.getEntityID());
-                        rs = loadEntityData.executeQuery();
-
-                        while (rs.next()) {
-                            // `domain`,`world`,`category`,`statistic`,`value`
-                            IStat ps = esb.getStat(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
-                            ps.setValue(rs.getInt(5));
-                            ps.clearArchive();
-                        }
-                        rs.close();
-                    } else if (result == null && query.create) {
-
-                        saveEntity.setString(1, query.name);
-                        saveEntity.setString(2, query.type);
-                        saveEntity.setString(3, query.uuid == null ? "" : query.uuid.toString());
-                        saveEntity.executeUpdate();
-                        rs = saveEntity.getGeneratedKeys();
-                        rs.next();// load player id
-
-                        // make the player object, close out result set.
-                        esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.uuid,t);
-                        rs.close();
-                    }
-                    //Didn't get a esb, kill it.
-                    if (esb == null) {
-                        promise.reject(new NoRecordFoundException());
-                        return;
-                    }
-                    
-                    platform.loadEvent(esb);
-                    platform.getLogger().log(Level.CONFIG, "time taken to retrieve: {0} Milliseconds", ((new Date()).getTime() - t1));
-
-                    promise.resolve(esb);
-                } catch (SQLException e) {
-                    platform.mysqlError(e, SQL_LOAD_ENTITY_DATA);
-                    promise.reject(e);
-                }
+    public EntityStatBlob pullEntityBlob(ProviderQuery query) {
+        try {
+            if (!checkConnection()) {
+                platform.getLogger().severe("Database connection error!");
+                return null;
             }
-        };
+            long t1 = (new Date()).getTime();
+            ProviderQueryResult result = getSingleEntity(query);
+            EntityStatBlob esb = null;
+            ResultSet rs;
 
-        this.loadQueue.execute(run);
+            if (result != null) {
 
-        return promise;
+                esb = new EntityStatBlob(result.name, result.dbid, result.type, result.type, this);//Create the damn esb
+                // load all stats data
+                loadEntityData.setInt(1, esb.getEntityID());
+                rs = loadEntityData.executeQuery();
 
+                while (rs.next()) {
+                    // `domain`,`world`,`category`,`statistic`,`value`
+                    IStat ps = esb.getStat(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                    ps.setValue(rs.getInt(5));
+                    ps.clearArchive();
+                }
+                rs.close();
+            } else if (result == null && query.create) {
+
+                saveEntity.setString(1, query.name);
+                saveEntity.setString(2, query.type);
+                saveEntity.setString(3, query.uuid == null ? "" : query.uuid.toString());
+                saveEntity.executeUpdate();
+                rs = saveEntity.getGeneratedKeys();
+                rs.next();// load player id
+
+                // make the player object, close out result set.
+                esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.uuid, this);
+                rs.close();
+            }
+            //Didn't get a esb, kill it.
+            if (esb == null) {
+                return null;
+            }
+
+            platform.loadEvent(esb);
+            platform.getLogger().log(Level.CONFIG, "time taken to retrieve: {0} Milliseconds", ((new Date()).getTime() - t1));
+            return esb;
+        } catch (SQLException e) {
+            platform.mysqlError(e, SQL_LOAD_ENTITY_DATA);
+        }
+        return null;
     }
 
     protected ProviderQueryResult getSingleEntity(ProviderQuery query) throws IllegalStateException {
@@ -660,8 +642,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                 saveEntityData.addBatch();
                             }
                             saveEntityData.executeBatch();
-                            
-                            for(DocumentFileRef ref : updateRecord.files){
+
+                            for (DocumentFileRef ref : updateRecord.files) {
                                 try {
                                     DocumentFile newDoc = pushDocument(updateRecord.entityId, ref.getRef());
                                     ref.getRef().invalidateDocument();
@@ -855,11 +837,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         return truncatedName;
     }
 
-    @Override
-    public EntityStatBlob pullEntityBlobDirect(ProviderQuery query) {
-        return pullEntityBlob(query).getValue();
-    }
-
     protected void runCodeFor(int version, Class<? extends Annotation> ann) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         for (Method m : getClass().getMethods()) {
             if (m.isAnnotationPresent(ann)) {
@@ -919,12 +896,11 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         return mapping;
     }
-    
+
     /**
      * Utility method to load SQL commands from files in JAR
      *
-     * @param type extension of file to load, if not found will try load sql
-     * type (which is the type for MySQL syntax)
+     * @param type extension of file to load, if not found will try load sql type (which is the type for MySQL syntax)
      * @param filename file to load, minus extension
      * @param prefix table prefix, replaces ${PREFIX} in loaded files
      * @return SQL commands loaded from file.
@@ -944,7 +920,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         return sql.replaceAll("\\$\\{PREFIX\\}", prefix);
 
     }
-    
+
     public String byteArrayToHexString(byte[] b) {
         String result = "";
         for (int i = 0; i < b.length; i++) {
@@ -953,8 +929,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         }
         return result;
     }
-    
-    public Connection getConnection(){
+
+    public Connection getConnection() {
         return conn;
     }
 }

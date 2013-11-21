@@ -36,23 +36,9 @@ public abstract class IStatDataProviderTest {
     public void testPullEntityBlob() {
         System.out.println("pullEntityBlob");
         ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
-        Promise<EntityStatBlob> result = instance.pullEntityBlob(query);
-        EntityStatBlob blob = result.getValue();
+        EntityStatBlob blob  = instance.pullEntityBlob(query);
         assertEquals(blob.getName(), "Tehbeard");
         
-    }
-
-    /**
-     * Test of pullEntityBlobDirect method, of class IStatDataProvider.
-     */
-    @Test
-    public void testPullEntityBlobDirect() {
-        
-        System.out.println("pullEntityBlobDirect");
-        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
-        EntityStatBlob result = instance.pullEntityBlobDirect(query);
-        assertEquals(result.getName(), "Tehbeard");
-
     }
 
     /**
@@ -62,12 +48,12 @@ public abstract class IStatDataProviderTest {
     public void testPushEntityBlob() {
         System.out.println("pushEntityBlob");
         ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
-        EntityStatBlob blob = instance.pullEntityBlobDirect(query);
+        EntityStatBlob blob = instance.pullEntityBlob(query);
         blob.getStat("world", "stats", "playedfor").setValue(500);
         instance.pushEntityBlob(blob);
         instance.flushSync();
         
-        assertEquals("value was written", 500,instance.pullEntityBlobDirect(query).getStat("world", "stats", "playedfor").getValue());
+        assertEquals("value was written", 500,instance.pullEntityBlob(query).getStat("world", "stats", "playedfor").getValue());
         
         
     }
@@ -180,7 +166,7 @@ public abstract class IStatDataProviderTest {
         System.out.println("pullDocument");
         
         ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
-        EntityStatBlob result = instance.pullEntityBlobDirect(query);
+        EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);
         DocumentRegistry.cleanup();
@@ -196,7 +182,7 @@ public abstract class IStatDataProviderTest {
         
         System.out.println("pushDocument");
         ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
-        EntityStatBlob result = instance.pullEntityBlobDirect(query);
+        EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);
         DocumentRegistry.cleanup();
