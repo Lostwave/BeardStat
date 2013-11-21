@@ -83,7 +83,7 @@ public class EntityStatManager implements CommandExecutor{
         return typeNameCache.get(cacheKey);
     }
 
-    public Promise<EntityStatBlob> getBlobByString(String uuid) {
+    public Promise<EntityStatBlob> getBlobByUUID(String uuid) {
 
         if (!uuidCache.containsKey(uuid.toString())) {
 
