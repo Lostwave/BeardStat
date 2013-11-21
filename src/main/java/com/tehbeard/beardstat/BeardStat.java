@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -284,6 +281,16 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
     @Override
     public void loadEvent(EntityStatBlob esb) {
         Bukkit.getPluginManager().callEvent(new EntityStatBlobLoadEvent(esb));
+    }
+
+    @Override
+    public boolean isPlayerOnline(String player) {
+        return Bukkit.getOfflinePlayer(player).isOnline();
+    }
+
+    @Override
+    public String getWorldForPlayer(String entityName) {
+        return Bukkit.getPlayer(entityName).getWorld().getName();
     }
 
     /**

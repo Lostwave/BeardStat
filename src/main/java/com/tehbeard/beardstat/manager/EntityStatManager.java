@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -119,7 +118,7 @@ public class EntityStatManager {
                         }
                     }
                     if (isPlayerOnline(entityName)) {
-                        OnlineTimeManager.setRecord(entityName, Bukkit.getPlayer(entityName).getWorld().getName());
+                        OnlineTimeManager.setRecord(entityName, platform.getWorldForPlayer(entityName));
                     } else {
                         OnlineTimeManager.wipeRecord(entityName);
                         cache.remove(new ProviderQuery(blob.getName(), blob.getType(), blob.getUUID(),false));
@@ -130,7 +129,7 @@ public class EntityStatManager {
     }
 
     private boolean isPlayerOnline(String player) {
-        return Bukkit.getOfflinePlayer(player).isOnline();
+        return platform.isPlayerOnline(player);
     }
 
     public String getLocalizedStatisticName(String gameTag) {

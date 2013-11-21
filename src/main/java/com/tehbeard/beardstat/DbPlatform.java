@@ -31,5 +31,9 @@ public interface DbPlatform {
     public void configValueSet(String key, Object val);
 
     public void loadEvent(EntityStatBlob esb);
+
+    public boolean isPlayerOnline(String player);
+
+    public String getWorldForPlayer(String entityName);
     
 }
