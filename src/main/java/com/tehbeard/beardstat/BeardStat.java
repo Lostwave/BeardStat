@@ -297,8 +297,8 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         @Override
         public void run() {
             getLogger().config("Flushing to database.");
-            BeardStat.this.statManager.saveCache();
-            BeardStat.this.statManager.flush();
+            statManager.saveCache();
+            statManager.flush();
             getLogger().config("flush completed");
 
         }

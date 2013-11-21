@@ -7,11 +7,14 @@ import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
+
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -33,14 +36,29 @@ public class EntityStatManager {
 
     }
 
+    /**
+     * Returns the EntityStatBlob for a player.
+     * @param player
+     * @return EntityStatBlob
+     */
     public EntityStatBlob getBlobForPlayer(Player player){
         return getBlobForPlayerAsync(player).getValue();
     }
 
+    /**
+     * Returns the EntityStatBlob for the blob that matches this query
+     * @param query
+     * @return 
+     */
     public EntityStatBlob getBlob(ProviderQuery query){
         return getBlobASync(query).getValue();
     }
 
+    /**
+     * Returns a list of blobs that match the query
+     * @param query
+     * @return 
+     */
     public EntityStatBlob[] getBlobs(ProviderQuery query){
         ProviderQueryResult[] results = queryDatabase(query);
         EntityStatBlob[] blobs = new EntityStatBlob[results.length];
@@ -50,11 +68,21 @@ public class EntityStatManager {
         return blobs;
     }
 
+    /**
+     * Asynchronously retrieves a player blob, this will not lock the game thread if called.
+     * @param player
+     * @return 
+     */
     public Promise<EntityStatBlob> getBlobForPlayerAsync(Player player){
         //TODO use uuid in future
         return getBlobASync(new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, null, true));
     }
 
+    /**
+     * Asynchronously retrieves a blob matching the query.
+     * @param query
+     * @return 
+     */
     public Promise<EntityStatBlob> getBlobASync(final ProviderQuery query) {
         if (query.likeName) {
             throw new IllegalStateException("Cannot use partial matching in query to fetch a blob");
@@ -97,6 +125,7 @@ public class EntityStatManager {
                         cache.remove(new ProviderQuery(blob.getName(), blob.getType(), blob.getUUID(),false));
                     }
                 }
+            backendDatabase.pushEntityBlob(blob);
         }
     }
 
