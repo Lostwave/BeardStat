@@ -1,16 +1,27 @@
-5,0x3,0,15
-6,0x3,0,15
-263,0x1,0,15
-17,0x3,0,15
-18,0x3,0,15
-24,0x3,0,15
-31,0x3,0,15
-35,0xF,0,15
-43,0x7,0,15
-44,0x7,0,15
-97,0x3,0,15
-98,0x3,0,15
-125,0x3,0,15
-126,0x3,0,15
-140,0xF,0,15
-351,0xF,0,15
+3,0x3,0,15,#Dirt
+5,0x7,0,15,#Wood planks
+6,0x7,0,15,#Saplings
+17,0x3,0,15,#oak/birch/jungle/spruce log
+18,0x3,0,15,#oak/birch/jungle/spruce leaf
+24,0x3,0,15,#Sandstone blocks
+31,0x3,0,15,#Shrubs
+35,0xF,0,15,#Wool
+38,0xF,0,8,#Flowers
+43,0x7,0,15,#Double slab
+44,0x7,0,15,#Single slab
+97,0xF,0,15,#Stained glass
+97,0x3,0,15,#Feesh blocks
+98,0x3,0,15,#Stone brick
+125,0x3,0,15,#oak/birch/jungle/spruce Double slab
+126,0x3,0,15,#oak/birch/jungle/spruce single slab
+140,0xF,0,13,#Flower pot, skip quartz entry, needs special handling for pillar
+159,0xF,0,15,#Stained clay
+160,0xF,0,15,#Stained glass panes
+161,0x1,0,1,#acacia / dark oak leaves
+162,0x1,0,1,#acacia / dark oak logs
+172,0xF,0,15,#Carpets
+175,0x7,0,5,#Double height flowers
+263,0x1,0,15,#Coal/Charcoal item
+349,0xF,0,15,#Fish
+350,0xF,0,15,#Cooked fish
+351,0xF,0,15,#Dye
