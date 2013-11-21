@@ -54,6 +54,7 @@ public class MetaDataCapture {
                 int max = Integer.parseInt(entry[3].replaceAll("[^0-9A-Fa-f]", ""));
                 
                 Material mat = Material.getMaterial(blockId);
+                if(mat == null){continue;}
                 EntryInfo ei = new EntryInfo(metaMask, min, max);
                 mats.put(mat, ei);
             } catch (Exception e) {
