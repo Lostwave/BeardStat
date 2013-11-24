@@ -51,5 +51,15 @@ class TestPlatform implements DbPlatform {
     public void loadEvent(EntityStatBlob esb) {
         
     }
+
+    @Override
+    public boolean isPlayerOnline(String player) {
+        return false;
+    }
+
+    @Override
+    public String getWorldForPlayer(String entityName) {
+        return "world";
+    }
     
 }
