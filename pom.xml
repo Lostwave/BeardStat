@@ -174,7 +174,6 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>me.tehbeard:Vocalise</include>
                                     <include>com.tehbeard:utils</include>
                                     <include>org.mcstats.bukkit:metrics</include>
                                     <include>com.google.code.gson:gson</include>
@@ -184,10 +183,6 @@
 
                             </artifactSet>
                             <relocations>
-                                <relocation>
-                                    <pattern>me.tehbeard.vocalise</pattern>
-                                    <shadedPattern>com.tehbeard.beardstat.vocalise</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>com.tehbeard.utils</pattern>
                                     <shadedPattern>com.tehbeard.beardstat.utils</shadedPattern>
