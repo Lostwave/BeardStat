@@ -10,8 +10,6 @@ import com.tehbeard.beardstat.listeners.defer.DeferAddUUID;
 import com.tehbeard.beardstat.listeners.defer.DeferRemoveBlob;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
-import com.tehbeard.utils.mojang.api.profiles.Profile;
-import com.tehbeard.utils.mojang.api.profiles.ProfileCriteria;
 import com.tehbeard.utils.mojang.api.profiles.ProfileRepository;
 import java.util.HashMap;
 import java.util.Iterator;

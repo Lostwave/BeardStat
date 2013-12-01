@@ -8,12 +8,9 @@ import com.tehbeard.utils.mojang.api.http.HttpHeader;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class HttpProfileRepository implements ProfileRepository {
 

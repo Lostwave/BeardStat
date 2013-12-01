@@ -5,7 +5,6 @@
 package com.tehbeard.beardstat.listeners.defer;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import java.util.HashMap;
 import java.util.Map;
 
 import net.dragonzone.promise.Delegate;
