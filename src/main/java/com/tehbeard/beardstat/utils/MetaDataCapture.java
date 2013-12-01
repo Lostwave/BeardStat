@@ -23,7 +23,7 @@ import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
  * 
  */
 public class MetaDataCapture {
-
+    
     // private static Material[] mats =
     // {Material.WOOD,Material.LOG,Material.SAPLING,Material.INK_SACK,Material.COAL,Material.STEP,Material.WOOL,Material.SMOOTH_BRICK};
 
@@ -44,13 +44,18 @@ public class MetaDataCapture {
 
         while (s.hasNext()) {
             String line = s.nextLine();
+            if(line.startsWith("#")){continue;}
             String[] entry = line.split(",");
+            if(entry.length < 4){System.out.println("Invalid entry found [" + line + "]");continue;}
             try {
-                Material mat = Material.getMaterial(Integer.parseInt(entry[0].replaceAll("[^0-9]", "")));
-                EntryInfo ei = new EntryInfo(Integer.parseInt(
-                        entry[1].replaceAll("0(X|x)", "").replaceAll("[^0-9A-Fa-f]", ""), 16),
-                        Integer.parseInt(entry[2].replaceAll("[^0-9A-Fa-f]", "")), Integer.parseInt(entry[3]
-                                .replaceAll("[^0-9A-Fa-f]", "")));
+                int blockId = Integer.parseInt(entry[0].replaceAll("[^0-9]", ""));
+                int metaMask = Integer.parseInt(entry[1].replaceAll("0(X|x)", "").replaceAll("[^0-9A-Fa-f]", ""), 16);
+                int min =  Integer.parseInt(entry[2].replaceAll("[^0-9A-Fa-f]", ""));
+                int max = Integer.parseInt(entry[3].replaceAll("[^0-9A-Fa-f]", ""));
+                
+                Material mat = Material.getMaterial(blockId);
+                if(mat == null){continue;}
+                EntryInfo ei = new EntryInfo(metaMask, min, max);
                 mats.put(mat, ei);
             } catch (Exception e) {
                 System.out.println("Failed to load metadata for id: " + entry[0] + ", skipping (version mismatch?)");

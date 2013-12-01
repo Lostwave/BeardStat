@@ -3,7 +3,7 @@ package com.tehbeard.beardstat.dataproviders;
 import com.tehbeard.utils.syringe.configInjector.InjectConfig;
 import java.lang.reflect.Field;
 import java.util.Properties;
-import me.tehbeard.utils.syringe.Injector;
+import com.tehbeard.utils.syringe.Injector;
 
 /**
  *
