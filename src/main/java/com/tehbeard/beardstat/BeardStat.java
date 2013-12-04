@@ -53,7 +53,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class BeardStat extends JavaPlugin {
 
     public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
-    public static final String PERM_COMMAND_STAT_OTHER = "command.stat.other";
+    public static final String PERM_COMMAND_STAT_OTHER = "stat.command.stat.other";
     // Default values for domain and world
     public static final String DEFAULT_DOMAIN = "default";
     public static final String GLOBAL_WORLD = "__global__";
