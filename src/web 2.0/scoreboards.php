@@ -20,7 +20,7 @@ $score->reset_field();
 ?></tr>
 <?php 
 while($score->have_entry()){
-?><tr><td><canvas class="head" data-name="<?php echo $score->the_player_name(); ?>"></canvas></td><td><?php echo $score->the_rank(); ?></td><td><?php echo $score->the_player_name(); ?></td><?php 
+?><tr><td><canvas class="head" data-name="<?php echo $score->the_player_name(); ?>"></canvas></td><td><?php echo $score->the_rank(); ?></td><td><a href="showplayer.php?playerName=<?php echo $score->the_player_name(); ?>"><?php echo $score->the_player_name(); ?></a></td><?php 
  while($score->have_field()){
   echo "<td class=\"" . $score->the_field_name() . "\">" . $score->the_field_value() . "</td>"; 
  } 
