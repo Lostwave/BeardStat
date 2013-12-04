@@ -57,6 +57,7 @@ permissions:
     default: op
   stat.command.played:
     description: Allows you to view your /played
+    default: true
   stat.command.played.other:
     description: See how much others have played
     default: op

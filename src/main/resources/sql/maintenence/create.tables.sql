@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `${PREFIX}_entity` (
   `name` char(32) NOT NULL,  
   `type` char(16) NOT NULL, 
   `scoreboardhide` BOOLEAN NOT NULL DEFAULT false,
-  `uuid` CHAR( 32 ) UNIQUE,
+  `uuid` CHAR( 32 ),
   PRIMARY KEY (`entityId`),
   UNIQUE KEY `chkName` (`name`,`type`)
   ) 
