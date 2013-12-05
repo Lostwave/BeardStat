@@ -73,6 +73,7 @@ public class DocumentFile {
         return parentRevision;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends IStatDocument> T getDocument() {
         return (T)document;
     }

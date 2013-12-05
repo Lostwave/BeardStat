@@ -5,7 +5,6 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import com.tehbeard.beardstat.DatabaseConfiguration;
-import static com.tehbeard.beardstat.dataproviders.IStatDataProviderTest.instance;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;

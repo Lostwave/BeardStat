@@ -219,7 +219,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
 
                     platform.getLogger().fine(new String(document.getBytes(1, (int) document.length())));
-
+                    //Load the document
                     IStatDocument fromJson = DocumentRegistry.instance().fromJson(jsr, IStatDocument.class);
 
                     file = new DocumentFile(curRev, parentRev, domain, key, fromJson, added);

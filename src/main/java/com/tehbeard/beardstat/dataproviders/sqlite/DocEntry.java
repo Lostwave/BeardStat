@@ -5,7 +5,6 @@
 package com.tehbeard.beardstat.dataproviders.sqlite;
 
 import com.google.gson.annotations.Expose;
-import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import java.sql.Timestamp;
 import java.util.HashMap;

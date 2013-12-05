@@ -2,8 +2,6 @@ package com.tehbeard.beardstat.dataproviders;
 
 import com.tehbeard.beardstat.dataproviders.metadata.*;
 
-import net.dragonzone.promise.Promise;
-
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import java.io.File;
