@@ -11,7 +11,6 @@ stats:
     username: "Beardstats"
     password: "changeme"
     database: "stats"
-    table: "stats"
     prefix: "stats"
     port: 3306
     backups: true
