@@ -70,12 +70,29 @@ public interface IStatDataProvider {
      */
     public void flush();
 
+    /**
+     * Returns the DomainMeta object for the given domain
+     * @param gameTag
+     * @return
+     */
     public DomainMeta getDomain(String gameTag);
-
+    /**
+     * Returns the WorldMeta object for the given world
+     * @param gameTag
+     * @return
+     */
     public WorldMeta getWorld(String gameTag);
-
+    /**
+     * Returns the CategoryMeta object for the given category
+     * @param gameTag
+     * @return
+     */
     public CategoryMeta getCategory(String gameTag);
-
+    /**
+     * Returns the StatisticMeta object for the given statistic
+     * @param gameTag
+     * @return
+     */
     public StatisticMeta getStatistic(String gameTag);
 
     /**
@@ -100,7 +117,7 @@ public interface IStatDataProvider {
      * @param query
      * @param document
      * @return new DocumentFile with the revision of the stored document
-     * @throws com.tehbeard.beardstat.dataproviders.IStatDataProvider.RevisionMismatchException if revision key passed does not match current (latest) one.
+     * @throws #RevisionMismatchException if revision key passed does not match current (latest) one.
      */
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException;
     
@@ -122,7 +139,18 @@ public interface IStatDataProvider {
     public String[] getDocumentKeysInDomain(int entityId, String domain);
 
 
+    /**
+     * Thrown when the head revision of a document in the database is not the same as the revision we checked out.
+     * This allows for Multi server (i.e Bungeecord) environments, and provides a mechanism to get the changed head revision and 
+     * take appropriate action (merge, overwrite, ignore)
+     * @author James
+     *
+     */
     public class RevisionMismatchException extends Exception {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 467302713446315251L;
         private final DocumentFile newFile;
 
         public DocumentFile getNewFile() {
