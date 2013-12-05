@@ -3,7 +3,6 @@ package com.tehbeard.beardstat.dataproviders;
 import com.google.gson.stream.JsonWriter;
 import java.sql.SQLException;
 
-import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;

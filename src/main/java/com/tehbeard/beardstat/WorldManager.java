@@ -28,7 +28,7 @@ public class WorldManager {
     private static class WorldData {
         
         @InjectConfig("survival")
-        private boolean survival;
+        private boolean survival;//Track survival mode
         @InjectConfig("creative")
         private boolean creative;
         @InjectConfig("adventure")
@@ -55,6 +55,11 @@ public class WorldManager {
                     
         }
         
+        /**
+         * Returns true if no gamemode is tracked for a world.
+         * used for certain checks. (entity death) 
+         * @return
+         */
         public boolean isBlackListed(){
             return !(survival || creative || adventure);
         }
@@ -86,11 +91,10 @@ public class WorldManager {
     }
     
     public boolean isBlackListed(World world){
-        return false;
-        /*if(worlds.containsKey(world.getName())){
+        if(worlds.containsKey(world.getName())){
             return worlds.get(world.getName()).isBlackListed();
         }
-            return defaultWorld.isBlackListed();*/
+            return defaultWorld.isBlackListed();
     }
     
     public void addWorld(String name,boolean s,boolean c,boolean a){

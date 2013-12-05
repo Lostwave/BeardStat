@@ -36,7 +36,7 @@ public class ClassBasedParser<T> implements JsonSerializer<T>, JsonDeserializer<
     public T deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
         try {
             String id = element.getAsJsonObject().get("_type").getAsString();
-            Class c = catalogue.get(id);
+            Class<?> c = catalogue.get(id);
             if (c != null) {
                 return context.deserialize(element, c);
             }
