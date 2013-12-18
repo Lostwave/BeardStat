@@ -58,7 +58,7 @@ public class DocumentFile {
     }
 
     public boolean shouldArchive() {
-        return archive;
+        return archive || (document instanceof IStatDynamicDocument);
     }
 
     public void setArchiveFlag() {
@@ -75,6 +75,9 @@ public class DocumentFile {
 
     @SuppressWarnings("unchecked")
     public <T extends IStatDocument> T getDocument() {
+        if(document instanceof IStatDynamicDocument){
+            ((IStatDynamicDocument) document).updateDocument();
+        }
         return (T)document;
     }
     
