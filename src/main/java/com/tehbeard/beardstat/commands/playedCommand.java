@@ -13,6 +13,7 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 import com.tehbeard.beardstat.containers.StatVector;
 import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.utils.LanguagePack;
@@ -60,8 +61,13 @@ public class playedCommand extends BeardStatCommand {
             }
             StatVector vector = blob.getStats(BeardStat.DEFAULT_DOMAIN, "*", "stats", "playedfor");
             seconds = vector.getValue();
-
-            seconds += OnlineTimeManager.getRecord(selectedPlayer.getName()).sessionTime();
+            
+            //Only get record if player is online.
+            ManagerRecord onlineTimeRecord = OnlineTimeManager.getRecord(selectedPlayer.getName());
+            if(onlineTimeRecord != null){
+                seconds += onlineTimeRecord.sessionTime();
+            }
+            
             sender.sendMessage(getPlayedString(seconds) + " total");
 
             for (IStat stat : vector) {
