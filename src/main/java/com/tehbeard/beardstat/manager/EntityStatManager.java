@@ -132,7 +132,7 @@ public class EntityStatManager implements CommandExecutor{
                     ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
 
                     if (timeRecord != null) {
-                        this.plugin.getLogger().info("saving time: [Player : " + entityName + " , world: " + timeRecord.world + ", time: " + timeRecord.sessionTime() + "]");
+                        this.plugin.getLogger().fine("saving time: [Player : " + entityName + " , world: " + timeRecord.world + ", time: " + timeRecord.sessionTime() + "]");
                         if (timeRecord.world != null) {
                             entry.getValue().getValue()
                                     .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
