@@ -6,4 +6,5 @@ package com.tehbeard.beardstat.containers.documents;
  */
 public interface IStatDocument {
     
+    public IStatDocument mergeDocument(DocumentFile file);
 }
