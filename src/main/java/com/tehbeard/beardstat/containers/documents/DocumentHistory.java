@@ -70,9 +70,6 @@ public class DocumentHistory {
         public Timestamp getAdded() {
             return added;
         }
-        public int getStoreId() {
-            return storeId;
-        }
         /**
          * @param revision
          * @param parentRev

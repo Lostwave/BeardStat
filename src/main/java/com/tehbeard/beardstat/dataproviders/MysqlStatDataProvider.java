@@ -7,6 +7,7 @@ import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
+import com.tehbeard.beardstat.containers.documents.DocumentHistory.DocumentHistoryEntry;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import java.io.BufferedWriter;
@@ -124,8 +125,8 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 sb.append(version).append("\n");
                 sb.append("\n");
                 sb.append("-- ----------------------------\n")
-                        .append("-- Table structure for `").append(tbl)
-                        .append("`\n-- ----------------------------\n");
+                .append("-- Table structure for `").append(tbl)
+                .append("`\n-- ----------------------------\n");
                 sb.append("DROP TABLE IF EXISTS `").append(tbl).append("`;\n");
                 ResultSet rs2 = query("SHOW CREATE TABLE `" + tbl + "`");
                 rs2.next();
@@ -167,8 +168,8 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
                 sb.append("\n");
                 sb.append("-- ----------------------------\n")
-                        .append("-- View structure for `").append(tbl)
-                        .append("`\n-- ----------------------------\n");
+                .append("-- View structure for `").append(tbl)
+                .append("`\n-- ----------------------------\n");
                 sb.append("DROP VIEW IF EXISTS `").append(tbl).append("`;\n");
                 ResultSet rs3 = query("SHOW CREATE VIEW `" + tbl + "`");
                 rs3.next();
@@ -188,18 +189,20 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         DocumentFile file = null;
 
         try {
+            //Look for existing document
             ResultSet rs = getDocumentResultSet(entityId, domain, key);
 
+            //if existing document is found, load it.
             if (rs.next()) {
                 int docId = getDocumentId(rs);
                 String curRev = getCurrentRev(rs);
                 rs.close();
 
-                //Get document
+                //Get the latest revision
                 stmtDocSelect.setInt(1, docId);
                 stmtDocSelect.setString(2, curRev);
                 rs = stmtDocSelect.executeQuery();
-
+                //If found, grab it.
                 if (rs.next()) {
                     //`parentRev`, `added`,`document`
                     String parentRev = rs.getString("parentRev");
@@ -233,7 +236,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         }
 
         return file;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private final int MAX_DOC_SIZE = 16 * 1024 * 1024;//16mb limit
@@ -241,7 +243,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     @Override
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException {
 
-       
+
         DocumentFile returnDoc = null;
 
         try {
@@ -330,7 +332,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                
+
                 conn.setAutoCommit(true);
             } catch (SQLException ex) {
                 Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
@@ -345,7 +347,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             stmtMetaPoll.setInt(1,entityId);
             stmtMetaPoll.setInt(2, getDomain(domain).getDbId());
             ResultSet rs = stmtMetaPoll.executeQuery();
-            
+
             List<String> keys = new ArrayList<String>();
             while(rs.next()){
                 keys.add(rs.getString("key"));
@@ -355,24 +357,54 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         } catch (SQLException ex) {
             Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return null;
     }
-    
+
     @Override
     public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
-        
+        ResultSet rs;
+        try {
+            rs = getDocumentResultSet(entityId, domain, key);
+       
+        if (rs.next()) {
+            int docId = getDocumentId(rs);
+            String headRev = getCurrentRev(rs);
+            rs.close();
+            stmtDocPoll.setInt(1, docId);
+            rs = stmtDocPoll.executeQuery();
+            DocumentHistory history = new DocumentHistory(domain, key, headRev);
+
+
+            while(rs.next()){
+                DocumentHistoryEntry entry = new DocumentHistoryEntry(
+                        rs.getString("revision"), 
+                        rs.getString("parentRev"), 
+                        rs.getTimestamp("added"),
+                        rs.getInt("storeId"));
+                history.getEntries().add(entry);
+            }
+            rs.close()
+            return history;
+
+        }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
         return null;
     }
-    
+
     @Override
     public void deleteDocument(int entityId, String domain, String key, String revision) {
         if(revision == null){
-            
+
         }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     /**
      * Get the ResultSet for document, or null on not found
      * @param entityId
@@ -390,14 +422,14 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         stmtMetaSelect.setString(3, key);
         platform.getLogger().log(Level.FINE, "eid: {0}, domainId: {1}, key: {2}", new Object[]{entityId, domainId, key});
         return stmtMetaSelect.executeQuery();
-        
+
     }
-    
+
     private String getCurrentRev(ResultSet rs) throws SQLException{
         return rs.getString("curRevision");
     }
     private int getDocumentId(ResultSet rs) throws SQLException{
         return rs.getInt("documentId");
     }
-    
+
 }
