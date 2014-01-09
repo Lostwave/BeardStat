@@ -384,7 +384,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                         rs.getInt("storeId"));
                 history.getEntries().add(entry);
             }
-            rs.close()
+            rs.close();
             return history;
 
         }
