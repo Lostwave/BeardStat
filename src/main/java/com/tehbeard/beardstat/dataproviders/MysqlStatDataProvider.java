@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import java.io.BufferedWriter;
@@ -47,7 +48,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public static final String SQL_DOC_STORE_PURGE = "sql/doc/store/storePurge";
     //meta
     private PreparedStatement stmtMetaInsert;
-    private PreparedStatement stmtMetaLock;
     private PreparedStatement stmtMetaUpdate;
     private PreparedStatement stmtMetaDelete;
     private PreparedStatement stmtMetaSelect;
@@ -214,7 +214,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                     String parentRev = rs.getString("parentRev");
                     Timestamp added = rs.getTimestamp("added");
                     Blob document = rs.getBlob("document");
-                    int storeId = rs.getInt("storeId");
                     JsonReader jsr = new JsonReader(new InputStreamReader(document.getBinaryStream()));
 
 
@@ -269,7 +268,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             //3) lock meta document record, get headrev revision tag
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             conn.setAutoCommit(false);
-            int domainId = getDomain(document.getDomain()).getDbId();
+            int domainId = getDomain(document.getDomain()).getDbId();//Get domain int it
             stmtMetaSelect.setInt(1, entityId);
             stmtMetaSelect.setInt(2, domainId);
             stmtMetaSelect.setString(3, document.getKey());
@@ -307,7 +306,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 stmtDocInsert.executeUpdate();
                 rs = stmtDocInsert.getGeneratedKeys();
                 rs.next();
-                int storeId = rs.getInt(1);
                 rs.close();
                 returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
             } else {
@@ -379,9 +377,20 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     }
     
     @Override
+    public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
+        
+        return null;
+    }
+    
+    @Override
     public void deleteDocument(int entityId, String domain, String key, String revision) {
+        if(revision == null){
+            
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+
 
     
 }
