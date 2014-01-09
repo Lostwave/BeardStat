@@ -7,6 +7,7 @@ import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry.DocRev;
@@ -117,5 +118,11 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         } catch (IOException ex) {
             Logger.getLogger(SQLiteStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
