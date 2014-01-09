@@ -187,21 +187,12 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public DocumentFile pullDocument(int entityId, String domain, String key) {
         DocumentFile file = null;
 
-        int domainId = getDomain(domain).getDbId();
-
         try {
-            conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            conn.setAutoCommit(false);
-            stmtMetaSelect.setInt(1, entityId);
-            stmtMetaSelect.setInt(2, domainId);
-            stmtMetaSelect.setString(3, key);
-
-            platform.getLogger().log(Level.FINE, "eid: {0}, domainId: {1}, key: {2}", new Object[]{entityId, domainId, key});
-            ResultSet rs = stmtMetaSelect.executeQuery();
+            ResultSet rs = getDocumentResultSet(entityId, domain, key);
 
             if (rs.next()) {
-                int docId = rs.getInt("documentId");
-                String curRev = rs.getString("curRevision");
+                int docId = getDocumentId(rs);
+                String curRev = getCurrentRev(rs);
                 rs.close();
 
                 //Get document
@@ -266,19 +257,11 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             String newRevision = byteArrayToHexString(digest.digest(doc));
 
             //3) lock meta document record, get headrev revision tag
-            conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            conn.setAutoCommit(false);
-            int domainId = getDomain(document.getDomain()).getDbId();//Get domain int it
-            stmtMetaSelect.setInt(1, entityId);
-            stmtMetaSelect.setInt(2, domainId);
-            stmtMetaSelect.setString(3, document.getKey());
-            platform.getLogger().log(Level.FINE, "eid: {0}, domainId: {1}, key: {2}", new Object[]{entityId, domainId, document.getKey()});
-            ResultSet rs = stmtMetaSelect.executeQuery();
-            if (rs.next()) {
-                //We are updating a record
-                String headRev = rs.getString("curRevision");
-                int docId = rs.getInt("documentId");
+            ResultSet rs = getDocumentResultSet(entityId, document.getDomain(), document.getKey());
 
+            if (rs.next()) {
+                int docId = getDocumentId(rs);
+                String headRev = getCurrentRev(rs);
                 rs.close();
 
                 if (!headRev.equalsIgnoreCase(document.getRevision())) {
@@ -314,7 +297,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 //We are inserting a record
                 //`entityId`, `domainId`, `key`, `curRevision`
                 stmtMetaInsert.setInt(1, entityId);
-                stmtMetaInsert.setInt(2, domainId);
+                stmtMetaInsert.setInt(2, getDomain(document.getDomain()).getDbId());
                 stmtMetaInsert.setString(3, document.getKey());
                 stmtMetaInsert.setString(4, newRevision);
                 stmtMetaInsert.executeUpdate();
@@ -389,8 +372,32 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-
-
+    
+    /**
+     * Get the ResultSet for document, or null on not found
+     * @param entityId
+     * @param domain
+     * @param key
+     * @return
+     * @throws SQLException 
+     */
+    private ResultSet getDocumentResultSet(int entityId, String domain,String key) throws SQLException{
+        conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        conn.setAutoCommit(false);
+        int domainId = getDomain(domain).getDbId();//Get domain int it
+        stmtMetaSelect.setInt(1, entityId);
+        stmtMetaSelect.setInt(2, domainId);
+        stmtMetaSelect.setString(3, key);
+        platform.getLogger().log(Level.FINE, "eid: {0}, domainId: {1}, key: {2}", new Object[]{entityId, domainId, key});
+        return stmtMetaSelect.executeQuery();
+        
+    }
+    
+    private String getCurrentRev(ResultSet rs) throws SQLException{
+        return rs.getString("curRevision");
+    }
+    private int getDocumentId(ResultSet rs) throws SQLException{
+        return rs.getInt("documentId");
+    }
     
 }
