@@ -377,12 +377,11 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
 
             while(rs.next()){
-                DocumentHistoryEntry entry = new DocumentHistoryEntry(
+                history.addEntry(
                         rs.getString("revision"), 
                         rs.getString("parentRev"), 
                         rs.getTimestamp("added"),
                         rs.getInt("storeId"));
-                history.getEntries().add(entry);
             }
             rs.close();
             return history;

@@ -53,6 +53,10 @@ public class DocumentHistory {
         return null;
     }
 
+    
+    public void addEntry(String revision, String parentRev, Timestamp added, int storeId){
+        entries.add(new DocumentHistoryEntry(revision, parentRev, added, storeId));
+    }
 
     public class DocumentHistoryEntry {
         
