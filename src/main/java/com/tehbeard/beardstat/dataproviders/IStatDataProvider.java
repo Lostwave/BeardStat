@@ -4,6 +4,8 @@ import com.tehbeard.beardstat.dataproviders.metadata.*;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentHistory;
+
 import java.io.File;
 
 /**
@@ -137,6 +139,15 @@ public interface IStatDataProvider {
      * @return 
      */
     public String[] getDocumentKeysInDomain(int entityId, String domain);
+    
+    /**
+     * Returns the available history for a document.
+     * @param entityId entity the document belongs to
+     * @param domain - domain document is under
+     * @param key - key document is under
+     * @return
+     */
+    public DocumentHistory getDocumentHistory(int entityId, String domain, String key);
 
 
     /**

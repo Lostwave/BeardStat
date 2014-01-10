@@ -250,6 +250,7 @@ public class EntityStatBlob implements VariableProvider {
         for (DocumentFileRef ref : files.values()) {
             if (ref.getRef().shouldArchive()) {
                 record.files.add(ref);
+                ref.getRef().clearArchiveFlag();
             }
 
         }
