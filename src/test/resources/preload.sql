@@ -1,4 +1,4 @@
-INSERT IGNORE INTO `stats_category` (`categoryId`, `category`, `statwrapper`) VALUES
+INSERT IGNORE INTO `stats_test_category` (`categoryId`, `category`, `statwrapper`) VALUES
 (1, 'comp', '%s'),
 (2, 'stats', '%s'),
 (3, 'blockcreate', '%s placed'),
@@ -28,16 +28,16 @@ INSERT IGNORE INTO `stats_category` (`categoryId`, `category`, `statwrapper`) VA
 (27, 'status', '%s'),
 (28, 'consume', '%s'),
 (29, 'plant', '%s');
-INSERT IGNORE INTO `stats_domain` (`domainId`, `domain`) VALUES
+INSERT IGNORE INTO `stats_test_domain` (`domainId`, `domain`) VALUES
 (1, 'default'),
 (2, 'beardach');
-INSERT IGNORE INTO `stats_entity` (`entityId`, `name`, `type`, `scoreboardhide`, `uuid`) VALUES
+INSERT IGNORE INTO `stats_test_entity` (`entityId`, `name`, `type`, `scoreboardhide`, `uuid`) VALUES
 (46406, 'Spyboticsguy', 'player', 0, 'e090d5577a834b8ebe9e784c69656e66'),
 (46783, 'steveab', 'player', 0, '57533d14380047b6bc387bebf051a822'),
 (48287, 'Tehbeard', 'player', 0, '09d770ac7bfe48a2bf6877cbd21c51a1'),
 (51133, 'Tulonsae', 'player', 0, '7e5ec1446ede44488994421d2ff5a2a7'),
 (53514, 'wokka1', 'player', 0, '3a7b30b450344293bbcbe4c3428d66ea');
-INSERT IGNORE INTO `stats_statistic` (`statisticId`, `statistic`, `name`, `formatting`) VALUES
+INSERT IGNORE INTO `stats_test_statistic` (`statisticId`, `statistic`, `name`, `formatting`) VALUES
 (1, 'pk', 'pk', 'none'),
 (2, 'playedfor', 'play time', 'time'),
 (3, 'glowstone', 'glowstone', 'none'),
@@ -739,7 +739,7 @@ INSERT IGNORE INTO `stats_statistic` (`statisticId`, `statistic`, `name`, `forma
 (699, 'weakness', 'weakness', 'none'),
 (700, 'weather', 'weather', 'none'),
 (701, 'witherspawn', 'wither spawn', 'none');
-INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
+INSERT IGNORE INTO `stats_test_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
 (46406, 1, 1, 1, 1, 27),
 (46406, 1, 1, 2, 2, 2091704),
 (46406, 1, 1, 2, 4, 1323637172),
@@ -2712,7 +2712,7 @@ INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId
 (46783, 1, 1, 10, 253, 63),
 (46783, 1, 1, 10, 254, 420),
 (46783, 1, 1, 10, 255, 2958);
-INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
+INSERT IGNORE INTO `stats_test_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
 (46783, 1, 1, 10, 261, 28),
 (46783, 1, 1, 10, 265, 2106),
 (46783, 1, 1, 10, 268, 20),
@@ -4664,7 +4664,7 @@ INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId
 (48287, 1, 5, 5, 344, 31),
 (48287, 1, 5, 5, 348, 16),
 (48287, 1, 5, 5, 358, 51);
-INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
+INSERT IGNORE INTO `stats_test_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
 (48287, 1, 5, 5, 366, 1),
 (48287, 1, 5, 5, 380, 13),
 (48287, 1, 5, 5, 381, 78),
@@ -6633,7 +6633,7 @@ INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId
 (53514, 1, 1, 10, 113, 29),
 (53514, 1, 1, 10, 114, 66),
 (53514, 1, 1, 10, 116, 11);
-INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
+INSERT IGNORE INTO `stats_test_value` (`entityId`, `domainId`, `worldId`, `categoryId`, `statisticId`, `value`) VALUES
 (53514, 1, 1, 10, 117, 10353),
 (53514, 1, 1, 10, 118, 2),
 (53514, 1, 1, 10, 119, 39),
@@ -6839,7 +6839,7 @@ INSERT IGNORE INTO `stats_value` (`entityId`, `domainId`, `worldId`, `categoryId
 (53514, 1, 3, 2, 7, 22),
 (53514, 1, 3, 27, 602, 20),
 (53514, 1, 6, 2, 2, 14);
-INSERT IGNORE INTO `stats_world` (`worldId`, `world`, `name`) VALUES
+INSERT IGNORE INTO `stats_test_world` (`worldId`, `world`, `name`) VALUES
 (1, '__imported__', NULL),
 (2, 'survival', 'survival'),
 (3, '__global__', '__global__'),
