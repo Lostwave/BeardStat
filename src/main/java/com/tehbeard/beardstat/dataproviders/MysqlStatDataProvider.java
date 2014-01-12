@@ -249,30 +249,36 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
         try {
             boolean isSingleton = document.getDocument().getClass().getAnnotation(StatDocument.class).singleInstance();
-            //1) Generate JSON
 
-            byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
-
-            if (doc.length > MAX_DOC_SIZE) {
-                throw new RuntimeException("Document exceeds max size.");
-            }
-
-            //2) Generate new revision tag.
-            MessageDigest digest = MessageDigest.getInstance("SHA1");
-            String newRevision = byteArrayToHexString(digest.digest(doc));
-
-            //3) lock meta document record, get headrev revision tag
+            //1) lock meta document record, get headrev revision tag
             ResultSet rs = getDocumentResultSet(entityId, document.getDomain(), document.getKey());
 
             if (rs.next()) {
                 int docId = getDocumentId(rs);
                 String headRev = getCurrentRev(rs);
                 rs.close();
+                
+                IStatDocument doc = document.getDocument();
 
                 if (!headRev.equalsIgnoreCase(document.getRevision())) {
                     //TODO - Handle revision mismatch exception
-                    throw new RevisionMismatchException(pullDocument(entityId, document.getDomain(), document.getKey()));
+                    DocumentFile dbDoc = pullDocument(entityId, document.getDomain(), document.getKey());
+                    doc = doc.mergeDocument(dbDoc);
+                    //throw new RevisionMismatchException(dbDoc);
                 }
+
+
+                //2) Generate JSON
+
+                byte[] docData = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
+
+                if (docData.length > MAX_DOC_SIZE) {
+                    throw new RuntimeException("Document exceeds max size.");
+                }
+
+                //3) Generate new revision tag.
+                MessageDigest digest = MessageDigest.getInstance("SHA1");
+                String newRevision = byteArrayToHexString(digest.digest(docData));
 
                 stmtMetaUpdate.setString(1, newRevision);
                 stmtMetaUpdate.setInt(2, docId);
@@ -285,15 +291,11 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 //`documentId`, `revision`, `parentRev`, `added`, `document`
                 stmtDocInsert.setInt(1, docId);
                 stmtDocInsert.setString(2, newRevision);
-
                 stmtDocInsert.setString(3,isSingleton ? null : headRev);//Do not write out the parent revision
-
-
-
                 Timestamp tStamp = new Timestamp(System.currentTimeMillis());
                 stmtDocInsert.setTimestamp(4, tStamp);
 
-                stmtDocInsert.setBlob(5, new ByteArrayInputStream(doc));
+                stmtDocInsert.setBlob(5, new ByteArrayInputStream(docData));
 
 
                 stmtDocInsert.executeUpdate();
@@ -301,9 +303,21 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs.next();
                 rs.close();
                 returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
+                
+                deleteDocument(entityId, document.getDomain(), document.getKey(), document.getParentRevision());
             } else {
                 rs.close();
 
+                byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
+
+                if (doc.length > MAX_DOC_SIZE) {
+                    throw new RuntimeException("Document exceeds max size.");
+                }
+
+                //3) Generate new revision tag.
+                MessageDigest digest = MessageDigest.getInstance("SHA1");
+                String newRevision = byteArrayToHexString(digest.digest(doc));
+                
                 //We are inserting a record
                 //`entityId`, `domainId`, `key`, `curRevision`
                 stmtMetaInsert.setInt(1, entityId);
@@ -400,7 +414,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         }
         return null;
 
-        
+
     }
 
     @Override
@@ -420,8 +434,8 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
             if(revision == null){
                 //use purge, delete all previous revisions
-                    stmtDocPurge.setInt(1, docId);
-                    stmtDocPurge.execute();
+                stmtDocPurge.setInt(1, docId);
+                stmtDocPurge.execute();
             }
             else
             {
@@ -429,11 +443,11 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 DocumentHistory history = getDocumentHistory(entityId, domain, key);
                 boolean isHead = history.getHeadRevision().equals(revision);
                 String newHeadRev = history.getEntry(revision).getParentRev();
-                
+
                 stmtDocDelete.setInt(1, docId);
                 stmtDocDelete.setString(2, revision);
                 stmtDocDelete.execute();
-                
+
                 //Update head revision to point to the parent of the revision we just deleted,
                 //if that revision was the head one.
                 if(isHead){
@@ -442,7 +456,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                     stmtMetaUpdate.executeUpdate();
                 }
             }
-            
+
             //If we have zero entries, delete the meta
             if(getDocumentHistory(entityId, domain, key).getEntries().size() == 0){
                 stmtMetaDelete.setInt(1, docId);
