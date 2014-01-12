@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -63,7 +64,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
     @Override
     public DocumentFile pullDocument(int entityId, String domain, String key) {
-        DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(getDomain(domain).getDbId(), key);
+        DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(domain, key);
         DocRev docRevision = dbEntry.getRevisions().get(dbEntry.getCurrentRevision());
 
         return new DocumentFile(dbEntry.getCurrentRevision(), docRevision.parentRev, domain, key, docRevision.document, docRevision.dateAdded);
@@ -80,7 +81,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
             String currentRevision = document.getRevision();
 
-            DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(getDomain(document.getDomain()).getDbId(), document.getKey());
+            DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(document.getDomain(), document.getKey());
 
             if (!currentRevision.equals(dbEntry.getCurrentRevision())) {
                 throw new RevisionMismatchException(pullDocument(entityId, document.getDomain(), document.getKey()));
@@ -97,15 +98,33 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         }
         return null;
     }
+    
+    @Override
+    public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
+        DocEntry d = docDB.getStore(entityId).getDocumentData(domain, key);
+        DocumentHistory history = new DocumentHistory(domain, key, d.getCurrentRevision());
+        for(Entry<String, DocRev> e : d.getRevisions().entrySet()){
+            history.addEntry(e.getKey(), e.getValue().parentRev, e.getValue().dateAdded, -1);
+        }
+        return history;
+    }
+
+    @Override
+    public void deleteDocument(int entityId, String domain, String key) {
+        docDB.getStore(entityId).deleteDocument(domain, key);
+    }
 
     @Override
     public void deleteDocumentRevision(int entityId, String domain, String key, String revision) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().remove(revision);
+        if(docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().size() == 0){
+            deleteDocument(entityId, domain, key);
+        }
     }
 
     @Override
     public String[] getDocumentKeysInDomain(int entityId, String domain) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return docDB.getStore(entityId).getDocsUnderDomain(domain);
     }
 
     @Override
@@ -120,15 +139,5 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         }
     }
 
-    @Override
-    public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void deleteDocument(int entityId, String domain, String key) {
-        // TODO Auto-generated method stub
-        
-    }
+    
 }
