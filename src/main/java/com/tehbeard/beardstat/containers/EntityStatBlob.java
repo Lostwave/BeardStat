@@ -234,6 +234,10 @@ public class EntityStatBlob implements VariableProvider {
         return this.type;
     }
 
+    /**
+     * Used by internal BeardStat methods, DO NOT USE.
+     * @return
+     */
     public StatBlobRecord cloneForArchive() {
         StatBlobRecord record = new StatBlobRecord(entityId);
 

@@ -68,7 +68,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         this.connectionProperties.put("user", config.username);
         this.connectionProperties.put("password", config.password);
         this.connectionProperties.put("autoReconnect", "true");
-
+        this.tblPrefix = config.tablePrefix;
         initialise();
     }
 
@@ -188,8 +188,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     @Override
     public DocumentFile pullDocument(int entityId, String domain, String key) {
         DocumentFile file = null;
-
+        
         try {
+            boolean acStatus = conn.getAutoCommit();
             //Look for existing document
             ResultSet rs = getDocumentResultSet(entityId, domain, key);
 
@@ -224,16 +225,10 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 platform.getLogger().fine("No document entry found.");
                 rs.close();
             }
-
+            conn.setAutoCommit(acStatus);
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
 
         return file;
@@ -253,18 +248,19 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             //1) lock meta document record, get headrev revision tag
             ResultSet rs = getDocumentResultSet(entityId, document.getDomain(), document.getKey());
 
+            //If we found the document
             if (rs.next()) {
                 int docId = getDocumentId(rs);
                 String headRev = getCurrentRev(rs);
                 rs.close();
-                
-                IStatDocument doc = document.getDocument();
 
+
+                IStatDocument doc = document.getDocument();
                 if (!headRev.equalsIgnoreCase(document.getRevision())) {
-                    //TODO - Handle revision mismatch exception
+                    //TODO - Check this actually works.
                     DocumentFile dbDoc = pullDocument(entityId, document.getDomain(), document.getKey());
                     doc = doc.mergeDocument(dbDoc);
-                    //throw new RevisionMismatchException(dbDoc);
+
                 }
 
 
@@ -303,8 +299,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs.next();
                 rs.close();
                 returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
-                
-                deleteDocument(entityId, document.getDomain(), document.getKey(), document.getParentRevision());
+                if(isSingleton && document.getRevision() != null){
+                    deleteDocument(entityId, document.getDomain(), document.getKey(), document.getRevision());
+                }
             } else {
                 rs.close();
 
@@ -317,7 +314,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 //3) Generate new revision tag.
                 MessageDigest digest = MessageDigest.getInstance("SHA1");
                 String newRevision = byteArrayToHexString(digest.digest(doc));
-                
+
                 //We are inserting a record
                 //`entityId`, `domainId`, `key`, `curRevision`
                 stmtMetaInsert.setInt(1, entityId);
@@ -465,7 +462,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         }catch(SQLException e){
             platform.mysqlError(e, "Delete document");
         }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

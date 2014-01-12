@@ -35,7 +35,7 @@ public class DatabaseConfiguration {
 
     @Override
     public String toString() {
-        return "DatabaseConfiguration{" + "databaseType=" + databaseType + ", version=" + version + ", host=" + host + ", username=" + username + ", password=" + password + ", database=" + database + ", tablePrefix=" + tablePrefix + ", port=" + port + ", backups=" + backups + ", latestVersion=" + latestVersion + '}';
+        return "DatabaseConfiguration{" + "databaseType=" + databaseType + ", version=" + version + ", host=" + host + ", username=" + username + ", database=" + database + ", tablePrefix=" + tablePrefix + ", port=" + port + ", backups=" + backups + ", latestVersion=" + latestVersion + '}';
     }
     
     

@@ -37,11 +37,19 @@ public class TestMySQLDataProvider extends IStatDataProviderTest  {
         properties.load(is);
         new JavaPropertiesInjector(properties).inject(config);
         config.version = config.latestVersion;
-        
+        System.out.println(config.toString());
         //System.out.println(config);
         instance = new MysqlStatDataProvider(new TestPlatform(), config);
-       
-        String preloadStmt = ((MysqlStatDataProvider)instance).readSQL("sql","preload",config.tablePrefix);
+        
+        System.out.println("deleting tables.");
+        String preloadStmt = ((MysqlStatDataProvider)instance).readSQL("sql","cleanup","stats");
+        for(String s : preloadStmt.split("\\;")){
+            ((MysqlStatDataProvider)instance).conn.createStatement().execute(s);
+        }
+        instance = new MysqlStatDataProvider(new TestPlatform(), config);
+        
+        System.out.println("Loaded driver.");
+        preloadStmt = ((MysqlStatDataProvider)instance).readSQL("sql","preload",config.tablePrefix);
         for(String s : preloadStmt.split("\\;")){
             try{
            ((MysqlStatDataProvider)instance).conn.createStatement().execute(s);
@@ -53,14 +61,7 @@ public class TestMySQLDataProvider extends IStatDataProviderTest  {
         }
     }
     
-    @AfterClass
-    public static void tearDownClass() throws IOException, SQLException{
-       String preloadStmt = ((MysqlStatDataProvider)instance).readSQL("sql","cleanup","stats");
-        for(String s : preloadStmt.split("\\;")){
-           ((MysqlStatDataProvider)instance).conn.createStatement().execute(s);
-        }
-        
-    }
+
 
     
 }

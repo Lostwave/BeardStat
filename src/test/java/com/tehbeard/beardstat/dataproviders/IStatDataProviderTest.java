@@ -6,6 +6,8 @@ package com.tehbeard.beardstat.dataproviders;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
+import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.dataproviders.MemoDocument.Memo;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
@@ -185,10 +187,54 @@ public abstract class IStatDataProviderTest {
         DocumentRegistry.cleanup();
         DocumentFile docFile = result.getDocument("default","memo", MemoDocument.class);
         MemoDocument doc = docFile.getDocument();
-        doc.memos.add(new Memo("invoop","Buying more glands."));
+        doc.memos.add(new Memo("invoop","Enigma broke again."));
         docFile.setArchiveFlag();
         instance.pushDocument(result.getEntityID(), docFile);
     }
+    
+    @Test
+    public void testDocumentSingleInstance() throws Exception {
+        System.out.println("documentSingleInstance");
+        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        EntityStatBlob result = instance.pullEntityBlob(query);
+        
+        DocumentRegistry.registerDocument(MemoDocument.class);
+        DocumentRegistry.cleanup();
+        DocumentFile docFile = result.getDocument("default","memoSingle", MemoDocument.class);
+        MemoDocument doc = docFile.getDocument();
+        doc.memos.add(new Memo("invoop","Buying more glands."));
+        docFile.setArchiveFlag();
+        instance.pushDocument(result.getEntityID(), docFile);
+        for( DocumentFileRef ref : result.cloneForArchive().files){
+            ref.invalidateRef();
+        }
+        
+        
+        docFile = result.getDocument("default","memoSingle", MemoDocument.class);
+        doc = docFile.getDocument();
+        doc.memos.add(new Memo("Tulonsae", "Javadoc the document system please?"));
+        
+        docFile.setArchiveFlag();
+        instance.pushDocument(result.getEntityID(), docFile);
+        
+        for( DocumentFileRef ref : result.cloneForArchive().files){
+            ref.invalidateRef();
+        }
+        
+        
+        docFile = result.getDocument("default","memoSingle", MemoDocument.class);
+        doc = docFile.getDocument();
+        doc.memos.add(new Memo("comet1", "I can haz vet?"));
+        
+        docFile.setArchiveFlag();
+        instance.pushDocument(result.getEntityID(), docFile);
+
+        
+        DocumentHistory history = instance.getDocumentHistory(result.getEntityID(), "default","memoSingle");
+        assertFalse("History returned",history == null);
+        assertEquals("Only one entry saved", 1, history.getEntries().size());
+    }
+    
 
     /**
      * Test of deleteDocument method, of class IStatDataProvider.

@@ -30,8 +30,7 @@ class TestPlatform implements DbPlatform {
     }
 
     public void mysqlError(SQLException sqlException, String file) {
-        sqlException.printStackTrace();
-        getLogger().log(Level.SEVERE, "file: {0}", file);
+        throw new RuntimeException(sqlException);
     }
 
     public InputStream getResource(String file) {

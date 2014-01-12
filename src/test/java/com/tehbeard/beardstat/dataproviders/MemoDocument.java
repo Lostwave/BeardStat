@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author James
  */
-@StatDocument("memo")
+@StatDocument(value="memo",singleInstance=true)
 public class MemoDocument implements IStatDocument {
 
     @Expose
