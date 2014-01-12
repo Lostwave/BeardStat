@@ -44,6 +44,10 @@ public class DocumentHistory {
         return getEntry(latestRevision);
     }
     
+    public String getHeadRevision(){
+        return latestRevision;
+    }
+    
     public DocumentHistoryEntry getEntry(String revisionId){
         for(DocumentHistoryEntry e : entries){
             if(e.revision.equals(revisionId)){

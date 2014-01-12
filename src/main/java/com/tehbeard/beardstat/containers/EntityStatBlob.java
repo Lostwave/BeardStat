@@ -269,6 +269,7 @@ public class EntityStatBlob implements VariableProvider {
     /**
      * Accessor method for getting documents associated with a statblob.
      * IMPORTANT: DocumentFile's are cached internally, DO NOT CACHE EXTERNALLY, DocumentFile's are valid only until a save occurs.
+     * After a save there is no guarantee another server might have manipulated the document.
      * @param domain
      * @param key
      * @param docClass class of the document, used for instantiation if no document found. Pass null to not instantiate a document

@@ -7,6 +7,7 @@ import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
+import com.tehbeard.beardstat.containers.documents.StatDocument;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory.DocumentHistoryEntry;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
@@ -247,7 +248,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         DocumentFile returnDoc = null;
 
         try {
+            boolean isSingleton = document.getDocument().getClass().getAnnotation(StatDocument.class).singleInstance();
             //1) Generate JSON
+
             byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
 
             if (doc.length > MAX_DOC_SIZE) {
@@ -267,6 +270,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs.close();
 
                 if (!headRev.equalsIgnoreCase(document.getRevision())) {
+                    //TODO - Handle revision mismatch exception
                     throw new RevisionMismatchException(pullDocument(entityId, document.getDomain(), document.getKey()));
                 }
 
@@ -281,7 +285,11 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 //`documentId`, `revision`, `parentRev`, `added`, `document`
                 stmtDocInsert.setInt(1, docId);
                 stmtDocInsert.setString(2, newRevision);
-                stmtDocInsert.setString(3, headRev);
+
+                stmtDocInsert.setString(3,isSingleton ? null : headRev);//Do not write out the parent revision
+
+
+
                 Timestamp tStamp = new Timestamp(System.currentTimeMillis());
                 stmtDocInsert.setTimestamp(4, tStamp);
 
@@ -366,40 +374,82 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         ResultSet rs;
         try {
             rs = getDocumentResultSet(entityId, domain, key);
-       
-        if (rs.next()) {
-            int docId = getDocumentId(rs);
-            String headRev = getCurrentRev(rs);
-            rs.close();
-            stmtDocPoll.setInt(1, docId);
-            rs = stmtDocPoll.executeQuery();
-            DocumentHistory history = new DocumentHistory(domain, key, headRev);
+
+            if (rs.next()) {
+                int docId = getDocumentId(rs);
+                String headRev = getCurrentRev(rs);
+                rs.close();
+                stmtDocPoll.setInt(1, docId);
+                rs = stmtDocPoll.executeQuery();
+                DocumentHistory history = new DocumentHistory(domain, key, headRev);
 
 
-            while(rs.next()){
-                history.addEntry(
-                        rs.getString("revision"), 
-                        rs.getString("parentRev"), 
-                        rs.getTimestamp("added"),
-                        rs.getInt("storeId"));
+                while(rs.next()){
+                    history.addEntry(
+                            rs.getString("revision"), 
+                            rs.getString("parentRev"), 
+                            rs.getTimestamp("added"),
+                            rs.getInt("storeId"));
+                }
+                rs.close();
+                return history;
+
             }
-            rs.close();
-            return history;
-
-        }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            platform.mysqlError(e, SQL_DOC_STORE_POLL);
         }
-
-
         return null;
+
+        
     }
 
     @Override
     public void deleteDocument(int entityId, String domain, String key, String revision) {
-        if(revision == null){
+        try{
+            ResultSet rs = getDocumentResultSet(entityId, domain, key);
+            int docId = -1;
+            if (rs.next()) {
+                docId = getDocumentId(rs);
+                rs.close();
+            }
+            else
+            {
+                return;
+            }
 
+
+            if(revision == null){
+                //use purge, delete all previous revisions
+                    stmtDocPurge.setInt(1, docId);
+                    stmtDocPurge.execute();
+            }
+            else
+            {
+                //If the head rev is targeted, we want to set the head back to it's parent.
+                DocumentHistory history = getDocumentHistory(entityId, domain, key);
+                boolean isHead = history.getHeadRevision().equals(revision);
+                String newHeadRev = history.getEntry(revision).getParentRev();
+                
+                stmtDocDelete.setInt(1, docId);
+                stmtDocDelete.setString(2, revision);
+                stmtDocDelete.execute();
+                
+                //Update head revision to point to the parent of the revision we just deleted,
+                //if that revision was the head one.
+                if(isHead){
+                    stmtMetaUpdate.setString(1,newHeadRev);
+                    stmtMetaUpdate.setInt(2,docId);
+                    stmtMetaUpdate.executeUpdate();
+                }
+            }
+            
+            //If we have zero entries, delete the meta
+            if(getDocumentHistory(entityId, domain, key).getEntries().size() == 0){
+                stmtMetaDelete.setInt(1, docId);
+                stmtMetaDelete.execute();
+            }
+        }catch(SQLException e){
+            platform.mysqlError(e, "Delete document");
         }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
