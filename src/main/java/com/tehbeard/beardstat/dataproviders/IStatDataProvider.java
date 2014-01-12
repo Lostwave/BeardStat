@@ -124,13 +124,21 @@ public interface IStatDataProvider {
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException;
     
     /**
-     * Deletes a document
+     * Deletes a document revision
      * @param query entity to delete from
      * @param domain domain key
      * @param key unique id for document
-     * @param revision specific revision to delete. If passed null deletes all revisions
+     * @param revision specific revision to delete.
      */
-    public void deleteDocument(int entityId, String domain, String key, String revision);
+    public void deleteDocumentRevision(int entityId, String domain, String key, String revision);
+    
+    /**
+     * Deletes a document, all revisions
+     * @param entityId
+     * @param domain
+     * @param key
+     */
+    public void deleteDocument(int entityId, String domain,String key);
 
     /**
      * Returns a list of document keys under a specific domain for a entity.

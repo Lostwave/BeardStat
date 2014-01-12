@@ -99,7 +99,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     }
 
     @Override
-    public void deleteDocument(int entityId, String domain, String key, String revision) {
+    public void deleteDocumentRevision(int entityId, String domain, String key, String revision) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -124,5 +124,11 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void deleteDocument(int entityId, String domain, String key) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -188,7 +188,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     @Override
     public DocumentFile pullDocument(int entityId, String domain, String key) {
         DocumentFile file = null;
-        
+
         try {
             boolean acStatus = conn.getAutoCommit();
             //Look for existing document
@@ -300,7 +300,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs.close();
                 returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
                 if(isSingleton && document.getRevision() != null){
-                    deleteDocument(entityId, document.getDomain(), document.getKey(), document.getRevision());
+                    deleteDocumentRevision(entityId, document.getDomain(), document.getKey(), document.getRevision());
                 }
             } else {
                 rs.close();
@@ -415,7 +415,8 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     }
 
     @Override
-    public void deleteDocument(int entityId, String domain, String key, String revision) {
+    public void deleteDocumentRevision(int entityId, String domain, String key, String revision) {
+        if(revision == null){ throw new IllegalArgumentException("Cannot have null revision");}
         try{
             ResultSet rs = getDocumentResultSet(entityId, domain, key);
             int docId = -1;
@@ -429,30 +430,23 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             }
 
 
-            if(revision == null){
-                //use purge, delete all previous revisions
-                stmtDocPurge.setInt(1, docId);
-                stmtDocPurge.execute();
-            }
-            else
-            {
-                //If the head rev is targeted, we want to set the head back to it's parent.
-                DocumentHistory history = getDocumentHistory(entityId, domain, key);
-                boolean isHead = history.getHeadRevision().equals(revision);
-                String newHeadRev = history.getEntry(revision).getParentRev();
+            //If the head rev is targeted, we want to set the head back to it's parent.
+            DocumentHistory history = getDocumentHistory(entityId, domain, key);
+            boolean isHead = history.getHeadRevision().equals(revision);
+            String newHeadRev = history.getEntry(revision).getParentRev();
 
-                stmtDocDelete.setInt(1, docId);
-                stmtDocDelete.setString(2, revision);
-                stmtDocDelete.execute();
+            stmtDocDelete.setInt(1, docId);
+            stmtDocDelete.setString(2, revision);
+            stmtDocDelete.execute();
 
-                //Update head revision to point to the parent of the revision we just deleted,
-                //if that revision was the head one.
-                if(isHead){
-                    stmtMetaUpdate.setString(1,newHeadRev);
-                    stmtMetaUpdate.setInt(2,docId);
-                    stmtMetaUpdate.executeUpdate();
-                }
+            //Update head revision to point to the parent of the revision we just deleted,
+            //if that revision was the head one.
+            if(isHead){
+                stmtMetaUpdate.setString(1,newHeadRev);
+                stmtMetaUpdate.setInt(2,docId);
+                stmtMetaUpdate.executeUpdate();
             }
+
 
             //If we have zero entries, delete the meta
             if(getDocumentHistory(entityId, domain, key).getEntries().size() == 0){
@@ -462,7 +456,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         }catch(SQLException e){
             platform.mysqlError(e, "Delete document");
         }
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -490,6 +483,28 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     }
     private int getDocumentId(ResultSet rs) throws SQLException{
         return rs.getInt("documentId");
+    }
+
+    @Override
+    public void deleteDocument(int entityId, String domain, String key) {
+        try{
+            ResultSet rs = getDocumentResultSet(entityId, domain, key);
+
+            if (rs.next()) {
+                int docId = getDocumentId(rs);
+                rs.close();
+                //use purge, delete all previous revisions
+                stmtDocPurge.setInt(1, docId);
+                stmtDocPurge.execute();
+                //If we have zero entries, delete the meta
+                if(getDocumentHistory(entityId, domain, key).getEntries().size() == 0){
+                    stmtMetaDelete.setInt(1, docId);
+                    stmtMetaDelete.execute();
+                }
+            }
+        }catch(SQLException e){
+            platform.mysqlError(e, "deleteDocument");
+        }
     }
 
 }
