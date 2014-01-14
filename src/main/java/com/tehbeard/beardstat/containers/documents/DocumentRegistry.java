@@ -2,6 +2,7 @@ package com.tehbeard.beardstat.containers.documents;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.tehbeard.beardstat.utils.ClassBasedParser;
 import com.tehbeard.utils.factory.ClassCatalogue;
 
 /**

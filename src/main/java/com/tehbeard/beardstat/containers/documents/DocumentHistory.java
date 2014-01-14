@@ -58,8 +58,8 @@ public class DocumentHistory {
     }
 
     
-    public void addEntry(String revision, String parentRev, Timestamp added, int storeId){
-        entries.add(new DocumentHistoryEntry(revision, parentRev, added, storeId));
+    public void addEntry(String revision, String parentRev, Timestamp added){
+        entries.add(new DocumentHistoryEntry(revision, parentRev, added));
     }
 
     public class DocumentHistoryEntry {
@@ -67,7 +67,6 @@ public class DocumentHistory {
         private final String revision;
         private final String parentRev;
         private final Timestamp added;
-        private final int storeId;
         
         public String getRevision() {
             return revision;
@@ -84,11 +83,10 @@ public class DocumentHistory {
          * @param added
          * @param storeId
          */
-        public DocumentHistoryEntry(String revision, String parentRev, Timestamp added, int storeId) {
+        public DocumentHistoryEntry(String revision, String parentRev, Timestamp added) {
             this.revision = revision;
             this.parentRev = parentRev;
             this.added = added;
-            this.storeId = storeId;
         }
         
         /**

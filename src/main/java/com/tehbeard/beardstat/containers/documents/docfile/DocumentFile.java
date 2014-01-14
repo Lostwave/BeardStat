@@ -2,9 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tehbeard.beardstat.containers.documents;
+package com.tehbeard.beardstat.containers.documents.docfile;
 
 import java.sql.Timestamp;
+
+import com.tehbeard.beardstat.containers.documents.IStatDocument;
+import com.tehbeard.beardstat.containers.documents.IStatDynamicDocument;
 
 /**
  * Holds metadata for a document

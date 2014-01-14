@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tehbeard.beardstat.containers.documents;
+package com.tehbeard.beardstat.utils;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.tehbeard.beardstat.containers.documents.StatDocument;
 import com.tehbeard.utils.factory.ClassCatalogue;
 import java.lang.reflect.Type;
 

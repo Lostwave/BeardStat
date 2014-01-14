@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.containers.documents.DocumentFile;
-import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import java.util.HashMap;
 import java.util.logging.Level;

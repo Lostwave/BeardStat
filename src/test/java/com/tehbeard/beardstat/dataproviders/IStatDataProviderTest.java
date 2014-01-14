@@ -5,10 +5,10 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.containers.documents.DocumentFile;
-import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
 import com.tehbeard.beardstat.dataproviders.MemoDocument.Memo;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;

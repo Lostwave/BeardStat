@@ -1,6 +1,7 @@
 package com.tehbeard.beardstat.containers;
 
-import com.tehbeard.beardstat.containers.documents.DocumentFileRef;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
+
 import java.util.ArrayList;
 import java.util.List;
 

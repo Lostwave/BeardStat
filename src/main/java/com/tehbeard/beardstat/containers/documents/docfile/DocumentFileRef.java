@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.containers.documents;
+package com.tehbeard.beardstat.containers.documents.docfile;
 
 /**
  * Internal reference class to allow updating of EntityStatBlob's document store from save thread. NOT API SAFE

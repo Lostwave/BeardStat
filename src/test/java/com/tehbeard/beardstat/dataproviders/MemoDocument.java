@@ -1,10 +1,10 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import com.google.gson.annotations.Expose;
-import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.containers.documents.StatDocument;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 
 import java.util.ArrayList;
 import java.util.List;

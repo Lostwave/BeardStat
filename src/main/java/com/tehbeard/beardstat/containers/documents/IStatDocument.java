@@ -1,5 +1,7 @@
 package com.tehbeard.beardstat.containers.documents;
 
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
+
 /**
  *
  * @author James

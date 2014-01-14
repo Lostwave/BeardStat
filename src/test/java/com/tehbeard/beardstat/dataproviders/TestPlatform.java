@@ -9,7 +9,6 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

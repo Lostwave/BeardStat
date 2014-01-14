@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
-import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry.DocRev;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocumentDatabase;
@@ -104,7 +104,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         DocEntry d = docDB.getStore(entityId).getDocumentData(domain, key);
         DocumentHistory history = new DocumentHistory(domain, key, d.getCurrentRevision());
         for(Entry<String, DocRev> e : d.getRevisions().entrySet()){
-            history.addEntry(e.getKey(), e.getValue().parentRev, e.getValue().dateAdded, -1);
+            history.addEntry(e.getKey(), e.getValue().parentRev, e.getValue().dateAdded);
         }
         return history;
     }

@@ -5,12 +5,12 @@ import java.sql.SQLException;
 
 import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
-import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.StatDocument;
-import com.tehbeard.beardstat.containers.documents.DocumentHistory.DocumentHistoryEntry;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -399,8 +399,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                     history.addEntry(
                             rs.getString("revision"), 
                             rs.getString("parentRev"), 
-                            rs.getTimestamp("added"),
-                            rs.getInt("storeId"));
+                            rs.getTimestamp("added"));
                 }
                 rs.close();
                 return history;

@@ -3,8 +3,8 @@ package com.tehbeard.beardstat.dataproviders;
 import com.tehbeard.beardstat.dataproviders.metadata.*;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.containers.documents.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 
 import java.io.File;
 
