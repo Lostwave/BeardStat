@@ -22,6 +22,6 @@
 172,0xF,0,15,#Carpets
 175,0x7,0,5,#Double height flowers
 263,0x1,0,15,#Coal/Charcoal item
-349,0xF,0,15,#Fish
-350,0xF,0,15,#Cooked fish
+349,0xF,0,3,#Fish
+350,0xF,0,3,#Cooked fish
 351,0xF,0,15,#Dye
