@@ -22,7 +22,7 @@ import com.tehbeard.beardstat.manager.EntityStatManager;
  * Display a statpage
  * 
  * @author James
- * 
+ * TODO - FIX
  */
 public class StatPageCommand extends BeardStatCommand {
 

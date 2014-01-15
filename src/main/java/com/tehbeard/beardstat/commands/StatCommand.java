@@ -115,6 +115,7 @@ public class StatCommand extends BeardStatCommand {
                 }
 
             } else {
+                //TODO - Swap to API call instead
                 Bukkit.dispatchCommand(sender, "statpage " + player + " default");
             }
 
