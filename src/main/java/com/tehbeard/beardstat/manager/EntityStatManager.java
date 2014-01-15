@@ -1,26 +1,26 @@
 package com.tehbeard.beardstat.manager;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.ProviderQuery;
-import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
-import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.listeners.defer.DeferAddNameType;
-import com.tehbeard.beardstat.listeners.defer.DeferAddUUID;
-import com.tehbeard.beardstat.listeners.defer.DeferRemoveBlob;
-import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
-import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
-import com.tehbeard.utils.mojang.api.profiles.ProfileRepository;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 import net.dragonzone.promise.Promise;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.ProviderQuery;
+import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
+import com.tehbeard.beardstat.listeners.defer.DeferAddNameType;
+import com.tehbeard.beardstat.listeners.defer.DeferAddUUID;
+import com.tehbeard.beardstat.listeners.defer.DeferRemoveBlob;
+import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 
 /**
  * Manages a cache of online stat entities;

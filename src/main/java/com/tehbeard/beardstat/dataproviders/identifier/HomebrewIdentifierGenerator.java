@@ -56,7 +56,6 @@ public class HomebrewIdentifierGenerator implements IIdentifierGenerator{
         });
     }
 
-    @SuppressWarnings("deprecation")
     public static void readData(InputStream is) {
         Scanner s = new Scanner(is);
 
