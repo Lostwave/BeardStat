@@ -40,8 +40,11 @@ public class ProfileUUIDUpdater {
         int batches = (int) Math.ceil(toProcess.size() / partitionSize);
         logger.info("Querying Mojang username -> uuid server @ " + partitionSize + " players per request");
         logger.info("Total batches: " + batches);
+        int batch = 1;
         for (int i = 0; i < toProcess.size(); i += partitionSize) {
-            logger.fine("Processing batch " + (i+1));
+            logger.info("Processing batch: " + batch);
+            batch++;
+            
             Profile[] serverResults = profileRepo.findProfilesByCriteria(toProcess.subList(i,i + Math.min(partitionSize, toProcess.size() - i)).toArray(new ProfileCriteria[0]));
             for(Profile profile : serverResults){
                 provider.setUUID(profile.getName(), profile.getId());
@@ -52,7 +55,7 @@ public class ProfileUUIDUpdater {
         
         //Alert admin if any were not processed.
         if(names.size() > 0){
-            logger.warning("Some usernames did not return a profile id, this could be an issue with mojang's server, or the username is no longer valid. (reverted from premium)");
+            logger.warning("Some usernames did not return a profile id, this could be an issue with mojang's server, or the username is no longer valid. (reverted to a non paid name)");
             logger.warning("These players uuids could not be collected.");
             for(String name : names){
                 logger.warning(name);

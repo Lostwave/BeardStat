@@ -209,7 +209,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             // current version if successful commit
 
             this.platform.getLogger().info("Updating database to latest version");
-            this.platform.getLogger().log(Level.INFO, "Your database: {0} latest: {1}", new Object[]{installedVersion, config.latestVersion});
+            this.platform.getLogger().info("Your database: " + installedVersion +" latest: " + config.latestVersion);
 
             if (config.backups) {
                 try {
