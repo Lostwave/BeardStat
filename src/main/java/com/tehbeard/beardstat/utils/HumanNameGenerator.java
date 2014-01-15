@@ -38,7 +38,7 @@ import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerat
 public class HumanNameGenerator {
 
     private static Map<Class<? extends MaterialData>, String> readers = new HashMap<Class<? extends MaterialData>, String>();
-    private static Map<String, String>                        mapping;
+    private static Map<String, String> mapping;
 
     public static String getNameOf(String key) {
         if(mapping.containsKey(key)){
@@ -141,7 +141,7 @@ public class HumanNameGenerator {
     }
 
     public static Map<String, String> getAllHumanNames() {
-        Map<String, String> t = new TreeMap<String, String>();
+        Map<String, String> t = new HashMap<String, String>();
         t.putAll(generateHumanNamesEnum(RegainReason.values()));
         t.putAll(generateHumanNamesEnum(DamageCause.values()));
         t.putAll(generateHumanNamesEnum(Material.values()));
