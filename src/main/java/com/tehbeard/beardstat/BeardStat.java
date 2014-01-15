@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -12,34 +14,35 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Plotter;
 
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.MysqlStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.SQLiteStatDataProvider;
 import com.tehbeard.beardstat.commands.LastOnCommand;
 import com.tehbeard.beardstat.commands.StatAdmin;
 import com.tehbeard.beardstat.commands.StatCommand;
 import com.tehbeard.beardstat.commands.StatPageCommand;
 import com.tehbeard.beardstat.commands.playedCommand;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.manager.OnlineTimeManager;
-import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.MysqlStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.SQLiteStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator;
+import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.listeners.StatBlockListener;
 import com.tehbeard.beardstat.listeners.StatCraftListener;
 import com.tehbeard.beardstat.listeners.StatEntityListener;
 import com.tehbeard.beardstat.listeners.StatPlayerListener;
 import com.tehbeard.beardstat.listeners.StatVehicleListener;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.beardstat.utils.LanguagePack;
-import com.tehbeard.beardstat.utils.MetaDataCapture;
-import java.util.logging.Level;
+import com.tehbeard.beardstat.utils.StatUtils;
 import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
-import java.util.logging.Handler;
-import org.bukkit.configuration.file.YamlConfiguration;
+
 
 /**
  * BeardStat Statistic's tracking for the gentleman server
@@ -90,9 +93,10 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         getLogger().info("Starting BeardStat");
 
         // Read in the metadata file from jar and from data folder
-        MetaDataCapture.readData(getResource("metadata.txt"));
+        HomebrewIdentifierGenerator.readData(getResource("metadata.txt"));
+        
         try {
-            MetaDataCapture.readData(new FileInputStream(new File(getDataFolder(), "metadata.txt")));
+            HomebrewIdentifierGenerator.readData(new FileInputStream(new File(getDataFolder(), "metadata.txt")));
         } catch (FileNotFoundException e) {
             getLogger().warning("No External metadata file detected");
         }
@@ -135,7 +139,6 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             handler.setLevel(level);
         }
 
-
         File worldsFile = new File(getDataFolder(), "worlds.yml");
         worldManager = new WorldManager(YamlConfiguration.loadConfiguration(worldsFile).getConfigurationSection("worlds"));
 
@@ -153,8 +156,13 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         // start the player manager
         this.statManager = new EntityStatManager(this, db);
 
-        getLogger().info("Composite stats disabled until reworked.");
 
+        getLogger().info("Loading id mapping");
+
+        StatUtils.setManager(this.statManager);
+        
+        IdentifierService.setGenerator(new HomebrewIdentifierGenerator());
+        
         getLogger().info("Registering events and collectors");
 
         // register event listeners
@@ -337,24 +345,24 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         logger.severe("Mysql error code: " + e.getErrorCode());
 
         switch (e.getErrorCode()) {
-            case 1042:
-                logger.severe("Cannot find hostname provided, check spelling of hostname in config file");
-                break;
-            case 1044:
-            case 1045:
-                logger.severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
-                break;
-            case 1049:
-                logger.severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
-                break;
+        case 1042:
+            logger.severe("Cannot find hostname provided, check spelling of hostname in config file");
+            break;
+        case 1044:
+        case 1045:
+            logger.severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
+            break;
+        case 1049:
+            logger.severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
+            break;
 
-            default:
-                logger.severe("Error code ["
-                        + e.getErrorCode()
-                        + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
-                logger.severe("Exception Detail:");
-                logger.severe(e.getMessage());
-                break;
+        default:
+            logger.severe("Error code ["
+                    + e.getErrorCode()
+                    + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
+            logger.severe("Exception Detail:");
+            logger.severe(e.getMessage());
+            break;
         }
 
         // dump stack trace if in verbose mode

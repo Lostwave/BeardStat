@@ -1,7 +1,5 @@
 package com.tehbeard.beardstat.listeners;
 
-import net.dragonzone.promise.Promise;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,9 +7,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
+import com.tehbeard.beardstat.utils.StatUtils;
 
 public class StatVehicleListener extends StatListener {
 
@@ -44,11 +41,7 @@ public class StatVehicleListener extends StatListener {
             to = event.getTo();
             if (from.getWorld().equals(to.getWorld())) {
                 if (from.distance(to) < 10) {
-                    Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getBlobForPlayerAsync(player);
-                    promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, to.getWorld().getName(),
-                            "vehicle", event.getVehicle().getType().toString().toLowerCase().replace("_", ""),
-                            (int) Math.ceil(from.distance(to))));
-
+                    StatUtils.modifyStatEntity(player, "vehicle", event.getVehicle(), (int) Math.ceil(from.distance(to)));
                 }
             }
         }

@@ -94,7 +94,7 @@ public class WorldManager {
         if(worlds.containsKey(world.getName())){
             return worlds.get(world.getName()).isBlackListed();
         }
-            return defaultWorld.isBlackListed();
+        return defaultWorld.isBlackListed();
     }
     
     public void addWorld(String name,boolean s,boolean c,boolean a){

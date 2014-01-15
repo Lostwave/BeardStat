@@ -1,13 +1,5 @@
 package com.tehbeard.beardstat.manager;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.DbPlatform;
-import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.ProviderQuery;
-import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
-import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -16,6 +8,16 @@ import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
 
 import org.bukkit.entity.Player;
+
+import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.DbPlatform;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.ProviderQuery;
+import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
+import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
+
+
 
 /**
  * Manages a cache of online stat entities;
@@ -31,6 +33,7 @@ public class EntityStatManager {
 
     public EntityStatManager(DbPlatform platform, IStatDataProvider backendDatabase) {
         this.platform = platform;
+
         this.backendDatabase = backendDatabase;
 
     }
@@ -75,6 +78,16 @@ public class EntityStatManager {
     public Promise<EntityStatBlob> getBlobForPlayerAsync(Player player){
         //TODO use uuid in future
         return getBlobASync(new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, null, true));
+    }
+    
+    /**
+     * Asynchronously retrieves a player blob, this will not lock the game thread if called.
+     * @param player
+     * @return 
+     */
+    public Promise<EntityStatBlob> getBlobForPlayerAsync(String player){
+        //TODO use uuid in future
+        return getBlobASync(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE, null, true));
     }
 
     /**

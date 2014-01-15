@@ -2,6 +2,9 @@ package com.tehbeard.beardstat.utils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -29,10 +32,8 @@ import org.bukkit.material.WoodenStep;
 import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionType;
 
-import com.tehbeard.beardstat.utils.MetaDataCapture.EntryInfo;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
+import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator;
+import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator.EntryInfo;
 
 public class HumanNameGenerator {
 
@@ -81,7 +82,7 @@ public class HumanNameGenerator {
     public static Map<String, String> generateHumanNamesMaterials() {
         Map<String, String> out = new TreeMap<String, String>();
 
-        for (Entry<Material, EntryInfo> entry : MetaDataCapture.mats.entrySet()) {
+        for (Entry<Material, EntryInfo> entry : HomebrewIdentifierGenerator.mats.entrySet()) {
             Material material = entry.getKey();
             EntryInfo info = entry.getValue();
 
@@ -171,7 +172,7 @@ public class HumanNameGenerator {
     
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        MetaDataCapture.readData(new FileInputStream(
+        HomebrewIdentifierGenerator.readData(new FileInputStream(
                 "c:/users/james/workspace/BeardStat/src/main/resources/metadata.txt"));
 
         Map<String, String> t = getAllHumanNames();

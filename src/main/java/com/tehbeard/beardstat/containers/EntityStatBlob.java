@@ -263,7 +263,7 @@ public class EntityStatBlob implements VariableProvider {
 
     @Override
     public int[] resolveReference(String array) {
-        throw new UnsupportedOperationException("Array support not yet available."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Array support not yet available."); //TODO - Fix this.
     }
 
     public String getUUID() {
