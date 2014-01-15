@@ -49,7 +49,7 @@ public class StatCommand extends BeardStatCommand {
                 player = ((Player) sender).getName();
             }
 
-            // not a player and no player picked? show the help message
+            // not a player and no player picked? or -h flag? show the help message.
             if ((player == null) || arguments.getFlag("h")) {
                 sendHelpMessage(sender);
                 return true;
@@ -89,6 +89,7 @@ public class StatCommand extends BeardStatCommand {
                     sender.sendMessage(LanguagePack.getMsg("command.error.nostat"));
                     return true;
                 }
+                sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (vector.size() == 1) {
                     IStat iStat = vector.iterator().next();
 
