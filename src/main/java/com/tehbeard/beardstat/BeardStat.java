@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -16,37 +17,34 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Plotter;
 
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.MysqlStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.SQLiteStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator;
-import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.commands.LastOnCommand;
 import com.tehbeard.beardstat.commands.StatAdmin;
 import com.tehbeard.beardstat.commands.StatCommand;
 import com.tehbeard.beardstat.commands.StatPageCommand;
 import com.tehbeard.beardstat.commands.playedCommand;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.manager.OnlineTimeManager;
-import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.MysqlStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.SQLiteStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator;
+import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.listeners.StatBlockListener;
 import com.tehbeard.beardstat.listeners.StatCraftListener;
 import com.tehbeard.beardstat.listeners.StatEntityListener;
 import com.tehbeard.beardstat.listeners.StatPlayerListener;
 import com.tehbeard.beardstat.listeners.StatVehicleListener;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.beardstat.utils.LanguagePack;
-import com.tehbeard.beardstat.utils.MetaDataCapture;
 import com.tehbeard.beardstat.utils.StatUtils;
-
-import java.util.logging.Level;
 import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * BeardStat Statistic's tracking for the gentleman server
@@ -97,9 +95,10 @@ public class BeardStat extends JavaPlugin {
         getLogger().info("Starting BeardStat");
 
         // Read in the metadata file from jar and from data folder
-        MetaDataCapture.readData(getResource("metadata.txt"));
+        HomebrewIdentifierGenerator.readData(getResource("metadata.txt"));
+        
         try {
-            MetaDataCapture.readData(new FileInputStream(new File(getDataFolder(), "metadata.txt")));
+            HomebrewIdentifierGenerator.readData(new FileInputStream(new File(getDataFolder(), "metadata.txt")));
         } catch (FileNotFoundException e) {
             getLogger().warning("No External metadata file detected");
         }

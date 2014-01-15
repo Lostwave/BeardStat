@@ -34,8 +34,6 @@ public class EntityStatManager implements CommandExecutor{
     private final BeardStat plugin;
     private final IStatDataProvider backendDatabase;
     
-    private final ProfileRepository profileRepo = new HttpProfileRepository();
-
     public EntityStatManager(BeardStat plugin, IStatDataProvider backendDatabase) {
         this.plugin = plugin;
         this.backendDatabase = backendDatabase;

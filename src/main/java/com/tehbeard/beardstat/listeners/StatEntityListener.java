@@ -23,9 +23,8 @@ import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
-import com.tehbeard.beardstat.utils.MetaDataCapture;
+import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.StatUtils;
 
 public class StatEntityListener extends StatListener {
@@ -203,7 +202,7 @@ public class StatEntityListener extends StatListener {
                         .onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, "potions", "splashhit", 1));
                 // added per potion details
                 for (PotionEffect potionEffect : potion.getEffects()) {
-                    MetaDataCapture.saveMetadataPotionStat(promiseblob, BeardStat.DEFAULT_DOMAIN, world, "potions", potionEffect, 1);
+                    StatUtils.statPotion(p, "potions",potionEffect, 1);
                 }
             }
         }

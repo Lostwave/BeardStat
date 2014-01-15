@@ -55,7 +55,6 @@ import com.tehbeard.beardstat.listeners.defer.DelegateSet;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
-import com.tehbeard.beardstat.utils.MetaDataCapture;
 import com.tehbeard.beardstat.utils.StatUtils;
 
 /**
@@ -493,11 +492,7 @@ public class StatPlayerListener extends StatListener {
             PotionMeta meta = (PotionMeta) event.getItem().getItemMeta();
             if (meta != null) {
                 for (PotionEffect effect : meta.getCustomEffects()) {
-                    MetaDataCapture.saveMetadataPotionStat(
-                            promiseblob,BeardStat.DEFAULT_DOMAIN, 
-                            player.getWorld().getName(),
-                            "consume", 
-                            effect, 1);
+                    StatUtils.statPotion(player, "consume", effect, 1);
                 }
                 return;
             }
@@ -508,11 +503,7 @@ public class StatPlayerListener extends StatListener {
                     event.getItem().getDurability());
 
             for (PotionEffect effect : potion) {
-                MetaDataCapture.saveMetadataPotionStat(
-                        promiseblob,BeardStat.DEFAULT_DOMAIN, 
-                        player.getWorld().getName(),
-                        "consume", 
-                        effect, 1);
+                StatUtils.statPotion(player, "consume", effect, 1);
             }
         }
 
