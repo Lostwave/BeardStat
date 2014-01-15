@@ -6,6 +6,7 @@ import net.dragonzone.promise.Promise;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import java.io.File;
+import java.util.UUID;
 
 
 
@@ -93,4 +94,6 @@ public interface IStatDataProvider {
      * @param file 
      */
     public void generateBackup(File file);
+    
+    public void setUUID(String player, UUID uuid);
 }

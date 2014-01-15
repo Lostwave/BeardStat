@@ -262,7 +262,7 @@ public class EntityStatBlob implements VariableProvider {
         throw new UnsupportedOperationException("Array support not yet available."); //TODO - Fix this.
     }
     
-    public String getString(){
+    public String getUUID(){
         return uuid;
     }
 

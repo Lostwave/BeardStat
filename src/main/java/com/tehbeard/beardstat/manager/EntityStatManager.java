@@ -45,12 +45,6 @@ public class EntityStatManager implements CommandExecutor{
     }
     
     public Promise<EntityStatBlob> getOrCreatePlayerStatBlob(String name){
-        /*String uuid = null;
-        Profile[] result = profileRepo.findProfilesByCriteria(new ProfileCriteria(name,"minecraft"));
-        if(result.length == 1){
-            uuid = result[0].getId();
-        }*/
-        
         return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, null);//TODO - GET THIS SOMEHOW IN 1.7
     }
 
@@ -72,8 +66,8 @@ public class EntityStatManager implements CommandExecutor{
 
             typeNameCache.put(cacheKey, dbValue);// Pre-emptively cache the promise, defer removing to on error.
 
-            dbValue.onReject(new DeferRemoveBlob(cacheKey, typeNameCache));
-            dbValue.onResolve(new DeferAddUUID(uuidCache));
+            dbValue.onReject(new DeferRemoveBlob(cacheKey, typeNameCache));//Remove from cache if failed.
+            dbValue.onResolve(new DeferAddUUID(uuidCache));//Add uuid to cache on load
 
         }
         return typeNameCache.get(cacheKey);
@@ -92,7 +86,7 @@ public class EntityStatManager implements CommandExecutor{
             dbValue.onDone(new DeferAddNameType(uuidCache));
 
         }
-        return uuidCache.get(uuid.toString());
+        return uuidCache.get(uuid);
     }
     
     private boolean isPlayerOnline(String player) {

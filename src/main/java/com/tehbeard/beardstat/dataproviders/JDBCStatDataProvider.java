@@ -42,12 +42,14 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.management.PlatformLoggingMXBean;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,6 +124,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected PreparedStatement listEntities;
     protected PreparedStatement deleteEntity;
     protected PreparedStatement createTable;
+    //Utility
+    protected PreparedStatement setUUID;
+    //Cache
     private HashMap<String, EntityStatBlob> writeCache = new HashMap<String, EntityStatBlob>();
     // default connection related configuration
     protected String connectionUrl = "";
@@ -396,6 +401,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         // deleteEntity =
         // conn.prepareStatement(plugin.readSQL(type,"sql/maintenence/deletePlayerFully",
         // tblPrefix));
+        
+        this.setUUID = getStatementFromScript("sql/save/setUUID");
 
         this.plugin.getLogger().config("Set player stat statement created");
     }
@@ -545,8 +552,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                     ResultSet rs;
 
                     if (results.length == 1) {
-                        
-                        esb = new EntityStatBlob(results[0].name, results[0].dbid, results[0].type, results[0].type);//Create the damn esb
+                        esb = new EntityStatBlob(results[0].name, results[0].dbid, results[0].type, results[0].uuid);//Create the damn esb
                         // load all stats data
                         loadEntityData.setInt(1, esb.getEntityID());
                         rs = loadEntityData.executeQuery();
@@ -900,5 +906,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
 
         return mapping;
+    }
+    
+    public void setUUID(String player, UUID uuid){
+        try{
+        setUUID.setString(1, uuid.toString().replaceAll("-", ""));
+        setUUID.setString(2,player);
+        setUUID.setString(3,IStatDataProvider.PLAYER_TYPE);
+        setUUID.executeUpdate();
+        }catch(SQLException e){
+            plugin.mysqlError(e, "setUUID");
+        }
+        
     }
 }
