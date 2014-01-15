@@ -1,7 +1,6 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import java.io.File;
-import java.util.UUID;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;

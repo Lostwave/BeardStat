@@ -142,7 +142,7 @@ public class StatPlayerListener extends StatListener {
         if (event.isCancelled() == false) {
             StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "kicks", 1);
             StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout", (int) ((new Date()).getTime() / 1000L));
-            addTimeOnlineAndWipe(event.getPlayer().getName());
+            addTimeOnlineAndWipe(event.getPlayer());
         }
 
     }
@@ -151,7 +151,7 @@ public class StatPlayerListener extends StatListener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout",
                 (int) ((new Date()).getTime() / 1000L));
-        addTimeOnlineAndWipe(event.getPlayer().getName());
+        addTimeOnlineAndWipe(event.getPlayer());
 
     }
 
@@ -371,23 +371,23 @@ public class StatPlayerListener extends StatListener {
         }
     }
 
-    private void addTimeOnlineAndWipe(String player) {
+    private void addTimeOnlineAndWipe(Player player) {
 
-        ManagerRecord timeRecord = OnlineTimeManager.getRecord(player);
+        ManagerRecord timeRecord = OnlineTimeManager.getRecord(player.getName());
         if (timeRecord == null) {
             return;
         }
         if (timeRecord.world == null) {
             return;
         }
-        StatUtils.increment(player, BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor", timeRecord.sessionTime());
-        OnlineTimeManager.wipeRecord(player);
+        StatUtils.increment(player.getUniqueId(), BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor", timeRecord.sessionTime());
+        OnlineTimeManager.wipeRecord(player.getName());
 
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void worldJump(PlayerChangedWorldEvent event) {
-        addTimeOnlineAndWipe(event.getPlayer().getName());
+        addTimeOnlineAndWipe(event.getPlayer());
         OnlineTimeManager.setRecord(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
     }
 

@@ -160,4 +160,8 @@ public class EntityStatManager {
     public void flush() {
         this.backendDatabase.flush();
     }
+
+    public Promise<EntityStatBlob> getBlobForUUID(String uuid) {
+        return getBlobASync(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, uuid, true));
+    }
 }
