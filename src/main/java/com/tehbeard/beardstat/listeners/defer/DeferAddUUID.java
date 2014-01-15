@@ -25,7 +25,7 @@ public class DeferAddUUID implements Delegate<Void, Promise<EntityStatBlob>> {
         if (params.getValue() == null) {
             String uuid = params.getValue().getUUID();
             if(uuid != null){
-                cache.put(uuid.toString(),params);
+                cache.put(uuid,params);
             }
         }
         return null;

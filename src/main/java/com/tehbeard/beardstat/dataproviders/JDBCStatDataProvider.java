@@ -1,40 +1,5 @@
 package com.tehbeard.beardstat.dataproviders;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.regex.MatchResult;
-
-
-//import org.bukkit.Bukkit;
-//import org.bukkit.ChatColor;
-
-import com.tehbeard.beardstat.BeardStatRuntimeException;
-import com.tehbeard.beardstat.DatabaseConfiguration;
-import com.tehbeard.beardstat.DbPlatform;
-import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
-import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
-import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.containers.IStat;
-import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
-import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
-import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
-import com.tehbeard.beardstat.containers.StatBlobRecord;
-import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
-import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
-import com.tehbeard.beardstat.utils.HumanNameGenerator;
-import com.tehbeard.utils.misc.CallbackMatcher;
-import com.tehbeard.utils.misc.CallbackMatcher.Callback;
-import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
-import com.tehbeard.utils.mojang.api.profiles.Profile;
-import com.tehbeard.utils.mojang.api.profiles.ProfileCriteria;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,14 +10,47 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Scanner;
-
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.MatchResult;
+
+import com.tehbeard.beardstat.BeardStatRuntimeException;
+import com.tehbeard.beardstat.DatabaseConfiguration;
+import com.tehbeard.beardstat.DbPlatform;
+import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.containers.IStat;
+import com.tehbeard.beardstat.containers.StatBlobRecord;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
+import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
+import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
+import com.tehbeard.beardstat.utils.HumanNameGenerator;
+import com.tehbeard.utils.misc.CallbackMatcher;
+import com.tehbeard.utils.misc.CallbackMatcher.Callback;
+import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
+import com.tehbeard.utils.mojang.api.profiles.Profile;
+import com.tehbeard.utils.mojang.api.profiles.ProfileCriteria;
+//import org.bukkit.Bukkit;
+//import org.bukkit.ChatColor;
 
 /**
  * base class for JDBC based data providers Allows easy development of data providers that make use of JDBC
@@ -118,6 +116,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     protected PreparedStatement keepAlive;
     protected PreparedStatement deleteEntity;
     protected PreparedStatement createTable;
+
+    //Utility
+    protected PreparedStatement setUUID;
     // default connection related configuration
     protected String connectionUrl = "";
     protected Properties connectionProperties = new Properties();
@@ -392,6 +393,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         // deleteEntity =
         // conn.prepareStatement(platform.readSQL(type,"sql/maintenence/deletePlayerFully",
         // tblPrefix));
+        
+        this.setUUID = getStatementFromScript("sql/save/setUUID");
 
         this.platform.getLogger().config("Set player stat statement created");
     }
@@ -551,6 +554,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 }
                 rs.close();
             } else if (result == null && query.create) {
+
 
                 saveEntity.setString(1, query.name);
                 saveEntity.setString(2, query.type);
@@ -932,5 +936,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     public Connection getConnection() {
         return conn;
+    }
+    
+    public void setUUID(String player, UUID uuid){
+        try{
+        setUUID.setString(1, uuid.toString().replaceAll("-", ""));
+        setUUID.setString(2,player);
+        setUUID.setString(3,IStatDataProvider.PLAYER_TYPE);
+        setUUID.executeUpdate();
+        }catch(SQLException e){
+            platform.mysqlError(e, "setUUID");
+        }
+        
     }
 }

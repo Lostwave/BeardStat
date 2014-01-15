@@ -54,6 +54,7 @@ public class EntityStatManager {
      */
     public EntityStatBlob getBlob(ProviderQuery query){
         return getBlobASync(query).getValue();
+
     }
 
     /**
@@ -88,6 +89,7 @@ public class EntityStatManager {
     public Promise<EntityStatBlob> getBlobForPlayerAsync(String player){
         //TODO use uuid in future
         return getBlobASync(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE, null, true));
+
     }
 
     /**

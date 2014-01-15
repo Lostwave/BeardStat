@@ -1,12 +1,15 @@
 package com.tehbeard.beardstat.dataproviders;
 
-import com.tehbeard.beardstat.dataproviders.metadata.*;
+import java.io.File;
+import java.util.UUID;
 
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
-
-import java.io.File;
+import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
+import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 
 /**
  * Provides push/pull service for getting and saving stats to a backend storage system.
@@ -185,4 +188,7 @@ public interface IStatDataProvider {
             this.newFile = newFile;
         }
     }
+    
+    public void setUUID(String player, UUID uuid);
+
 }
