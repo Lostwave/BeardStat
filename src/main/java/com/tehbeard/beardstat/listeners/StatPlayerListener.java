@@ -50,12 +50,13 @@ import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.manager.OnlineTimeManager;
-import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
-import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
 import com.tehbeard.beardstat.listeners.defer.DelegateSet;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.manager.OnlineTimeManager;
+import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 import com.tehbeard.beardstat.utils.MetaDataCapture;
+import com.tehbeard.beardstat.utils.StatUtils;
 
 /**
  * Calls the stat manager to trigger events
@@ -131,11 +132,8 @@ public class StatPlayerListener extends StatListener {
         if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-
-        MetaDataCapture.saveMetaDataMaterialStat(
-                this.getPlayerStatManager().getOrCreatePlayerStatBlob(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
-                event.getPlayer().getWorld().getName(), "itemdrop", event.getItemDrop().getItemStack().getType(), event
-                .getItemDrop().getItemStack().getDurability(), event.getItemDrop().getItemStack().getAmount());
+        
+        StatUtils.statItem(event.getPlayer(), "itemdrop", event.getItemDrop().getItemStack(), event.getItemDrop().getItemStack().getAmount());
 
     }
 
@@ -214,10 +212,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        MetaDataCapture.saveMetaDataMaterialStat(
-                this.getPlayerStatManager().getOrCreatePlayerStatBlob(event.getPlayer().getName()), BeardStat.DEFAULT_DOMAIN,
-                event.getPlayer().getWorld().getName(), "itempickup", event.getItem().getItemStack().getType(), event
-                .getItem().getItemStack().getDurability(), event.getItem().getItemStack().getAmount());
+        StatUtils.statItem(event.getPlayer(), "itempickup", event.getItem().getItemStack(), event.getItem().getItemStack().getAmount());
 
     }
 
@@ -300,13 +295,9 @@ public class StatPlayerListener extends StatListener {
             promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld()
                     .getName(), "dye", "total", 1));
 
-            /**
-             * if MetaDataable, make the item string correct
-             */
 
-            MetaDataCapture.saveMetaDataMaterialStat(promiseblob, BeardStat.DEFAULT_DOMAIN, event.getPlayer()
-                    .getWorld().getName(), "dye", event.getPlayer().getItemInHand().getType(), event.getPlayer()
-                    .getItemInHand().getDurability(), 1);
+            StatUtils.statItem(event.getPlayer(), "dye", event.getPlayer().getItemInHand(), 1);
+            
 
         }
 
@@ -327,10 +318,8 @@ public class StatPlayerListener extends StatListener {
             /**
              * if MetaDataable, make the item string correct
              */
-
-            MetaDataCapture.saveMetaDataMaterialStat(promiseblob, BeardStat.DEFAULT_DOMAIN, event.getPlayer()
-                    .getWorld().getName(), "wolfdye", event.getPlayer().getItemInHand().getType(), event.getPlayer()
-                    .getItemInHand().getDurability(), 1);
+            
+            StatUtils.statItem(event.getPlayer(), "wolfdye", event.getPlayer().getItemInHand(), 1);
 
         }
 
@@ -399,8 +388,7 @@ public class StatPlayerListener extends StatListener {
                 for (Material mm : m) {
 
                     if (mm.equals(item.getType())) {
-                        MetaDataCapture.saveMetaDataMaterialStat(promiseblob, BeardStat.DEFAULT_DOMAIN, event
-                                .getPlayer().getWorld().getName(), "plant", mm, item.getDurability(), 1);
+                        StatUtils.statItem(event.getPlayer(),"plant",item,1);
                     }
                 }
 
@@ -537,9 +525,6 @@ public class StatPlayerListener extends StatListener {
             return;
         }
         Player player = event.getPlayer();
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(player.getName());
-
-        MetaDataCapture.saveMetaDataEntityStat(promiseblob, BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(),
-                "leash", event.getEntity(), 1);
+        StatUtils.statEntity(player, "leash", event.getEntity(), 1);
     }
 }

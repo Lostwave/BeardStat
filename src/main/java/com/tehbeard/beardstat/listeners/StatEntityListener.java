@@ -26,6 +26,7 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
 import com.tehbeard.beardstat.utils.MetaDataCapture;
+import com.tehbeard.beardstat.utils.StatUtils;
 
 public class StatEntityListener extends StatListener {
 
@@ -119,13 +120,11 @@ public class StatEntityListener extends StatListener {
         }
         // Entity damage
         if ((other != null) && !(other instanceof Player)) {
-            MetaDataCapture.saveMetaDataEntityStat(promiseblob, BeardStat.DEFAULT_DOMAIN, world, category[idx], other,
-                    amount);
+            StatUtils.statEntity(player, category[idx], other, amount);
         }
         // Projectile damage
         if (projectile != null) {
-            promiseblob.onResolve(new DelegateIncrement(BeardStat.DEFAULT_DOMAIN, world, category[idx], projectile
-                    .getType().toString().toLowerCase().replace("_", ""), amount));
+            StatUtils.statEntity(player, category[idx], projectile, amount);
         }
 
         if ((attacker instanceof Player) && (attacked instanceof Player)) {
