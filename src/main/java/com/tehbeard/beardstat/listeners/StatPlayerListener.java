@@ -50,7 +50,6 @@ import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.listeners.defer.DelegateSet;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
@@ -75,15 +74,15 @@ public class StatPlayerListener extends StatListener {
         }
 
         if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
-            StatUtils.statPlayer(event.getPlayer(), "stats", "armswing", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "armswing", 1);
         }
 
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        StatUtils.statPlayer(event.getPlayer(), "stats", "login",1);
-        StatUtils.statPlayer(event.getPlayer(), "stats", "lastlogin",
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "login",1);
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogin",
                 (int) (System.currentTimeMillis() / 1000L));
         
         //Special case for first join
@@ -112,8 +111,8 @@ public class StatPlayerListener extends StatListener {
         if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
             int len = event.getMessage().length();
 
-            StatUtils.statPlayer(event.getPlayer(), "stats", "chatletters", len);
-            StatUtils.statPlayer(event.getPlayer(), "stats", "chat", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "chatletters", len);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "chat", 1);
 
         }
     }
@@ -124,7 +123,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
         
-        StatUtils.statItem(event.getPlayer(), "itemdrop", event.getItemDrop().getItemStack(), event.getItemDrop().getItemStack().getAmount());
+        StatUtils.modifyStatItem(event.getPlayer(), "itemdrop", event.getItemDrop().getItemStack(), event.getItemDrop().getItemStack().getAmount());
 
     }
 
@@ -135,15 +134,15 @@ public class StatPlayerListener extends StatListener {
         }
         
         //TODO : FIX FISHING. NEED 1.7 API FOR THIS :(
-        StatUtils.statPlayer(event.getPlayer(), "stats", "fishcaught", 1);
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "fishcaught", 1);
 
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         if (event.isCancelled() == false) {
-            StatUtils.statPlayer(event.getPlayer(), "stats", "kicks", 1);
-            StatUtils.statPlayer(event.getPlayer(), "stats", "lastlogout", (int) ((new Date()).getTime() / 1000L));
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "kicks", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout", (int) ((new Date()).getTime() / 1000L));
             addTimeOnlineAndWipe(event.getPlayer().getName());
         }
 
@@ -151,7 +150,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        StatUtils.statPlayer(event.getPlayer(), "stats", "lastlogout",
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout",
                 (int) ((new Date()).getTime() / 1000L));
         addTimeOnlineAndWipe(event.getPlayer().getName());
 
@@ -176,7 +175,7 @@ public class StatPlayerListener extends StatListener {
             if (from.getWorld().equals(to.getWorld())) {
                 final double distance = from.distance(to);
                 if (distance < 8) {
-                    StatUtils.statPlayer(event.getPlayer(), "stats", "move", (int) Math.ceil(distance));
+                    StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "move", (int) Math.ceil(distance));
                 }
             }
         }
@@ -188,14 +187,14 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        StatUtils.statItem(event.getPlayer(), "itempickup", event.getItem().getItemStack(), event.getItem().getItemStack().getAmount());
+        StatUtils.modifyStatItem(event.getPlayer(), "itempickup", event.getItem().getItemStack(), event.getItem().getItemStack().getAmount());
 
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPortal(PlayerPortalEvent event) {
         if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
-            StatUtils.statPlayer(event.getPlayer(), "stats", "portal", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "portal", 1);
         }
     }
 
@@ -205,9 +204,9 @@ public class StatPlayerListener extends StatListener {
             final TeleportCause teleportCause = event.getCause();
 
             if (teleportCause == TeleportCause.ENDER_PEARL) {
-                StatUtils.statPlayer(event.getPlayer(), "itemuse", "enderpearl", 1);
+                StatUtils.modifyStatPlayer(event.getPlayer(), "itemuse", "enderpearl", 1);
             }
-            StatUtils.statPlayer(event.getPlayer(), "stats", "teleport", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "teleport", 1);
 
         }
     }
@@ -218,7 +217,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        StatUtils.statPlayer(event.getPlayer(), "stats", "fill" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "fill" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
 
     }
 
@@ -228,7 +227,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        StatUtils.statPlayer(event.getPlayer(), "stats", "empty" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "empty" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
 
     }
 
@@ -243,18 +242,18 @@ public class StatPlayerListener extends StatListener {
 
 
         if ((material == Material.BUCKET) && (rightClicked instanceof Cow)) {
-            StatUtils.statPlayer(event.getPlayer(), "interact", "milkcow", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "interact", "milkcow", 1);
             return;
         }
 
         if ((material == Material.BOWL) && (rightClicked instanceof MushroomCow)) {
-            StatUtils.statPlayer(event.getPlayer(), "interact", "milkmushroomcow", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "interact", "milkmushroomcow", 1);
             return;
         }
 
         if ((material == Material.INK_SACK) && (rightClicked instanceof Sheep)) {
-            StatUtils.statPlayer(event.getPlayer(), "dye", "total", 1);
-            StatUtils.statItem(event.getPlayer(), "dye", event.getPlayer().getItemInHand(), 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "dye", "total", 1);
+            StatUtils.modifyStatItem(event.getPlayer(), "dye", event.getPlayer().getItemInHand(), 1);
             return;
         }
 
@@ -269,13 +268,13 @@ public class StatPlayerListener extends StatListener {
                 return;
             }
 
-            StatUtils.statPlayer(event.getPlayer(), "wolfdye", "total", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "wolfdye", "total", 1);
 
             /**
              * if MetaDataable, make the item string correct
              */
             
-            StatUtils.statItem(event.getPlayer(), "wolfdye", event.getPlayer().getItemInHand(), 1);
+            StatUtils.modifyStatItem(event.getPlayer(), "wolfdye", event.getPlayer().getItemInHand(), 1);
 
         }
 
@@ -289,11 +288,11 @@ public class StatPlayerListener extends StatListener {
 
 
         if (event.getEntity() instanceof Sheep) {
-            StatUtils.statPlayer(event.getPlayer(), "sheared", "sheep", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "sheared", "sheep", 1);
         }
 
         if (event.getEntity() instanceof MushroomCow) {
-            StatUtils.statPlayer(event.getPlayer(), "sheared", "mushroomcow", 1);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "sheared", "mushroomcow", 1);
         }
 
     }
@@ -315,15 +314,15 @@ public class StatPlayerListener extends StatListener {
             if (result.equals(Result.DENY) == false) {
                 if ((item.getType() == Material.FLINT_AND_STEEL) || (item.getType() == Material.FIREBALL)
                         || (item.getType() == Material.SIGN)) {
-                    StatUtils.statItem(event.getPlayer(), "itemuse", item, 1);
+                    StatUtils.modifyStatItem(event.getPlayer(), "itemuse", item, 1);
                 }
             }
             if ((clickedBlock.getType() == Material.CAKE_BLOCK)
                     || ((clickedBlock.getType() == Material.TNT) && (item.getType() == Material.FLINT_AND_STEEL))) {
-                StatUtils.statBlock(event.getPlayer(), "itemuse", clickedBlock, 1);
+                StatUtils.modifyStatBlock(event.getPlayer(), "itemuse", clickedBlock, 1);
             }
             if (clickedBlock.getType().equals(Material.CHEST)) {
-                StatUtils.statPlayer(event.getPlayer(), "stats", "openchest", 1);
+                StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "openchest", 1);
             }
             if (clickedBlock.getType().equals(Material.FLOWER_POT) && (action == Action.RIGHT_CLICK_BLOCK)
                     && (clickedBlock.getData() == 0)) {
@@ -332,7 +331,7 @@ public class StatPlayerListener extends StatListener {
                 for (Material mm : m) {
 
                     if (mm.equals(item.getType())) {
-                        StatUtils.statItem(event.getPlayer(),"plant",item,1);
+                        StatUtils.modifyStatItem(event.getPlayer(),"plant",item,1);
                     }
                 }
 
@@ -348,10 +347,9 @@ public class StatPlayerListener extends StatListener {
         }
 
         
-        StatUtils.statPlayer(event.getPlayer(),"exp", "lifetimexp", event.getAmount());
+        StatUtils.modifyStatPlayer(event.getPlayer(),"exp", "lifetimexp", event.getAmount());
         
-        getPlayerStatManager().getOrCreatePlayerStatBlob(event.getPlayer().getName()).onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(), "exp",
-                "currentexp", event.getPlayer().getTotalExperience() + event.getAmount()));
+        StatUtils.setPlayerStat(event.getPlayer(), "exp", "currentexp", event.getPlayer().getTotalExperience() + event.getAmount());
 
     }
 
@@ -360,14 +358,10 @@ public class StatPlayerListener extends StatListener {
         if (!shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-
-        Promise<EntityStatBlob> promiseblob = this.getPlayerStatManager().getOrCreatePlayerStatBlob(
-                event.getPlayer().getName());
-        promiseblob.onResolve(new DelegateSet(BeardStat.DEFAULT_DOMAIN, event.getPlayer().getWorld().getName(), "exp",
-                "currentlvl", event.getNewLevel()));
+        StatUtils.setPlayerStat(event.getPlayer(),  "exp", "currentlvl", event.getNewLevel());
         int change = event.getNewLevel() - event.getOldLevel();
         if (change > 0) {
-            StatUtils.statPlayer(event.getPlayer(), "exp", "lifetimelvl", change);
+            StatUtils.modifyStatPlayer(event.getPlayer(), "exp", "lifetimelvl", change);
         }
 
     }
@@ -381,8 +375,8 @@ public class StatPlayerListener extends StatListener {
         }
 
         if ((event.isCancelled() == false) && !isBlacklistedWorld(player.getWorld())) {
-            StatUtils.statPlayer(player, "enchant", "total", 1);
-            StatUtils.statPlayer(player, "enchant", "totallvlspent", event.getExpLevelCost());
+            StatUtils.modifyStatPlayer(player, "enchant", "total", 1);
+            StatUtils.modifyStatPlayer(player, "enchant", "totallvlspent", event.getExpLevelCost());
         }
     }
 
@@ -416,7 +410,7 @@ public class StatPlayerListener extends StatListener {
         }
 
         if (event.getItem().getType().isEdible()) {
-            StatUtils.statItem(player,"consume", event.getItem(), 1);
+            StatUtils.modifyStatItem(player,"consume", event.getItem(), 1);
             return;
         }
         if (event.getItem().getType() == Material.POTION) {
@@ -425,7 +419,7 @@ public class StatPlayerListener extends StatListener {
             PotionMeta meta = (PotionMeta) event.getItem().getItemMeta();
             if (meta != null) {
                 for (PotionEffect effect : meta.getCustomEffects()) {
-                    StatUtils.statPotion(player, "consume", effect, 1);
+                    StatUtils.modifyStatPotion(player, "consume", effect, 1);
                 }
                 return;
             }
@@ -436,7 +430,7 @@ public class StatPlayerListener extends StatListener {
                     event.getItem().getDurability());
 
             for (PotionEffect effect : potion) {
-                StatUtils.statPotion(player, "consume", effect, 1);
+                StatUtils.modifyStatPotion(player, "consume", effect, 1);
             }
         }
 
@@ -449,6 +443,6 @@ public class StatPlayerListener extends StatListener {
             return;
         }
         Player player = event.getPlayer();
-        StatUtils.statEntity(player, "leash", event.getEntity(), 1);
+        StatUtils.modifyStatEntity(player, "leash", event.getEntity(), 1);
     }
 }

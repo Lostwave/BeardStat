@@ -20,8 +20,8 @@ public class StatBlockListener extends StatListener {
         if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-        StatUtils.statPlayer(event.getPlayer(), "stats", "totalblockcreate", 1);
-        StatUtils.statBlock(event.getPlayer(), "blockcreate", event.getBlock(), 1);
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "totalblockcreate", 1);
+        StatUtils.modifyStatBlock(event.getPlayer(), "blockcreate", event.getBlock(), 1);
         
 
     }
@@ -32,8 +32,8 @@ public class StatBlockListener extends StatListener {
             return;
         }
 
-        StatUtils.statPlayer(event.getPlayer(), "stats", "totalblockdestroy", 1);
-        StatUtils.statBlock(event.getPlayer(), "blockdestroy", event.getBlock(), 1);
+        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "totalblockdestroy", 1);
+        StatUtils.modifyStatBlock(event.getPlayer(), "blockdestroy", event.getBlock(), 1);
     }
 
 }

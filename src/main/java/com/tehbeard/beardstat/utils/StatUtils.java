@@ -15,6 +15,7 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.listeners.defer.DelegateDecrement;
 import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
+import com.tehbeard.beardstat.listeners.defer.DelegateSet;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 
 /**
@@ -31,25 +32,34 @@ public class StatUtils {
         StatUtils.manager = manager;
     }
     
-    public static void statPotion(Player player,String category,PotionEffect effect, int amount){
-        statPlayer(player, category, IdentifierService.getIdForPotionEffect(effect), amount);
+    public static void modifyStatPotion(Player player,String category,PotionEffect effect, int amount){
+        modifyStatPlayer(player, category, IdentifierService.getIdForPotionEffect(effect), amount);
     }
 
-    public static void statEntity(Player player, String category, Entity entity, int amount){
-        statPlayer(player, category, IdentifierService.getIdForEntity(entity), amount);
+    public static void modifyStatEntity(Player player, String category, Entity entity, int amount){
+        modifyStatPlayer(player, category, IdentifierService.getIdForEntity(entity), amount);
         //TODO -  Deprecate or add api handle?
         if (entity instanceof Skeleton) {
-            statPlayer(player, category, ((Skeleton) entity).getSkeletonType().toString().toLowerCase()+ "_skeleton",amount);
+            modifyStatPlayer(player, category, ((Skeleton) entity).getSkeletonType().toString().toLowerCase()+ "_skeleton",amount);
         }
 
         if (entity instanceof Zombie) {
             if (((Zombie) entity).isVillager()) {
-                statPlayer(player, category, "villager_zombie", amount);
+                modifyStatPlayer(player, category, "villager_zombie", amount);
             }
         }
     }
+    
+    public static void setPlayerStat(Player player,String category, String statistic, int amount){
+        set( player.getName(), 
+                BeardStat.DEFAULT_DOMAIN, 
+                player.getWorld().getName(), 
+                category, 
+                statistic,
+                amount);
+    }
 
-    public static void statPlayer(Player player,String category, String statistic, int amount){
+    public static void modifyStatPlayer(Player player,String category, String statistic, int amount){
         modifyStat(
                 player.getName(), 
                 BeardStat.DEFAULT_DOMAIN, 
@@ -60,8 +70,8 @@ public class StatUtils {
                 amount);
     }
 
-    public static void statItem(Player player,  String category, ItemStack item, int amount){
-        statItem(player.getName(),
+    public static void modifyStatItem(Player player,  String category, ItemStack item, int amount){
+        modifyStatItem(player.getName(),
                 BeardStat.DEFAULT_DOMAIN,
                 player.getWorld().getName(),
                 category,
@@ -78,7 +88,7 @@ public class StatUtils {
      * @param item
      * @param amount
      */
-    public static void statItem(String player,String domain, String world, String category, ItemStack item, int amount){
+    public static void modifyStatItem(String player,String domain, String world, String category, ItemStack item, int amount){
         String baseId = IdentifierService.getIdForItemStack(item);
         String metaId = IdentifierService.getIdForItemStackWithMeta(item);
         modifyStat(player, domain, world, category, baseId, metaId, amount);
@@ -91,8 +101,8 @@ public class StatUtils {
      * @param block
      * @param amount
      */
-    public static void statBlock(Player player, String category, Block block, int amount){
-        statBlock(player.getName(),
+    public static void modifyStatBlock(Player player, String category, Block block, int amount){
+        modifyStatBlock(player.getName(),
                 BeardStat.DEFAULT_DOMAIN,
                 player.getWorld().getName(),
                 category,
@@ -110,7 +120,7 @@ public class StatUtils {
      * @param amount
      */
 
-    public static void statBlock(String player,String domain, String world, String category, Block block, int amount){
+    public static void modifyStatBlock(String player,String domain, String world, String category, Block block, int amount){
         String baseId = IdentifierService.getIdForMaterial(block.getType());
         String metaId = IdentifierService.getIdForMaterial(block.getType(),block.getData());
         modifyStat(player, domain, world, category, baseId, metaId, amount);
@@ -144,6 +154,11 @@ public class StatUtils {
     public static void decrement(String player,String domain, String world, String category, String statistic, int amount){
         Promise<EntityStatBlob> blob = manager.getOrCreatePlayerStatBlob(player);
         blob.onResolve(new DelegateDecrement(domain,world,category,statistic,amount));
+    }
+    
+    public static void set(String player,String domain, String world, String category, String statistic, int amount){
+        Promise<EntityStatBlob> blob = manager.getOrCreatePlayerStatBlob(player);
+        blob.onResolve(new DelegateSet(domain,world,category,statistic,amount));
     }
 
 }

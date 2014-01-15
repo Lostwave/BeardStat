@@ -86,11 +86,10 @@ public class WorldManager {
     }
     
     public boolean isBlackListed(World world){
-        return false;
-        /*if(worlds.containsKey(world.getName())){
+        if(worlds.containsKey(world.getName())){
             return worlds.get(world.getName()).isBlackListed();
         }
-            return defaultWorld.isBlackListed();*/
+        return defaultWorld.isBlackListed();
     }
     
     public void addWorld(String name,boolean s,boolean c,boolean a){
