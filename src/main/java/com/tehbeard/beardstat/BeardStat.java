@@ -41,6 +41,7 @@ import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.beardstat.utils.LanguagePack;
 import com.tehbeard.beardstat.utils.StatUtils;
+import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
 import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
 
 
@@ -145,13 +146,21 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         // setup our data provider, fail out if it's not found
         getLogger().info("Connecting to database");
         getLogger().info("Using " + configuration.dbType + " Adpater");
-        IStatDataProvider db = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.database")));
+        DatabaseConfiguration dbConfig = getDatabaseConfiguration(getConfig().getConfigurationSection("stats.database"));
+        IStatDataProvider db = getDataProvider(dbConfig);
 
         if (db == null) {
             getLogger().severe(" Error loading database, disabling plugin");
             getPluginLoader().disablePlugin(this);
             return;
         }
+        
+        if(dbConfig.runUUIDUpdate){
+            new ProfileUUIDUpdater(getLogger(), db, new HttpProfileRepository());
+            getConfig().set("stats.database.uuidUpdate",false);
+            saveConfig();
+        }
+        
 
         // start the player manager
         this.statManager = new EntityStatManager(this, db);

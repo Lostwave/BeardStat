@@ -188,7 +188,7 @@ public interface IStatDataProvider {
             this.newFile = newFile;
         }
     }
-    
-    public void setUUID(String player, UUID uuid);
+
+    public void setUUID(String player, String uuid);
 
 }

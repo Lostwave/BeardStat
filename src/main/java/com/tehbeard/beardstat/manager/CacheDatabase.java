@@ -33,7 +33,7 @@ public class CacheDatabase {
     }
 
     public synchronized Promise<EntityStatBlob> getCache(ProviderQuery query) {
-        if (query.uuid == null) {
+        if (query.uuid == null) {  
             return cache.get(makeQryKey(query));
         } else {
             return uuidCache.get(query.uuid);

@@ -134,7 +134,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     //Configuration/env
     protected DbPlatform platform;
     protected DatabaseConfiguration config;
-
+    
     public JDBCStatDataProvider(DbPlatform platform, String scriptSuffix, String driverClass, DatabaseConfiguration config) {
         try {
             this.connectionProperties.put("allowMultiQuery", "true");
@@ -938,9 +938,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         return conn;
     }
     
-    public void setUUID(String player, UUID uuid){
+    public void setUUID(String player, String uuid){
         try{
-        setUUID.setString(1, uuid.toString().replaceAll("-", ""));
+        setUUID.setString(1, uuid);
         setUUID.setString(2,player);
         setUUID.setString(3,IStatDataProvider.PLAYER_TYPE);
         setUUID.executeUpdate();

@@ -26,6 +26,8 @@ public class DatabaseConfiguration {
     public int port;
     @InjectConfig("backups")
     public boolean backups;
+    @InjectConfig("uuidUpdate")
+    public boolean runUUIDUpdate;
     
     public int latestVersion;
     

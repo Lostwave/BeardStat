@@ -78,14 +78,16 @@ public class EntityStatManager {
      */
     public Promise<EntityStatBlob> getBlobForPlayerAsync(Player player){
         //TODO use uuid in future
-        return getBlobASync(new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, null, true));
+        return getBlobASync(new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-", ""), true));
     }
     
     /**
      * Asynchronously retrieves a player blob, this will not lock the game thread if called.
      * @param player
      * @return 
+     * @deprecated in favour of uuid based methods in the future.
      */
+    @Deprecated
     public Promise<EntityStatBlob> getBlobForPlayerAsync(String player){
         //TODO use uuid in future
         return getBlobASync(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE, null, true));
