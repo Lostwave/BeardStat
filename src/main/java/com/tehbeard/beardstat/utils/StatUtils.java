@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
@@ -28,6 +29,10 @@ public class StatUtils {
 
     public static void setManager(EntityStatManager manager){
         StatUtils.manager = manager;
+    }
+    
+    public static void statPotion(Player player,String category,PotionEffect effect, int amount){
+        statPlayer(player, category, IdentifierService.getIdForPotionEffect(effect), amount);
     }
 
     public static void statEntity(Player player, String category, Entity entity, int amount){
@@ -117,16 +122,16 @@ public class StatUtils {
         int am = Math.abs(amount);
 
         if(inc){
-            increment(player, domain, world, category, baseId, amount);
+            increment(player, domain, world, category, baseId, am);
             if(metaId != null){
-                increment(player, domain, world, category, metaId, amount);
+                increment(player, domain, world, category, metaId, am);
             }
         }
         else
         {
-            decrement(player, domain, world, category, baseId, amount);
+            decrement(player, domain, world, category, baseId, am);
             if(metaId != null){
-                decrement(player, domain, world, category, metaId, amount);
+                decrement(player, domain, world, category, metaId, am);
             }
         }
     }

@@ -3,6 +3,7 @@ package com.tehbeard.beardstat.dataproviders.identifier;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 /**
  * Provides methods to get string ids for various items
@@ -36,6 +37,10 @@ public class IdentifierService {
     
     public static String getIdForEntity(Entity entity){
         return generator.keyForEntity(entity);
+    }
+
+    public static String getIdForPotionEffect(PotionEffect effect) {
+        return generator.keyForPotionEffect(effect);
     }
 
 }

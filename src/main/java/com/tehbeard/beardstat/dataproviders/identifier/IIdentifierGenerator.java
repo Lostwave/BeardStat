@@ -1,6 +1,7 @@
 package com.tehbeard.beardstat.dataproviders.identifier;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.potion.PotionEffect;
 
 /**
  * Interface for a identifier generator, which returns a string id for various given resources (blocks, items, entities).
@@ -27,5 +28,5 @@ public interface IIdentifierGenerator {
      */
     public String keyForEntity(Entity entity);
 
-    
+    public String keyForPotionEffect(PotionEffect effect);
 }

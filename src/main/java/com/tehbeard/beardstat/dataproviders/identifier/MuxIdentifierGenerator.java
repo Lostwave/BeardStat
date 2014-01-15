@@ -1,6 +1,7 @@
 package com.tehbeard.beardstat.dataproviders.identifier;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.potion.PotionEffect;
 
 /**
  * Muxes various {@link IIdentifierGenerator} instances, priority given to the first declared generator
@@ -42,6 +43,17 @@ public class MuxIdentifierGenerator implements IIdentifierGenerator {
     public String keyForId(int id, int meta) {
         for(IIdentifierGenerator gen : generators){
             String s = gen.keyForId(id, meta);
+            if(s!=null){
+                return s;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String keyForPotionEffect(PotionEffect effect) {
+        for(IIdentifierGenerator gen : generators){
+            String s = gen.keyForPotionEffect(effect);
             if(s!=null){
                 return s;
             }
