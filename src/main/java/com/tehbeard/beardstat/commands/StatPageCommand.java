@@ -84,7 +84,7 @@ public class StatPageCommand extends BeardStatCommand {
         super(statManager, plugin);
 
 
-        ConfigurationSection pageConfig = plugin.getConfig().getConfigurationSection("stats.pages");
+        ConfigurationSection pageConfig = plugin.getConfig().getConfigurationSection("pages");
         if (pageConfig != null) {
             Set<String> pageNames = pageConfig.getKeys(false);
             for (String pageName : pageNames) {
