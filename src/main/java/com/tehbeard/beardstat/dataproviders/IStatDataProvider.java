@@ -79,25 +79,25 @@ public interface IStatDataProvider {
      * @param gameTag
      * @return
      */
-    public DomainMeta getDomain(String gameTag);
+    public DomainMeta getDomain(String gameTag, boolean create);
     /**
      * Returns the WorldMeta object for the given world
      * @param gameTag
      * @return
      */
-    public WorldMeta getWorld(String gameTag);
+    public WorldMeta getWorld(String gameTag, boolean create);
     /**
      * Returns the CategoryMeta object for the given category
      * @param gameTag
      * @return
      */
-    public CategoryMeta getCategory(String gameTag);
+    public CategoryMeta getCategory(String gameTag, boolean create);
     /**
      * Returns the StatisticMeta object for the given statistic
      * @param gameTag
      * @return
      */
-    public StatisticMeta getStatistic(String gameTag);
+    public StatisticMeta getStatistic(String gameTag, boolean create);
 
     /**
      * backup the database, for MySQL this could be a schema dump. SQLite makes a copy of the db file.

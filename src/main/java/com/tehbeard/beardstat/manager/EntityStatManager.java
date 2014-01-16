@@ -15,6 +15,7 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
+import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 
 
@@ -80,7 +81,7 @@ public class EntityStatManager {
         //TODO use uuid in future
         return getBlobASync(new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-", ""), true));
     }
-    
+
     /**
      * Asynchronously retrieves a player blob, this will not lock the game thread if called.
      * @param player
@@ -125,22 +126,22 @@ public class EntityStatManager {
     public void saveCache() {
         for( EntityStatBlob blob : cache.getLoadedBlobs()){
             if (blob.getType().equals(IStatDataProvider.PLAYER_TYPE)) {
-                    String entityName = blob.getName();
-                    ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
+                String entityName = blob.getName();
+                ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
 
-                    if (timeRecord != null) {
-                        platform.getLogger().log(Level.FINE, "saving time: [Player : {0} , world: {1}, time: {2}]", new Object[]{entityName, timeRecord.world, timeRecord.sessionTime()});
-                        if (timeRecord.world != null) {
-                            blob.getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor").incrementStat(timeRecord.sessionTime());
-                        }
-                    }
-                    if (isPlayerOnline(entityName)) {
-                        OnlineTimeManager.setRecord(entityName, platform.getWorldForPlayer(entityName));
-                    } else {
-                        OnlineTimeManager.wipeRecord(entityName);
-                        cache.remove(new ProviderQuery(blob.getName(), blob.getType(), blob.getUUID(),false));
+                if (timeRecord != null) {
+                    platform.getLogger().log(Level.FINE, "saving time: [Player : {0} , world: {1}, time: {2}]", new Object[]{entityName, timeRecord.world, timeRecord.sessionTime()});
+                    if (timeRecord.world != null) {
+                        blob.getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor").incrementStat(timeRecord.sessionTime());
                     }
                 }
+                if (isPlayerOnline(entityName)) {
+                    OnlineTimeManager.setRecord(entityName, platform.getWorldForPlayer(entityName));
+                } else {
+                    OnlineTimeManager.wipeRecord(entityName);
+                    cache.remove(new ProviderQuery(blob.getName(), blob.getType(), blob.getUUID(),false));
+                }
+            }
             backendDatabase.pushEntityBlob(blob);
         }
     }
@@ -150,11 +151,19 @@ public class EntityStatManager {
     }
 
     public String getLocalizedStatisticName(String gameTag) {
-        return this.backendDatabase.getStatistic(gameTag).getLocalizedName();
+        StatisticMeta meta = this.backendDatabase.getStatistic(gameTag,false);
+        if(meta!= null){
+            return meta.getLocalizedName();
+        }
+        return gameTag;
     }
 
     public String formatStat(String gameTag, int value) {
-        return this.backendDatabase.getStatistic(gameTag).formatStat(value);
+        StatisticMeta meta = this.backendDatabase.getStatistic(gameTag,false);
+        if(meta!=null){
+            return meta.formatStat(value);
+        }
+        return "" + value;
     }
 
     public void flush() {

@@ -637,10 +637,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                             for (Iterator<IStat> it = updateRecord.stats.iterator(); it.hasNext();) {
                                 stat = it.next();
                                 saveEntityData.setInt(1, updateRecord.entityId);
-                                saveEntityData.setInt(2, getDomain(stat.getDomain()).getDbId());
-                                saveEntityData.setInt(3, getWorld(stat.getWorld()).getDbId());
-                                saveEntityData.setInt(4, getCategory(stat.getCategory()).getDbId());
-                                saveEntityData.setInt(5, getStatistic(stat.getStatistic()).getDbId());
+                                saveEntityData.setInt(2, getDomain(stat.getDomain(),true).getDbId());
+                                saveEntityData.setInt(3, getWorld(stat.getWorld(),true).getDbId());
+                                saveEntityData.setInt(4, getCategory(stat.getCategory(),true).getDbId());
+                                saveEntityData.setInt(5, getStatistic(stat.getStatistic(),true).getDbId());
                                 saveEntityData.setInt(6, stat.getValue());
                                 saveEntityData.addBatch();
                             }
@@ -661,10 +661,10 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                         } catch (SQLException e) {
                             platform.getLogger().log(Level.WARNING, "entity id: {0}}", new Object[]{updateRecord.entityId});
-                            platform.getLogger().log(Level.WARNING, "domain: {0} :: {1}", new Object[]{stat.getDomain(), getDomain(stat.getDomain()).getDbId()});
-                            platform.getLogger().log(Level.WARNING, "world: {0} :: {1}", new Object[]{stat.getWorld(), getWorld(stat.getWorld()).getDbId()});
-                            platform.getLogger().log(Level.WARNING, "category: {0} :: {1}", new Object[]{stat.getCategory(), getCategory(stat.getCategory()).getDbId()});
-                            platform.getLogger().log(Level.WARNING, "statistic: {0} :: {1}", new Object[]{stat.getStatistic(), getStatistic(stat.getStatistic()).getDbId()});
+                            platform.getLogger().log(Level.WARNING, "domain: {0} :: {1}", new Object[]{stat.getDomain(), getDomain(stat.getDomain(),true).getDbId()});
+                            platform.getLogger().log(Level.WARNING, "world: {0} :: {1}", new Object[]{stat.getWorld(), getWorld(stat.getWorld(),true).getDbId()});
+                            platform.getLogger().log(Level.WARNING, "category: {0} :: {1}", new Object[]{stat.getCategory(), getCategory(stat.getCategory(),true).getDbId()});
+                            platform.getLogger().log(Level.WARNING, "statistic: {0} :: {1}", new Object[]{stat.getStatistic(), getStatistic(stat.getStatistic(),true).getDbId()});
                             platform.getLogger().log(Level.WARNING, "Value: {0}", stat.getValue());
                             platform.mysqlError(e, SQL_SAVE_STAT);
                             checkConnection();
@@ -755,9 +755,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public DomainMeta getDomain(String gameTag) {
+    public DomainMeta getDomain(String gameTag, boolean create) {
         String qGameTag = sanitizeTag(gameTag);
-        if (!domainMetaMap.containsKey(qGameTag)) {
+        if (!domainMetaMap.containsKey(qGameTag) && create) {
             try {
 
                 saveDomain.setString(1, qGameTag);
@@ -775,9 +775,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public WorldMeta getWorld(String gameTag) {
+    public WorldMeta getWorld(String gameTag, boolean create) {
 
-        if (!worldMetaMap.containsKey(gameTag)) {
+        if (!worldMetaMap.containsKey(gameTag) && create) {
             try {
                 saveWorld.setString(1, gameTag);
                 saveWorld.setString(2, gameTag.replaceAll("_", " "));
@@ -795,8 +795,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public CategoryMeta getCategory(String gameTag) {
-        if (!categoryMetaMap.containsKey(gameTag)) {
+    public CategoryMeta getCategory(String gameTag, boolean create) {
+        if (!categoryMetaMap.containsKey(gameTag) && create) {
             try {
                 saveCategory.setString(1, gameTag);
                 saveCategory.execute();
@@ -813,8 +813,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     @Override
-    public StatisticMeta getStatistic(String gameTag) {
-        if (!statisticMetaMap.containsKey(gameTag)) {
+    public StatisticMeta getStatistic(String gameTag, boolean create) {
+        if (!statisticMetaMap.containsKey(gameTag) && create) {
             try {
                 saveStatistic.setString(1, gameTag);
                 saveStatistic.setString(2, HumanNameGenerator.getNameOf(gameTag));
