@@ -4,10 +4,6 @@
  */
 package com.tehbeard.beardstat.dataproviders;
 
-import com.tehbeard.beardstat.DatabaseConfiguration;
-import java.io.IOException;
-import java.sql.SQLException;
-import org.junit.BeforeClass;
 
 /**
  * TODO - FIX THIS.

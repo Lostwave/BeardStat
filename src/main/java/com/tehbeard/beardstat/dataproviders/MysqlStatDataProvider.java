@@ -318,7 +318,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 //We are inserting a record
                 //`entityId`, `domainId`, `key`, `curRevision`
                 stmtMetaInsert.setInt(1, entityId);
-                stmtMetaInsert.setInt(2, getDomain(document.getDomain()).getDbId());
+                stmtMetaInsert.setInt(2, getDomain(document.getDomain(), true).getDbId());
                 stmtMetaInsert.setString(3, document.getKey());
                 stmtMetaInsert.setString(4, newRevision);
                 stmtMetaInsert.executeUpdate();
@@ -364,7 +364,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public String[] getDocumentKeysInDomain(int entityId, String domain) {
         try {
             stmtMetaPoll.setInt(1,entityId);
-            stmtMetaPoll.setInt(2, getDomain(domain).getDbId());
+            stmtMetaPoll.setInt(2, getDomain(domain, true).getDbId());
             ResultSet rs = stmtMetaPoll.executeQuery();
 
             List<String> keys = new ArrayList<String>();
@@ -468,7 +468,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     private ResultSet getDocumentResultSet(int entityId, String domain,String key) throws SQLException{
         conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         conn.setAutoCommit(false);
-        int domainId = getDomain(domain).getDbId();//Get domain int it
+        int domainId = getDomain(domain, true).getDbId();//Get domain int it
         stmtMetaSelect.setInt(1, entityId);
         stmtMetaSelect.setInt(2, domainId);
         stmtMetaSelect.setString(3, key);

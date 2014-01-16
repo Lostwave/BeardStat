@@ -106,7 +106,7 @@ public abstract class IStatDataProviderTest {
     public void testGetDomain() {
         System.out.println("getDomain");
         String gameTag = "default";
-        DomainMeta result = instance.getDomain(gameTag);
+        DomainMeta result = instance.getDomain(gameTag, true);
         assertEquals(1, result.getDbId());
     }
 
@@ -117,7 +117,7 @@ public abstract class IStatDataProviderTest {
     public void testGetWorld() {
         System.out.println("getWorld");
         String gameTag = "world";
-        WorldMeta result = instance.getWorld(gameTag);
+        WorldMeta result = instance.getWorld(gameTag, true);
         assertEquals("world", result.getGameTag());
     }
 
@@ -128,7 +128,7 @@ public abstract class IStatDataProviderTest {
     public void testGetCategory() {
         System.out.println("getCategory");
         String gameTag = "stats";
-        CategoryMeta result = instance.getCategory(gameTag);
+        CategoryMeta result = instance.getCategory(gameTag, true);
         assertEquals(gameTag, result.getGameTag());
     }
 
@@ -139,7 +139,7 @@ public abstract class IStatDataProviderTest {
     public void testGetStatistic() {
         System.out.println("getStatistic");
         String gameTag = "playedfor";
-        StatisticMeta result = instance.getStatistic(gameTag);
+        StatisticMeta result = instance.getStatistic(gameTag, true);
         assertEquals(gameTag, result.getName());
         assertEquals(StatisticMeta.Formatting.time, result.getFormat());
         // TODO review the generated test code and remove the default call to fail.
