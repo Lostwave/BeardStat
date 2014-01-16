@@ -40,9 +40,7 @@ public class StatCommand extends BeardStatCommand {
 
             String player = null;
             // Use another player
-            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {
-                player = arguments.getOption("p");
-            }
+            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {player = arguments.getOption("p");}
 
             // Else use this player
             if ((player == null) && (sender instanceof Player)) {
@@ -73,6 +71,7 @@ public class StatCommand extends BeardStatCommand {
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
                 EntityStatBlob blob = this.playerStatManager.getBlob(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE,null,false));
+                sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
                     return true;
@@ -89,7 +88,6 @@ public class StatCommand extends BeardStatCommand {
                     sender.sendMessage(LanguagePack.getMsg("command.error.nostat"));
                     return true;
                 }
-                sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (vector.size() == 1) {
                     IStat iStat = vector.iterator().next();
 
