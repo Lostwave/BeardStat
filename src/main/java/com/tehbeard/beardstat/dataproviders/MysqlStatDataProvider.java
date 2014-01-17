@@ -234,7 +234,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         return file;
     }
 
-    private final int MAX_DOC_SIZE = 16 * 1024 * 1024;//16mb limit
+    public final static int MAX_DOC_SIZE = 16 * 1024 * 1024;//16mb limit
 
     @Override
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException {
@@ -269,7 +269,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 byte[] docData = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
 
                 if (docData.length > MAX_DOC_SIZE) {
-                    throw new RuntimeException("Document exceeds max size.");
+                    throw new RuntimeException("Document exceeds max size.");//TODO - Change to a specific exception for this usecase
                 }
 
                 //3) Generate new revision tag.

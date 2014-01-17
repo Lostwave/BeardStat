@@ -1,18 +1,5 @@
 package com.tehbeard.beardstat.dataproviders;
 
-import com.google.gson.stream.JsonWriter;
-import java.sql.SQLException;
-
-import com.tehbeard.beardstat.BeardStatRuntimeException;
-import com.tehbeard.beardstat.DatabaseConfiguration;
-import com.tehbeard.beardstat.DbPlatform;
-import com.tehbeard.beardstat.containers.documents.DocumentHistory;
-import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
-import com.tehbeard.beardstat.containers.documents.IStatDocument;
-import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
-import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry;
-import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry.DocRev;
-import com.tehbeard.beardstat.dataproviders.sqlite.DocumentDatabase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,12 +9,26 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
 import org.bukkit.util.FileUtil;
+
+import com.google.gson.stream.JsonWriter;
+import com.tehbeard.beardstat.BeardStatRuntimeException;
+import com.tehbeard.beardstat.DatabaseConfiguration;
+import com.tehbeard.beardstat.DbPlatform;
+import com.tehbeard.beardstat.containers.documents.DocumentHistory;
+import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
+import com.tehbeard.beardstat.containers.documents.StatDocument;
+import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
+import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry;
+import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry.DocRev;
+import com.tehbeard.beardstat.dataproviders.sqlite.DocumentDatabase;
 
 public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
@@ -67,11 +68,11 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentFile pullDocument(int entityId, String domain, String key) {
         DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(domain, key);
         DocRev docRevision = dbEntry.getRevisions().get(dbEntry.getCurrentRevision());
-        
+
         if(docRevision == null){
             return null;
         }
-        
+
         return new DocumentFile(dbEntry.getCurrentRevision(), docRevision.parentRev, domain, key, docRevision.document, docRevision.dateAdded);
 
     }
@@ -80,10 +81,16 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException {
         try {
             byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(), DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
+            if(doc.length > MysqlStatDataProvider.MAX_DOC_SIZE){
+                throw new RuntimeException("Document exceeds max size.");//TODO - Change to a specific exception for this usecase
+            }
+            
+            
             //2) Generate new revision tag.
             MessageDigest digest = MessageDigest.getInstance("SHA1");
             String newRevision = byteArrayToHexString(digest.digest(doc));
-
+            boolean isSingleton = document.getDocument().getClass().getAnnotation(StatDocument.class).singleInstance();
+            
             String currentRevision = document.getRevision();
 
             DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(document.getDomain(), document.getKey());
@@ -92,10 +99,14 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
                 throw new RevisionMismatchException(pullDocument(entityId, document.getDomain(), document.getKey()));
             }
 
-            //Add the revision
-            dbEntry.getRevisions().put(newRevision, new DocRev(currentRevision, document.getDocument()));
+            //Add the new document, if singleton, null the parent revision.
+            dbEntry.getRevisions().put(newRevision, new DocRev(isSingleton ? null : currentRevision, document.getDocument()));
+            
             dbEntry.setCurrentRevision(newRevision);
-
+          //delete old entry if singleton
+            if(isSingleton){
+                dbEntry.getRevisions().remove(currentRevision);
+            }
             return pullDocument(entityId, document.getDomain(), document.getKey());
 
         } catch (NoSuchAlgorithmException ex) {
@@ -103,7 +114,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         }
         return null;
     }
-    
+
     @Override
     public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
         DocEntry d = docDB.getStore(entityId).getDocumentData(domain, key);
@@ -144,5 +155,5 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         }
     }
 
-    
+
 }
