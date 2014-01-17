@@ -123,7 +123,7 @@ public interface IStatDataProvider {
      * @return new DocumentFile with the revision of the stored document
      * @throws #RevisionMismatchException if revision key passed does not match current (latest) one.
      */
-    public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException;
+    public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException, DocumentTooLargeException;
     
     /**
      * Deletes a document revision

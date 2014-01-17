@@ -78,11 +78,11 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     }
 
     @Override
-    public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException {
+    public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException, DocumentTooLargeException {
         try {
             byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(), DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
             if(doc.length > MysqlStatDataProvider.MAX_DOC_SIZE){
-                throw new RuntimeException("Document exceeds max size.");//TODO - Change to a specific exception for this usecase
+                throw new DocumentTooLargeException("Document exceeds max size.");//TODO - Change to a specific exception for this usecase
             }
             
             

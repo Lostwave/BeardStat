@@ -660,6 +660,9 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                                     platform.getLogger().log(Level.SEVERE, "Document {0}:{1} failed to save.", new Object[]{ref.getRef().getDomain(), ref.getRef().getKey()});
                                     platform.getLogger().severe("Another process has stored a new revision at this address.");
                                     platform.getLogger().severe("No Revision Merge strategy found. Changes not saved.");
+                                } catch (DocumentTooLargeException e) {
+                                    platform.getLogger().log(Level.SEVERE, "Document {0}:{1} failed to save.", new Object[]{ref.getRef().getDomain(), ref.getRef().getKey()});
+                                    platform.getLogger().severe("The document was too large to save to the database.");
                                 }
                             }
 
