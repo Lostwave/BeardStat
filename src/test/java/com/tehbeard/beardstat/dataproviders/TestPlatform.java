@@ -29,7 +29,7 @@ class TestPlatform implements DbPlatform {
     }
 
     public void mysqlError(SQLException sqlException, String file) {
-        throw new RuntimeException(sqlException);
+        throw new RuntimeException("error in file " + file,sqlException);
     }
 
     public InputStream getResource(String file) {

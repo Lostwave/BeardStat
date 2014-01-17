@@ -8,6 +8,7 @@ import com.tehbeard.beardstat.DatabaseConfiguration;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
+import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry.DocRev;
@@ -66,7 +67,11 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentFile pullDocument(int entityId, String domain, String key) {
         DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(domain, key);
         DocRev docRevision = dbEntry.getRevisions().get(dbEntry.getCurrentRevision());
-
+        
+        if(docRevision == null){
+            return null;
+        }
+        
         return new DocumentFile(dbEntry.getCurrentRevision(), docRevision.parentRev, domain, key, docRevision.document, docRevision.dateAdded);
 
     }
@@ -83,7 +88,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
             DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(document.getDomain(), document.getKey());
 
-            if (!currentRevision.equals(dbEntry.getCurrentRevision())) {
+            if (currentRevision != null && !currentRevision.equals(dbEntry.getCurrentRevision())) {
                 throw new RevisionMismatchException(pullDocument(entityId, document.getDomain(), document.getKey()));
             }
 

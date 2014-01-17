@@ -4,13 +4,21 @@
  */
 package com.tehbeard.beardstat.dataproviders;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+
+import org.junit.BeforeClass;
+
+import com.tehbeard.beardstat.DatabaseConfiguration;
+
 
 /**
  * TODO - FIX THIS.
  * @author James
  */
 
-/*public class TestSQLiteDataProvider extends IStatDataProviderTest  {
+public class TestSQLiteDataProvider extends IStatDataProviderTest  {
      
     @BeforeClass
     public static void setUpClass() throws IOException, SQLException {
@@ -19,18 +27,22 @@ package com.tehbeard.beardstat.dataproviders;
         config.backups = false;
         
         //System.out.println(config);
+        try{
+            new File("test.db").delete();
+        }catch(Exception e){}
         instance = new SQLiteStatDataProvider(new TestPlatform(), ":memory:", config);
-       
         String preloadStmt = ((SQLiteStatDataProvider)instance).readSQL("sqlite","preload",config.tablePrefix);
         for(String s : preloadStmt.split("\\;")){
             try{
            ((SQLiteStatDataProvider)instance).conn.createStatement().execute(s);
             }catch(SQLException e ){
+                System.out.println(s);
                 e.printStackTrace();
                 
                 throw e;
             }
         }
+        ((JDBCStatDataProvider)instance).cacheComponents();
     }
 
-}*/
+}

@@ -401,11 +401,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     /**
      * Cache entries for quicker resolvement on our end.
      */
-    private void cacheComponents() {
+    public void cacheComponents() {
         ResultSet rs;
         try {
             //Domains
             rs = loadDomainsList.executeQuery();
+            domainMetaMap.clear();
             while (rs.next()) {
                 DomainMeta dm = new DomainMeta(
                         rs.getInt("domainId"),
@@ -419,6 +420,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         try {
             //Worlds
             rs = loadWorldsList.executeQuery();
+            worldMetaMap.clear();
             while (rs.next()) {
                 WorldMeta wm = new WorldMeta(
                         rs.getInt("worldId"),
@@ -433,6 +435,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         try {
             //Worlds
             rs = loadCategoriesList.executeQuery();
+            categoryMetaMap.clear();
             while (rs.next()) {
                 CategoryMeta cm = new CategoryMeta(
                         rs.getInt("categoryId"),
@@ -447,6 +450,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         try {
             //Worlds
             rs = loadStatisticsList.executeQuery();
+            statisticMetaMap.clear();
             while (rs.next()) {
                 StatisticMeta sm = new StatisticMeta(
                         rs.getInt("statisticId"),
@@ -787,7 +791,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 worldMetaMap.put(gameTag, new WorldMeta(rs.getInt(1), gameTag, gameTag.replaceAll("_", " ")));
                 rs.close();
             } catch (SQLException ex) {
-                platform.mysqlError(ex, SQL_SAVE_WORLD);
+                platform.mysqlError(ex, SQL_SAVE_WORLD + " @ " + gameTag + " cache size: " + worldMetaMap.size());
             }
         }
 

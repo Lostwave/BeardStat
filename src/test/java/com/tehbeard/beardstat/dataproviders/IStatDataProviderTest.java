@@ -15,6 +15,8 @@ import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import java.io.File;
+import java.util.logging.Logger;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,7 +36,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testPullEntityBlob() {
         System.out.println("pullEntityBlob");
-        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
         EntityStatBlob blob  = instance.pullEntityBlob(query);
         assertEquals(blob.getName(), "Tehbeard");
         
@@ -46,13 +48,17 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testPushEntityBlob() {
         System.out.println("pushEntityBlob");
-        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
         EntityStatBlob blob = instance.pullEntityBlob(query);
         blob.getStat("world", "stats", "playedfor").setValue(500);
+        assertEquals("value was set", 500,blob.getStat("world", "stats", "playedfor").getValue());
+        
         instance.pushEntityBlob(blob);
         instance.flushSync();
         
-        assertEquals("value was written", 500,instance.pullEntityBlob(query).getStat("world", "stats", "playedfor").getValue());
+        blob = instance.pullEntityBlob(query);
+        System.out.println(blob.getStat("world", "stats", "playedfor").getValue());
+        assertEquals("value was written", 500,blob.getStat("world", "stats", "playedfor").getValue());
         
         
     }
@@ -63,7 +69,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testHasEntityBlob() {
         System.out.println("hasEntityBlob");
-        ProviderQuery query = new ProviderQuery("MrRogers", IStatDataProvider.PLAYER_TYPE, null, false);;
+        ProviderQuery query = new ProviderQuery("MrRogers", IStatDataProvider.PLAYER_TYPE, null, false);
         boolean expResult = false;
         boolean result = instance.hasEntityBlob(query);
         assertEquals(expResult, result);
@@ -164,7 +170,7 @@ public abstract class IStatDataProviderTest {
         
         System.out.println("pullDocument");
         
-        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
         EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);
@@ -180,7 +186,7 @@ public abstract class IStatDataProviderTest {
     public void testPushDocument() throws Exception {
         
         System.out.println("pushDocument");
-        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
         EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);
@@ -195,7 +201,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testDocumentSingleInstance() throws Exception {
         System.out.println("documentSingleInstance");
-        ProviderQuery query = new ProviderQuery("tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
         EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);
