@@ -305,6 +305,8 @@ public class EntityStatBlob implements VariableProvider {
         if(files.get(code).isInvalid()){
             files.put(code, new DocumentFileRef(provider.pullDocument(entityId, domain, key)));
         }
-        return files.get(code).getRef();
+        DocumentFile d = files.get(code).getRef();
+        d.setOwner(this);
+        return d;
     }
 }

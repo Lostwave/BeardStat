@@ -6,6 +6,7 @@ package com.tehbeard.beardstat.containers.documents.docfile;
 
 import java.sql.Timestamp;
 
+import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.containers.documents.IStatDynamicDocument;
 
@@ -24,6 +25,8 @@ public class DocumentFile {
     private final IStatDocument document;
     private final Timestamp dateCreated;
     private boolean isInvalid = false;
+    
+    private EntityStatBlob owner = null;
 
     /**
      * Create a new DocumentFile with no parent/revision information
@@ -124,7 +127,7 @@ public class DocumentFile {
     @SuppressWarnings("unchecked")
     public <T extends IStatDocument> T getDocument() {
         if(document instanceof IStatDynamicDocument){
-            ((IStatDynamicDocument) document).updateDocument();
+            ((IStatDynamicDocument) document).updateDocument(getOwner());
         }
         return (T)document;
     }
@@ -144,6 +147,14 @@ public class DocumentFile {
      */
     public synchronized void invalidateDocument(){
         isInvalid = true;
+    }
+
+    public EntityStatBlob getOwner() {
+        return owner;
+    }
+
+    public void setOwner(EntityStatBlob owner) {
+        this.owner = owner;
     }
 
 }
