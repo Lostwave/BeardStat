@@ -26,10 +26,6 @@ public class TestSQLiteDataProvider extends IStatDataProviderTest  {
         config.version = config.latestVersion;
         config.backups = false;
         
-        //System.out.println(config);
-        try{
-            new File("test.db").delete();
-        }catch(Exception e){}
         instance = new SQLiteStatDataProvider(new TestPlatform(), ":memory:", config);
         String preloadStmt = ((SQLiteStatDataProvider)instance).readSQL("sqlite","preload",config.tablePrefix);
         for(String s : preloadStmt.split("\\;")){
