@@ -37,12 +37,12 @@ import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.containers.StatBlobRecord;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
+import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
-import com.tehbeard.beardstat.utils.HumanNameGenerator;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
 import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
@@ -824,7 +824,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         if (!statisticMetaMap.containsKey(gameTag) && create) {
             try {
                 saveStatistic.setString(1, gameTag);
-                saveStatistic.setString(2, HumanNameGenerator.getNameOf(gameTag));
+                saveStatistic.setString(2, IdentifierService.getHumanName(gameTag));
                 saveStatistic.setString(3, Formatting.none.toString().toLowerCase());
                 saveStatistic.execute();
                 ResultSet rs = saveStatistic.getGeneratedKeys();

@@ -61,5 +61,16 @@ public class MuxIdentifierGenerator implements IIdentifierGenerator {
         return null;
     }
 
+    @Override
+    public String getHumanName(String key) {
+        for(IIdentifierGenerator gen : generators){
+            String s = gen.getHumanName(key);
+            if(s!=null){
+                return s;
+            }
+        }
+        return key;
+    }
+
 
 }

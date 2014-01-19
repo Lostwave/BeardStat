@@ -29,4 +29,6 @@ public interface IIdentifierGenerator {
     public String keyForEntity(Entity entity);
 
     public String keyForPotionEffect(PotionEffect effect);
+    
+    public String getHumanName(String key);
 }

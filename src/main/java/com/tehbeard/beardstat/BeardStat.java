@@ -38,7 +38,7 @@ import com.tehbeard.beardstat.listeners.StatPlayerListener;
 import com.tehbeard.beardstat.listeners.StatVehicleListener;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager;
-import com.tehbeard.beardstat.utils.HumanNameGenerator;
+import com.tehbeard.beardstat.utils.BukkitHumanNameGenerator;
 import com.tehbeard.beardstat.utils.LanguagePack;
 import com.tehbeard.beardstat.utils.StatUtils;
 import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
@@ -101,7 +101,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         } catch (FileNotFoundException e) {
             getLogger().warning("No External metadata file detected");
         }
-        HumanNameGenerator.init();
+        BukkitHumanNameGenerator.init();
 
         // load language file from jar and from data folder
         try {

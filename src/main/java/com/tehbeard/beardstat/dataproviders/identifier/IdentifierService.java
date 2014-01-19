@@ -42,5 +42,9 @@ public class IdentifierService {
     public static String getIdForPotionEffect(PotionEffect effect) {
         return generator.keyForPotionEffect(effect);
     }
+    
+    public static String getHumanName(String key){
+        return generator.getHumanName(key);
+    }
 
 }
