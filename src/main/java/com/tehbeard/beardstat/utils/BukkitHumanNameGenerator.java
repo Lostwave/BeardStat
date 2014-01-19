@@ -120,27 +120,27 @@ public class BukkitHumanNameGenerator {
     
     public static void main(String[] args) throws FileNotFoundException{
         HomebrewIdentifierGenerator.readData(new FileInputStream("src/main/resources/metadata.txt"));
-        genMetadataMaterial();
+        init();
         System.out.println("=nullfix script=");
         
         
         for( Entry<String, String> e : mapping.entrySet()){
             //System.out.println(e.getKey() + " = " + e.getValue());
-            p("UPDATE ${PREFIX}_statistic SET `name`='" + e.getValue() + "' WHERE `statistic`='" + e.getKey() + "' and `name`=null");
+            p("UPDATE ${PREFIX}_statistic SET `name`='" + e.getValue() + "' WHERE `statistic`='" + e.getKey() + "' and `name` IS NULL;");
         }
         System.out.println("=statistic.sql=");
         p("INSERT IGNORE INTO ${PREFIX}_domain (domain) VALUES ('default');");
         p("INSERT IGNORE INTO ${PREFIX}_world (world,name) VALUES ('__global__','Global');");
         for( Entry<String, String> e : mapping.entrySet()){
             //System.out.println(e.getKey() + " = " + e.getValue());
-            p("INSERT INGORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('" + e.getValue() + "','" + e.getKey() + ")");
+            p("INSERT INGORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('" + e.getValue() + "','" + e.getKey() + "');");
         }
         System.out.println("=statistic.sqlite=");
         p("INSERT OR IGNORE INTO ${PREFIX}_domain (domain) VALUES ('default');");
         p("INSERT OR IGNORE INTO ${PREFIX}_world (world,name) VALUES ('__global__','Global');");
         for( Entry<String, String> e : mapping.entrySet()){
             //System.out.println(e.getKey() + " = " + e.getValue());
-            p("INSERT OR INGORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('" + e.getValue() + "','" + e.getKey() + ")");
+            p("INSERT OR INGORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('" + e.getValue() + "','" + e.getKey() + "');");
         }
     }
     
