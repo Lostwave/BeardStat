@@ -133,7 +133,7 @@ public class BukkitHumanNameGenerator {
         p("INSERT IGNORE INTO ${PREFIX}_world (world,name) VALUES ('__global__','Global');");
         for( Entry<String, String> e : mapping.entrySet()){
             //System.out.println(e.getKey() + " = " + e.getValue());
-            p("INSERT INGORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('" + e.getValue() + "','" + e.getKey() + "');");
+            p("INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('" + e.getValue() + "','" + e.getKey() + "');");
         }
         System.out.println("=statistic.sqlite=");
         p("INSERT OR IGNORE INTO ${PREFIX}_domain (domain) VALUES ('default');");

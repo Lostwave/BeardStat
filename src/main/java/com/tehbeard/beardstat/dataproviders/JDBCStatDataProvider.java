@@ -79,6 +79,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_METADATA_CATEGORY = "sql/maintenence/metadata/category";
     public static final String SQL_METADATA_STATISTIC = "sql/maintenence/metadata/statistic";
     public static final String SQL_METADATA_STATIC_STATS = "sql/maintenence/metadata/staticstats";
+    public static final String SQL_METADATA_STATIC_FIXNULL = "sql/maintenence/metadata/fixnull";
     public static final String SQL_CREATE_TABLES = "sql/maintenence/create.tables";
     public static final String SQL_KEEP_ALIVE = "sql/maintenence/keepAlive";
     //Entity scripts
@@ -171,10 +172,12 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             executeScript(SQL_METADATA_CATEGORY);
             executeScript(SQL_METADATA_STATISTIC);
             executeScript(SQL_METADATA_STATIC_STATS);
+            executeScript(SQL_METADATA_STATIC_FIXNULL);
 
 
             cacheComponents();
         } catch (SQLException ex) {
+            platform.mysqlError(ex, "init");
             throw new BeardStatRuntimeException("Error during init", ex, false);
         }
     }
