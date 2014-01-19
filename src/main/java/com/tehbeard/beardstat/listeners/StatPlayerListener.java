@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
@@ -85,7 +86,7 @@ public class StatPlayerListener extends StatListener {
         StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "login",1);
         StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogin",
                 (int) (System.currentTimeMillis() / 1000L));
-        
+
         //Special case for first join
         getPlayerStatManager().getBlobForPlayerAsync(event.getPlayer())
         .onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
@@ -95,7 +96,7 @@ public class StatPlayerListener extends StatListener {
 
                 if (!params.getValue().hasStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "firstlogin")) {
                     params.getValue().getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "firstlogin")
-                            .setValue((int) (event.getPlayer().getFirstPlayed() / 1000L));
+                    .setValue((int) (event.getPlayer().getFirstPlayed() / 1000L));
 
                 }
 
@@ -132,18 +133,21 @@ public class StatPlayerListener extends StatListener {
         if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-        
-        
 
-        //TODO : FIX FISHING. NEED 1.7 API FOR THIS :(
-        
-        
         switch(event.getState()) {
         case CAUGHT_FISH:
             StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "fishcaught", 1);
-            JavaPlugin.getPlugin(BeardStat.class).getLogger().info(event.getCaught().toString());
+            if(event.getCaught() instanceof Item){
+                Item item = (Item) event.getCaught();
+                item.getItemStack();
+                StatUtils.modifyStatItem(event.getPlayer(), "fishing", item.getItemStack(), item.getItemStack().getAmount());
+            }
             break;
         case CAUGHT_ENTITY:
+            //Prevent Item triggering twice??
+            if(event.getCaught() instanceof Item == false){
+                StatUtils.modifyStatEntity(event.getPlayer(), "fishing",event.getCaught(),1);
+            }
             break;
         case FAILED_ATTEMPT:
             break;
@@ -340,7 +344,7 @@ public class StatPlayerListener extends StatListener {
             if (clickedBlock.getType().equals(Material.FLOWER_POT) && (action == Action.RIGHT_CLICK_BLOCK)
                     && (clickedBlock.getData() == 0)) {
                 Material[] m = {Material.RED_ROSE, Material.YELLOW_FLOWER, Material.SAPLING, Material.RED_MUSHROOM,
-                    Material.BROWN_MUSHROOM, Material.CACTUS, Material.DEAD_BUSH};
+                        Material.BROWN_MUSHROOM, Material.CACTUS, Material.DEAD_BUSH};
                 for (Material mm : m) {
 
                     if (mm.equals(item.getType())) {
@@ -360,7 +364,7 @@ public class StatPlayerListener extends StatListener {
         }
 
         StatUtils.modifyStatPlayer(event.getPlayer(),"exp", "lifetimexp", event.getAmount());
-        
+
         StatUtils.setPlayerStat(event.getPlayer(), "exp", "currentexp", event.getPlayer().getTotalExperience() + event.getAmount());
 
     }
