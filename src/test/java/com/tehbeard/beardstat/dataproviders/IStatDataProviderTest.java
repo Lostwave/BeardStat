@@ -4,6 +4,13 @@
  */
 package com.tehbeard.beardstat.dataproviders;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import java.io.File;
+
+import org.junit.Test;
+
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
@@ -14,11 +21,6 @@ import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
-import java.io.File;
-import java.util.logging.Logger;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
