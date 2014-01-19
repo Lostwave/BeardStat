@@ -387,7 +387,7 @@ INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('nether fence
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('diamond block','diamondblock');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('raw chicken','rawchicken');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('name tag','nametag');
-INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('log 2','log2_1');
+INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('Dark oak log','log2_1');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('iron spade','ironspade');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('furnace','furnace');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('wood axe','woodaxe');
@@ -397,7 +397,7 @@ INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('iron golem',
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('iron door block','irondoorblock');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('gold hoe','goldhoe');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('stone axe','stoneaxe');
-INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('log 2','log2_0');
+INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('Acacia log','log2_0');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('diamond chestplate','diamondchestplate');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('red mushroom','redmushroom');
 INSERT IGNORE INTO ${PREFIX}_statistic (`name`,`statistic`) VALUES('redstone wire','redstonewire');
