@@ -107,7 +107,9 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
             if(isSingleton){
                 dbEntry.getRevisions().remove(currentRevision);
             }
-            return pullDocument(entityId, document.getDomain(), document.getKey());
+            DocumentFile d = pullDocument(entityId, document.getDomain(), document.getKey());
+            d.setOwner(document.getOwner());
+            return d;
 
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(SQLiteStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);

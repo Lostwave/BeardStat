@@ -45,6 +45,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
@@ -131,9 +132,29 @@ public class StatPlayerListener extends StatListener {
         if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
+        
+        
 
         //TODO : FIX FISHING. NEED 1.7 API FOR THIS :(
-        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "fishcaught", 1);
+        
+        
+        switch(event.getState()) {
+        case CAUGHT_FISH:
+            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "fishcaught", 1);
+            JavaPlugin.getPlugin(BeardStat.class).getLogger().info(event.getCaught().toString());
+            break;
+        case CAUGHT_ENTITY:
+            break;
+        case FAILED_ATTEMPT:
+            break;
+        case FISHING:
+            break;
+        case IN_GROUND:
+            break;
+        default:
+            break;
+        }
+
 
     }
 

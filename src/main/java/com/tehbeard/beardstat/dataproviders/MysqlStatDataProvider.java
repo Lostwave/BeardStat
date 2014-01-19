@@ -357,6 +357,8 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        returnDoc.setOwner(document.getOwner());
         return returnDoc;
     }
 
