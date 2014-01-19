@@ -28,7 +28,7 @@ public class WorldManager {
     private static class WorldData {
         
         @InjectConfig("survival")
-        private boolean survival;
+        private boolean survival;//Track survival mode
         @InjectConfig("creative")
         private boolean creative;
         @InjectConfig("adventure")
@@ -55,6 +55,11 @@ public class WorldManager {
                     
         }
         
+        /**
+         * Returns true if no gamemode is tracked for a world.
+         * used for certain checks. (entity death) 
+         * @return
+         */
         public boolean isBlackListed(){
             return !(survival || creative || adventure);
         }

@@ -23,6 +23,9 @@ public class StatConfiguration {
     
     @InjectConfig("stats.database.type")
     public String dbType;
+    
+    @InjectConfig("general.loglevel")
+    public String logLevel = "INFO";
 
     @Override
     public String toString() {

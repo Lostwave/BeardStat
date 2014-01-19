@@ -1,6 +1,7 @@
 general:
   debug: false
   verbose: false
+  loglevel: INFO
 stats:
   configversion: ${project.config.version}
   database:
@@ -13,6 +14,7 @@ stats:
     prefix: "stats"
     port: 3306
     backups: true
+    uuidUpdate: true
 pages:
     default:
       - "blocks placed:stats.totalblockcreate"

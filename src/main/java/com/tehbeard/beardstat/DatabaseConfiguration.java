@@ -26,4 +26,19 @@ public class DatabaseConfiguration {
     public int port;
     @InjectConfig("backups")
     public boolean backups;
+    @InjectConfig("uuidUpdate")
+    public boolean runUUIDUpdate;
+    
+    public int latestVersion;
+    
+    public DatabaseConfiguration(int latestVersion){
+        this.latestVersion = latestVersion;
+    }
+
+    @Override
+    public String toString() {
+        return "DatabaseConfiguration{" + "databaseType=" + databaseType + ", version=" + version + ", host=" + host + ", username=" + username + ", database=" + database + ", tablePrefix=" + tablePrefix + ", port=" + port + ", backups=" + backups + ", latestVersion=" + latestVersion + '}';
+    }
+    
+    
 }

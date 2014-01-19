@@ -9,6 +9,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffect;
 
+import com.tehbeard.beardstat.utils.BukkitHumanNameGenerator;
+
 /**
  * Uses the old metadata id system, To be dropped in 0.7.2 in favour of minecraft string ids
  * @author James
@@ -59,7 +61,7 @@ public class HomebrewIdentifierGenerator implements IIdentifierGenerator{
     public static void readData(InputStream is) {
         Scanner s = new Scanner(is);
 
-        while (s.hasNext()) {
+        while (s.hasNextLine()) {
             String line = s.nextLine();
             if(line.startsWith("#")){continue;}
             String[] entry = line.split(",");
@@ -109,6 +111,13 @@ public class HomebrewIdentifierGenerator implements IIdentifierGenerator{
             return "EntryInfo [mask=" + this.mask + ", min=" + this.min + ", max=" + this.max + "]";
         }
 
+    }
+
+
+
+    @Override
+    public String getHumanName(String key) {
+        return BukkitHumanNameGenerator.map(key);
     }
 
 }

@@ -22,7 +22,6 @@ public class StatBlockListener extends StatListener {
         }
         StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "totalblockcreate", 1);
         StatUtils.modifyStatBlock(event.getPlayer(), "blockcreate", event.getBlock(), 1);
-        
 
     }
 

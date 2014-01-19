@@ -102,8 +102,6 @@ public class StatEntityListener extends StatListener {
             return;
         }
 
-        
-
         // Total damage
         StatUtils.modifyStatPlayer(player, category[idx], "total", amount);
 
@@ -139,7 +137,7 @@ public class StatEntityListener extends StatListener {
             if (!shouldTrackPlayer(player)) {
                 return;
             }
-            
+
             StatUtils.modifyStatPlayer(player, "stats", "damagehealed", amount);
             if (reason != RegainReason.CUSTOM) {
                 StatUtils.modifyStatPlayer(player, "stats", "heal" + reason.toString().replace("_", "").toLowerCase(), amount);
@@ -198,7 +196,6 @@ public class StatEntityListener extends StatListener {
             if (!shouldTrackPlayer(player)) {
                 return;
             }
-
 
             StatUtils.modifyStatPlayer(player, "bow", "shots", 1);
 

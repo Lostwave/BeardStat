@@ -1,5 +1,7 @@
 package com.tehbeard.beardstat.utils;
 
+import java.util.UUID;
+
 import net.dragonzone.promise.Promise;
 
 import org.bukkit.block.Block;
@@ -75,7 +77,7 @@ public class StatUtils {
      * @param amount
      */
     public static void setPlayerStat(Player player,String category, String statistic, int amount){
-        set( player.getName(), 
+        set( player.getUniqueId(), 
                 BeardStat.DEFAULT_DOMAIN, 
                 player.getWorld().getName(), 
                 category, 
@@ -92,7 +94,7 @@ public class StatUtils {
      */
     public static void modifyStatPlayer(Player player,String category, String statistic, int amount){
         modifyStat(
-                player.getName(), 
+                player.getUniqueId(), 
                 BeardStat.DEFAULT_DOMAIN, 
                 player.getWorld().getName(), 
                 category, 
@@ -109,27 +111,10 @@ public class StatUtils {
      * @param amount
      */
     public static void modifyStatItem(Player player,  String category, ItemStack item, int amount){
-        modifyStatItem(player.getName(),
-                BeardStat.DEFAULT_DOMAIN,
-                player.getWorld().getName(),
-                category,
-                item,
-                amount);
-    }
-
-    /**
-     * Helper method 
-     * @param player
-     * @param domain
-     * @param world
-     * @param category
-     * @param item
-     * @param amount
-     */
-    public static void modifyStatItem(String player,String domain, String world, String category, ItemStack item, int amount){
         String baseId = IdentifierService.getIdForItemStack(item);
         String metaId = IdentifierService.getIdForItemStackWithMeta(item);
-        modifyStat(player, domain, world, category, baseId, metaId, amount);
+        modifyStat(player.getUniqueId(), BeardStat.DEFAULT_DOMAIN, player.getWorld().getName(), category, baseId, metaId, amount);
+        
     }
 
     /**
@@ -140,7 +125,7 @@ public class StatUtils {
      * @param amount
      */
     public static void modifyStatBlock(Player player, String category, Block block, int amount){
-        modifyStatBlock(player.getName(),
+        modifyStatBlock(player.getUniqueId(),
                 BeardStat.DEFAULT_DOMAIN,
                 player.getWorld().getName(),
                 category,
@@ -157,15 +142,15 @@ public class StatUtils {
      * @param block
      * @param amount
      */
-    public static void modifyStatBlock(String player,String domain, String world, String category, Block block, int amount){
+    public static void modifyStatBlock(UUID uuid,String domain, String world, String category, Block block, int amount){
         String baseId = IdentifierService.getIdForMaterial(block.getType());
         String metaId = IdentifierService.getIdForMaterial(block.getType(),block.getData());
-        modifyStat(player, domain, world, category, baseId, metaId, amount);
+        modifyStat(uuid, domain, world, category, baseId, metaId, amount);
     }
 
     /**
      * Increment/decrement a stat
-     * @param player
+     * @param uuid
      * @param domain
      * @param world
      * @param category
@@ -173,21 +158,21 @@ public class StatUtils {
      * @param metaId
      * @param amount
      */
-    public static void modifyStat(String player,String domain, String world, String category, String baseId, String metaId, int amount){
+    public static void modifyStat(UUID uuid,String domain, String world, String category, String baseId, String metaId, int amount){
         boolean inc = (amount > 0);
         int am = Math.abs(amount);
 
         if(inc){
-            increment(player, domain, world, category, baseId, am);
+            increment(uuid, domain, world, category, baseId, am);
             if(metaId != null){
-                increment(player, domain, world, category, metaId, am);
+                increment(uuid, domain, world, category, metaId, am);
             }
         }
         else
         {
-            decrement(player, domain, world, category, baseId, am);
+            decrement(uuid, domain, world, category, baseId, am);
             if(metaId != null){
-                decrement(player, domain, world, category, metaId, am);
+                decrement(uuid, domain, world, category, metaId, am);
             }
         }
     }
@@ -201,8 +186,8 @@ public class StatUtils {
      * @param statistic
      * @param amount
      */
-    public static void increment(String player,String domain, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getOrCreatePlayerStatBlob(player);
+    public static void increment(UUID uuid,String domain, String world, String category, String statistic, int amount){
+        Promise<EntityStatBlob> blob = manager.getBlobForUUID(uuid.toString().replaceAll("-",""));
         blob.onResolve(new DelegateIncrement(domain,world,category,statistic,amount));
     }
 
@@ -215,8 +200,8 @@ public class StatUtils {
      * @param statistic
      * @param amount
      */
-    public static void decrement(String player,String domain, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getOrCreatePlayerStatBlob(player);
+    public static void decrement(UUID uuid,String domain, String world, String category, String statistic, int amount){
+        Promise<EntityStatBlob> blob = manager.getBlobForUUID(uuid.toString().replaceAll("-",""));
         blob.onResolve(new DelegateDecrement(domain,world,category,statistic,amount));
     }
     
@@ -229,8 +214,8 @@ public class StatUtils {
      * @param statistic
      * @param amount
      */
-    public static void set(String player,String domain, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getOrCreatePlayerStatBlob(player);
+    public static void set(UUID uuid,String domain, String world, String category, String statistic, int amount){
+        Promise<EntityStatBlob> blob = manager.getBlobForUUID(uuid.toString().replaceAll("-",""));
         blob.onResolve(new DelegateSet(domain,world,category,statistic,amount));
     }
 

@@ -49,7 +49,6 @@ public class StatCraftListener extends StatListener {
              * if MetaDataable, make the item string correct
              */
             StatUtils.modifyStatItem(p,"crafting", event.getRecipe().getResult(), amount);
-
         }
 
     }

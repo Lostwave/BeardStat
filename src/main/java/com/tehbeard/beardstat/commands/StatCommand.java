@@ -18,6 +18,7 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.containers.StatVector;
+import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.utils.LanguagePack;
 
 /**
@@ -39,16 +40,14 @@ public class StatCommand extends BeardStatCommand {
 
             String player = null;
             // Use another player
-            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {
-                player = arguments.getOption("p");
-            }
+            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {player = arguments.getOption("p");}
 
             // Else use this player
             if ((player == null) && (sender instanceof Player)) {
                 player = ((Player) sender).getName();
             }
 
-            // not a player and no player picked? show the help message
+            // not a player and no player picked? or -h flag? show the help message.
             if ((player == null) || arguments.getFlag("h")) {
                 sendHelpMessage(sender);
                 return true;
@@ -71,7 +70,8 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.getBlobByNameType(player, IStatDataProvider.PLAYER_TYPE).getValue();
+                EntityStatBlob blob = this.playerStatManager.getBlob(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE,null,false));
+                sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
                     return true;
@@ -113,6 +113,7 @@ public class StatCommand extends BeardStatCommand {
                 }
 
             } else {
+                //TODO - Swap to API call instead
                 Bukkit.dispatchCommand(sender, "statpage " + player + " default");
             }
 

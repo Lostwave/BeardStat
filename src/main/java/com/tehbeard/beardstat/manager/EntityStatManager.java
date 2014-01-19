@@ -1,188 +1,176 @@
 package com.tehbeard.beardstat.manager;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
 
+import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
-import com.tehbeard.beardstat.listeners.defer.DeferAddNameType;
-import com.tehbeard.beardstat.listeners.defer.DeferAddUUID;
-import com.tehbeard.beardstat.listeners.defer.DeferRemoveBlob;
+import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
+
+
 
 /**
  * Manages a cache of online stat entities;
  *
  * @author James
  */
-public class EntityStatManager implements CommandExecutor{
+public class EntityStatManager {
 
-    private HashMap<String, Promise<EntityStatBlob>> typeNameCache = new HashMap<String, Promise<EntityStatBlob>>();
-    private HashMap<String, Promise<EntityStatBlob>> uuidCache = new HashMap<String, Promise<EntityStatBlob>>();
-    private final BeardStat plugin;
+    private final CacheDatabase cache = new CacheDatabase();
+    private final DbPlatform platform;
     private final IStatDataProvider backendDatabase;
-    
-    public EntityStatManager(BeardStat plugin, IStatDataProvider backendDatabase) {
-        this.plugin = plugin;
+    private ExecutorService loadQueue = Executors.newSingleThreadExecutor();
+
+    public EntityStatManager(DbPlatform platform, IStatDataProvider backendDatabase) {
+        this.platform = platform;
+
         this.backendDatabase = backendDatabase;
 
     }
 
-    public static String getCacheKey(String name, String type) {
-        return type + "::" + name;
-    }
-    
-    public Promise<EntityStatBlob> getOrCreatePlayerStatBlob(String name){
-        return getOrCreateBlob(name, IStatDataProvider.PLAYER_TYPE, null);//TODO - GET THIS SOMEHOW IN 1.7
-    }
-
-    public Promise<EntityStatBlob> getOrCreateBlob(String name, String type, String uuid) {
-        return getBlob(name, type, uuid, true);
+    /**
+     * Returns the EntityStatBlob for a player.
+     * @param player
+     * @return EntityStatBlob
+     */
+    public EntityStatBlob getBlobForPlayer(Player player){
+        return getBlobForPlayerAsync(player).getValue();
     }
 
-    public Promise<EntityStatBlob> getBlobByNameType(String name, String type) {
-        return getBlob(name, type, null, false);
+    /**
+     * Returns the EntityStatBlob for the blob that matches this query
+     * @param query
+     * @return 
+     */
+    public EntityStatBlob getBlob(ProviderQuery query){
+        return getBlobASync(query).getValue();
+
     }
-    
 
-    private Promise<EntityStatBlob> getBlob(String name, String type, String uuid, boolean create) {
-        final String cacheKey = getCacheKey(name, type);
-        if (!typeNameCache.containsKey(cacheKey)) {
-
-            //Pull from database, preemptively cache name/type, cache String on completion.
-            Promise<EntityStatBlob> dbValue = backendDatabase.pullEntityBlob(new ProviderQuery(name, type, uuid, create));
-
-            typeNameCache.put(cacheKey, dbValue);// Pre-emptively cache the promise, defer removing to on error.
-
-            dbValue.onReject(new DeferRemoveBlob(cacheKey, typeNameCache));//Remove from cache if failed.
-            dbValue.onResolve(new DeferAddUUID(uuidCache));//Add uuid to cache on load
-
+    /**
+     * Returns a list of blobs that match the query
+     * @param query
+     * @return 
+     */
+    public EntityStatBlob[] getBlobs(ProviderQuery query){
+        ProviderQueryResult[] results = queryDatabase(query);
+        EntityStatBlob[] blobs = new EntityStatBlob[results.length];
+        for(int i = 0;i<results.length; i++){
+            blobs[i] = getBlob(results[i].asProviderQuery());
         }
-        return typeNameCache.get(cacheKey);
+        return blobs;
     }
 
-    public Promise<EntityStatBlob> getBlobByUUID(String uuid) {
+    /**
+     * Asynchronously retrieves a player blob, this will not lock the game thread if called.
+     * @param player
+     * @return 
+     */
+    public Promise<EntityStatBlob> getBlobForPlayerAsync(Player player){
+        //TODO use uuid in future
+        return getBlobASync(new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-", ""), true));
+    }
 
-        if (!uuidCache.containsKey(uuid.toString())) {
+    /**
+     * Asynchronously retrieves a player blob, this will not lock the game thread if called.
+     * @param player
+     * @return 
+     * @deprecated in favour of uuid based methods in the future.
+     */
+    @Deprecated
+    public Promise<EntityStatBlob> getBlobForPlayerAsync(String player){
+        //TODO use uuid in future
+        return getBlobASync(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE, null, true));
 
-            //Pull from database, preemptively cache name/type, cache String on completion.
-            Promise<EntityStatBlob> dbValue = backendDatabase.pullEntityBlob(new ProviderQuery(null, null, uuid, false));
+    }
 
-            uuidCache.put(uuid, dbValue);// Pre-emptively cache the promise, defer removing to on error.
-
-            dbValue.onReject(new DeferRemoveBlob(uuid, uuidCache));
-            dbValue.onDone(new DeferAddNameType(uuidCache));
-
+    /**
+     * Asynchronously retrieves a blob matching the query.
+     * @param query
+     * @return 
+     */
+    public Promise<EntityStatBlob> getBlobASync(final ProviderQuery query) {
+        if (query.likeName) {
+            throw new IllegalStateException("Cannot use partial matching in query to fetch a blob");
         }
-        return uuidCache.get(uuid);
+
+        if (!cache.hasEntry(query)) {
+            final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
+            cache.addToCache(query, promise);
+            loadQueue.submit(new ASyncLoadBlob(query, backendDatabase, promise));
+        }
+        return cache.getCache(query);
     }
-    
-    private boolean isPlayerOnline(String player) {
-        return Bukkit.getOfflinePlayer(player).isOnline();
+
+    /**
+     * Query the database
+     *
+     * @param providerQuery
+     * @return
+     */
+    public ProviderQueryResult[] queryDatabase(ProviderQuery providerQuery) {
+        return backendDatabase.queryDatabase(providerQuery);
     }
 
     public void saveCache() {
-        Iterator<Entry<String, Promise<EntityStatBlob>>> i = this.typeNameCache.entrySet().iterator();
+        for( EntityStatBlob blob : cache.getLoadedBlobs()){
+            if (blob.getType().equals(IStatDataProvider.PLAYER_TYPE)) {
+                String entityName = blob.getName();
+                ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
 
-        // iterate over cache and save
-        while (i.hasNext()) {
-            Entry<String, Promise<EntityStatBlob>> entry = i.next();
-            String entityId = entry.getKey();
-
-            // check if rejected promise, remove from cache silently
-            if (entry.getValue().isRejected()) {
-                this.plugin.getLogger().severe("Promise[" + entityId + "] was rejected (error?), removing from cache.");// alert
-                // debug
-                // dump
-                i.remove();// clear it out
-                continue;// Skip now
-            }
-
-            // skip if not resolved
-            if (!entry.getValue().isResolved()) {
-                continue;
-            }
-
-            if (entry.getValue().getValue() != null) {
-                // record time for player
-                EntityStatBlob blob = entry.getValue().getValue();
-
-                if (blob.getType().equals(IStatDataProvider.PLAYER_TYPE)) {
-                    String entityName = blob.getName();
-                    ManagerRecord timeRecord = OnlineTimeManager.getRecord(entityName);
-
-                    if (timeRecord != null) {
-                        this.plugin.getLogger().fine("saving time: [Player : " + entityName + " , world: " + timeRecord.world + ", time: " + timeRecord.sessionTime() + "]");
-                        if (timeRecord.world != null) {
-                            entry.getValue().getValue()
-                                    .getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor")
-                                    .incrementStat(timeRecord.sessionTime());
-                        }
-                    }
-                    if (isPlayerOnline(entityName)) {
-                        OnlineTimeManager.setRecord(entityName, Bukkit.getPlayer(entityName).getWorld().getName());
-                    } else {
-                        OnlineTimeManager.wipeRecord(entityName);
-                        i.remove();
+                if (timeRecord != null) {
+                    platform.getLogger().log(Level.FINE, "saving time: [Player : {0} , world: {1}, time: {2}]", new Object[]{entityName, timeRecord.world, timeRecord.sessionTime()});
+                    if (timeRecord.world != null) {
+                        blob.getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor").incrementStat(timeRecord.sessionTime());
                     }
                 }
-
-                this.backendDatabase.pushEntityBlob(blob);
-
-            } else {
-                // Nulled player data
-                this.plugin.getLogger().warning("Promise[" + entityId + "] had a null value! Removed from cache.");
-                i.remove();
+                if (isPlayerOnline(entityName)) {
+                    OnlineTimeManager.setRecord(entityName, platform.getWorldForPlayer(entityName));
+                } else {
+                    OnlineTimeManager.wipeRecord(entityName);
+                    cache.remove(new ProviderQuery(blob.getName(), blob.getType(), blob.getUUID(),false));
+                }
             }
-
+            backendDatabase.pushEntityBlob(blob);
         }
-
     }
-    
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
-        Iterator<Entry<String, Promise<EntityStatBlob>>> i = this.typeNameCache.entrySet().iterator();
-        sender.sendMessage("Players in Stat cache");
-        while (i.hasNext()) {
-            Entry<String, Promise<EntityStatBlob>> entry = i.next();
-            String player = entry.getKey();
-            sender.sendMessage(ChatColor.GOLD + player);
-        }
 
-        sender.sendMessage("Players in login cache");
-
-        for (String player : OnlineTimeManager.getPlayers()) {
-            sender.sendMessage(ChatColor.GOLD + player);
-        }
-        return true;
+    private boolean isPlayerOnline(String player) {
+        return platform.isPlayerOnline(player);
     }
-    
+
     public String getLocalizedStatisticName(String gameTag) {
-        return this.backendDatabase.getStatistic(gameTag).getLocalizedName();
+        StatisticMeta meta = this.backendDatabase.getStatistic(gameTag,false);
+        if(meta!= null){
+            return meta.getLocalizedName();
+        }
+        return gameTag;
     }
 
     public String formatStat(String gameTag, int value) {
-        return this.backendDatabase.getStatistic(gameTag).formatStat(value);
+        StatisticMeta meta = this.backendDatabase.getStatistic(gameTag,false);
+        if(meta!=null){
+            return meta.formatStat(value);
+        }
+        return "" + value;
     }
 
     public void flush() {
         this.backendDatabase.flush();
     }
 
-    public ProviderQueryResult[] queryDatabase(ProviderQuery providerQuery) {
-        return this.backendDatabase.queryDatabase(providerQuery);
+    public Promise<EntityStatBlob> getBlobForUUID(String uuid) {
+        return getBlobASync(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, uuid, true));
     }
-    
 }

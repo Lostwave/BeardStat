@@ -2,12 +2,16 @@
 <actions>
         <action>
             <actionName>build</actionName>
-            <packagings>
-                <packaging>*</packaging>
-            </packagings>
             <goals>
                 <goal>clean</goal>
                 <goal>install</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>test</actionName>
+            <goals>
+                <goal>clean</goal>
+                <goal>test</goal>
             </goals>
         </action>
     </actions>

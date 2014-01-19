@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
+import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 
 /**
@@ -41,7 +42,7 @@ public class LastOnCommand extends BeardStatCommand {
             player = Bukkit.getOfflinePlayer(args[0]);
             name = args[0];
 
-            blob = this.playerStatManager.getBlobByNameType(args[0], IStatDataProvider.PLAYER_TYPE).getValue();
+            blob = this.playerStatManager.getBlob(new ProviderQuery(args[0], IStatDataProvider.PLAYER_TYPE,null,false));
         } else if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED
@@ -52,7 +53,7 @@ public class LastOnCommand extends BeardStatCommand {
             player = Bukkit.getOfflinePlayer(sender.getName());
             if (player != null) {
                 name = player.getName();
-                blob = this.playerStatManager.getBlobByNameType(name, IStatDataProvider.PLAYER_TYPE).getValue();
+                blob = this.playerStatManager.getBlob(new ProviderQuery(name, IStatDataProvider.PLAYER_TYPE,null,false));
             }
         }
 
