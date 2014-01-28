@@ -113,7 +113,8 @@ public class StatCommand extends BeardStatCommand {
                 }
 
             } else {
-                //TODO - Swap to API call instead
+                //TODO - Swap to API call instead?
+                sender.sendMessage(ChatColor.YELLOW + "=========");
                 Bukkit.dispatchCommand(sender, "statpage " + player + " default");
             }
 
