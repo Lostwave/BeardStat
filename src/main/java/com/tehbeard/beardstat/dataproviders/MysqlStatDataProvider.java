@@ -254,9 +254,11 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 String headRev = getCurrentRev(rs);
                 rs.close();
 
-
                 IStatDocument doc = document.getDocument();
-                if (!headRev.equalsIgnoreCase(document.getRevision())) {
+                
+                boolean isNull = headRev == null && headRev == document.getRevision();
+                
+                if (!isNull && !headRev.equalsIgnoreCase(document.getRevision())) {
                     //TODO - Check this actually works.
                     DocumentFile dbDoc = pullDocument(entityId, document.getDomain(), document.getKey());
                     doc = doc.mergeDocument(dbDoc);
