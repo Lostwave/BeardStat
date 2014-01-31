@@ -404,7 +404,7 @@ public class StatPlayerListener extends StatListener {
         if (timeRecord.world == null) {
             return;
         }
-        StatUtils.instance.increment(player, BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor", timeRecord.sessionTime());
+        StatUtils.instance.increment(player, timeRecord.world, "stats", "playedfor", timeRecord.sessionTime());
         OnlineTimeManager.wipeRecord(player.getName());
 
     }

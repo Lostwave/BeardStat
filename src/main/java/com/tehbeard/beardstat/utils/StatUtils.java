@@ -87,7 +87,6 @@ public class StatUtils {
      */
     public void setPlayerStat(Player player,String category, String statistic, int amount){
         set( player, 
-                this.domain, 
                 player.getWorld().getName(), 
                 category, 
                 statistic,
@@ -104,7 +103,6 @@ public class StatUtils {
     public void modifyStatPlayer(Player player,String category, String statistic, int amount){
         modifyStat(
                 player, 
-                this.domain, 
                 player.getWorld().getName(), 
                 category, 
                 statistic,
@@ -122,7 +120,7 @@ public class StatUtils {
     public void modifyStatItem(Player player,  String category, ItemStack item, int amount){
         String baseId = IdentifierService.getIdForItemStack(item);
         String metaId = IdentifierService.getIdForItemStackWithMeta(item);
-        modifyStat(player, this.domain, player.getWorld().getName(), category, baseId, metaId, amount);
+        modifyStat(player, player.getWorld().getName(), category, baseId, metaId, amount);
         
     }
 
@@ -135,7 +133,6 @@ public class StatUtils {
      */
     public void modifyStatBlock(Player player, String category, Block block, int amount){
         modifyStatBlock(player,
-                this.domain,
                 player.getWorld().getName(),
                 category,
                 block,
@@ -151,10 +148,10 @@ public class StatUtils {
      * @param block
      * @param amount
      */
-    public void modifyStatBlock(Player player,String domain, String world, String category, Block block, int amount){
+    public void modifyStatBlock(Player player, String world, String category, Block block, int amount){
         String baseId = IdentifierService.getIdForMaterial(block.getType());
         String metaId = IdentifierService.getIdForMaterial(block.getType(),block.getData());
-        modifyStat(player, domain, world, category, baseId, metaId, amount);
+        modifyStat(player, world, category, baseId, metaId, amount);
     }
 
     /**
@@ -167,21 +164,21 @@ public class StatUtils {
      * @param metaId
      * @param amount
      */
-    public void modifyStat(Player player,String domain, String world, String category, String baseId, String metaId, int amount){
+    public void modifyStat(Player player, String world, String category, String baseId, String metaId, int amount){
         boolean inc = (amount > 0);
         int am = Math.abs(amount);
 
         if(inc){
-            increment(player, domain, world, category, baseId, am);
+            increment(player, world, category, baseId, am);
             if(metaId != null){
-                increment(player, domain, world, category, metaId, am);
+                increment(player, world, category, metaId, am);
             }
         }
         else
         {
-            decrement(player, domain, world, category, baseId, am);
+            decrement(player, world, category, baseId, am);
             if(metaId != null){
-                decrement(player, domain, world, category, metaId, am);
+                decrement(player, world, category, metaId, am);
             }
         }
     }
@@ -195,7 +192,7 @@ public class StatUtils {
      * @param statistic
      * @param amount
      */
-    public void increment(Player player,String domain, String world, String category, String statistic, int amount){
+    public void increment(Player player, String world, String category, String statistic, int amount){
         Promise<EntityStatBlob> blob = manager.getBlobASync(makeQry(player));
         blob.onResolve(new DelegateIncrement(domain,world,category,statistic,amount));
     }
@@ -209,7 +206,7 @@ public class StatUtils {
      * @param statistic
      * @param amount
      */
-    public void decrement(Player player,String domain, String world, String category, String statistic, int amount){
+    public void decrement(Player player, String world, String category, String statistic, int amount){
         Promise<EntityStatBlob> blob = manager.getBlobASync(makeQry(player));
         blob.onResolve(new DelegateDecrement(domain,world,category,statistic,amount));
     }
@@ -223,7 +220,7 @@ public class StatUtils {
      * @param statistic
      * @param amount
      */
-    public void set(Player player,String domain, String world, String category, String statistic, int amount){
+    public void set(Player player, String world, String category, String statistic, int amount){
         Promise<EntityStatBlob> blob = manager.getBlobASync(makeQry(player));
         blob.onResolve(new DelegateSet(domain,world,category,statistic,amount));
     }
