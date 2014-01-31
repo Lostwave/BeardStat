@@ -75,15 +75,15 @@ public class StatPlayerListener extends StatListener {
         }
 
         if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "armswing", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "armswing", 1);
         }
 
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "login",1);
-        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogin",
+        StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "login",1);
+        StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "lastlogin",
                 (int) (System.currentTimeMillis() / 1000L));
 
         //Special case for first join
@@ -112,8 +112,8 @@ public class StatPlayerListener extends StatListener {
         if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
             int len = event.getMessage().length();
 
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "chatletters", len);
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "chat", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "chatletters", len);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "chat", 1);
 
         }
     }
@@ -123,7 +123,7 @@ public class StatPlayerListener extends StatListener {
         if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-        StatUtils.modifyStatItem(event.getPlayer(), "itemdrop", event.getItemDrop().getItemStack(), event.getItemDrop().getItemStack().getAmount());
+        StatUtils.instance.modifyStatItem(event.getPlayer(), "itemdrop", event.getItemDrop().getItemStack(), event.getItemDrop().getItemStack().getAmount());
 
     }
 
@@ -135,17 +135,17 @@ public class StatPlayerListener extends StatListener {
 
         switch(event.getState()) {
         case CAUGHT_FISH:
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "fishcaught", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "fishcaught", 1);
             if(event.getCaught() instanceof Item){
                 Item item = (Item) event.getCaught();
                 item.getItemStack();
-                StatUtils.modifyStatItem(event.getPlayer(), "fishing", item.getItemStack(), item.getItemStack().getAmount());
+                StatUtils.instance.modifyStatItem(event.getPlayer(), "fishing", item.getItemStack(), item.getItemStack().getAmount());
             }
             break;
         case CAUGHT_ENTITY:
             //Prevent Item triggering twice??
             if(event.getCaught() instanceof Item == false){
-                StatUtils.modifyStatEntity(event.getPlayer(), "fishing",event.getCaught(),1);
+                StatUtils.instance.modifyStatEntity(event.getPlayer(), "fishing",event.getCaught(),1);
             }
             break;
         case FAILED_ATTEMPT:
@@ -164,8 +164,8 @@ public class StatPlayerListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         if (event.isCancelled() == false) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "kicks", 1);
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout", (int) ((new Date()).getTime() / 1000L));
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "kicks", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout", (int) ((new Date()).getTime() / 1000L));
             addTimeOnlineAndWipe(event.getPlayer());
         }
 
@@ -173,7 +173,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout",
+        StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout",
                 (int) ((new Date()).getTime() / 1000L));
         addTimeOnlineAndWipe(event.getPlayer());
 
@@ -198,7 +198,7 @@ public class StatPlayerListener extends StatListener {
             if (from.getWorld().equals(to.getWorld())) {
                 final double distance = from.distance(to);
                 if (distance < 8) {
-                    StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "move", (int) Math.ceil(distance));
+                    StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "move", (int) Math.ceil(distance));
                 }
             }
         }
@@ -210,14 +210,14 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        StatUtils.modifyStatItem(event.getPlayer(), "itempickup", event.getItem().getItemStack(), event.getItem().getItemStack().getAmount());
+        StatUtils.instance.modifyStatItem(event.getPlayer(), "itempickup", event.getItem().getItemStack(), event.getItem().getItemStack().getAmount());
 
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPortal(PlayerPortalEvent event) {
         if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "portal", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "portal", 1);
         }
     }
 
@@ -227,9 +227,9 @@ public class StatPlayerListener extends StatListener {
             final TeleportCause teleportCause = event.getCause();
 
             if (teleportCause == TeleportCause.ENDER_PEARL) {
-                StatUtils.modifyStatPlayer(event.getPlayer(), "itemuse", "enderpearl", 1);
+                StatUtils.instance.modifyStatPlayer(event.getPlayer(), "itemuse", "enderpearl", 1);
             }
-            StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "teleport", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "teleport", 1);
         }
     }
 
@@ -238,7 +238,7 @@ public class StatPlayerListener extends StatListener {
         if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "fill" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
+        StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "fill" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -247,7 +247,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "empty" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
+        StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "empty" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
 
     }
 
@@ -261,18 +261,18 @@ public class StatPlayerListener extends StatListener {
         Entity rightClicked = event.getRightClicked();
 
         if ((material == Material.BUCKET) && (rightClicked instanceof Cow)) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "interact", "milkcow", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "interact", "milkcow", 1);
             return;
         }
 
         if ((material == Material.BOWL) && (rightClicked instanceof MushroomCow)) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "interact", "milkmushroomcow", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "interact", "milkmushroomcow", 1);
             return;
         }
 
         if ((material == Material.INK_SACK) && (rightClicked instanceof Sheep)) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "dye", "total", 1);
-            StatUtils.modifyStatItem(event.getPlayer(), "dye", event.getPlayer().getItemInHand(), 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "dye", "total", 1);
+            StatUtils.instance.modifyStatItem(event.getPlayer(), "dye", event.getPlayer().getItemInHand(), 1);
             return;
         }
 
@@ -287,12 +287,12 @@ public class StatPlayerListener extends StatListener {
                 return;
             }
 
-            StatUtils.modifyStatPlayer(event.getPlayer(), "wolfdye", "total", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "wolfdye", "total", 1);
 
             /**
              * if MetaDataable, make the item string correct
              */
-            StatUtils.modifyStatItem(event.getPlayer(), "wolfdye", event.getPlayer().getItemInHand(), 1);
+            StatUtils.instance.modifyStatItem(event.getPlayer(), "wolfdye", event.getPlayer().getItemInHand(), 1);
         }
 
     }
@@ -304,11 +304,11 @@ public class StatPlayerListener extends StatListener {
         }
 
         if (event.getEntity() instanceof Sheep) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "sheared", "sheep", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "sheared", "sheep", 1);
         }
 
         if (event.getEntity() instanceof MushroomCow) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "sheared", "mushroomcow", 1);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "sheared", "mushroomcow", 1);
         }
 
     }
@@ -330,15 +330,15 @@ public class StatPlayerListener extends StatListener {
             if (result.equals(Result.DENY) == false) {
                 if ((item.getType() == Material.FLINT_AND_STEEL) || (item.getType() == Material.FIREBALL)
                         || (item.getType() == Material.SIGN)) {
-                    StatUtils.modifyStatItem(event.getPlayer(), "itemuse", item, 1);
+                    StatUtils.instance.modifyStatItem(event.getPlayer(), "itemuse", item, 1);
                 }
             }
             if ((clickedBlock.getType() == Material.CAKE_BLOCK)
                     || ((clickedBlock.getType() == Material.TNT) && (item.getType() == Material.FLINT_AND_STEEL))) {
-                StatUtils.modifyStatBlock(event.getPlayer(), "itemuse", clickedBlock, 1);
+                StatUtils.instance.modifyStatBlock(event.getPlayer(), "itemuse", clickedBlock, 1);
             }
             if (clickedBlock.getType().equals(Material.CHEST)) {
-                StatUtils.modifyStatPlayer(event.getPlayer(), "stats", "openchest", 1);
+                StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "openchest", 1);
             }
             if (clickedBlock.getType().equals(Material.FLOWER_POT) && (action == Action.RIGHT_CLICK_BLOCK)
                     && (clickedBlock.getData() == 0)) {
@@ -347,7 +347,7 @@ public class StatPlayerListener extends StatListener {
                 for (Material mm : m) {
 
                     if (mm.equals(item.getType())) {
-                        StatUtils.modifyStatItem(event.getPlayer(),"plant",item,1);
+                        StatUtils.instance.modifyStatItem(event.getPlayer(),"plant",item,1);
                     }
                 }
 
@@ -362,9 +362,9 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        StatUtils.modifyStatPlayer(event.getPlayer(),"exp", "lifetimexp", event.getAmount());
+        StatUtils.instance.modifyStatPlayer(event.getPlayer(),"exp", "lifetimexp", event.getAmount());
 
-        StatUtils.setPlayerStat(event.getPlayer(), "exp", "currentexp", event.getPlayer().getTotalExperience() + event.getAmount());
+        StatUtils.instance.setPlayerStat(event.getPlayer(), "exp", "currentexp", event.getPlayer().getTotalExperience() + event.getAmount());
 
     }
 
@@ -373,10 +373,10 @@ public class StatPlayerListener extends StatListener {
         if (!shouldTrackPlayer(event.getPlayer())) {
             return;
         }
-        StatUtils.setPlayerStat(event.getPlayer(),  "exp", "currentlvl", event.getNewLevel());
+        StatUtils.instance.setPlayerStat(event.getPlayer(),  "exp", "currentlvl", event.getNewLevel());
         int change = event.getNewLevel() - event.getOldLevel();
         if (change > 0) {
-            StatUtils.modifyStatPlayer(event.getPlayer(), "exp", "lifetimelvl", change);
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "exp", "lifetimelvl", change);
         }
 
     }
@@ -390,8 +390,8 @@ public class StatPlayerListener extends StatListener {
         }
 
         if ((event.isCancelled() == false) && !isBlacklistedWorld(player.getWorld())) {
-            StatUtils.modifyStatPlayer(player, "enchant", "total", 1);
-            StatUtils.modifyStatPlayer(player, "enchant", "totallvlspent", event.getExpLevelCost());
+            StatUtils.instance.modifyStatPlayer(player, "enchant", "total", 1);
+            StatUtils.instance.modifyStatPlayer(player, "enchant", "totallvlspent", event.getExpLevelCost());
         }
     }
 
@@ -404,7 +404,7 @@ public class StatPlayerListener extends StatListener {
         if (timeRecord.world == null) {
             return;
         }
-        StatUtils.increment(player.getUniqueId(), BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor", timeRecord.sessionTime());
+        StatUtils.instance.increment(player, BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor", timeRecord.sessionTime());
         OnlineTimeManager.wipeRecord(player.getName());
 
     }
@@ -424,7 +424,7 @@ public class StatPlayerListener extends StatListener {
         }
 
         if (event.getItem().getType().isEdible()) {
-            StatUtils.modifyStatItem(player,"consume", event.getItem(), 1);
+            StatUtils.instance.modifyStatItem(player,"consume", event.getItem(), 1);
             return;
         }
         if (event.getItem().getType() == Material.POTION) {
@@ -434,7 +434,7 @@ public class StatPlayerListener extends StatListener {
             if (meta != null) {
                 for (PotionEffect effect : meta.getCustomEffects()) {
 
-                    StatUtils.modifyStatPotion(player, "consume", effect, 1);
+                    StatUtils.instance.modifyStatPotion(player, "consume", effect, 1);
                 }
                 return;
             }
@@ -445,7 +445,7 @@ public class StatPlayerListener extends StatListener {
                     event.getItem().getDurability());
 
             for (PotionEffect effect : potion) {
-                StatUtils.modifyStatPotion(player, "consume", effect, 1);
+                StatUtils.instance.modifyStatPotion(player, "consume", effect, 1);
             }
         }
 
@@ -458,6 +458,6 @@ public class StatPlayerListener extends StatListener {
             return;
         }
         Player player = event.getPlayer();
-        StatUtils.modifyStatEntity(player, "leash", event.getEntity(), 1);
+        StatUtils.instance.modifyStatEntity(player, "leash", event.getEntity(), 1);
     }
 }

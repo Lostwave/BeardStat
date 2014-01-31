@@ -41,7 +41,7 @@ public class StatVehicleListener extends StatListener {
             to = event.getTo();
             if (from.getWorld().equals(to.getWorld())) {
                 if (from.distance(to) < 10) {
-                    StatUtils.modifyStatEntity(player, "vehicle", event.getVehicle(), (int) Math.ceil(from.distance(to)));
+                    StatUtils.instance.modifyStatEntity(player, "vehicle", event.getVehicle(), (int) Math.ceil(from.distance(to)));
                 }
             }
         }

@@ -39,7 +39,7 @@ public class StatCraftListener extends StatListener {
                     int made = getItemCount(inv, is) - preAmount;
                     // String item =
                     // is.getType().toString().toLowerCase().replace("_","");
-                    StatUtils.modifyStatItem(p,"crafting",is,made);
+                    StatUtils.instance.modifyStatItem(p,"crafting",is,made);
                 }
 
             });
@@ -48,7 +48,7 @@ public class StatCraftListener extends StatListener {
             /**
              * if MetaDataable, make the item string correct
              */
-            StatUtils.modifyStatItem(p,"crafting", event.getRecipe().getResult(), amount);
+            StatUtils.instance.modifyStatItem(p,"crafting", event.getRecipe().getResult(), amount);
         }
 
     }

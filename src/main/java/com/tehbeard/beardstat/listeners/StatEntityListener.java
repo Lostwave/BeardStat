@@ -103,24 +103,24 @@ public class StatEntityListener extends StatListener {
         }
 
         // Total damage
-        StatUtils.modifyStatPlayer(player, category[idx], "total", amount);
+        StatUtils.instance.modifyStatPlayer(player, category[idx], "total", amount);
 
         // Damage cause if not from 
         if (cause != DamageCause.PROJECTILE) {
-            StatUtils.modifyStatPlayer(player, category[idx], cause.toString().toLowerCase().replace("_", ""), amount);
+            StatUtils.instance.modifyStatPlayer(player, category[idx], cause.toString().toLowerCase().replace("_", ""), amount);
         }
         // Entity damage
         if ((other != null) && !(other instanceof Player)) {
-            StatUtils.modifyStatEntity(player, category[idx], other, amount);
+            StatUtils.instance.modifyStatEntity(player, category[idx], other, amount);
         }
         // Projectile damage
         if (projectile != null) {
-            StatUtils.modifyStatEntity(player, category[idx], projectile, amount);
+            StatUtils.instance.modifyStatEntity(player, category[idx], projectile, amount);
         }
 
         if ((attacker instanceof Player) && (attacked instanceof Player)) {
-            StatUtils.modifyStatPlayer((Player)attacker, category[0], "pvp", 1);
-            StatUtils.modifyStatPlayer((Player)attacked, category[1], "pvp", 1);
+            StatUtils.instance.modifyStatPlayer((Player)attacker, category[0], "pvp", 1);
+            StatUtils.instance.modifyStatPlayer((Player)attacked, category[1], "pvp", 1);
         }
     }
 
@@ -138,9 +138,9 @@ public class StatEntityListener extends StatListener {
                 return;
             }
 
-            StatUtils.modifyStatPlayer(player, "stats", "damagehealed", amount);
+            StatUtils.instance.modifyStatPlayer(player, "stats", "damagehealed", amount);
             if (reason != RegainReason.CUSTOM) {
-                StatUtils.modifyStatPlayer(player, "stats", "heal" + reason.toString().replace("_", "").toLowerCase(), amount);
+                StatUtils.instance.modifyStatPlayer(player, "stats", "heal" + reason.toString().replace("_", "").toLowerCase(), amount);
             }
         }
     }
@@ -153,7 +153,7 @@ public class StatEntityListener extends StatListener {
                 return;
             }
             
-            StatUtils.modifyStatEntity((Player)event.getOwner(), "tame", event.getEntity(), 1);
+            StatUtils.instance.modifyStatEntity((Player)event.getOwner(), "tame", event.getEntity(), 1);
         }
     }
 
@@ -174,10 +174,10 @@ public class StatEntityListener extends StatListener {
                     continue;
                 }
 
-                StatUtils.modifyStatPlayer(p, "potions", "splashhit", 1);
+                StatUtils.instance.modifyStatPlayer(p, "potions", "splashhit", 1);
                 // added per potion details
                 for (PotionEffect potionEffect : potion.getEffects()) {
-                    StatUtils.modifyStatPotion(p, "potions",potionEffect, 1);
+                    StatUtils.instance.modifyStatPotion(p, "potions",potionEffect, 1);
                 }
             }
         }
@@ -197,14 +197,14 @@ public class StatEntityListener extends StatListener {
                 return;
             }
 
-            StatUtils.modifyStatPlayer(player, "bow", "shots", 1);
+            StatUtils.instance.modifyStatPlayer(player, "bow", "shots", 1);
 
             if (event.getBow().containsEnchantment(Enchantment.ARROW_FIRE)) {
-                StatUtils.modifyStatPlayer(player, "bow", "fireshots", 1);
+                StatUtils.instance.modifyStatPlayer(player, "bow", "fireshots", 1);
             }
 
             if (event.getBow().containsEnchantment(Enchantment.ARROW_INFINITE)) {
-                StatUtils.modifyStatPlayer(player, "bow", "infiniteshots", 1);
+                StatUtils.instance.modifyStatPlayer(player, "bow", "infiniteshots", 1);
             }
 
         }
