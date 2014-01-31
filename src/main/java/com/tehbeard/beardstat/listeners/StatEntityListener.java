@@ -18,6 +18,8 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.projectiles.BlockProjectileSource;
+import org.bukkit.projectiles.ProjectileSource;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.manager.EntityStatManager;
@@ -70,6 +72,8 @@ public class StatEntityListener extends StatListener {
         int amount = forceOne ? 1 : (int) Math.floor(event.getDamage());
         Entity attacker = null;
         Projectile projectile = null;
+
+        boolean dispenserFired = false;
         // grab the attacker if one exists.
         if (event instanceof EntityDamageByEntityEvent) {
             attacker = ((EntityDamageByEntityEvent) event).getDamager();
@@ -77,7 +81,13 @@ public class StatEntityListener extends StatListener {
         // Projectile -> projectile + attacker
         if (attacker instanceof Projectile) {
             projectile = (Projectile) attacker;
-            attacker = projectile.getShooter();
+            ProjectileSource projectileSource = projectile.getShooter();
+            if(projectileSource instanceof Entity){
+                attacker = (Entity)projectileSource;
+            }
+            if(projectileSource instanceof BlockProjectileSource){
+                dispenserFired = true;
+            }
         }
 
         // dragon fixer
@@ -105,6 +115,7 @@ public class StatEntityListener extends StatListener {
         // Total damage
         StatUtils.instance.modifyStatPlayer(player, category[idx], "total", amount);
 
+
         // Damage cause if not from 
         if (cause != DamageCause.PROJECTILE) {
             StatUtils.instance.modifyStatPlayer(player, category[idx], cause.toString().toLowerCase().replace("_", ""), amount);
@@ -117,7 +128,12 @@ public class StatEntityListener extends StatListener {
         if (projectile != null) {
             StatUtils.instance.modifyStatEntity(player, category[idx], projectile, amount);
         }
+        // Dispenser
+        if(dispenserFired){
+            StatUtils.instance.modifyStatPlayer(player, category[idx], "dispenser", amount);
+        }
 
+        //PvP
         if ((attacker instanceof Player) && (attacked instanceof Player)) {
             StatUtils.instance.modifyStatPlayer((Player)attacker, category[0], "pvp", 1);
             StatUtils.instance.modifyStatPlayer((Player)attacked, category[1], "pvp", 1);
@@ -152,7 +168,7 @@ public class StatEntityListener extends StatListener {
             if (event.isCancelled() || !shouldTrackPlayer((Player) event.getOwner())) {
                 return;
             }
-            
+
             StatUtils.instance.modifyStatEntity((Player)event.getOwner(), "tame", event.getEntity(), 1);
         }
     }
