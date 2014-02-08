@@ -76,6 +76,12 @@ public class ProviderQuery {
         p.likeName = likeName;
         return p;
     }
+
+    @Override
+    public String toString() {
+        return "ProviderQuery [name=" + name + ", type=" + type + ", uuid=" + uuid + ", create=" + create
+                + ", likeName=" + likeName + "]";
+    }
     
     
     
