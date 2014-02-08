@@ -29,7 +29,6 @@ import com.tehbeard.beardstat.manager.EntityStatManager;
  * modifyXXX methods adjust stats relativly. if you pass in +3, the stat is incremented by 3.
  * setXXX methods adjust stats absolutely. If you pass 50, the stat is now 50. 
  */
-@SuppressWarnings("deprecation")
 public class StatUtils {
 
     private static EntityStatManager manager = null;
@@ -148,8 +147,10 @@ public class StatUtils {
      * @param block
      * @param amount
      */
+    
     public void modifyStatBlock(Player player, String world, String category, Block block, int amount){
         String baseId = IdentifierService.getIdForMaterial(block.getType());
+        @SuppressWarnings("deprecation")
         String metaId = IdentifierService.getIdForMaterial(block.getType(),block.getData());
         modifyStat(player, world, category, baseId, metaId, amount);
     }
@@ -227,9 +228,9 @@ public class StatUtils {
     //uuid
     
     private static ProviderQuery makeQry(Player player){
-        if(Bukkit.getOnlineMode()){
-            return new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-",""), false);
+        if(Bukkit.getOnlineMode() || BeardStat.configuration.overrideUUIDMode){
+            return new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-",""), true);
         }
-        return  new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, null, false);
+        return  new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, null, true);
     }
 }
