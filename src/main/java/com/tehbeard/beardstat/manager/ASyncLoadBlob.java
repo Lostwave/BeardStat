@@ -9,6 +9,8 @@ import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import net.dragonzone.promise.Deferred;
+import net.dragonzone.promise.Delegate;
+import net.dragonzone.promise.Promise;
 
 /**
  *
@@ -23,6 +25,14 @@ public class ASyncLoadBlob implements Runnable{
         this.query = query;
         this.provider = provider;
         this.promise = promise;
+        promise.onReject(new Delegate<Void, Promise<EntityStatBlob>>() {
+            
+            @Override
+            public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
+                params.getError().printStackTrace();
+                return null;
+            }
+        });
 
         
     }

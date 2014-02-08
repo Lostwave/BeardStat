@@ -107,6 +107,7 @@ public class EntityStatManager {
             final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
             cache.addToCache(query, promise);
             loadQueue.submit(new ASyncLoadBlob(query, backendDatabase, promise));
+            return promise;
         }
         return cache.getCache(query);
     }

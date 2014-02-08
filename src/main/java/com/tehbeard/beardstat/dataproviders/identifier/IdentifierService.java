@@ -28,11 +28,11 @@ public class IdentifierService {
     }
     
     public static String getIdForItemStack(ItemStack itemStack){
-        return generator.keyForId(itemStack.getType().getId(), itemStack.getDurability());
+        return generator.keyForId(itemStack.getType().getId());
     }
     
     public static String getIdForItemStackWithMeta(ItemStack itemStack){
-        return generator.keyForId(itemStack.getType().getId());
+        return generator.keyForId(itemStack.getType().getId(), itemStack.getDurability());
     }
     
     public static String getIdForEntity(Entity entity){

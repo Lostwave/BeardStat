@@ -21,7 +21,7 @@ public class StaticStat implements IStat {
     private boolean archive  = false;
 
     public StaticStat(String domain, String world, String cat, String statistic, int value) {
-        super();
+        if(statistic == null){throw new IllegalArgumentException("Passed null statistic");}
         this.domain = domain;
         this.world = world;
         this.statistic = statistic;

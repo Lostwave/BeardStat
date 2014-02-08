@@ -28,7 +28,7 @@ public class StatConfiguration {
     public String logLevel = "INFO";
     
     @InjectConfig("general.forceuuidcheck")
-    public boolean overrideUUIDMode;
+    public boolean overrideUUIDMode = false;
 
     @Override
     public String toString() {

@@ -547,7 +547,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
             if (result != null) {
 
-                esb = new EntityStatBlob(result.name, result.dbid, result.type, result.type, this);//Create the damn esb
+                esb = new EntityStatBlob(result.name, result.dbid, result.type, result.uuid, this);//Create the damn esb
                 // load all stats data
                 loadEntityData.setInt(1, esb.getEntityID());
                 rs = loadEntityData.executeQuery();
@@ -564,7 +564,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                 saveEntity.setString(1, query.name);
                 saveEntity.setString(2, query.type);
-                saveEntity.setString(3, query.uuid == null ? "" : query.uuid.toString());
+                saveEntity.setString(3, query.uuid == null ? "" : query.uuid);
                 saveEntity.executeUpdate();
                 rs = saveEntity.getGeneratedKeys();
                 rs.next();// load player id
@@ -824,6 +824,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     @Override
     public StatisticMeta getStatistic(String gameTag, boolean create) {
+        if(gameTag == null){throw new NullPointerException();}
         if (!statisticMetaMap.containsKey(gameTag) && create) {
             try {
                 saveStatistic.setString(1, gameTag);
