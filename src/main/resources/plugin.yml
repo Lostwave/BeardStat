@@ -30,6 +30,9 @@ commands:
         description: Admin control
         usage: /<command>    
         permission: stat.command.admin
+    statexecscript:
+        description: Execute sql script in plugins/BeardStat/sqlfix/
+        usage: /<command> scriptname
 permissions:
   stat.command.admin:
     description: Access to /statadmin that allows deletion/reset of stats

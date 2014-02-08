@@ -24,9 +24,11 @@ import com.tehbeard.beardstat.commands.LastOnCommand;
 import com.tehbeard.beardstat.commands.StatAdmin;
 import com.tehbeard.beardstat.commands.StatCommand;
 import com.tehbeard.beardstat.commands.StatPageCommand;
+import com.tehbeard.beardstat.commands.StatScriptExecCommand;
 import com.tehbeard.beardstat.commands.playedCommand;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
+import com.tehbeard.beardstat.dataproviders.JDBCStatDataProvider;
 import com.tehbeard.beardstat.dataproviders.MysqlStatDataProvider;
 import com.tehbeard.beardstat.dataproviders.SQLiteStatDataProvider;
 import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator;
@@ -205,6 +207,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             getCommand("laston").setExecutor(new LastOnCommand(this.statManager, this));
             //getCommand("beardstatdebug").setExecutor(this.statManager);
             getCommand("statadmin").setExecutor(new StatAdmin(this.statManager, this));
+            getCommand("statexecscript").setExecutor(new StatScriptExecCommand(this.statManager, this,  (db instanceof JDBCStatDataProvider ? (JDBCStatDataProvider) db : null)));
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error registering commands", e, false));
         }

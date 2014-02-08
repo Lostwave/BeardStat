@@ -1,6 +1,8 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -95,6 +97,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public static final String SQL_SAVE_WORLD = "sql/components/save/saveWorld";
     public static final String SQL_SAVE_CATEGORY = "sql/components/save/saveCategory";
     public static final String SQL_SAVE_STATISTIC = "sql/components/save/saveStatistic";
+    public static final String SQL_SAVE_UUID = "sql/save/setUUID";
     //Connection
     protected Connection conn;
     // Load components
@@ -396,7 +399,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         // conn.prepareStatement(platform.readSQL(type,"sql/maintenence/deletePlayerFully",
         // tblPrefix));
         
-        this.setUUID = getStatementFromScript("sql/save/setUUID");
+        this.setUUID = getStatementFromScript(SQL_SAVE_UUID);
 
         this.platform.getLogger().config("Set player stat statement created");
     }
@@ -955,8 +958,24 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         setUUID.setString(3,IStatDataProvider.PLAYER_TYPE);
         setUUID.executeUpdate();
         }catch(SQLException e){
-            platform.mysqlError(e, "setUUID");
+            platform.mysqlError(e, SQL_SAVE_UUID);
         }
         
+    }
+    
+    public void runExternalScript(File file) throws SQLException {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if(is == null){return;}
+        Scanner scanner = new Scanner(is);
+        String sql = scanner.useDelimiter("\\Z").next().replaceAll("\\Z", "").replaceAll("\\n|\\r", "");
+        scanner.close();
+        conn.prepareStatement(sql.replaceAll("\\$\\{PREFIX\\}", this.tblPrefix)).execute();
+
     }
 }
