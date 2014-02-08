@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tehbeard</groupId>
     <artifactId>BeardStat</artifactId>
-    <version>0.8-SNAPSHOT</version>
+    <version>0.8.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>BeardStat</name>
 
     <properties>
         <project.plugin.flavour>Ambrosia</project.plugin.flavour>
         <project.plugin.version>${project.version}-${project.plugin.flavour}</project.plugin.version>
-        <project.config.version>5</project.config.version>
+        <project.config.version>6</project.config.version>
         <project.database.version>7</project.database.version>
     </properties>
 
