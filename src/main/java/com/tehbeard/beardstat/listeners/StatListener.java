@@ -32,10 +32,6 @@ public abstract class StatListener implements Listener {
         return BeardStat.worldManager.shouldTrack(player);
     }
     
-    protected boolean isBlacklistedWorld(World world){
-        return BeardStat.worldManager.isBlackListed(world);
-    }
-
     protected BeardStat getPlugin() {
         return this.plugin;
     }

@@ -109,7 +109,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
+        if ((event.isCancelled() == false)) {
             int len = event.getMessage().length();
 
             StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "chatletters", len);
@@ -216,14 +216,14 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPortal(PlayerPortalEvent event) {
-        if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
+        if (event.isCancelled() == false) {
             StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "portal", 1);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if ((event.isCancelled() == false) && !isBlacklistedWorld(event.getPlayer().getWorld())) {
+        if (event.isCancelled() == false) {
             final TeleportCause teleportCause = event.getCause();
 
             if (teleportCause == TeleportCause.ENDER_PEARL) {
@@ -389,7 +389,7 @@ public class StatPlayerListener extends StatListener {
             return;
         }
 
-        if ((event.isCancelled() == false) && !isBlacklistedWorld(player.getWorld())) {
+        if (event.isCancelled() == false) {
             StatUtils.instance.modifyStatPlayer(player, "enchant", "total", 1);
             StatUtils.instance.modifyStatPlayer(player, "enchant", "totallvlspent", event.getExpLevelCost());
         }

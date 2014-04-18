@@ -18,9 +18,6 @@ public class StatVehicleListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleMove(VehicleMoveEvent event) {
-        if (isBlacklistedWorld(event.getVehicle().getWorld())) {
-            return;
-        }
 
         if (((event.getTo().getBlockX() != event.getFrom().getBlockX())
                 || (event.getTo().getBlockY() != event.getFrom().getBlockY()) || (event.getTo().getBlockZ() != event

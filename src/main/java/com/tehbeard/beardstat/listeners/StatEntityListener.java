@@ -37,7 +37,7 @@ public class StatEntityListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamage(EntityDamageEvent event) {
 
-        if (event.isCancelled() || isBlacklistedWorld(event.getEntity().getWorld())) {
+        if (event.isCancelled()) {
             return;
         }
 
@@ -48,9 +48,7 @@ public class StatEntityListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event) {
 
-        if (isBlacklistedWorld(event.getEntity().getWorld())) {
-            return;
-        }
+        
 
         EntityDamageEvent lastCause = event.getEntity().getLastDamageCause();
         if (lastCause != null) {
@@ -143,8 +141,7 @@ public class StatEntityListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
 
-        if ((event.isCancelled() == false) && (event.getEntity() instanceof Player)
-                && !isBlacklistedWorld(event.getEntity().getWorld())) {
+        if ((event.isCancelled() == false) && (event.getEntity() instanceof Player)) {
 
             int amount = (int) Math.floor(event.getAmount());
             RegainReason reason = event.getRegainReason();
@@ -163,8 +160,7 @@ public class StatEntityListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
-        if ((event.isCancelled() == false) && (event.getOwner() instanceof Player)
-                && !isBlacklistedWorld(event.getEntity().getWorld())) {
+        if ((event.isCancelled() == false) && (event.getOwner() instanceof Player)) {
             if (event.isCancelled() || !shouldTrackPlayer((Player) event.getOwner())) {
                 return;
             }
@@ -176,7 +172,7 @@ public class StatEntityListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPotionSplash(PotionSplashEvent event) {
 
-        if (event.isCancelled() || isBlacklistedWorld(event.getPotion().getWorld())) {
+        if (event.isCancelled()) {
             return;
         }
 
@@ -202,7 +198,7 @@ public class StatEntityListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBowShoot(EntityShootBowEvent event) {
 
-        if ((event.isCancelled() || isBlacklistedWorld(event.getEntity().getWorld()))) {
+        if ((event.isCancelled())) {
             return;
         }
 

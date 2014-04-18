@@ -55,14 +55,6 @@ public class WorldManager {
                     
         }
         
-        /**
-         * Returns true if no gamemode is tracked for a world.
-         * used for certain checks. (entity death) 
-         * @return
-         */
-        public boolean isBlackListed(){
-            return !(survival || creative || adventure);
-        }
     }
     
     
@@ -88,13 +80,6 @@ public class WorldManager {
         }
             return defaultWorld.shouldTrack(player);
             
-    }
-    
-    public boolean isBlackListed(World world){
-        if(worlds.containsKey(world.getName())){
-            return worlds.get(world.getName()).isBlackListed();
-        }
-        return defaultWorld.isBlackListed();
     }
     
     public void addWorld(String name,boolean s,boolean c,boolean a){
