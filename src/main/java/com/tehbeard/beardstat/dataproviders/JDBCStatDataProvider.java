@@ -136,7 +136,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     //Configuration/env
     protected DbPlatform platform;
     protected DatabaseConfiguration config;
-    
+
     public JDBCStatDataProvider(DbPlatform platform, String scriptSuffix, String driverClass, DatabaseConfiguration config) {
         try {
             this.connectionProperties.put("allowMultiQuery", "true");
@@ -397,7 +397,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         // deleteEntity =
         // conn.prepareStatement(platform.readSQL(type,"sql/maintenence/deletePlayerFully",
         // tblPrefix));
-        
+
         this.setUUID = getStatementFromScript(SQL_SAVE_UUID);
 
         this.platform.getLogger().config("Set player stat statement created");
@@ -854,13 +854,17 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     protected void runCodeFor(int version, Class<? extends Annotation> ann) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        
-        for (Method m : getClass().getMethods()) {
-            if (m.isAnnotationPresent(ann)) {
-                if (m.getAnnotation(dbVersion.class).value() == version) {
-                    m.invoke(this);
+        Class c = getClass();
+        while(c != null){
+            if(c.getSuperclass() == null){return;} // Short out on Object class
+            for (Method m : getClass().getMethods()) {
+                if (m.isAnnotationPresent(ann)) {
+                    if (m.getAnnotation(dbVersion.class).value() == version) {
+                        m.invoke(this);
+                    }
                 }
             }
+            c = c.getSuperclass();
         }
     }
     public final static int MAX_UUID_REQUESTS_PER = 2 * 64;
@@ -875,19 +879,19 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public void upgradeWriteUUIDS() throws SQLException,Exception {
         platform.getLogger().log(Level.INFO, "Updating all UUIDs based on Mojang Web API");
         PreparedStatement stmt = conn.prepareStatement("UPDATE `" + tblPrefix + "_entity` SET `uuid`=? WHERE `name`=? and `type`=?");
-        
+
         stmt.setString(3, IStatDataProvider.PLAYER_TYPE);
         platform.getLogger().log(Level.INFO, "Generating list of players to checks");
         ProviderQueryResult[] result = queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
-       
+
         List<String> toGet = new ArrayList<String>(result.length);
         for(ProviderQueryResult res : result){
             toGet.add(res.name);
         }
-        
+
         platform.getLogger().log(Level.INFO, "Querying Mojang Web API");
         Map<String, UUID> map = MojangWebAPI.lookupUUIDS(toGet);
-        
+
         platform.getLogger().log(Level.INFO, "Applying Name->UUID mapping.");
         for (Entry<String, UUID> e : map.entrySet()) {
             stmt.setString(2, e.getKey());
@@ -897,7 +901,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         }
         platform.getLogger().log(Level.INFO, "Updated {0} entries", map.size());
 
-         
+
     }
 
 
@@ -937,19 +941,19 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     public Connection getConnection() {
         return conn;
     }
-    
+
     public void setUUID(String player, String uuid){
         try{
-        setUUID.setString(1, uuid);
-        setUUID.setString(2,player);
-        setUUID.setString(3,IStatDataProvider.PLAYER_TYPE);
-        setUUID.executeUpdate();
+            setUUID.setString(1, uuid);
+            setUUID.setString(2,player);
+            setUUID.setString(3,IStatDataProvider.PLAYER_TYPE);
+            setUUID.executeUpdate();
         }catch(SQLException e){
             platform.mysqlError(e, SQL_SAVE_UUID);
         }
-        
+
     }
-    
+
     public void runExternalScript(File file) throws SQLException {
         InputStream is = null;
         try {
