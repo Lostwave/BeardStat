@@ -229,7 +229,7 @@ public class StatUtils {
     
     private static ProviderQuery makeQry(Player player){
         if(Bukkit.getOnlineMode() || BeardStat.configuration.overrideUUIDMode){
-            return new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-",""), true);
+            return new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-",""), true);
         }
         return  new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, null, true);
     }

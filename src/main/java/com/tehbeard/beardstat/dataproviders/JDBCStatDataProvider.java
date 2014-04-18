@@ -854,7 +854,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     protected void runCodeFor(int version, Class<? extends Annotation> ann) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Class c = getClass();
+        Class<?> c = getClass();
         while(c != null){
             if(c.getSuperclass() == null){return;} // Short out on Object class
             for (Method m : getClass().getMethods()) {
