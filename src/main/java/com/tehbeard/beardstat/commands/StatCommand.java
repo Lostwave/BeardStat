@@ -36,7 +36,7 @@ public class StatCommand extends BeardStatCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
-            ArgumentPack arguments = new ArgumentPack(new String[] { "i", "h" }, new String[] { "p", "s" }, args);
+            ArgumentPack<CommandSender> arguments = new ArgumentPack<CommandSender>(new String[] { "i", "h" }, new String[] { "p", "s" }, args);
 
             String player = null;
             // Use another player

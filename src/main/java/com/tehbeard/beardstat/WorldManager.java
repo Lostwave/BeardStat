@@ -10,7 +10,6 @@ import java.util.Set;
 import com.tehbeard.utils.syringe.configInjector.InjectConfig;
 import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
 import org.bukkit.GameMode;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 

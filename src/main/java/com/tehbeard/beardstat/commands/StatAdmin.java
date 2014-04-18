@@ -23,7 +23,7 @@ public class StatAdmin extends BeardStatCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
-        ArgumentPack arguments = new ArgumentPack(new String[] { "a", "s" }, new String[0], args);
+        ArgumentPack<CommandSender> arguments = new ArgumentPack<CommandSender>(new String[] { "a", "s" }, new String[0], args);
 
         if (arguments.size() == 1) {
             if (arguments.getFlag("a")) {
