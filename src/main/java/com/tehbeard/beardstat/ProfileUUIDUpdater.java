@@ -49,7 +49,7 @@ public class ProfileUUIDUpdater {
             logger.warning("Some usernames did not return a profile id, this could be an issue with mojang's server, or the username is no longer valid. (reverted to a non paid name)");
             logger.warning("These players uuids could not be collected.");
             for(String name : names){
-                logger.warning(name);
+                logger.warning(name + (MojangWebAPI.hasPaid(name) ? " Paid account (bug?)" : " Non paid account (Refunded?)"));
             }
             logger.warning("If you believe these players to be active, please try again.");
         }
