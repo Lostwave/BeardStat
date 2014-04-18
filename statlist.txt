@@ -1,0 +1,102 @@
+[itemstack]        = An itemstack (block or item), _X refers to metadata specific variants e.g. wool means ALL wool, wool_0 is White wool only
+
+[entity]           = An entity, including non living (Items on the ground Are both an itemstack and an entity) cow, creeper etc. Some variants have prefixes 
+
+[damagecause]      = Cause of damage, such as lava, fire, explosion, attack, etc
+
+::stats::
+totalblockcreate   = Total blocks placed
+totalblockdestroy  = Total blocks mined/broken
+damagehealed       = Total health healed
+heal[reason]       = Damage healed by [reason]
+armswing           = swinging arm animation
+login              = Times logged in
+lastlogin          = Last login time (timestamp)
+lastlogout         = Last logout time (timestamp)
+firstlogin         = First login time (timestamp)
+chatletters        = total letters
+chat               = total messages
+fishcaught         = total successful fishings
+kicks              = Times kicked off server
+move               = Amount moved
+portal             = Times used a nether/end? portal
+teleport           = Times teleported
+playedfor          = Time playedfor (seconds)
+fill[water/lava]bucket
+empty[water/lava]bucket
+openchest
+
+::plant::
+[itemstack]
+
+::blockcreate::
+::blockdestroy::
+::crafting::
+[itemstack]        = Total of that item placed/mined/crafted
+
+::kills::          = Number of kills
+::deaths::         = Number of deaths
+::damagetaken::    = Amount of damage taken
+::damagedealt::    = Amount of damage dealt
+[entity]
+[damagecause]      = Caused by types of attacks
+[entity]           = Caused by a specific entity type
+total              = Total
+pvp                = Caused by players
+dispenser          = Caused by dispensers
+
+::tame::
+[entity]           = Number of such entities tamed.
+
+::potions::
+splashhit          = times hit with a splash potion
+[potion]           = times hit with x potion
+
+::bow::
+shots
+fireshots
+infiniteshots
+
+::itemdrop::
+::itempickup::
+[itemstack]
+
+::fishing::
+[itemstack]
+[entity]
+
+::itemuse::
+enderpearl         = Times used an enderpearl to teleport
+[itemstack]        = certain items being used (flintnsteel,sign, fireball)
+::interact::
+milkcow
+milkmushroomcow
+
+::wolfdye::        = coloring wolf color
+::dye::            = dyeing sheep
+total
+[itemstack / dyes]
+
+::sheared::
+sheep
+mushroomcow
+
+::exp::
+lifetimexp
+currentexp
+currentlvl
+lifetimelvl
+
+::enchant::
+total
+totallvlspent
+
+::consume::
+[itemstack]
+[potioneffect]
+
+::leash::
+[entity]
+
+::vehicle::
+[entity]
