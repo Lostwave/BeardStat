@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.MatchResult;
@@ -47,11 +48,9 @@ import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
-import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
-import com.tehbeard.utils.mojang.api.profiles.Profile;
-import com.tehbeard.utils.mojang.api.profiles.ProfileCriteria;
 //import org.bukkit.Bukkit;
 //import org.bukkit.ChatColor;
+import com.tehbeard.utils.uuid.MojangWebAPI;
 
 /**
  * base class for JDBC based data providers Allows easy development of data providers that make use of JDBC
@@ -855,6 +854,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
     }
 
     protected void runCodeFor(int version, Class<? extends Annotation> ann) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        
         for (Method m : getClass().getMethods()) {
             if (m.isAnnotationPresent(ann)) {
                 if (m.getAnnotation(dbVersion.class).value() == version) {
@@ -872,47 +872,34 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
      */
     @postUpgrade
     @dbVersion(6)
-    public void upgradeWriteUUIDS() throws SQLException {
-
+    public void upgradeWriteUUIDS() throws SQLException,Exception {
+        platform.getLogger().log(Level.INFO, "Updating all UUIDs based on Mojang Web API");
         PreparedStatement stmt = conn.prepareStatement("UPDATE `" + tblPrefix + "_entity` SET `uuid`=? WHERE `name`=? and `type`=?");
+        
         stmt.setString(3, IStatDataProvider.PLAYER_TYPE);
+        platform.getLogger().log(Level.INFO, "Generating list of players to checks");
         ProviderQueryResult[] result = queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
-        platform.getLogger().log(Level.INFO, "Found {0} player entries, processing in batches of {1}", new Object[]{result.length, MAX_UUID_REQUESTS_PER});
-        for (int i = 0; i < result.length; i += MAX_UUID_REQUESTS_PER) {
-            String[] toGet = new String[Math.min(MAX_UUID_REQUESTS_PER, result.length)];
-            for (int k = 0; k < toGet.length; k++) {
-                toGet[k] = result[i + k].name;
-            }
-            Map<String, String> map = getUUIDS(toGet);
-            for (Entry<String, String> e : map.entrySet()) {
-                stmt.setString(2, e.getKey());
-                stmt.setString(1, e.getValue());
-                stmt.executeUpdate();
-                //System.out.println(e.getKey() + " = " + e.getValue());
-            }
-            platform.getLogger().log(Level.INFO, "Updated {0} entries", map.size());
+       
+        List<String> toGet = new ArrayList<String>(result.length);
+        for(ProviderQueryResult res : result){
+            toGet.add(res.name);
         }
+        
+        platform.getLogger().log(Level.INFO, "Querying Mojang Web API");
+        Map<String, UUID> map = MojangWebAPI.lookupUUIDS(toGet);
+        
+        platform.getLogger().log(Level.INFO, "Applying Name->UUID mapping.");
+        for (Entry<String, UUID> e : map.entrySet()) {
+            stmt.setString(2, e.getKey());
+            stmt.setString(1, e.getValue().toString().replaceAll("-", ""));
+            stmt.executeUpdate();
+            //System.out.println(e.getKey() + " = " + e.getValue());
+        }
+        platform.getLogger().log(Level.INFO, "Updated {0} entries", map.size());
+
+         
     }
 
-    private Map<String, String> getUUIDS(String... players) {
-        Map<String, String> mapping = new HashMap<String, String>();
-
-        List<ProfileCriteria> criteria = new ArrayList<ProfileCriteria>(players.length);
-        for (String player : players) {
-            criteria.add(new ProfileCriteria(player, "minecraft"));
-        }
-
-        Profile[] results = new HttpProfileRepository().findProfilesByCriteria(criteria.toArray(new ProfileCriteria[0]));
-        for (Profile profile : results) {
-
-            mapping.put(
-                    profile.getName(),
-                    profile.getId());
-        }
-
-
-        return mapping;
-    }
 
     /**
      * Utility method to load SQL commands from files in JAR

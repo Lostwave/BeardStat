@@ -43,7 +43,6 @@ import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.utils.BukkitHumanNameGenerator;
 import com.tehbeard.beardstat.utils.LanguagePack;
 import com.tehbeard.beardstat.utils.StatUtils;
-import com.tehbeard.utils.mojang.api.profiles.HttpProfileRepository;
 import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
 
 
@@ -158,9 +157,14 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         }
         
         if(dbConfig.runUUIDUpdate){
-            new ProfileUUIDUpdater(getLogger(), db, new HttpProfileRepository());
+            try{
+            new ProfileUUIDUpdater(getLogger(), db);
             getConfig().set("stats.database.uuidUpdate",false);
             saveConfig();
+            }catch(Exception e){
+                getLogger().severe("Failed to run UUID updater");
+                e.printStackTrace();
+            }
         }
         
 

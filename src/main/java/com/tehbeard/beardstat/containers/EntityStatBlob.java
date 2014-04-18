@@ -1,22 +1,20 @@
 package com.tehbeard.beardstat.containers;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import com.tehbeard.utils.expressions.VariableProvider;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.tehbeard.utils.expressions.VariableProvider;
 
 /**
  * Represents a collection of statistics bound to an entity Currently only used for Players.
@@ -272,7 +270,7 @@ public class EntityStatBlob implements VariableProvider {
     }
 
     /**
-     * Accessor method for getting documents associated with a statblob.
+     * Getter method for getting documents associated with a statblob.
      * IMPORTANT: DocumentFile's are cached internally, DO NOT CACHE EXTERNALLY, DocumentFile's are valid only until a save occurs.
      * After a save there is no guarantee another server might have manipulated the document.
      * @param domain
