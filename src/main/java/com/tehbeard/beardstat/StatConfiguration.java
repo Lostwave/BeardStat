@@ -27,14 +27,11 @@ public class StatConfiguration {
     @InjectConfig("general.loglevel")
     public String logLevel = "INFO";
     
-    @InjectConfig("general.forceuuidcheck")
-    public boolean overrideUUIDMode = false;
 
     @Override
     public String toString() {
         return "StatConfiguration [debugMode=" + debugMode + ", verboseMode=" + verboseMode + ", configVersion="
-                + configVersion + ", dbType=" + dbType + ", logLevel=" + logLevel + ", overrideUUIDMode="
-                + overrideUUIDMode + "]";
+                + configVersion + ", dbType=" + dbType + ", logLevel=" + logLevel + "]";
     }
     
     

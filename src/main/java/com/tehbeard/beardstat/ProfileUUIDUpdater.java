@@ -23,13 +23,13 @@ public class ProfileUUIDUpdater {
         logger.info("Loading list of players stored in database");
         
         //Grab the players we have to process.
-        ProviderQueryResult[] results = provider.queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
+        ProviderQueryResult[] results = provider.queryDatabase(ProviderQuery.ALL_PLAYERS);
 
         Set<String> names = new HashSet<String>();
         
         logger.info("Locating entries with no uuid.");
         for( ProviderQueryResult result : results){
-            if(result.uuid == null || result.uuid.length() == 0){
+            if(result.uuid == null){
                 
                 names.add(result.name.toLowerCase());
             }

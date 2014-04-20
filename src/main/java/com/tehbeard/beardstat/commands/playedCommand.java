@@ -8,14 +8,12 @@ import org.bukkit.command.CommandSender;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
-import com.tehbeard.beardstat.manager.OnlineTimeManager;
-import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 import com.tehbeard.beardstat.containers.StatVector;
-import com.tehbeard.beardstat.dataproviders.ProviderQuery;
+import com.tehbeard.beardstat.manager.EntityStatManager;
+import com.tehbeard.beardstat.manager.OnlineTimeManager;
+import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
 import com.tehbeard.beardstat.utils.LanguagePack;
 
 /**
@@ -54,7 +52,7 @@ public class playedCommand extends BeardStatCommand {
 
             // Grab player blob and format out stat
             // TODO: async this
-            blob = this.playerStatManager.getBlob(new ProviderQuery(selectedPlayer.getName(), IStatDataProvider.PLAYER_TYPE, null, false));
+            blob = this.playerStatManager.getPlayerByName(selectedPlayer.getName());
             if (blob == null) {
                 sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));
                 return true;

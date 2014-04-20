@@ -1,8 +1,9 @@
 package com.tehbeard.beardstat.utils;
 
+import java.util.UUID;
+
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -13,8 +14,6 @@ import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.listeners.defer.DelegateDecrement;
 import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
@@ -194,7 +193,7 @@ public class StatUtils {
      * @param amount
      */
     public void increment(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getBlobASync(makeQry(player));
+        Promise<EntityStatBlob> blob = manager.getPlayer(player);
         blob.onResolve(new DelegateIncrement(domain,world,category,statistic,amount));
     }
 
@@ -208,7 +207,7 @@ public class StatUtils {
      * @param amount
      */
     public void decrement(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getBlobASync(makeQry(player));
+        Promise<EntityStatBlob> blob = manager.getPlayer(player);
         blob.onResolve(new DelegateDecrement(domain,world,category,statistic,amount));
     }
     
@@ -222,15 +221,15 @@ public class StatUtils {
      * @param amount
      */
     public void set(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getBlobASync(makeQry(player));
+        Promise<EntityStatBlob> blob = manager.getPlayer(player);
         blob.onResolve(new DelegateSet(domain,world,category,statistic,amount));
     }
-    //uuid
     
-    private static ProviderQuery makeQry(Player player){
-        if(Bukkit.getOnlineMode() || BeardStat.configuration.overrideUUIDMode){
-            return new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, player.getUniqueId().toString().replaceAll("-",""), true);
-        }
-        return  new ProviderQuery(player.getName(), IStatDataProvider.PLAYER_TYPE, null, true);
+    public static UUID expandUUID(String uuid){
+        return UUID.fromString(uuid.substring(0, 8) + "-" + uuid.substring(8, 12) + "-" + uuid.substring(12, 16) + "-" + uuid.substring(16, 20) + "-" +uuid.substring(20, 32));
+    }
+    
+    public static String compactUUID(UUID uuid){
+        return uuid.toString().replaceAll("-", "");
     }
 }

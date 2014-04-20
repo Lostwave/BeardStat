@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ public class EntityStatBlob implements VariableProvider {
     private int entityId;
     private String name;
     private String type;
-    private String uuid;
+    private UUID uuid;
     private IStatDataProvider provider;
     private Map<String, DocumentFileRef> files = new HashMap<String, DocumentFileRef>();
 
@@ -57,7 +58,8 @@ public class EntityStatBlob implements VariableProvider {
      * @param type
      * @param uuid
      */
-    public EntityStatBlob(String name, int entityId, String type, String uuid, IStatDataProvider provider) {
+    public EntityStatBlob(String name, int entityId, String type, UUID uuid, IStatDataProvider provider) {
+        Logger.getGlobal().info("Created EntityStatBlob");
         this.name = name;
         this.entityId = entityId;
         this.type = type;
@@ -264,7 +266,7 @@ public class EntityStatBlob implements VariableProvider {
         throw new UnsupportedOperationException("Array support not yet available."); //TODO - Fix this.
     }
     
-    public String getUUID(){
+    public UUID getUUID(){
 
         return uuid;
     }

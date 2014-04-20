@@ -11,9 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 
 /**
@@ -32,32 +30,20 @@ public class LastOnCommand extends BeardStatCommand {
     private static final String FIRSTPLAYEDSTAT = "firstlogin";
     private static final String LASTPLAYEDSTAT  = "lastlogin";
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
 
         String name = "";
         EntityStatBlob blob = null;
-        OfflinePlayer player = null;
+        OfflinePlayer player = sender instanceof Player ? (OfflinePlayer) sender : null;
         if (args.length == 1) {
             player = Bukkit.getOfflinePlayer(args[0]);
-            name = args[0];
-
-            blob = this.playerStatManager.getBlob(new ProviderQuery(args[0], IStatDataProvider.PLAYER_TYPE,null,false));
-        } else if (args.length == 0) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED
-                        + "You cannot run this command from the console with no arguments, you must specify a player name.  Use: firston <player>");
-                return true;
-            }
-
-            player = Bukkit.getOfflinePlayer(sender.getName());
-            if (player != null) {
-                name = player.getName();
-                blob = this.playerStatManager.getBlob(new ProviderQuery(name, IStatDataProvider.PLAYER_TYPE,null,false));
-            }
         }
-
-        sender.sendMessage(GetLastOnString(name, blob, player));
+        blob = this.playerStatManager.getPlayer(player, false).getValue();
+        if(blob != null){
+            sender.sendMessage(GetLastOnString(name, blob, player));
+        }
         return true;
     }
 

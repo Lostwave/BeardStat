@@ -21,6 +21,7 @@ import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
+import com.tehbeard.beardstat.utils.StatUtils;
 
 /**
  *
@@ -38,7 +39,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testPullEntityBlob() {
         System.out.println("pullEntityBlob");
-        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, StatUtils.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), false);
         EntityStatBlob blob  = instance.pullEntityBlob(query);
         assertEquals(blob.getName(), "Tehbeard");
         
@@ -50,7 +51,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testPushEntityBlob() {
         System.out.println("pushEntityBlob");
-        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, StatUtils.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), false);
         EntityStatBlob blob = instance.pullEntityBlob(query);
         blob.getStat("world", "stats", "playedfor").setValue(500);
         assertEquals("value was set", 500,blob.getStat("world", "stats", "playedfor").getValue());
@@ -172,7 +173,7 @@ public abstract class IStatDataProviderTest {
         
         System.out.println("pullDocument");
         
-        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, StatUtils.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), false);
         EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);
@@ -188,7 +189,7 @@ public abstract class IStatDataProviderTest {
     public void testPushDocument() throws Exception {
         
         System.out.println("pushDocument");
-        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, StatUtils.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), false);
         EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);
@@ -203,7 +204,7 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testDocumentSingleInstance() throws Exception {
         System.out.println("documentSingleInstance");
-        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, null, false);
+        ProviderQuery query = new ProviderQuery("Tehbeard", IStatDataProvider.PLAYER_TYPE, StatUtils.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), false);
         EntityStatBlob result = instance.pullEntityBlob(query);
         
         DocumentRegistry.registerDocument(MemoDocument.class);

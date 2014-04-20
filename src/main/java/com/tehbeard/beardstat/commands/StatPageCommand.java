@@ -15,8 +15,6 @@ import org.bukkit.entity.Player;
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
-import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.LanguagePack;
 
@@ -100,7 +98,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             //Find the player to use
             if(sender instanceof Player){
-                blob = playerStatManager.getBlobForPlayer((Player)sender);
+                blob = playerStatManager.getPlayer((Player)sender, false).getValue();
             }
             if(blob == null && args.length != 2){
                 return false;
@@ -108,7 +106,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             String page = null;
             if(args.length == 2){
-                blob = playerStatManager.getBlob(new ProviderQuery(args[0], IStatDataProvider.PLAYER_TYPE, null, false));
+                blob = playerStatManager.getPlayerByName(args[0]);
                 page = args[1];
             }
             

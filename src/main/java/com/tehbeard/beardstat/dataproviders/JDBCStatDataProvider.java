@@ -46,6 +46,7 @@ import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
+import com.tehbeard.beardstat.utils.StatUtils;
 import com.tehbeard.utils.misc.CallbackMatcher;
 import com.tehbeard.utils.misc.CallbackMatcher.Callback;
 //import org.bukkit.Bukkit;
@@ -474,12 +475,21 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
     @Override
     public ProviderQueryResult[] queryDatabase(ProviderQuery query) {
-        if (query.name == null && query.type == null && query.uuid == null) {
+        if (query.name == null && query.type == null && query.getUUIDString() == null ) {
             throw new IllegalStateException("Invalid ProviderQuery passed.");
         }
         String sql = "SELECT `entityId`,`name`,`type`,`uuid` FROM `" + tblPrefix + "_entity` WHERE ";
         boolean addAnd = false;
-        if (query.name != null) {
+        
+        //Search by UUID if provided, or fall back to player name, NEVER DO BOTH
+        if(query.getUUIDString() != null){
+            if (addAnd) {
+                sql += "AND ";
+            }
+            sql += "`uuid`=? ";
+            addAnd = true;
+        }
+        else if (query.name != null) {
             if (query.likeName) {
                 sql += "`name` LIKE ? ";
                 addAnd = true;
@@ -488,6 +498,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 addAnd = true;
             }
         }
+        
         if (query.type != null) {
             if (addAnd) {
                 sql += "AND ";
@@ -495,16 +506,14 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
             sql += "`type`=? ";
             addAnd = true;
         }
-        if (query.uuid != null) {
-            if (addAnd) {
-                sql += "AND ";
-            }
-            sql += "`uuid`=? ";
-        }
+        
         try {
             PreparedStatement qryStmt = conn.prepareStatement(sql);
             int colId = 1;
-            if (query.name != null) {
+            if(query.getUUIDString() != null){
+                qryStmt.setString(colId, query.getUUIDString());
+                colId++;
+            }else if (query.name != null) {
                 String sqlName = (query.likeName ? "%" : "") + query.name + (query.likeName ? "%" : "");
                 qryStmt.setString(colId, sqlName);
                 colId++;
@@ -513,10 +522,8 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                 qryStmt.setString(colId, query.type);
                 colId++;
             }
-            if (query.uuid != null) {
-                qryStmt.setString(colId, query.uuid);
-                colId++;
-            }
+            
+
             ResultSet rs = qryStmt.executeQuery();
             List<ProviderQueryResult> results = new ArrayList<ProviderQueryResult>();
             while (rs.next()) {
@@ -524,7 +531,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
                         rs.getInt("entityId"),
                         rs.getString("name"),
                         rs.getString("type"),
-                        rs.getString("uuid") == null ? null : rs.getString("uuid")));
+                        rs.getString("uuid") == null ? null : StatUtils.expandUUID(rs.getString("uuid"))));
             }
             rs.close();
             return results.toArray(new ProviderQueryResult[0]);
@@ -566,13 +573,13 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
                 saveEntity.setString(1, query.name);
                 saveEntity.setString(2, query.type);
-                saveEntity.setString(3, query.uuid == null ? "" : query.uuid);
+                saveEntity.setString(3, query.getUUIDString());
                 saveEntity.executeUpdate();
                 rs = saveEntity.getGeneratedKeys();
                 rs.next();// load player id
 
                 // make the player object, close out result set.
-                esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.uuid, this);
+                esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.getUUID(), this);
                 rs.close();
             }
             //Didn't get a esb, kill it.
@@ -882,7 +889,7 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
 
         stmt.setString(3, IStatDataProvider.PLAYER_TYPE);
         platform.getLogger().log(Level.INFO, "Generating list of players to checks");
-        ProviderQueryResult[] result = queryDatabase(new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false));
+        ProviderQueryResult[] result = queryDatabase(ProviderQuery.ALL_PLAYERS);
 
         List<String> toGet = new ArrayList<String>(result.length);
         for(ProviderQueryResult res : result){

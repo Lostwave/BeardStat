@@ -2,7 +2,6 @@ general:
   debug: false
   verbose: false
   loglevel: INFO
-  forceuuidcheck: false
 stats:
   configversion: ${project.config.version}
   database:

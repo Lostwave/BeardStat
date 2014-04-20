@@ -4,6 +4,10 @@
  */
 package com.tehbeard.beardstat.dataproviders;
 
+import java.util.UUID;
+
+import org.bukkit.OfflinePlayer;
+
 
 
 /**
@@ -11,19 +15,26 @@ package com.tehbeard.beardstat.dataproviders;
  * @author James
  */
 public class ProviderQuery {
+    
+    public static final ProviderQuery ALL_PLAYERS = new ProviderQuery(null, IStatDataProvider.PLAYER_TYPE, null, false);
+    
     public final String name;
     public final String type;
-    public final String uuid;
+    private final UUID uuid;
     
     public final boolean create;
     
     public boolean likeName = false;
     
-    public ProviderQuery(String name,String type,String uuid,boolean create){
+    public ProviderQuery(OfflinePlayer player, boolean create){
+        this(null, IStatDataProvider.PLAYER_TYPE, player.getUniqueId(), create);
+    }
+    
+    public ProviderQuery(String name,String type,UUID uuid,boolean create){
         if(type == null){throw new IllegalArgumentException("Type must not be null.");}
         this.name = name;
         this.type = type;
-        this.uuid = uuid;
+        this.uuid = uuid != null ? uuid : name != null ? UUID.nameUUIDFromBytes(name.getBytes()) : null;
         this.create = create;
     }
     
@@ -83,6 +94,12 @@ public class ProviderQuery {
                 + ", likeName=" + likeName + "]";
     }
     
+    public String getUUIDString(){
+        return uuid == null ? null : uuid.toString().replaceAll("-", "");
+    }
     
+    public UUID getUUID(){
+        return uuid;
+    }
     
 }

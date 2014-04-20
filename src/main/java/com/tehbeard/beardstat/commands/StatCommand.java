@@ -3,8 +3,6 @@ package com.tehbeard.beardstat.commands;
 import java.util.Stack;
 import java.util.regex.PatternSyntaxException;
 
-import com.tehbeard.utils.commands.ArgumentPack;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,13 +11,12 @@ import org.bukkit.entity.Player;
 
 import com.tehbeard.beardstat.BeardStat;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
-import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
-import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.containers.StatVector;
-import com.tehbeard.beardstat.dataproviders.ProviderQuery;
+import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.LanguagePack;
+import com.tehbeard.utils.commands.ArgumentPack;
 
 /**
  * Show stats for a player,
@@ -70,7 +67,7 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.getBlob(new ProviderQuery(player, IStatDataProvider.PLAYER_TYPE,null,false));
+                EntityStatBlob blob = this.playerStatManager.getPlayerByName(player);
                 sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));

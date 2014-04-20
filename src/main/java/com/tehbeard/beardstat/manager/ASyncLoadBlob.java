@@ -41,7 +41,7 @@ public class ASyncLoadBlob implements Runnable{
     public void run() {
         EntityStatBlob blob = provider.pullEntityBlob(query);
         if(blob == null){
-            promise.reject(new NoRecordFoundException(query.name,query.type,query.uuid));
+            promise.reject(new NoRecordFoundException(query.name,query.type,query.getUUIDString()));
         }
         else
         {
