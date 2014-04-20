@@ -28,6 +28,7 @@ public class playedCommand extends BeardStatCommand {
         super(playerStatManager, plugin);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
@@ -52,7 +53,7 @@ public class playedCommand extends BeardStatCommand {
 
             // Grab player blob and format out stat
             // TODO: async this
-            blob = this.playerStatManager.getPlayerByName(selectedPlayer.getName());
+            blob = this.playerStatManager.getPlayer(selectedPlayer, false);
             if (blob == null) {
                 sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));
                 return true;

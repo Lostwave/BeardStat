@@ -5,6 +5,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,18 +31,19 @@ public class StatCommand extends BeardStatCommand {
         super(playerStatManager, plugin);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String cmdLabel, String[] args) {
         try {
             ArgumentPack<CommandSender> arguments = new ArgumentPack<CommandSender>(new String[] { "i", "h" }, new String[] { "p", "s" }, args);
 
-            String player = null;
+            OfflinePlayer player = null;
             // Use another player
-            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {player = arguments.getOption("p");}
+            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {player = Bukkit.getOfflinePlayer(arguments.getOption("p"));}
 
             // Else use this player
             if ((player == null) && (sender instanceof Player)) {
-                player = ((Player) sender).getName();
+                player = ((Player) sender);
             }
 
             // not a player and no player picked? or -h flag? show the help message.
@@ -67,7 +69,7 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.getPlayerByName(player);
+                EntityStatBlob blob = this.playerStatManager.getPlayer(player, false);
                 sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));

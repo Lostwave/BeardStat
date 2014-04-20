@@ -13,6 +13,7 @@ import net.dragonzone.promise.Promise;
 import org.bukkit.OfflinePlayer;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.dataproviders.IStatDataProvider;
@@ -49,12 +50,23 @@ public class EntityStatManager {
      * @return
      */
     public Promise<EntityStatBlob> getPlayer(OfflinePlayer player){
-        return getPlayer(player, true);
+        return getPlayerAsync(player, true);
     }
     
-    public Promise<EntityStatBlob> getPlayer(OfflinePlayer player, boolean create){
-        ProviderQuery query = new ProviderQuery(player, create);
-
+    public Promise<EntityStatBlob> getPlayerAsync(OfflinePlayer player, boolean create){
+        return get(new ProviderQuery(player, create));
+    }
+    
+    public EntityStatBlob getPlayer(OfflinePlayer player, boolean create){
+        try{
+        return getPlayerAsync(player, create).getValue();
+        }catch(Exception e){
+            platform.handleError(new BeardStatRuntimeException("An error occured loading a stat blob for " + player.toString(), e, true));
+            return null;
+        }
+    }
+    
+    public Promise<EntityStatBlob> get(ProviderQuery query){
         if(!uuidCache.containsKey(query.getUUID())){
         final Deferred<EntityStatBlob> promise = new Deferred<EntityStatBlob>();
 
@@ -64,19 +76,18 @@ public class EntityStatManager {
 
         
         return uuidCache.get(query.getUUID());
-
     }
     
-    public EntityStatBlob getPlayerByName(String name){
-        for(Promise<EntityStatBlob> e : uuidCache.values()){
-            if(e.isResolved()){
-                if(e.getValue().getName().equalsIgnoreCase(name)){
-                    return e.getValue();
-                }
-            }
-        }
-        return null;
-    }
+//    public EntityStatBlob getPlayerByName(String name){
+//        for(Promise<EntityStatBlob> e : uuidCache.values()){
+//            if(e.isResolved()){
+//                if(e.getValue().getName().equalsIgnoreCase(name)){
+//                    return e.getValue();
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Query the database

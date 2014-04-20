@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -91,6 +92,7 @@ public class StatPageCommand extends BeardStatCommand {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
         try {
@@ -98,7 +100,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             //Find the player to use
             if(sender instanceof Player){
-                blob = playerStatManager.getPlayer((Player)sender, false).getValue();
+                blob = playerStatManager.getPlayer((Player)sender, false);
             }
             if(blob == null && args.length != 2){
                 return false;
@@ -106,7 +108,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             String page = null;
             if(args.length == 2){
-                blob = playerStatManager.getPlayerByName(args[0]);
+                blob = playerStatManager.getPlayer(Bukkit.getOfflinePlayer(args[0]), false);
                 page = args[1];
             }
             

@@ -36,4 +36,6 @@ public interface DbPlatform {
 
     public String getWorldForPlayer(String entityName);
     
+    public void handleError(Exception e);
+    
 }

@@ -59,5 +59,10 @@ class TestPlatform implements DbPlatform {
     public String getWorldForPlayer(String entityName) {
         return "world";
     }
+
+    @Override
+    public void handleError(Exception e) {
+        throw new RuntimeException(e);
+    }
     
 }

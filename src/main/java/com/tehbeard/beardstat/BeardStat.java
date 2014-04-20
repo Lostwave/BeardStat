@@ -307,11 +307,13 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         Bukkit.getPluginManager().callEvent(new EntityStatBlobLoadEvent(esb));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isPlayerOnline(String player) {
         return Bukkit.getOfflinePlayer(player).isOnline();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public String getWorldForPlayer(String entityName) {
         return Bukkit.getPlayer(entityName).getWorld().getName();
