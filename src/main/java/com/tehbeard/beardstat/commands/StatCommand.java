@@ -39,7 +39,7 @@ public class StatCommand extends BeardStatCommand {
 
             OfflinePlayer player = null;
             // Use another player
-            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER)) {player = Bukkit.getOfflinePlayer(arguments.getOption("p"));}
+            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER) && arguments.getOption("p") != null) {player = Bukkit.getOfflinePlayer(arguments.getOption("p"));}
 
             // Else use this player
             if ((player == null) && (sender instanceof Player)) {
