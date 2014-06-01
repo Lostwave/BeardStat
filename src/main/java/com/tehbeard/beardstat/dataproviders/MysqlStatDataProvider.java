@@ -163,20 +163,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 }
             }
 
-            ResultSet rs2 = query("SHOW FULL TABLES WHERE Table_type = 'VIEW'");
-            while (rs2.next()) {
-                String tbl = rs2.getString(1);
-
-                sb.append("\n");
-                sb.append("-- ----------------------------\n")
-                .append("-- View structure for `").append(tbl)
-                .append("`\n-- ----------------------------\n");
-                sb.append("DROP VIEW IF EXISTS `").append(tbl).append("`;\n");
-                ResultSet rs3 = query("SHOW CREATE VIEW `" + tbl + "`");
-                rs3.next();
-                String crt = rs3.getString(2) + ";";
-                sb.append(crt).append("\n");
-            }
 
             buff.flush();
             buff.close();

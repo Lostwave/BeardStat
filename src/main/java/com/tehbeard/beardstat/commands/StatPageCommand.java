@@ -23,7 +23,6 @@ import com.tehbeard.beardstat.utils.LanguagePack;
  * Display a statpage
  * 
  * @author James
- * TODO - FIX
  */
 public class StatPageCommand extends BeardStatCommand {
     

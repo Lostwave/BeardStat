@@ -966,7 +966,6 @@ public abstract class JDBCStatDataProvider implements IStatDataProvider {
         try {
             is = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         if(is == null){return;}
