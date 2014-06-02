@@ -14,7 +14,7 @@ command.error.nostat = No stats found
 command.played.output = [D]playtime:
 command.played.zero = [F] No playtime recorded 
 command.stat.stat = [D]%s = [F]%s
-command.stat.stat.world = [D]%s : %s = [F]%s
+command.stat.stat.world = [D]%s : %s : %s = [F]%s
 #Interactive mode
 interactive.enter = Entering interactive mode, type /exit to leave interactive mode
 interactive.exit = Leaving interactive stats mode

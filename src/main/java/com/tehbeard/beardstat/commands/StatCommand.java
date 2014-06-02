@@ -103,6 +103,7 @@ public class StatCommand extends BeardStatCommand {
                     for(IStat iStat : vector) {
 
                         sender.sendMessage(LanguagePack.getMsg("command.stat.stat.world", iStat.getWorld(),
+                                iStat.getCategory(),
                                 playerStatManager.getLocalizedStatisticName(iStat.getStatistic()),
                                 playerStatManager.formatStat(iStat.getStatistic(), iStat.getValue())));
                         
