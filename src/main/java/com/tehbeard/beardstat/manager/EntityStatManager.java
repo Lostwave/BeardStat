@@ -101,7 +101,7 @@ public class EntityStatManager {
 
     public void saveCache() {
         for( Promise<EntityStatBlob> blobP : uuidCache.values()){
-            if(!blobP.isResolved()){
+            if(blobP.isResolved()){
                 EntityStatBlob blob = blobP.getValue();
                 if (blob.getType().equals(IStatDataProvider.PLAYER_TYPE)) {
                     String entityName = blob.getName();
