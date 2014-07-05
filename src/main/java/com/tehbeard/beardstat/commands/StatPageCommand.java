@@ -14,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
@@ -53,7 +54,7 @@ public class StatPageCommand extends BeardStatCommand {
                 this.category = parts.pop();
                 //optional arguments, defaults to default.*.
                 this.world  = parts.isEmpty() ? "*" : parts.pop();
-                this.domain = parts.isEmpty() ? BeardStat.DEFAULT_DOMAIN : parts.pop();
+                this.domain = parts.isEmpty() ? Refs.DEFAULT_DOMAIN : parts.pop();
             }
             
             public void toCommandSender(CommandSender sender, EntityStatBlob blob){

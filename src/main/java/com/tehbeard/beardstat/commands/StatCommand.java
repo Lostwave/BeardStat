@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
@@ -39,7 +40,7 @@ public class StatCommand extends BeardStatCommand {
 
             OfflinePlayer player = null;
             // Use another player
-            if (sender.hasPermission(BeardStat.PERM_COMMAND_STAT_OTHER) && arguments.getOption("p") != null) {player = Bukkit.getOfflinePlayer(arguments.getOption("p"));}
+            if (sender.hasPermission(Refs.PERM_COMMAND_STAT_OTHER) && arguments.getOption("p") != null) {player = Bukkit.getOfflinePlayer(arguments.getOption("p"));}
 
             // Else use this player
             if ((player == null) && (sender instanceof Player)) {

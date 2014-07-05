@@ -1,6 +1,6 @@
 package com.tehbeard.beardstat.containers;
 
-import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 
 /**
  * Represents a timeable stat, adds a few handy features.
@@ -69,7 +69,7 @@ public class TimeStat implements IStat {
     @Override
     public String getWorld() {
 
-        return BeardStat.GLOBAL_WORLD;// Bukkit.getPlayer(getName()).getWorld().getName();
+        return Refs.GLOBAL_WORLD;// Bukkit.getPlayer(getName()).getWorld().getName();
     }
 
     @Override

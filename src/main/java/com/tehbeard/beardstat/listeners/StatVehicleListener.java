@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.StatUtils;
 
@@ -30,7 +31,7 @@ public class StatVehicleListener extends StatListener {
                 return;
             }
 
-            if (!shouldTrackPlayer(player)) {
+            if (!shouldTrackPlayer(player, Refs.TRACK_PLAYER_MOVE)) {
                 return;
             }
 

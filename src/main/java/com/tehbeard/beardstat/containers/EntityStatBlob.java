@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
@@ -88,7 +88,7 @@ public class EntityStatBlob implements VariableProvider {
      * @return
      */
     public IStat getStat(String world, String category, String statistic) {
-        return getStat(BeardStat.DEFAULT_DOMAIN, world, category, statistic);
+        return getStat(Refs.DEFAULT_DOMAIN, world, category, statistic);
     }
 
     /**
@@ -206,7 +206,7 @@ public class EntityStatBlob implements VariableProvider {
     @Override
     public int resolveVariable(String var) {
         String[] parts = var.split("\\::");
-        String domain = BeardStat.DEFAULT_DOMAIN;
+        String domain = Refs.DEFAULT_DOMAIN;
         String world = "*";
         String cat = "";
         String stat = "";

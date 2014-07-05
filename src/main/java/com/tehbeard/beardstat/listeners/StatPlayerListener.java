@@ -50,6 +50,7 @@ import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager;
@@ -70,7 +71,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerAnimation(PlayerAnimationEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(),Refs.TRACK_PLAYER_ARM)) {
             return;
         }
 
@@ -93,8 +94,8 @@ public class StatPlayerListener extends StatListener {
             @Override
             public <P extends Promise<EntityStatBlob>> Void invoke(P params) {
 
-                if (!params.getValue().hasStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "firstlogin")) {
-                    params.getValue().getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, "stats", "firstlogin")
+                if (!params.getValue().hasStat(Refs.DEFAULT_DOMAIN, Refs.GLOBAL_WORLD, "stats", "firstlogin")) {
+                    params.getValue().getStat(Refs.DEFAULT_DOMAIN, Refs.GLOBAL_WORLD, "stats", "firstlogin")
                     .setValue((int) (event.getPlayer().getFirstPlayed() / 1000L));
 
                 }
@@ -120,7 +121,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(), Refs.TRACK_ITEM_DROP)) {
             return;
         }
         StatUtils.instance.modifyStatItem(event.getPlayer(), "itemdrop", event.getItemDrop().getItemStack(), event.getItemDrop().getItemStack().getAmount());
@@ -129,7 +130,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerFish(PlayerFishEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(),Refs.TRACK_PLAYER_FISH)) {
             return;
         }
 
@@ -181,7 +182,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(),Refs.TRACK_PLAYER_MOVE)) {
             return;
         }
 
@@ -206,7 +207,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(), Refs.TRACK_ITEM_PICKUP)) {
             return;
         }
 
@@ -235,7 +236,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(),Refs.TRACK_PLAYER_BUCKET)) {
             return;
         }
         StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "fill" + event.getBucket().toString().toLowerCase().replace("_", ""), 1);
@@ -243,7 +244,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(),Refs.TRACK_PLAYER_BUCKET)) {
             return;
         }
 
@@ -253,7 +254,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(),Refs.TRACK_ENTITY_INTERACT)) {
             return;
         }
 
@@ -299,7 +300,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void shearEvent(PlayerShearEntityEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(), Refs.TRACK_ENTITY_SHEAR)) {
             return;
         }
 
@@ -316,7 +317,7 @@ public class StatPlayerListener extends StatListener {
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(),Refs.TRACK_PLAYER_USE)) {
             return;
         }
 
@@ -358,7 +359,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerExp(PlayerExpChangeEvent event) {
-        if (!shouldTrackPlayer(event.getPlayer())) {
+        if (!shouldTrackPlayer(event.getPlayer(),Refs.TRACK_PLAYER_EXP)) {
             return;
         }
 
@@ -370,7 +371,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerExpLevel(PlayerLevelChangeEvent event) {
-        if (!shouldTrackPlayer(event.getPlayer())) {
+        if (!shouldTrackPlayer(event.getPlayer(), Refs.TRACK_PLAYER_EXP)) {
             return;
         }
         StatUtils.instance.setPlayerStat(event.getPlayer(),  "exp", "currentlvl", event.getNewLevel());
@@ -385,7 +386,7 @@ public class StatPlayerListener extends StatListener {
     public void onEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
 
-        if (event.isCancelled() || !shouldTrackPlayer(event.getEnchanter())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getEnchanter(), Refs.TRACK_PLAYER_EXP)) {
             return;
         }
 
@@ -411,7 +412,9 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void worldJump(PlayerChangedWorldEvent event) {
-        addTimeOnlineAndWipe(event.getPlayer());
+        if(shouldTrackPlayer(event.getPlayer(), Refs.TRACK_PLAYER_TIME)){
+            addTimeOnlineAndWipe(event.getPlayer());
+        }
         OnlineTimeManager.setRecord(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
     }
 
@@ -419,7 +422,7 @@ public class StatPlayerListener extends StatListener {
     public void onNom(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
 
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(), Refs.TRACK_PLAYER_CONSUME)) {
             return;
         }
 
@@ -454,7 +457,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeash(PlayerLeashEntityEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer())) {
+        if (event.isCancelled() || !shouldTrackPlayer(event.getPlayer(), Refs.TRACK_ENTITY_INTERACT)) {
             return;
         }
         Player player = event.getPlayer();

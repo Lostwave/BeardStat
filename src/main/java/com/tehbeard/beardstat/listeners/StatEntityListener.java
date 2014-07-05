@@ -22,6 +22,7 @@ import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.StatUtils;
 
@@ -106,7 +107,7 @@ public class StatEntityListener extends StatListener {
             return;
         }// kill if no player involved
 
-        if (event.isCancelled() || !shouldTrackPlayer(player)) {
+        if (event.isCancelled() || !shouldTrackPlayer(player, Refs.TRACK_ENTITY_PREFIX + category[idx])) {
             return;
         }
 
@@ -147,7 +148,7 @@ public class StatEntityListener extends StatListener {
             RegainReason reason = event.getRegainReason();
             Player player = (Player) event.getEntity();
 
-            if (!shouldTrackPlayer(player)) {
+            if (!shouldTrackPlayer(player, Refs.TRACK_ENTITY_HEAL)) {
                 return;
             }
 
@@ -161,7 +162,7 @@ public class StatEntityListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityTame(EntityTameEvent event) {
         if ((event.isCancelled() == false) && (event.getOwner() instanceof Player)) {
-            if (event.isCancelled() || !shouldTrackPlayer((Player) event.getOwner())) {
+            if (event.isCancelled() || !shouldTrackPlayer((Player) event.getOwner(),Refs.TRACK_ENTITY_TAME)) {
                 return;
             }
 
@@ -182,7 +183,7 @@ public class StatEntityListener extends StatListener {
             if (e instanceof Player) {
                 Player p = (Player) e;
 
-                if (!shouldTrackPlayer(p)) {
+                if (!shouldTrackPlayer(p,Refs.TRACK_ENTITY_POTION)) {
                     continue;
                 }
 
@@ -205,7 +206,7 @@ public class StatEntityListener extends StatListener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (!shouldTrackPlayer(player)) {
+            if (!shouldTrackPlayer(player, Refs.TRACK_ENTITY_BOW)) {
                 return;
             }
 

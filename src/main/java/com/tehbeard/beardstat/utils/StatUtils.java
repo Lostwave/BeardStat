@@ -12,7 +12,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.listeners.defer.DelegateDecrement;
@@ -36,7 +36,7 @@ public class StatUtils {
         StatUtils.manager = manager;
     }
     
-    public static final StatUtils instance = new StatUtils(BeardStat.DEFAULT_DOMAIN);
+    public static final StatUtils instance = new StatUtils(Refs.DEFAULT_DOMAIN);
 
     
     private final String domain;

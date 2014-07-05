@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.LanguagePack;
@@ -44,8 +45,8 @@ public class LastOnCommand extends BeardStatCommand {
         if (args.length == 1) {
             sender.sendMessage(ChatColor.YELLOW + args[0]);
         }
-        sender.sendMessage(ChatColor.YELLOW + "First on: " + this.playerStatManager.formatStat(FIRSTPLAYEDSTAT, blob.getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, PLAYEDCAT, FIRSTPLAYEDSTAT).getValue()));
-        sender.sendMessage(ChatColor.YELLOW + "Last on: " + this.playerStatManager.formatStat(LASTPLAYEDSTAT, blob.getStat(BeardStat.DEFAULT_DOMAIN, BeardStat.GLOBAL_WORLD, PLAYEDCAT, LASTPLAYEDSTAT).getValue()));
+        sender.sendMessage(ChatColor.YELLOW + "First on: " + this.playerStatManager.formatStat(FIRSTPLAYEDSTAT, blob.getStat(Refs.DEFAULT_DOMAIN, Refs.GLOBAL_WORLD, PLAYEDCAT, FIRSTPLAYEDSTAT).getValue()));
+        sender.sendMessage(ChatColor.YELLOW + "Last on: " + this.playerStatManager.formatStat(LASTPLAYEDSTAT, blob.getStat(Refs.DEFAULT_DOMAIN, Refs.GLOBAL_WORLD, PLAYEDCAT, LASTPLAYEDSTAT).getValue()));
         
         return true;
     }

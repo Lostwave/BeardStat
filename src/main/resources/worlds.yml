@@ -3,3 +3,5 @@ worlds:
     survival: true
     creative: false
     adventure: false
+    blacklist: []
+    whitelist: []

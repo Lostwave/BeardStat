@@ -2,7 +2,7 @@ package com.tehbeard.beardstat.containers;
 
 import org.bukkit.Bukkit;
 
-import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 
 public class HealthStat implements IStat {
 
@@ -44,7 +44,7 @@ public class HealthStat implements IStat {
     @Override
     public String getWorld() {
 
-        return BeardStat.GLOBAL_WORLD;// Bukkit.getPlayer(getName()).getWorld().getName();
+        return Refs.GLOBAL_WORLD;// Bukkit.getPlayer(getName()).getWorld().getName();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class HealthStat implements IStat {
 
     @Override
     public String getDomain() {
-        return BeardStat.DEFAULT_DOMAIN;
+        return Refs.DEFAULT_DOMAIN;
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.StatUtils;
 
@@ -20,7 +21,7 @@ public class StatCraftListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCraftItem(CraftItemEvent event) {
-        if (event.isCancelled() || !shouldTrackPlayer((Player) event.getWhoClicked())) {
+        if (event.isCancelled() || !shouldTrackPlayer((Player) event.getWhoClicked(),Refs.TRACK_ITEM_CRAFT)) {
             return;
         }
 

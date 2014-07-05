@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
@@ -40,7 +41,7 @@ public class playedCommand extends BeardStatCommand {
             OfflinePlayer selectedPlayer = (sender instanceof OfflinePlayer) ? (OfflinePlayer) sender : null;
 
             // We got an argument, use that player instead
-            if ((args.length == 1) && sender.hasPermission(BeardStat.PERM_COMMAND_PLAYED_OTHER)) {
+            if ((args.length == 1) && sender.hasPermission(Refs.PERM_COMMAND_PLAYED_OTHER)) {
                 selectedPlayer = Bukkit.getOfflinePlayer(args[0]).hasPlayedBefore() ? Bukkit.getOfflinePlayer(args[0])
                         : null;
             }
@@ -57,7 +58,7 @@ public class playedCommand extends BeardStatCommand {
                 sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));
                 return true;
             }
-            StatVector vector = blob.getStats(BeardStat.DEFAULT_DOMAIN, "*", "stats", "playedfor");
+            StatVector vector = blob.getStats(Refs.DEFAULT_DOMAIN, "*", "stats", "playedfor");
             seconds = vector.getValue();
             
             //Only get record if player is online.

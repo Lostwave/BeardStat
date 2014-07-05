@@ -12,7 +12,7 @@ import net.dragonzone.promise.Promise;
 
 import org.bukkit.OfflinePlayer;
 
-import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.BeardStat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
@@ -110,7 +110,7 @@ public class EntityStatManager {
                     if (timeRecord != null) {
                         platform.getLogger().log(Level.FINE, "saving time: [Player : {0} , world: {1}, time: {2}]", new Object[]{entityName, timeRecord.world, timeRecord.sessionTime()});
                         if (timeRecord.world != null) {
-                            blob.getStat(BeardStat.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor").incrementStat(timeRecord.sessionTime());
+                            blob.getStat(Refs.DEFAULT_DOMAIN, timeRecord.world, "stats", "playedfor").incrementStat(timeRecord.sessionTime());
                         }
                     }
                     if (isPlayerOnline(entityName)) {

@@ -27,8 +27,8 @@ public abstract class StatListener implements Listener {
         this.plugin = plugin;
     }
 
-    protected boolean shouldTrackPlayer(Player player) {
-        return BeardStat.worldManager.shouldTrack(player);
+    protected boolean shouldTrackPlayer(Player player, String trackType) {
+        return BeardStat.worldManager.shouldTrack(player, trackType);
     }
     
     protected BeardStat getPlugin() {
