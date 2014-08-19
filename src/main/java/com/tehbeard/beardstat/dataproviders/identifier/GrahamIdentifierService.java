@@ -8,8 +8,8 @@ import java.util.Map;
 import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffect;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Generates Ids based off the data from http://minecraft-ids.grahamedgecombe.com
