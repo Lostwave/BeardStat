@@ -1,8 +1,9 @@
 general:
   debug: false
+  verbose: false
+  loglevel: INFO
 stats:
   configversion: ${project.config.version}
-  trackcreativemode: false
   database:
     sql_db_version: ${project.database.version}
     type: "sqlite"
@@ -10,13 +11,11 @@ stats:
     username: "Beardstats"
     password: "changeme"
     database: "stats"
-    table: "stats"
     prefix: "stats"
     port: 3306
-  blacklist:
-    - creative
-    - tutorialIsland
-  pages:
+    backups: true
+    uuidUpdate: true
+pages:
     default:
       - "blocks placed:stats.totalblockcreate"
       - "blocks broken:stats.totalblockdestroy"
@@ -27,5 +26,3 @@ stats:
       - "total shots:bow.shots"
       - "fire shots:bow.fireshots"
       - "Epirus bow shots:bow.infiniteshots"
-customformats:
-  - "stats.move:%1$s metres" 

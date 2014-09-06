@@ -5,5 +5,4 @@ ALTER TABLE  `stats_statistic` ADD  `formatting` VARCHAR(16) NOT NULL DEFAULT 'n
 ALTER TABLE  `stats_entity`    ADD  `scoreboardhide` BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE  `stats_category`  ADD  `statwrapper` VARCHAR(64);
 ALTER TABLE  `stats_world`     ADD  `name` VARCHAR( 32 );
-
 #Done migrating

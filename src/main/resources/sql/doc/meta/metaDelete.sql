@@ -1,0 +1,1 @@
+DELETE FROM `${PREFIX}_document_meta` where `documentId` = ?;

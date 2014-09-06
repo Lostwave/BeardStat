@@ -20,7 +20,7 @@
   </dependencySets>
   <fileSets>
     <fileSet>
-      <directory>src/web 2.0</directory>
+      <directory>src/web</directory>
       <outputDirectory>web</outputDirectory>
       <includes>
         <include>*/*.*</include>

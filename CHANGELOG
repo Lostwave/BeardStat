@@ -1,3 +1,32 @@
+0.8 - 1.7.2 Up
+=============
+* UUID access is now the preferred method of accessing player stat blobs
+  * To this end an option has been added to the config (default: on, switches itself off after completion) 
+    to on startup query Mojang's username->uuid service to update the database.
+* added several helper methods to make recording stats easier
+* Breaking? Entity taming is now under it's own category as opposed to tameENTITYNAME
+* New: documents system
+  * This allows BeardStat to record non-numeric stats data about a player.
+  * document api supports versioning and merging as well as "single instance" or no history documents.
+  * BeardStat itself will not have things that utilise this.
+    * But I do plan to release a "Inventory display" plugin that will record the users current inventory to a document, allowing viewing online.
+    * I also plan to do a killboard style plugin (x killed y with z listing).
+ 
+0.7
+=============
+* uuid integration
+  * Now supports storing the uuid of a minecraft player with their EntityStatBlob. In the future this will be used instead of player name for getting stat blobs so as to work with mojang's username changing plan.
+* Preload stats for current mc version into the database.
+* Access to metadata on keys (domain,world,category,statistic) from ingame.
+* Breaking: API now supports non player entities having stats
+* Breaking: class files now under com.tehbeard.beardstat
+* API now supports querying database for entities by type, name, uuid.
+
+0.6.3
+=============
+* Support for custom stats returns
+* bug fixes for web installer
+* Admin web ui?
 0.6.2
 =============
 * Public release of web ui, Admin panel coming soon(tm)
