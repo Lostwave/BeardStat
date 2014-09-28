@@ -14,8 +14,8 @@ import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.utils.syringe.configInjector.InjectConfig;
-import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
+import com.tehbeard.beardstat.cfg.InjectConfig;
+import com.tehbeard.beardstat.cfg.YamlConfigInjector;
 
 /**
  *
