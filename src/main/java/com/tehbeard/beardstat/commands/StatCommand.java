@@ -18,7 +18,6 @@ import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.containers.StatVector;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.utils.LanguagePack;
-import com.tehbeard.utils.commands.ArgumentPack;
 
 /**
  * Show stats for a player,
