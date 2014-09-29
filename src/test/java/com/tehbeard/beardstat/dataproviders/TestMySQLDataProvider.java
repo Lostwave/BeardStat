@@ -25,7 +25,7 @@ public class TestMySQLDataProvider extends IStatDataProviderTest  {
     }
     
     @BeforeClass
-    public static void setUpClass() throws IOException, SQLException {
+    public static void setUpClass() throws IOException, SQLException, ClassNotFoundException {
         InputStream is = TestMySQLDataProvider.class.getClassLoader().getResourceAsStream("mysql.properties");
         if(is == null){
             System.out.println("WARNING: MYSQL TEST NOT CONFIGURED, TEST SKIPPED.");
@@ -41,17 +41,17 @@ public class TestMySQLDataProvider extends IStatDataProviderTest  {
         instance = new MysqlStatDataProvider(new TestPlatform(), config);
         
         System.out.println("deleting tables.");
-        String preloadStmt = ((MysqlStatDataProvider)instance).readSQL("sql","cleanup","stats");
+        String preloadStmt = ((MysqlStatDataProvider)instance).readSQLFile("sql","cleanup");
         for(String s : preloadStmt.split("\\;")){
-            ((MysqlStatDataProvider)instance).conn.createStatement().execute(s);
+            ((MysqlStatDataProvider)instance).getConnection().createStatement().execute(s);
         }
         instance = new MysqlStatDataProvider(new TestPlatform(), config);
         
         System.out.println("Loaded driver.");
-        preloadStmt = ((MysqlStatDataProvider)instance).readSQL("sql","preload",config.tablePrefix);
+        preloadStmt = ((MysqlStatDataProvider)instance).readSQLFile("sql","preload");
         for(String s : preloadStmt.split("\\;")){
             try{
-           ((MysqlStatDataProvider)instance).conn.createStatement().execute(s);
+           ((MysqlStatDataProvider)instance).getConnection().createStatement().execute(s);
             }catch(SQLException e ){
                 e.printStackTrace();
                 

@@ -45,7 +45,6 @@ import com.tehbeard.beardstat.utils.StatUtils;
 import com.tehbeard.beardstat.cfg.YamlConfigInjector;
 import com.tehbeard.beardstat.commands.Commands;
 
-
 /**
  * BeardStat Statistic's tracking for the gentleman server
  *
@@ -53,39 +52,40 @@ import com.tehbeard.beardstat.commands.Commands;
  *
  */
 public class BeardStat extends JavaPlugin implements DbPlatform {
-    public static class Refs{
+
+    public static class Refs {
 
         public static final String PERM_COMMAND_PLAYED_OTHER = "stat.command.played.other";
         public static final String PERM_COMMAND_STAT_OTHER = "stat.command.stat.other";
         // Default values for domain and world
         public static final String DEFAULT_DOMAIN = "default";
         public static final String GLOBAL_WORLD = "__global__";
-        
+
         //Track types
         public static final String TRACK_BLOCK_PLACE = "block_place";
         public static final String TRACK_BLOCK_BREAK = "block_break";
-        
-        public static final String TRACK_ITEM_CRAFT    = "item_craft";
-        public static final String TRACK_ITEM_DROP     = "item_drop";
-        public static final String TRACK_ITEM_PICKUP   = "item_pickup";
+
+        public static final String TRACK_ITEM_CRAFT = "item_craft";
+        public static final String TRACK_ITEM_DROP = "item_drop";
+        public static final String TRACK_ITEM_PICKUP = "item_pickup";
         //Entity 
-        public static final String TRACK_ENTITY_PREFIX   = "entity_";
-        public static final String TRACK_ENTITY_HEAL     = "entity_heal";
-        public static final String TRACK_ENTITY_TAME     = "entity_tame";
-        public static final String TRACK_ENTITY_POTION   = "entity_potion";
-        public static final String TRACK_ENTITY_BOW      = "entity_bow";
+        public static final String TRACK_ENTITY_PREFIX = "entity_";
+        public static final String TRACK_ENTITY_HEAL = "entity_heal";
+        public static final String TRACK_ENTITY_TAME = "entity_tame";
+        public static final String TRACK_ENTITY_POTION = "entity_potion";
+        public static final String TRACK_ENTITY_BOW = "entity_bow";
         public static final String TRACK_ENTITY_INTERACT = "entity_interact";
-        public static final String TRACK_ENTITY_SHEAR    = "entity_shear";
+        public static final String TRACK_ENTITY_SHEAR = "entity_shear";
         //Player
-        public static final String TRACK_PLAYER_ARM     = "player_arm";
-        public static final String TRACK_PLAYER_FISH    = "player_fish";
-        public static final String TRACK_PLAYER_MOVE    = "player_move";
-        public static final String TRACK_PLAYER_BUCKET  = "player_bucket";
-        public static final String TRACK_PLAYER_USE     = "player_use";
-        public static final String TRACK_PLAYER_EXP     = "player_exp";
+        public static final String TRACK_PLAYER_ARM = "player_arm";
+        public static final String TRACK_PLAYER_FISH = "player_fish";
+        public static final String TRACK_PLAYER_MOVE = "player_move";
+        public static final String TRACK_PLAYER_BUCKET = "player_bucket";
+        public static final String TRACK_PLAYER_USE = "player_use";
+        public static final String TRACK_PLAYER_EXP = "player_exp";
         public static final String TRACK_PLAYER_CONSUME = "player_consume";
-        public static final String TRACK_PLAYER_TIME    = "player_time";
-        
+        public static final String TRACK_PLAYER_TIME = "player_time";
+
     }
 
     private int saveTaskId;
@@ -125,7 +125,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
 
         // Read in the metadata file from jar and from data folder
         HomebrewIdentifierGenerator.readData(getResource("metadata.txt"));
-        
+
         try {
             HomebrewIdentifierGenerator.readData(new FileInputStream(new File(getDataFolder(), "metadata.txt")));
         } catch (FileNotFoundException e) {
@@ -184,29 +184,27 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             getPluginLoader().disablePlugin(this);
             return;
         }
-        
-        if(dbConfig.runUUIDUpdate){
-            try{
-            new ProfileUUIDUpdater(getLogger(), db);
-            getConfig().set("stats.database.uuidUpdate",false);
-            saveConfig();
-            }catch(Exception e){
+
+        if (dbConfig.runUUIDUpdate) {
+            try {
+                new ProfileUUIDUpdater(getLogger(), db);
+                getConfig().set("stats.database.uuidUpdate", false);
+                saveConfig();
+            } catch (Exception e) {
                 getLogger().severe("Failed to run UUID updater");
                 e.printStackTrace();
             }
         }
-        
 
         // start the player manager
         this.statManager = new EntityStatManager(this, db);
 
-
         getLogger().info("Loading id mapping");
 
         StatUtils.setManager(this.statManager);
-        
+
         IdentifierService.setGenerator(new HomebrewIdentifierGenerator());
-        
+
         getLogger().info("Registering events and collectors");
 
         // register event listeners
@@ -240,7 +238,7 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             getCommand("laston").setExecutor(new LastOnCommand(this.statManager, this));
             //getCommand("beardstatdebug").setExecutor(this.statManager);
             getCommand("statadmin").setExecutor(new Commands(this.statManager, this));
-            getCommand("statexecscript").setExecutor(new StatScriptExecCommand(this.statManager, this,  (db instanceof JDBCStatDataProvider ? (JDBCStatDataProvider) db : null)));
+            getCommand("statexecscript").setExecutor(new StatScriptExecCommand(this.statManager, this, (db instanceof JDBCStatDataProvider ? (JDBCStatDataProvider) db : null)));
         } catch (Exception e) {
             handleError(new BeardStatRuntimeException("Error registering commands", e, false));
         }
@@ -257,11 +255,11 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
             metrics = new Metrics(this);
             metrics.createGraph("Database Type").addPlotter(
                     new Plotter(getConfig().getString("stats.database.type").toLowerCase()) {
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });// record database type
+                        @Override
+                        public int getValue() {
+                            return 1;
+                        }
+                    });// record database type
 
             metrics.start();
         } catch (Exception e) {
@@ -392,24 +390,24 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         logger.severe("Mysql error code: " + e.getErrorCode());
 
         switch (e.getErrorCode()) {
-        case 1042:
-            logger.severe("Cannot find hostname provided, check spelling of hostname in config file");
-            break;
-        case 1044:
-        case 1045:
-            logger.severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
-            break;
-        case 1049:
-            logger.severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
-            break;
+            case 1042:
+                logger.severe("Cannot find hostname provided, check spelling of hostname in config file");
+                break;
+            case 1044:
+            case 1045:
+                logger.severe("Cannot connect to database, check user credentials, database exists and that user is able to log in from this machine");
+                break;
+            case 1049:
+                logger.severe("Cannot locate database, check you spelt database name correctly and username has access rights from this machine.");
+                break;
 
-        default:
-            logger.severe("Error code ["
-                    + e.getErrorCode()
-                    + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
-            logger.severe("Exception Detail:");
-            logger.severe(e.getMessage());
-            break;
+            default:
+                logger.severe("Error code ["
+                        + e.getErrorCode()
+                        + "] not found (or not supplied!), either check the error code online, or post on the dev.bukkit.org/server-mods/beardstat page");
+                logger.severe("Exception Detail:");
+                logger.severe(e.getMessage());
+                break;
         }
 
         // dump stack trace if in verbose mode
@@ -432,63 +430,56 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
      * @return
      */
     private IStatDataProvider getDataProvider(DatabaseConfiguration config) {
+
         IStatDataProvider db = null;
-        // MySQL provider
-        if (config.databaseType.equalsIgnoreCase("mysql")) {
-            try {
+        try {
+            // MySQL provider
+            if (config.databaseType.equalsIgnoreCase("mysql")) {
                 db = new MysqlStatDataProvider(this,
                         config);
-            } catch (BeardStatRuntimeException e) {
-                handleError(e);
-            } catch (SQLException e) {
-                mysqlError(e, null);
-                db = null;
+
             }
-        }
-        // SQLite provider
-        if (config.databaseType.equalsIgnoreCase("sqlite")) {
-            try {
+            // SQLite provider
+            if (config.databaseType.equalsIgnoreCase("sqlite")) {
                 db = new SQLiteStatDataProvider(this, new File(getDataFolder(), "stats.db").toString(), config);
-            } catch (BeardStatRuntimeException e) {
-                handleError(e);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                db = null;
             }
 
-        }
-
-        // In memory provider
-        if (config.databaseType.equalsIgnoreCase("memory")) {
-            try {
+            // In memory provider
+            if (config.databaseType.equalsIgnoreCase("memory")) {
                 db = new SQLiteStatDataProvider(this, ":memory:", config);
-            } catch (BeardStatRuntimeException e) {
-                handleError(e);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                db = null;
+
             }
-        }
 
-        // File provider, kept for alert message, remove in 0.7
-        if (config.databaseType.equalsIgnoreCase("file")) {
-            getLogger().warning("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
-        }
+            // File provider, kept for alert message, remove in 0.7
+            if (config.databaseType.equalsIgnoreCase("file")) {
+                getLogger().warning("FILE DRIVER NO LONGER SUPPORTED, PLEASE TRANSFER TO SQLITE/MYSQL IN PREVIOUS VERSION BEFORE LOADING");
+            }
 
-        // transfer provider, calls method again to load handlers for transfer
-        if (config.databaseType.equalsIgnoreCase("transfer")) {
-            throw new UnsupportedOperationException("NOT IMPLEMENTED YET");//TODO - FIX
+            // transfer provider, calls method again to load handlers for transfer
+            if (config.databaseType.equalsIgnoreCase("transfer")) {
+                throw new UnsupportedOperationException("NOT IMPLEMENTED YET");//TODO - FIX
             /*IStatDataProvider _old = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.old")));
-             IStatDataProvider _new = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.new")));
-             printCon("Initiating transfer of stats, this may take a while");
-             new TransferDataProvider(this, _old, _new);
-             db = _new;*/
+                 IStatDataProvider _new = getDataProvider(getDatabaseConfiguration(getConfig().getConfigurationSection("stats.transfer.new")));
+                 printCon("Initiating transfer of stats, this may take a while");
+                 new TransferDataProvider(this, _old, _new);
+                 db = _new;*/
+            }
+        } catch (BeardStatRuntimeException e) {
+            handleError(e);
+            db = null;
+        } catch (SQLException e) {
+            mysqlError(e, null);
+            db = null;
+        } catch (ClassNotFoundException ex) {
+            handleError(ex);
+            db = null;
         }
         return db;
     }
 
     /**
-     * Handle an error, if it's a {@link BeardStatRuntimeException} it will try to kill BeardStat if the error is non-recoverable
+     * Handle an error, if it's a {@link BeardStatRuntimeException} it will try
+     * to kill BeardStat if the error is non-recoverable
      *
      * @param e
      */
@@ -538,4 +529,3 @@ public class BeardStat extends JavaPlugin implements DbPlatform {
         return dbc;
     }
 }
-

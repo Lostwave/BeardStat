@@ -6,9 +6,9 @@ import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.containers.StatBlobRecord;
-import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
+import static com.tehbeard.beardstat.dataproviders.JDBCStatDataProvider.SQL_CREATE_TABLES;
 import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
@@ -16,8 +16,6 @@ import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
 import com.tehbeard.beardstat.utils.StatUtils;
-import com.tehbeard.utils.misc.CallbackMatcher;
-import com.tehbeard.utils.misc.CallbackMatcher.Callback;
 import com.tehbeard.utils.sql.DBVersion;
 import com.tehbeard.utils.sql.JDBCDataSource;
 import com.tehbeard.utils.sql.PostUpgrade;
@@ -28,9 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,9 +49,12 @@ import java.util.logging.Level;
  * @author James
  *
  */
+@SQLInitScript(SQL_CREATE_TABLES)
 public abstract class JDBCStatDataProvider extends JDBCDataSource implements IStatDataProvider {
 
-    
+    public Connection getConnection(){
+        return connection;
+    }
 
     //Entity scripts
     public static final String SQL_SAVE_ENTITY = "sql/entity/saveEntity";
@@ -114,9 +112,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
     protected PreparedStatement keepAlive;
     protected PreparedStatement deleteEntity;
     //Create script
-    @SQLInitScript()
-    @SQLScript(SQL_CREATE_TABLES)
-    protected PreparedStatement createTable;
+    
     //Utility
     @SQLScript(SQL_SAVE_UUID)
     protected PreparedStatement setUUID;
@@ -136,6 +132,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
         super(scriptSuffix, driverClass, platform.getLogger());
         this.connectionProperties.put("allowMultiQuery", "true");
         this.config = config;
+        this.platform = platform;
     }
 
     /**
@@ -604,7 +601,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
      * @param prefix table prefix, replaces ${PREFIX} in loaded files
      * @return SQL commands loaded from file.
      */
-    public String readSQL(String type, String filename, String prefix) {
+    public String readSQLFile(String type, String filename) {
         platform.getLogger().fine("Loading SQL: " + filename);
         InputStream is = platform.getResource(filename + "." + type);
         if (is == null) {
@@ -616,7 +613,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
         Scanner scanner = new Scanner(is);
         String sql = scanner.useDelimiter("\\Z").next().replaceAll("\\Z", "").replaceAll("\\n|\\r", "");
         scanner.close();
-        return sql.replaceAll("\\$\\{PREFIX\\}", prefix);
+        return processSQL(sql);
 
     }
 

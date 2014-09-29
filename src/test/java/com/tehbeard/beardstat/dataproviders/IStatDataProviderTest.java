@@ -160,9 +160,8 @@ public abstract class IStatDataProviderTest {
     @Test
     public void testGenerateBackup() {
         System.out.println("generateBackup");
-        File file = new File("TestBackup");
-        instance.generateBackup(file);
-        file.delete();
+        instance.generateBackup("TestBackup");
+        //file.delete();
     }
 
     /**

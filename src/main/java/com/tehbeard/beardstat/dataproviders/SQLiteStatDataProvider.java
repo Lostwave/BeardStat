@@ -60,8 +60,8 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     }
 
     @Override
-    public void generateBackup(File file) {
-        FileUtil.copy(new File(filename), file);
+    public boolean generateBackup(String file) {
+        return FileUtil.copy(new File(filename), new File(platform.getDataFolder(), file));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(domain, key);
         DocRev docRevision = dbEntry.getRevisions().get(dbEntry.getCurrentRevision());
 
-        if(docRevision == null){
+        if (docRevision == null) {
             return null;
         }
 
@@ -81,16 +81,15 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException, DocumentTooLargeException {
         try {
             byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(), DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
-            if(doc.length > MysqlStatDataProvider.MAX_DOC_SIZE){
+            if (doc.length > MysqlStatDataProvider.MAX_DOC_SIZE) {
                 throw new DocumentTooLargeException("Document exceeds max size.");//TODO - Change to a specific exception for this usecase
             }
-            
-            
+
             //2) Generate new revision tag.
             MessageDigest digest = MessageDigest.getInstance("SHA1");
             String newRevision = byteArrayToHexString(digest.digest(doc));
             boolean isSingleton = document.getDocument().getClass().getAnnotation(StatDocument.class).singleInstance();
-            
+
             String currentRevision = document.getRevision();
 
             DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(document.getDomain(), document.getKey());
@@ -101,10 +100,10 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
             //Add the new document, if singleton, null the parent revision.
             dbEntry.getRevisions().put(newRevision, new DocRev(isSingleton ? null : currentRevision, document.getDocument()));
-            
+
             dbEntry.setCurrentRevision(newRevision);
-          //delete old entry if singleton
-            if(isSingleton){
+            //delete old entry if singleton
+            if (isSingleton) {
                 dbEntry.getRevisions().remove(currentRevision);
             }
             DocumentFile d = pullDocument(entityId, document.getDomain(), document.getKey());
@@ -121,7 +120,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
         DocEntry d = docDB.getStore(entityId).getDocumentData(domain, key);
         DocumentHistory history = new DocumentHistory(domain, key, d.getCurrentRevision());
-        for(Entry<String, DocRev> e : d.getRevisions().entrySet()){
+        for (Entry<String, DocRev> e : d.getRevisions().entrySet()) {
             history.addEntry(e.getKey(), e.getValue().parentRev, e.getValue().dateAdded);
         }
         return history;
@@ -135,7 +134,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     @Override
     public void deleteDocumentRevision(int entityId, String domain, String key, String revision) {
         docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().remove(revision);
-        if(docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().size() == 0){
+        if (docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().isEmpty()) {
             deleteDocument(entityId, domain, key);
         }
     }
@@ -157,5 +156,18 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         }
     }
 
+    @Override
+    public boolean restoreBackup(String file) {
+        try {
+            teardown();
+        } catch (SQLException ex) {
+            platform.getLogger().log(Level.SEVERE, null, ex);
+        }
+        if (FileUtil.copy(new File(platform.getDataFolder(), file), new File(filename))) {
+            initialise();
+            return true;
+        }
+        return false;
+    }
 
 }

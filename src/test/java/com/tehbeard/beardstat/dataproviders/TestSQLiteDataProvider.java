@@ -19,16 +19,16 @@ import com.tehbeard.beardstat.DatabaseConfiguration;
 public class TestSQLiteDataProvider extends IStatDataProviderTest  {
      
     @BeforeClass
-    public static void setUpClass() throws IOException, SQLException {
+    public static void setUpClass() throws IOException, SQLException, ClassNotFoundException {
         DatabaseConfiguration config = new DatabaseConfiguration(7);
         config.version = config.latestVersion;
         config.backups = false;
         
         instance = new SQLiteStatDataProvider(new TestPlatform(), ":memory:", config);
-        String preloadStmt = ((SQLiteStatDataProvider)instance).readSQL("sqlite","preload",config.tablePrefix);
+        String preloadStmt = ((SQLiteStatDataProvider)instance).readSQLFile("sqlite","preload");
         for(String s : preloadStmt.split("\\;")){
             try{
-           ((SQLiteStatDataProvider)instance).conn.createStatement().execute(s);
+           ((SQLiteStatDataProvider)instance).getConnection().createStatement().execute(s);
             }catch(SQLException e ){
                 System.out.println(s);
                 e.printStackTrace();
