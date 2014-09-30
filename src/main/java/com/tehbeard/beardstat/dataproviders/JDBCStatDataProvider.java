@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,13 +92,13 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
     @SQLScript(SQL_LOAD_STATISTICS)
     protected PreparedStatement loadStatisticsList;
     // save components
-    @SQLScript(SQL_SAVE_DOMAIN)
+    @SQLScript(value = SQL_SAVE_DOMAIN,flags = Statement.RETURN_GENERATED_KEYS)
     protected PreparedStatement saveDomain;
-    @SQLScript(SQL_SAVE_WORLD)
+    @SQLScript(value = SQL_SAVE_WORLD,flags = Statement.RETURN_GENERATED_KEYS)
     protected PreparedStatement saveWorld;
-    @SQLScript(SQL_SAVE_CATEGORY)
+    @SQLScript(value = SQL_SAVE_CATEGORY,flags = Statement.RETURN_GENERATED_KEYS)
     protected PreparedStatement saveCategory;
-    @SQLScript(SQL_SAVE_STATISTIC)
+    @SQLScript(value = SQL_SAVE_STATISTIC,flags = Statement.RETURN_GENERATED_KEYS)
     protected PreparedStatement saveStatistic;
     // Load data from db
     @SQLScript(SQL_LOAD_ENTITY_DATA)

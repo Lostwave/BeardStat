@@ -26,6 +26,7 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public static final String SQL_DOC_STORE_DELETE = "sql/doc/store/storeDelete";
     public static final String SQL_DOC_STORE_PURGE = "sql/doc/store/storePurge";
     //meta
-    @SQLScript(SQL_DOC_META_INSERT)
+    @SQLScript(value = SQL_DOC_META_INSERT, flags = Statement.RETURN_GENERATED_KEYS)
     private PreparedStatement stmtMetaInsert;
     @SQLScript(SQL_DOC_META_UPDATE)
     private PreparedStatement stmtMetaUpdate;
@@ -61,7 +62,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     @SQLScript(SQL_DOC_META_POLL)
     private PreparedStatement stmtMetaPoll;
     //docs
-    @SQLScript(SQL_DOC_STORE_INSERT)
+    @SQLScript(value = SQL_DOC_STORE_INSERT, flags = Statement.RETURN_GENERATED_KEYS)
     private PreparedStatement stmtDocInsert;
     @SQLScript(SQL_DOC_STORE_SELECT)
     private PreparedStatement stmtDocSelect;
