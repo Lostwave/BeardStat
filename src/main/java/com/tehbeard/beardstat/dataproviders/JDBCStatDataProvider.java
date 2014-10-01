@@ -8,7 +8,6 @@ import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.containers.StatBlobRecord;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
-import static com.tehbeard.beardstat.dataproviders.JDBCStatDataProvider.SQL_CREATE_TABLES;
 import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
@@ -50,7 +49,7 @@ import java.util.logging.Level;
  * @author James
  *
  */
-@SQLInitScript(SQL_CREATE_TABLES)
+@SQLInitScript("sql/maintenence/create.tables")
 public abstract class JDBCStatDataProvider extends JDBCDataSource implements IStatDataProvider {
 
     public Connection getConnection(){
@@ -77,7 +76,6 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
     public static final String SQL_METADATA_STATISTIC = "sql/maintenence/metadata/statistic";
     public static final String SQL_METADATA_STATIC_STATS = "sql/maintenence/metadata/staticstats";
     public static final String SQL_METADATA_STATIC_FIXNULL = "sql/maintenence/metadata/fixnull";
-    public static final String SQL_CREATE_TABLES = "sql/maintenence/create.tables";
     public static final String SQL_KEEP_ALIVE = "sql/maintenence/keepAlive";
 
     //Entity scripts
