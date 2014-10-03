@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
-import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.utils.intake.CommandException;
 import com.tehbeard.utils.intake.context.CommandLocals;
@@ -30,10 +30,10 @@ public class Commands implements TabExecutor {
 
     Dispatcher dispatcher;
     private final EntityStatManager playerStatManager;
-    private final BeardStat         plugin;
+    private final BukkitPlugin         plugin;
 
     
-    public Commands(EntityStatManager playerStatManager, BeardStat plugin) {
+    public Commands(EntityStatManager playerStatManager, BukkitPlugin plugin) {
         this.playerStatManager = playerStatManager;
         this.plugin = plugin;
         this.dispatcher = new SimpleDispatcher();
@@ -45,7 +45,7 @@ public class Commands implements TabExecutor {
         CommandLocals locals = new CommandLocals();
             locals.put(CommandSender.class, cs);
             locals.put(EntityStatManager.class,playerStatManager);
-            locals.put(BeardStat.class, plugin);
+            locals.put(BukkitPlugin.class, plugin);
         try {
             return dispatcher.getSuggestions(cmdlbl + " " + StringUtils.join(args, " "), locals);
         } catch (CommandException ex) {
@@ -61,7 +61,7 @@ public class Commands implements TabExecutor {
             CommandLocals locals = new CommandLocals();
             locals.put(CommandSender.class, cs);
             locals.put(EntityStatManager.class,playerStatManager);
-            locals.put(BeardStat.class, plugin);
+            locals.put(BukkitPlugin.class, plugin);
             result = dispatcher.call(cmdlbl + " " + StringUtils.join(args, " "), locals, new String[0]);
         } catch (CommandException ex) {
             Logger.getLogger(Commands.class.getName()).log(Level.SEVERE, null, ex);

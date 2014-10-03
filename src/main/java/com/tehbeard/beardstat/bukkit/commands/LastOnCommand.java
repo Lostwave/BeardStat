@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,11 +7,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.utils.LanguagePack;
+import com.tehbeard.beardstat.LanguagePack;
 
 /**
  * Implements last on feature, figures out when a user was last online
@@ -21,7 +21,7 @@ import com.tehbeard.beardstat.utils.LanguagePack;
  */
 public class LastOnCommand extends BeardStatCommand {
 
-    public LastOnCommand(EntityStatManager playerStatManager, BeardStat plugin) {
+    public LastOnCommand(EntityStatManager playerStatManager, BukkitPlugin plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -38,7 +38,7 @@ public class LastOnCommand extends BeardStatCommand {
         if (args.length == 1) {
             player = Bukkit.getOfflinePlayer(args[0]);
         }
-        blob = this.playerStatManager.getPlayer(player, false);
+        blob = this.playerStatManager.getPlayer(player.getUniqueId(), false);
         
         if(blob==null){sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));return true;}
         

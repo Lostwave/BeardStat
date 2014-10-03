@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
 import java.util.Stack;
 import java.util.regex.PatternSyntaxException;
@@ -10,14 +10,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.containers.StatVector;
 import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.utils.LanguagePack;
+import com.tehbeard.beardstat.LanguagePack;
 
 /**
  * Show stats for a player,
@@ -27,7 +27,7 @@ import com.tehbeard.beardstat.utils.LanguagePack;
  */
 public class StatCommand extends BeardStatCommand {
 
-    public StatCommand(EntityStatManager playerStatManager, BeardStat plugin) {
+    public StatCommand(EntityStatManager playerStatManager, BukkitPlugin plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -69,7 +69,7 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.getPlayer(player, false);
+                EntityStatBlob blob = this.playerStatManager.getPlayer(player.getUniqueId(), false);
                 sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));

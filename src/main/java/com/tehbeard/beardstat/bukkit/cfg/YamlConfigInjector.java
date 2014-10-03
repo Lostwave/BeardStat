@@ -1,5 +1,6 @@
-package com.tehbeard.beardstat.cfg;
+package com.tehbeard.beardstat.bukkit.cfg;
 
+import com.tehbeard.beardstat.cfg.InjectConfig;
 import java.lang.reflect.Field;
 
 import com.tehbeard.utils.syringe.Injector;

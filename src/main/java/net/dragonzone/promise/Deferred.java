@@ -16,8 +16,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.Validate;
-
 /**
  * <p>
  * This class is thread-safe, but provides no guarantee on order of operations.
@@ -90,7 +88,7 @@ public class Deferred<T> implements Promise<T>, Runnable {
 
         @Override
         public <P extends Promise<T>> Void invoke(P promise) {
-            Validate.notNull(promise, "Promise may not be null");
+            if(promise == null){throw new IllegalArgumentException("Promise may not be null");}
             // handle progress events
             if (!promise.isDone() && (this.progressFilter != null)) {
                 Object progress = promise.getProgress();

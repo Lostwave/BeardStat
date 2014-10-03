@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.bukkit.util.FileUtil;
-
 import com.google.gson.stream.JsonWriter;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
@@ -29,6 +27,7 @@ import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry.DocRev;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocumentDatabase;
+import com.tehbeard.utils.FileUtils;
 
 public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
@@ -61,7 +60,14 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
     @Override
     public boolean generateBackup(String file) {
-        return FileUtil.copy(new File(filename), new File(platform.getDataFolder(), file));
+        if(filename.equals(":memory:")){return true;}
+        try {
+            FileUtils.copy(new File(filename), new File(platform.getDataFolder(), file));
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(SQLiteStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     @Override
@@ -160,12 +166,14 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public boolean restoreBackup(String file) {
         try {
             teardown();
-        } catch (SQLException ex) {
-            platform.getLogger().log(Level.SEVERE, null, ex);
-        }
-        if (FileUtil.copy(new File(platform.getDataFolder(), file), new File(filename))) {
+
+            FileUtils.copy(new File(platform.getDataFolder(), file), new File(filename));
             initialise();
             return true;
+        } catch (IOException ex) {
+            Logger.getLogger(SQLiteStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            platform.getLogger().log(Level.SEVERE, null, ex);
         }
         return false;
     }

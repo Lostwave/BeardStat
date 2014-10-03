@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.dataproviders.identifier;
+package com.tehbeard.beardstat.bukkit.identifier;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffect;
 
-import com.tehbeard.beardstat.utils.BukkitHumanNameGenerator;
+import com.tehbeard.beardstat.bukkit.utils.BukkitHumanNameGenerator;
 
 /**
  * Uses the old metadata id system, To be dropped in 0.7.2 in favour of minecraft string ids

@@ -10,9 +10,7 @@ import java.util.logging.Level;
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.OfflinePlayer;
-
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
@@ -49,15 +47,15 @@ public class EntityStatManager {
      * @param player
      * @return
      */
-    public Promise<EntityStatBlob> getPlayer(OfflinePlayer player){
+    public Promise<EntityStatBlob> getPlayer(UUID player){
         return getPlayerAsync(player, true);
     }
     
-    public Promise<EntityStatBlob> getPlayerAsync(OfflinePlayer player, boolean create){
+    public Promise<EntityStatBlob> getPlayerAsync(UUID player, boolean create){
         return get(new ProviderQuery(player, create));
     }
     
-    public EntityStatBlob getPlayer(OfflinePlayer player, boolean create){
+    public EntityStatBlob getPlayer(UUID player, boolean create){
         try{
         return getPlayerAsync(player, create).getValue();
         }catch(Exception e){

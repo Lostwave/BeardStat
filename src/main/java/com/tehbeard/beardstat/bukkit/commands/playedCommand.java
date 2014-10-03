@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -6,8 +6,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
@@ -15,7 +15,7 @@ import com.tehbeard.beardstat.containers.StatVector;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
-import com.tehbeard.beardstat.utils.LanguagePack;
+import com.tehbeard.beardstat.LanguagePack;
 
 /**
  * /played - Show users playtime /played name - show player of name
@@ -25,7 +25,7 @@ import com.tehbeard.beardstat.utils.LanguagePack;
  */
 public class playedCommand extends BeardStatCommand {
 
-    public playedCommand(EntityStatManager playerStatManager, BeardStat plugin) {
+    public playedCommand(EntityStatManager playerStatManager, BukkitPlugin plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -53,7 +53,7 @@ public class playedCommand extends BeardStatCommand {
             }
 
             // Grab player blob and format out stat
-            blob = this.playerStatManager.getPlayer(selectedPlayer, false);
+            blob = this.playerStatManager.getPlayer(selectedPlayer.getUniqueId(), false);
             if (blob == null) {
                 sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));
                 return true;

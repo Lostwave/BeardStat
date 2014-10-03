@@ -8,13 +8,13 @@ import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.containers.StatBlobRecord;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFileRef;
-import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
+import com.tehbeard.beardstat.bukkit.identifier.IdentifierService;
 import com.tehbeard.beardstat.dataproviders.metadata.CategoryMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
-import com.tehbeard.beardstat.utils.StatUtils;
+import com.tehbeard.beardstat.bukkit.utils.StatUtils;
 import com.tehbeard.utils.sql.DBVersion;
 import com.tehbeard.utils.sql.JDBCDataSource;
 import com.tehbeard.utils.sql.PostUpgrade;
@@ -287,7 +287,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
                         rs.getInt("entityId"),
                         rs.getString("name"),
                         rs.getString("type"),
-                        rs.getString("uuid") == null ? null : StatUtils.expandUUID(rs.getString("uuid"))));
+                        rs.getString("uuid") == null ? null : MojangWebAPI.expandUUID(rs.getString("uuid"))));
             }
             rs.close();
             return results.toArray(new ProviderQueryResult[0]);

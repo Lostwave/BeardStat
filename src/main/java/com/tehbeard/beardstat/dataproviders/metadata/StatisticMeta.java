@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tehbeard.beardstat.commands.formatters.StatFormatter;
-import com.tehbeard.beardstat.utils.LanguagePack;
+import com.tehbeard.beardstat.LanguagePack;
 
 public class StatisticMeta {
 

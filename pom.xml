@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tehbeard</groupId>
     <artifactId>BeardStat</artifactId>
-    <version>0.8.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>BeardStat</name>
 
@@ -42,12 +42,6 @@
 
     <dependencies>
             
-        <!--<dependency>
-            <groupId>com.mojang</groupId>
-            <artifactId>AccountsClient</artifactId>
-            <version>latest</version>
-            <optional>true</optional>
-        </dependency>-->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
@@ -96,6 +90,14 @@
             <version>2.2.2</version>
             <type>jar</type>
         </dependency>
+        
+<!--        <dependency>
+    <groupId>rainbow</groupId>
+    <artifactId>rainbowAPI</artifactId>
+    <version>1.0</version>
+    <scope>system</scope>
+    <systemPath>F:\for_plugin_devs\PluginReference.jar</systemPath>
+  </dependency>-->
     </dependencies>
 
     <distributionManagement>
@@ -135,13 +137,7 @@
                 <directory>${basedir}/src/main/resources/</directory>
             </resource>
 
-            <!--<resource>
-                    <filtering>true</filtering>
-                    <targetPath>../filtered-sources/java</targetPath>
-                    <directory>${basedir}/src/main/java/</directory>
-            </resource>-->
         </resources>
-        <!--<sourceDirectory>target/filtered-sources/java</sourceDirectory>-->
         <plugins>
 
             <plugin>
@@ -186,8 +182,7 @@
                                 <includes>
                                     <include>com.tehbeard:utils</include>
                                     <include>org.mcstats.bukkit:metrics</include>
-                                    <include>com.google.code.gson:gson</include>
-                                    <!-- <include>net.dragonzone:Deferred</include> -->
+                                    <!--<include>com.google.code.gson:gson</include>-->
                                 </includes>
 
 
@@ -198,16 +193,12 @@
                                     <shadedPattern>com.tehbeard.beardstat.utils</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>net.dragonzone:Deferred</pattern>
+                                    <pattern>net.dragonzone</pattern>
                                     <shadedPattern>com.tehbeard.beardstat.utils.deferred</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.mcstats</pattern>
+                                    <pattern>org.mcstats</pattern>
                                     <shadedPattern>com.tehbeard.beardstat.utils</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google.code.gson</pattern>
-                                    <shadedPattern>com.tehbeard.beardstat</shadedPattern>
                                 </relocation>
                             </relocations>
                             <minimizeJar>true</minimizeJar>

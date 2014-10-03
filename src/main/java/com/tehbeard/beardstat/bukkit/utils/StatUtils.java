@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.utils;
+package com.tehbeard.beardstat.bukkit.utils;
 
 import java.util.UUID;
 
@@ -12,9 +12,9 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
-import com.tehbeard.beardstat.dataproviders.identifier.IdentifierService;
+import com.tehbeard.beardstat.bukkit.identifier.IdentifierService;
 import com.tehbeard.beardstat.listeners.defer.DelegateDecrement;
 import com.tehbeard.beardstat.listeners.defer.DelegateIncrement;
 import com.tehbeard.beardstat.listeners.defer.DelegateSet;
@@ -193,7 +193,7 @@ public class StatUtils {
      * @param amount
      */
     public void increment(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getPlayer(player);
+        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId());
         blob.onResolve(new DelegateIncrement(domain,world,category,statistic,amount));
     }
 
@@ -207,7 +207,7 @@ public class StatUtils {
      * @param amount
      */
     public void decrement(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getPlayer(player);
+        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId());
         blob.onResolve(new DelegateDecrement(domain,world,category,statistic,amount));
     }
     
@@ -221,15 +221,9 @@ public class StatUtils {
      * @param amount
      */
     public void set(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getPlayer(player);
+        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId());
         blob.onResolve(new DelegateSet(domain,world,category,statistic,amount));
     }
     
-    public static UUID expandUUID(String uuid){
-        return UUID.fromString(uuid.substring(0, 8) + "-" + uuid.substring(8, 12) + "-" + uuid.substring(12, 16) + "-" + uuid.substring(16, 20) + "-" +uuid.substring(20, 32));
-    }
     
-    public static String compactUUID(UUID uuid){
-        return uuid.toString().replaceAll("-", "");
-    }
 }

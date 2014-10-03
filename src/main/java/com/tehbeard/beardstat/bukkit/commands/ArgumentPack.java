@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;

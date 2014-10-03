@@ -6,10 +6,6 @@ package com.tehbeard.beardstat.dataproviders;
 
 import java.util.UUID;
 
-import org.bukkit.OfflinePlayer;
-
-
-
 /**
  *
  * @author James
@@ -26,8 +22,8 @@ public class ProviderQuery {
     
     public boolean likeName = false;
     
-    public ProviderQuery(OfflinePlayer player, boolean create){
-        this(null, IStatDataProvider.PLAYER_TYPE, player.getUniqueId(), create);
+    public ProviderQuery(UUID player, boolean create){
+        this(null, IStatDataProvider.PLAYER_TYPE, player, create);
     }
     
     public ProviderQuery(String name,String type,UUID uuid,boolean create){

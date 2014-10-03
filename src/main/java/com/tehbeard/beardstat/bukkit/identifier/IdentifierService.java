@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.dataproviders.identifier;
+package com.tehbeard.beardstat.bukkit.identifier;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
