@@ -19,6 +19,7 @@ import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 import com.tehbeard.beardstat.LanguagePack;
+import org.bukkit.OfflinePlayer;
 
 /**
  * Display a statpage
@@ -100,7 +101,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             //Find the player to use
             if(sender instanceof Player){
-                blob = playerStatManager.getPlayer(((Player)sender).getUniqueId(), false);
+                blob = playerStatManager.getPlayer(((Player)sender).getUniqueId(),((Player)sender).getName(), false);
             }
             if(blob == null && args.length != 2){
                 return false;
@@ -108,7 +109,8 @@ public class StatPageCommand extends BeardStatCommand {
             
             String page = null;
             if(args.length == 2){
-                blob = playerStatManager.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId(), false);
+                OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                blob = playerStatManager.getPlayer(player.getUniqueId(), player.getName(), false);
                 page = args[1];
             }
             

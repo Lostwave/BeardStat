@@ -22,8 +22,8 @@ public class ProviderQuery {
     
     public boolean likeName = false;
     
-    public ProviderQuery(UUID player, boolean create){
-        this(null, IStatDataProvider.PLAYER_TYPE, player, create);
+    public ProviderQuery(UUID player, String name, boolean create){
+        this(name, IStatDataProvider.PLAYER_TYPE, player, create);
     }
     
     public ProviderQuery(String name,String type,UUID uuid,boolean create){

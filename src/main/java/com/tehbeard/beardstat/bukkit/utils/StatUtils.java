@@ -193,7 +193,7 @@ public class StatUtils {
      * @param amount
      */
     public void increment(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId());
+        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId(), player.getName());
         blob.onResolve(new DelegateIncrement(domain,world,category,statistic,amount));
     }
 
@@ -207,7 +207,7 @@ public class StatUtils {
      * @param amount
      */
     public void decrement(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId());
+        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId(), player.getName());
         blob.onResolve(new DelegateDecrement(domain,world,category,statistic,amount));
     }
     
@@ -221,7 +221,7 @@ public class StatUtils {
      * @param amount
      */
     public void set(Player player, String world, String category, String statistic, int amount){
-        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId());
+        Promise<EntityStatBlob> blob = manager.getPlayer(player.getUniqueId(), player.getName());
         blob.onResolve(new DelegateSet(domain,world,category,statistic,amount));
     }
     

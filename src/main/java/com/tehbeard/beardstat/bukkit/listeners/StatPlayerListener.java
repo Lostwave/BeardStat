@@ -88,7 +88,7 @@ public class StatPlayerListener extends StatListener {
                 (int) (System.currentTimeMillis() / 1000L));
 
         //Special case for first join
-        getPlayerStatManager().getPlayer(event.getPlayer().getUniqueId())
+        getPlayerStatManager().getPlayer(event.getPlayer().getUniqueId(),event.getPlayer().getName())
         .onResolve(new Delegate<Void, Promise<EntityStatBlob>>() {
 
             @Override
