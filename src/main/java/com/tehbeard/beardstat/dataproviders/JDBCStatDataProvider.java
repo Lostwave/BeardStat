@@ -233,7 +233,11 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
 
     @Override
     public ProviderQueryResult[] queryDatabase(ProviderQuery query) {
-        if (query.name == null && query.type == null && query.getUUIDString() == null) {
+        if ( 
+                (query.name == null || query.noNameChk) && 
+                query.type == null && 
+                query.getUUIDString() == null
+            ) {
             throw new IllegalStateException("Invalid ProviderQuery passed.");
         }
         String sql = "SELECT `entityId`,`name`,`type`,`uuid` FROM `${PREFIX}_entity` WHERE ";
@@ -246,7 +250,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
             }
             sql += "`uuid`=? ";
             addAnd = true;
-        } else if (query.name != null) {
+        } else if (query.name != null && !query.noNameChk) {
             if (query.likeName) {
                 sql += "`name` LIKE ? ";
                 addAnd = true;
