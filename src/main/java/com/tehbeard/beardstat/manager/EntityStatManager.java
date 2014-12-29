@@ -52,7 +52,7 @@ public class EntityStatManager {
     }
     
     public Promise<EntityStatBlob> getPlayerAsync(UUID player, String name, boolean create){
-        return get(new ProviderQuery(player, name, create));
+        return get(new ProviderQuery(player, name, create).noNameChk());
     }
     
     public EntityStatBlob getPlayer(UUID player, String name, boolean create){
@@ -76,17 +76,6 @@ public class EntityStatManager {
         return uuidCache.get(query.getUUID());
     }
     
-//    public EntityStatBlob getPlayerByName(String name){
-//        for(Promise<EntityStatBlob> e : uuidCache.values()){
-//            if(e.isResolved()){
-//                if(e.getValue().getName().equalsIgnoreCase(name)){
-//                    return e.getValue();
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
     /**
      * Query the database
      *
