@@ -1,6 +1,7 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import com.google.gson.stream.JsonReader;
+import com.tehbeard.beardstat.BeardStatRuntimeException;
 import java.sql.SQLException;
 
 import com.tehbeard.beardstat.DatabaseConfiguration;
@@ -78,6 +79,9 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         super(platform, "sql", "com.mysql.jdbc.Driver", config);
         setConnectionUrl(String.format("jdbc:mysql://%s:%s/%s?allowMultiQueries=true", config.host, config.port, config.database));
         setTag("PREFIX", config.tablePrefix);
+        if(config.username == null){throw new BeardStatRuntimeException("config value stats.database.username must be provided.", null, false);}
+        if(config.password == null){throw new BeardStatRuntimeException("config value stats.database.password must be provided.", null, false);}
+        
         this.connectionProperties.put("user", config.username);
         this.connectionProperties.put("password", config.password);
         this.connectionProperties.put("autoReconnect", "true");

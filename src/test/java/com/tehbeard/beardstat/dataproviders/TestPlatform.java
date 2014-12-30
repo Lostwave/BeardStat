@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author James
  */
-class TestPlatform implements DbPlatform {
+public class TestPlatform implements DbPlatform {
 
     public TestPlatform() {
     }

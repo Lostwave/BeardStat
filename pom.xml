@@ -187,7 +187,7 @@
                                 <includes>
                                     <include>com.tehbeard:utils</include>
                                     <include>org.mcstats.bukkit:metrics</include>
-                                    <!--<include>com.google.code.gson:gson</include>-->
+                                    <include>com.google.code.gson:gson</include>
                                 </includes>
 
 
@@ -204,6 +204,10 @@
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
                                     <shadedPattern>com.tehbeard.beardstat.utils</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>com.tehbeard.beardstat.utils.gson</shadedPattern>
                                 </relocation>
                             </relocations>
                             <minimizeJar>true</minimizeJar>
