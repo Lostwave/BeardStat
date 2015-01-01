@@ -29,7 +29,14 @@ public class YamlConfigInjector extends Injector<Object, InjectConfig> {
             IllegalAccessException {
         Object value = this.section.get(annotation.value());
         if(value != null){
-        field.set(object, value);
+            if( field.getType() == String.class ){
+                field.set(object.toString(), value);
+            }
+            else
+            {
+                field.set(object, value);
+            }
+        
         }
 
     }
