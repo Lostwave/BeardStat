@@ -666,7 +666,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
 
     @Override
     public int getDataSourceVersion() {
-        return Integer.parseInt("${project.database.version}"); //To change body of generated methods, choose Tools | Templates.
+        return config.latestVersion; //To change body of generated methods, choose Tools | Templates.
     }
 
 }
