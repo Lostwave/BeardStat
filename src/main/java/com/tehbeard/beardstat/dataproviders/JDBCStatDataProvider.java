@@ -151,6 +151,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
 
         try {
             setup();
+            doMigration(getDataSourceVersion());
             executeScript(SQL_METADATA_CATEGORY);
             executeScript(SQL_METADATA_STATISTIC);
             executeScript(SQL_METADATA_STATIC_STATS);

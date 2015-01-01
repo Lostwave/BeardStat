@@ -38,7 +38,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public SQLiteStatDataProvider(DbPlatform platform, String filename, DatabaseConfiguration config) throws SQLException, ClassNotFoundException {
 
         super(platform, "sqlite", "org.sqlite.JDBC", config);
-
+        this.filename = filename;
         setConnectionUrl(String.format("jdbc:sqlite:%s", filename));
         setTag("PREFIX", "stats");
         initialise();
@@ -54,7 +54,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
             e.printStackTrace();
             throw new BeardStatRuntimeException("Error generating documents database", e, false);
         }
-        this.filename = filename;
+        
 
     }
 
