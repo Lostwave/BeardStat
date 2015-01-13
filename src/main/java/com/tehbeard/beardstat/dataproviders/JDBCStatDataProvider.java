@@ -102,7 +102,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
     @SQLScript(SQL_LOAD_ENTITY_DATA)
     protected PreparedStatement loadEntityData;
     // save to db
-    @SQLScript(SQL_SAVE_ENTITY)
+    @SQLScript(value = SQL_SAVE_ENTITY,flags = Statement.RETURN_GENERATED_KEYS)
     protected PreparedStatement saveEntity;
     @SQLScript(SQL_SAVE_STAT)
     protected PreparedStatement saveEntityData;
@@ -330,7 +330,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
                 }
                 rs.close();
             } else if (result == null && query.create) {
-
+                try{
                 saveEntity.setString(1, query.name);
                 saveEntity.setString(2, query.type);
                 saveEntity.setString(3, query.getUUIDString());
@@ -341,6 +341,9 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
                 // make the player object, close out result set.
                 esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.getUUID(), this);
                 rs.close();
+                } catch (SQLException e) {
+                    platform.mysqlError(e, SQL_SAVE_ENTITY);
+                }
             }
             //Didn't get a esb, kill it.
             if (esb == null) {
