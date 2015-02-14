@@ -177,5 +177,10 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         }
         return false;
     }
+    
+    @Override
+    public synchronized boolean checkConnection() {
+        return true;
+    }
 
 }
