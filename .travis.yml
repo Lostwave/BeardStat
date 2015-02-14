@@ -1,1 +1,9 @@
 language: java
+deploy:
+  provider: releases
+  api_key:
+    secure: eHfpJJE6AhP1b1t06i7q03pWNoHI4JOk7ki94FD6ZzPW8+fuiS6IaNVCHlXEG1UEFfk4QakkQsMjOUFnOKKxd64iYFFddD37EzQLAPBnS+cXrEnAXbX11BL6YkEv+bR4r8VqXfErE23MJ3iRBJUBkG6oitRBjv5y30gNtNgLCk4=
+  file: target/BeardStat.zip
+  on:
+    repo: tehbeard/BeardStat
+    tags: true
