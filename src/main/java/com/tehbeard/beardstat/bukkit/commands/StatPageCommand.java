@@ -27,7 +27,7 @@ import com.tehbeard.beardstat.LanguagePack;
  */
 public class StatPageCommand extends BeardStatCommand {
     
-    private final Map<String,StatPage> pages = new HashMap<String, StatPageCommand.StatPage>();
+    private static final Map<String,StatPage> pages = new HashMap<String, StatPageCommand.StatPage>();
     
     public class StatPage {
         private List<StatPageEntry> entries = new ArrayList<StatPageEntry>();
@@ -119,14 +119,19 @@ public class StatPageCommand extends BeardStatCommand {
             if(page == null){
                 return false;
             }
-            StatPage pageFile = pages.get(page);
-            if(pageFile ==null){return false;}
-            pageFile.toCommandSender(sender, blob);
+            sendPages(page, sender, blob);
             return true;
         } catch (Exception e) {
             this.plugin.handleError(new BeardStatRuntimeException("/statpage threw an error", e, true));
         }
         return true;
+    }
+    
+    public static boolean sendPages(String page, CommandSender sender, EntityStatBlob blob){
+        StatPage pageFile = pages.get(page);
+            if(pageFile ==null){return false;}
+            pageFile.toCommandSender(sender, blob);
+            return true;
     }
 
 }
