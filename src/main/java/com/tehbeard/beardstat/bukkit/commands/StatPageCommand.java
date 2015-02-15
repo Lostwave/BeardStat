@@ -100,7 +100,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             //Find the player to use
             if(sender instanceof Player){
-                blob = playerStatManager.getPlayer(((Player)sender).getUniqueId(), false);
+                blob = playerStatManager.getPlayer(null, ((Player)sender).getUniqueId(), false);
             }
             if(blob == null && args.length != 2){
                 return false;
@@ -108,7 +108,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             String page = null;
             if(args.length == 2){
-                blob = playerStatManager.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId(), false);
+                blob = playerStatManager.getPlayer(null, Bukkit.getOfflinePlayer(args[0]).getUniqueId(), false);
                 page = args[1];
             }
             
