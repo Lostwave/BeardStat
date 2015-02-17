@@ -54,7 +54,7 @@ public class EntityStatManagerTest {
      */
     @Test
     public void testGetPlayer_UUID_String() {
-        assertNotNull(manager.getPlayer(MojangWebAPI.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), "Tehbeard").getValue());
+        assertNotNull(manager.getPlayer("Tehbeard", MojangWebAPI.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1")).getValue());
     }
 
     /**
@@ -62,7 +62,7 @@ public class EntityStatManagerTest {
      */
     @Test
     public void testGetPlayerAsync() {
-        assertNotNull(manager.getPlayerAsync(MojangWebAPI.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), "Tehbeard", true).getValue());
+        assertNotNull(manager.getPlayerAsync("Tehbeard",MojangWebAPI.expandUUID("09d770ac7bfe48a2bf6877cbd21c51a1"), true).getValue());
     }
 
     /**
