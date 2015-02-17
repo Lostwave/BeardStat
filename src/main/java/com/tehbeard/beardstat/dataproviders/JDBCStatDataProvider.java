@@ -14,7 +14,6 @@ import com.tehbeard.beardstat.dataproviders.metadata.DomainMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta.Formatting;
 import com.tehbeard.beardstat.dataproviders.metadata.WorldMeta;
-import com.tehbeard.beardstat.bukkit.utils.StatUtils;
 import com.tehbeard.utils.sql.DBVersion;
 import com.tehbeard.utils.sql.JDBCDataSource;
 import com.tehbeard.utils.sql.PostUpgrade;
@@ -102,7 +101,7 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
     @SQLScript(SQL_LOAD_ENTITY_DATA)
     protected PreparedStatement loadEntityData;
     // save to db
-    @SQLScript(value = SQL_SAVE_ENTITY,flags = Statement.RETURN_GENERATED_KEYS)
+    @SQLScript(value=SQL_SAVE_ENTITY, flags = Statement.RETURN_GENERATED_KEYS)
     protected PreparedStatement saveEntity;
     @SQLScript(SQL_SAVE_STAT)
     protected PreparedStatement saveEntityData;
@@ -310,8 +309,10 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
                 platform.getLogger().severe("Database connection error!");
                 return null;
             }
+            platform.getLogger().log(Level.INFO, "Requesting data for {0}", query);
             long t1 = (new Date()).getTime();
             ProviderQueryResult result = getSingleEntity(query);
+            platform.getLogger().log(Level.INFO, "Entry {0}found", (result == null ? "not ":""));
             EntityStatBlob esb = null;
             ResultSet rs;
 
@@ -331,17 +332,16 @@ public abstract class JDBCStatDataProvider extends JDBCDataSource implements ISt
                 rs.close();
             } else if (result == null && query.create) {
                 try{
-                saveEntity.setString(1, query.name);
-                saveEntity.setString(2, query.type);
-                saveEntity.setString(3, query.getUUIDString());
-                saveEntity.executeUpdate();
-                rs = saveEntity.getGeneratedKeys();
-                rs.next();// load player id
-
-                // make the player object, close out result set.
-                esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.getUUID(), this);
-                rs.close();
-                } catch (SQLException e) {
+                    saveEntity.setString(1, query.name);
+                    saveEntity.setString(2, query.type);
+                    saveEntity.setString(3, query.getUUIDString());
+                    saveEntity.executeUpdate();
+                    rs = saveEntity.getGeneratedKeys();
+                    rs.next();// load player id
+                    // make the player object, close out result set.
+                    esb = new EntityStatBlob(query.name, rs.getInt(1), query.type, query.getUUID(), this);
+                    rs.close();
+                }catch(SQLException e){
                     platform.mysqlError(e, SQL_SAVE_ENTITY);
                 }
             }

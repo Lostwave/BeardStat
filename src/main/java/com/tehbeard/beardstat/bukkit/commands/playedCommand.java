@@ -53,7 +53,7 @@ public class playedCommand extends BeardStatCommand {
             }
 
             // Grab player blob and format out stat
-            blob = this.playerStatManager.getPlayer(selectedPlayer.getUniqueId(), selectedPlayer.getName(), false);
+            blob = this.playerStatManager.getPlayer(null, selectedPlayer.getUniqueId(), false);
             if (blob == null) {
                 sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));
                 return true;

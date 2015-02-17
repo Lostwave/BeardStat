@@ -38,7 +38,7 @@ public class LastOnCommand extends BeardStatCommand {
         if (args.length == 1) {
             player = Bukkit.getOfflinePlayer(args[0]);
         }
-        blob = this.playerStatManager.getPlayer(player.getUniqueId(),player.getName(), false);
+        blob = this.playerStatManager.getPlayer(null, player.getUniqueId(), false);
         
         if(blob==null){sender.sendMessage(ChatColor.RED + LanguagePack.getMsg("command.error.noplayer", args[0]));return true;}
         

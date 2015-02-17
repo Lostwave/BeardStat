@@ -45,6 +45,8 @@ public class StatCommand extends BeardStatCommand {
             if ((player == null) && (sender instanceof Player)) {
                 player = ((Player) sender);
             }
+            
+            EntityStatBlob blob = this.playerStatManager.getPlayer(null, player.getUniqueId(), false);
 
             // not a player and no player picked? or -h flag? show the help message.
             if ((player == null) || arguments.getFlag("h")) {
@@ -56,6 +58,7 @@ public class StatCommand extends BeardStatCommand {
                 sender.sendMessage("Interactive mode has been removed at this time.");
                 return true;
             }
+            
 
             if (arguments.getOption("s") != null) {
 
@@ -69,7 +72,7 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.getPlayer(player.getUniqueId(), player.getName(), false);
+                
                 sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
@@ -115,7 +118,8 @@ public class StatCommand extends BeardStatCommand {
             } else {
                 //TODO - Swap to API call instead?
                 sender.sendMessage(ChatColor.YELLOW + "=========");
-                Bukkit.dispatchCommand(sender, "statpage " + player.getName() + " default");
+                StatPageCommand.sendPages("default",sender,blob);
+
             }
 
         } catch (Exception e) {

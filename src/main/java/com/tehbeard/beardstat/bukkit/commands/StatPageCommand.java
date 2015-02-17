@@ -28,7 +28,7 @@ import org.bukkit.OfflinePlayer;
  */
 public class StatPageCommand extends BeardStatCommand {
     
-    private final Map<String,StatPage> pages = new HashMap<String, StatPageCommand.StatPage>();
+    private static final Map<String,StatPage> pages = new HashMap<String, StatPageCommand.StatPage>();
     
     public class StatPage {
         private List<StatPageEntry> entries = new ArrayList<StatPageEntry>();
@@ -101,7 +101,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             //Find the player to use
             if(sender instanceof Player){
-                blob = playerStatManager.getPlayer(((Player)sender).getUniqueId(),((Player)sender).getName(), false);
+                blob = playerStatManager.getPlayer(null, ((Player)sender).getUniqueId(), false);
             }
             if(blob == null && args.length != 2){
                 return false;
@@ -109,8 +109,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             String page = null;
             if(args.length == 2){
-                OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-                blob = playerStatManager.getPlayer(player.getUniqueId(), player.getName(), false);
+                blob = playerStatManager.getPlayer(null, Bukkit.getOfflinePlayer(args[0]).getUniqueId(), false);
                 page = args[1];
             }
             
@@ -121,14 +120,19 @@ public class StatPageCommand extends BeardStatCommand {
             if(page == null){
                 return false;
             }
-            StatPage pageFile = pages.get(page);
-            if(pageFile ==null){return false;}
-            pageFile.toCommandSender(sender, blob);
+            sendPages(page, sender, blob);
             return true;
         } catch (Exception e) {
             this.plugin.handleError(new BeardStatRuntimeException("/statpage threw an error", e, true));
         }
         return true;
+    }
+    
+    public static boolean sendPages(String page, CommandSender sender, EntityStatBlob blob){
+        StatPage pageFile = pages.get(page);
+            if(pageFile ==null){return false;}
+            pageFile.toCommandSender(sender, blob);
+            return true;
     }
 
 }

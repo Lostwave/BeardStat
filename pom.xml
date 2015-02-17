@@ -15,10 +15,9 @@
     </properties>
 
     <repositories>
-        <!-- Repository for Bukkit -->
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+                    <id>spigot-repo</id>
+                    <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
             <id>escapecraft-repo</id>
@@ -42,20 +41,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.7.2</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
             <version>1.8-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.tehbeard</groupId>
             <artifactId>utils</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -81,19 +74,20 @@
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
-            <version>R7</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>R8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.2</version>
             <type>jar</type>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.8.7</version>
+          <scope>runtime</scope>
         </dependency>
         
 <!--        <dependency>
@@ -222,6 +216,7 @@
                 <version>2.3</version>
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <finalName>BeardStat</finalName>
                     <descriptors>
                         <descriptor>src/main/assembly/package.xml</descriptor>
                     </descriptors>

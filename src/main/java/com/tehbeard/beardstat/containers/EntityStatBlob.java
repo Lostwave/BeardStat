@@ -59,7 +59,6 @@ public class EntityStatBlob implements VariableProvider {
      * @param uuid
      */
     public EntityStatBlob(String name, int entityId, String type, UUID uuid, IStatDataProvider provider) {
-        Logger.getGlobal().info("Created EntityStatBlob");
         this.name = name;
         this.entityId = entityId;
         this.type = type;

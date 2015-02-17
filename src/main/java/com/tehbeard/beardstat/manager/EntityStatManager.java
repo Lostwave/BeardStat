@@ -44,20 +44,21 @@ public class EntityStatManager {
 
     /**
      * Get the blob for a player
+     * @param name name of the player
      * @param player
      * @return
      */
-    public Promise<EntityStatBlob> getPlayer(UUID player, String name){
-        return getPlayerAsync(player, name, true);
+    public Promise<EntityStatBlob> getPlayer(String name, UUID player){
+        return getPlayerAsync(name, player, true);
     }
     
-    public Promise<EntityStatBlob> getPlayerAsync(UUID player, String name, boolean create){
-        return get(new ProviderQuery(player, name, create).noNameChk());
+    public Promise<EntityStatBlob> getPlayerAsync(String name, UUID player, boolean create){
+        return get(new ProviderQuery(name, player, create));
     }
     
-    public EntityStatBlob getPlayer(UUID player, String name, boolean create){
+    public EntityStatBlob getPlayer(String name, UUID player, boolean create){
         try{
-        return getPlayerAsync(player, name, create).getValue();
+        return getPlayerAsync(name, player, create).getValue();
         }catch(Exception e){
             platform.handleError(new BeardStatRuntimeException("An error occured loading a stat blob for " + player.toString(), e, true));
             return null;
