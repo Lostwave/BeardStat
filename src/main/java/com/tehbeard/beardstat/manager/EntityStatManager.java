@@ -19,6 +19,7 @@ import com.tehbeard.beardstat.dataproviders.ProviderQuery;
 import com.tehbeard.beardstat.dataproviders.ProviderQueryResult;
 import com.tehbeard.beardstat.dataproviders.metadata.StatisticMeta;
 import com.tehbeard.beardstat.manager.OnlineTimeManager.ManagerRecord;
+import java.util.Iterator;
 
 
 
@@ -88,7 +89,9 @@ public class EntityStatManager {
     }
 
     public void saveCache() {
-        for( Promise<EntityStatBlob> blobP : uuidCache.values()){
+        Iterator<Promise<EntityStatBlob>> cacheIterator = uuidCache.values().iterator();
+        while(cacheIterator.hasNext()){
+            Promise<EntityStatBlob> blobP = cacheIterator.next();
             if(blobP.isResolved()){
                 EntityStatBlob blob = blobP.getValue();
                 if (blob.getType().equals(IStatDataProvider.PLAYER_TYPE)) {
@@ -105,7 +108,7 @@ public class EntityStatManager {
                         OnlineTimeManager.setRecord(entityName, platform.getWorldForPlayer(entityName));
                     } else {
                         OnlineTimeManager.wipeRecord(entityName);
-                        uuidCache.remove(blob.getUUID());
+                        cacheIterator.remove();
                     }
                 }
                 backendDatabase.pushEntityBlob(blob);
