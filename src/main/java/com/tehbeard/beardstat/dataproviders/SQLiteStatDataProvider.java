@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.bukkit.util.FileUtil;
-
 import com.google.gson.stream.JsonWriter;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DatabaseConfiguration;
@@ -29,6 +27,7 @@ import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocEntry.DocRev;
 import com.tehbeard.beardstat.dataproviders.sqlite.DocumentDatabase;
+import com.tehbeard.utils.FileUtils;
 
 public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
@@ -36,12 +35,12 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     private DocumentDatabase docDB;
     private File docDbFile;
 
-    public SQLiteStatDataProvider(DbPlatform platform, String filename, DatabaseConfiguration config) throws SQLException {
+    public SQLiteStatDataProvider(DbPlatform platform, String filename, DatabaseConfiguration config) throws SQLException, ClassNotFoundException {
 
         super(platform, "sqlite", "org.sqlite.JDBC", config);
-
-        this.connectionUrl = String.format("jdbc:sqlite:%s", filename);
-        config.tablePrefix = "stats";
+        this.filename = filename;
+        setConnectionUrl(String.format("jdbc:sqlite:%s", filename));
+        setTag("PREFIX", "stats");
         initialise();
 
         try {
@@ -55,13 +54,20 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
             e.printStackTrace();
             throw new BeardStatRuntimeException("Error generating documents database", e, false);
         }
-        this.filename = filename;
+        
 
     }
 
     @Override
-    public void generateBackup(File file) {
-        FileUtil.copy(new File(filename), file);
+    public boolean generateBackup(String file) {
+        if(filename.equals(":memory:")){return true;}
+        try {
+            FileUtils.copy(new File(filename), new File(platform.getDataFolder(), file));
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(SQLiteStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     @Override
@@ -69,7 +75,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(domain, key);
         DocRev docRevision = dbEntry.getRevisions().get(dbEntry.getCurrentRevision());
 
-        if(docRevision == null){
+        if (docRevision == null) {
             return null;
         }
 
@@ -81,16 +87,15 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException, DocumentTooLargeException {
         try {
             byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(), DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
-            if(doc.length > MysqlStatDataProvider.MAX_DOC_SIZE){
+            if (doc.length > MysqlStatDataProvider.MAX_DOC_SIZE) {
                 throw new DocumentTooLargeException("Document exceeds max size.");//TODO - Change to a specific exception for this usecase
             }
-            
-            
+
             //2) Generate new revision tag.
             MessageDigest digest = MessageDigest.getInstance("SHA1");
             String newRevision = byteArrayToHexString(digest.digest(doc));
             boolean isSingleton = document.getDocument().getClass().getAnnotation(StatDocument.class).singleInstance();
-            
+
             String currentRevision = document.getRevision();
 
             DocEntry dbEntry = docDB.getStore(entityId).getDocumentData(document.getDomain(), document.getKey());
@@ -101,10 +106,10 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
 
             //Add the new document, if singleton, null the parent revision.
             dbEntry.getRevisions().put(newRevision, new DocRev(isSingleton ? null : currentRevision, document.getDocument()));
-            
+
             dbEntry.setCurrentRevision(newRevision);
-          //delete old entry if singleton
-            if(isSingleton){
+            //delete old entry if singleton
+            if (isSingleton) {
                 dbEntry.getRevisions().remove(currentRevision);
             }
             DocumentFile d = pullDocument(entityId, document.getDomain(), document.getKey());
@@ -121,7 +126,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     public DocumentHistory getDocumentHistory(int entityId, String domain, String key) {
         DocEntry d = docDB.getStore(entityId).getDocumentData(domain, key);
         DocumentHistory history = new DocumentHistory(domain, key, d.getCurrentRevision());
-        for(Entry<String, DocRev> e : d.getRevisions().entrySet()){
+        for (Entry<String, DocRev> e : d.getRevisions().entrySet()) {
             history.addEntry(e.getKey(), e.getValue().parentRev, e.getValue().dateAdded);
         }
         return history;
@@ -135,7 +140,7 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
     @Override
     public void deleteDocumentRevision(int entityId, String domain, String key, String revision) {
         docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().remove(revision);
-        if(docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().size() == 0){
+        if (docDB.getStore(entityId).getDocumentData(domain, key).getRevisions().isEmpty()) {
             deleteDocument(entityId, domain, key);
         }
     }
@@ -157,5 +162,25 @@ public class SQLiteStatDataProvider extends JDBCStatDataProvider {
         }
     }
 
+    @Override
+    public boolean restoreBackup(String file) {
+        try {
+            teardown();
+
+            FileUtils.copy(new File(platform.getDataFolder(), file), new File(filename));
+            initialise();
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(SQLiteStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            platform.getLogger().log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    @Override
+    public synchronized boolean checkConnection() {
+        return true;
+    }
 
 }

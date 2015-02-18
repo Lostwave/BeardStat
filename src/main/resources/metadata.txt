@@ -1,8 +1,10 @@
+1,0xF,0,6,#Stone
 3,0x3,0,15,#Dirt
 5,0x7,0,15,#Wood planks
 6,0x7,0,15,#Saplings
 17,0x3,0,15,#oak/birch/jungle/spruce log
 18,0x3,0,15,#oak/birch/jungle/spruce leaf
+19,0xF,0,15,#Sponge
 24,0x3,0,15,#Sandstone blocks
 31,0x3,0,15,#Shrubs
 35,0xF,0,15,#Wool
@@ -19,8 +21,10 @@
 160,0xF,0,15,#Stained glass panes
 161,0x1,0,1,#acacia / dark oak leaves
 162,0x1,0,1,#acacia / dark oak logs
+168,0xF,015,#prismarine
 172,0xF,0,15,#Carpets
 175,0x7,0,5,#Double height flowers
+179,0xF,0,15,#Red sandstone
 263,0x1,0,15,#Coal/Charcoal item
 349,0xF,0,3,#Fish
 350,0xF,0,3,#Cooked fish

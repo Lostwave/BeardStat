@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tehbeard.beardstat;
+package com.tehbeard.beardstat.bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +14,8 @@ import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.utils.syringe.configInjector.InjectConfig;
-import com.tehbeard.utils.syringe.configInjector.YamlConfigInjector;
+import com.tehbeard.beardstat.cfg.InjectConfig;
+import com.tehbeard.beardstat.bukkit.cfg.YamlConfigInjector;
 
 /**
  *

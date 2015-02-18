@@ -1,6 +1,6 @@
 package com.tehbeard.beardstat.containers;
 
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.Refs;
 
 /**
  * Represents a timeable stat, adds a few handy features.

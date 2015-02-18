@@ -1,5 +1,5 @@
 name: BeardStat
-main: com.tehbeard.beardstat.BeardStat
+main: com.tehbeard.beardstat.bukkit.BukkitPlugin
 version: ${project.plugin.version}-${describe}
 authors: [Tehbeard]
 commands:

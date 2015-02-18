@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,12 +13,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.utils.LanguagePack;
+import com.tehbeard.beardstat.LanguagePack;
+import org.bukkit.OfflinePlayer;
 
 /**
  * Display a statpage
@@ -27,7 +28,7 @@ import com.tehbeard.beardstat.utils.LanguagePack;
  */
 public class StatPageCommand extends BeardStatCommand {
     
-    private final Map<String,StatPage> pages = new HashMap<String, StatPageCommand.StatPage>();
+    private static final Map<String,StatPage> pages = new HashMap<String, StatPageCommand.StatPage>();
     
     public class StatPage {
         private List<StatPageEntry> entries = new ArrayList<StatPageEntry>();
@@ -79,7 +80,7 @@ public class StatPageCommand extends BeardStatCommand {
         }
     }
 
-    public StatPageCommand(EntityStatManager statManager, BeardStat plugin) {
+    public StatPageCommand(EntityStatManager statManager, BukkitPlugin plugin) {
         super(statManager, plugin);
 
 
@@ -100,7 +101,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             //Find the player to use
             if(sender instanceof Player){
-                blob = playerStatManager.getPlayer((Player)sender, false);
+                blob = playerStatManager.getPlayer(null, ((Player)sender).getUniqueId(), false);
             }
             if(blob == null && args.length != 2){
                 return false;
@@ -108,7 +109,7 @@ public class StatPageCommand extends BeardStatCommand {
             
             String page = null;
             if(args.length == 2){
-                blob = playerStatManager.getPlayer(Bukkit.getOfflinePlayer(args[0]), false);
+                blob = playerStatManager.getPlayer(null, Bukkit.getOfflinePlayer(args[0]).getUniqueId(), false);
                 page = args[1];
             }
             
@@ -119,14 +120,19 @@ public class StatPageCommand extends BeardStatCommand {
             if(page == null){
                 return false;
             }
-            StatPage pageFile = pages.get(page);
-            if(pageFile ==null){return false;}
-            pageFile.toCommandSender(sender, blob);
+            sendPages(page, sender, blob);
             return true;
         } catch (Exception e) {
             this.plugin.handleError(new BeardStatRuntimeException("/statpage threw an error", e, true));
         }
         return true;
+    }
+    
+    public static boolean sendPages(String page, CommandSender sender, EntityStatBlob blob){
+        StatPage pageFile = pages.get(page);
+            if(pageFile ==null){return false;}
+            pageFile.toCommandSender(sender, blob);
+            return true;
     }
 
 }

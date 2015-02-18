@@ -1,7 +1,5 @@
 package com.tehbeard.beardstat.dataproviders;
 
-import java.io.File;
-
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.documents.DocumentHistory;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
@@ -100,13 +98,6 @@ public interface IStatDataProvider {
     public StatisticMeta getStatistic(String gameTag, boolean create);
 
     /**
-     * backup the database, for MySQL this could be a schema dump. SQLite makes a copy of the db file.
-     *
-     * @param file
-     */
-    public void generateBackup(File file);
-
-    /**
      * Pulls a document from the database
      *
      * @param domain domain to store document under
@@ -159,6 +150,8 @@ public interface IStatDataProvider {
      */
     public DocumentHistory getDocumentHistory(int entityId, String domain, String key);
 
+    public boolean generateBackup(String testBackup);
+    public boolean restoreBackup(String testBackup);
 
     /**
      * Thrown when the head revision of a document in the database is not the same as the revision we checked out.

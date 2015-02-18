@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.listeners;
+package com.tehbeard.beardstat.bukkit.listeners;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ComplexEntityPart;
@@ -21,14 +21,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.utils.StatUtils;
+import com.tehbeard.beardstat.bukkit.utils.StatUtils;
 
 public class StatEntityListener extends StatListener {
 
-    public StatEntityListener( EntityStatManager playerStatManager, BeardStat plugin) {
+    public StatEntityListener( EntityStatManager playerStatManager, BukkitPlugin plugin) {
         super(playerStatManager, plugin);
     }
 

@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.tehbeard.beardstat.BeardStat;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
 import com.tehbeard.beardstat.dataproviders.JDBCStatDataProvider;
 import com.tehbeard.beardstat.manager.EntityStatManager;
 
@@ -14,7 +14,7 @@ public class StatScriptExecCommand extends BeardStatCommand{
 
     private JDBCStatDataProvider provider;
 
-    public StatScriptExecCommand(EntityStatManager playerStatManager, BeardStat plugin,JDBCStatDataProvider provider) {
+    public StatScriptExecCommand(EntityStatManager playerStatManager, BukkitPlugin plugin,JDBCStatDataProvider provider) {
         super(playerStatManager, plugin);
         this.provider = provider;
     }

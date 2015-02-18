@@ -6,10 +6,6 @@ package com.tehbeard.beardstat.dataproviders;
 
 import java.util.UUID;
 
-import org.bukkit.OfflinePlayer;
-
-
-
 /**
  *
  * @author James
@@ -25,21 +21,33 @@ public class ProviderQuery {
     public final boolean create;
     
     public boolean likeName = false;
+    public boolean noNameChk = false;
     
-    public ProviderQuery(OfflinePlayer player, boolean create){
-        this(null, IStatDataProvider.PLAYER_TYPE, player.getUniqueId(), create);
+    public ProviderQuery(UUID player, String name, boolean create){
+        this(name, IStatDataProvider.PLAYER_TYPE, player, create);
+    }
+    
+    public ProviderQuery(String name,UUID uuid,boolean create){
+        this(name, IStatDataProvider.PLAYER_TYPE, uuid, create);
     }
     
     public ProviderQuery(String name,String type,UUID uuid,boolean create){
         if(type == null){throw new IllegalArgumentException("Type must not be null.");}
+        if(name == null && create){throw new IllegalArgumentException("ProviderQuery requires a name if create flag is set.");}
         this.name = name;
         this.type = type;
         this.uuid = uuid != null ? uuid : name != null ? UUID.nameUUIDFromBytes(name.getBytes()) : null;
         this.create = create;
+        
     }
     
     public ProviderQuery partialNameMatch(){
         likeName = true;
+        return this;
+    }
+    
+    public ProviderQuery noNameChk(){
+        noNameChk = true;
         return this;
     }
 

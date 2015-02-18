@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.utils;
+package com.tehbeard.beardstat.bukkit.utils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,8 +26,8 @@ import org.bukkit.material.WoodenStep;
 import org.bukkit.material.Wool;
 import org.bukkit.potion.PotionType;
 
-import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator;
-import com.tehbeard.beardstat.dataproviders.identifier.HomebrewIdentifierGenerator.EntryInfo;
+import com.tehbeard.beardstat.bukkit.identifier.HomebrewIdentifierGenerator;
+import com.tehbeard.beardstat.bukkit.identifier.HomebrewIdentifierGenerator.EntryInfo;
 
 public class BukkitHumanNameGenerator {
 

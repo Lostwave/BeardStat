@@ -10,9 +10,7 @@ import java.util.logging.Level;
 import net.dragonzone.promise.Deferred;
 import net.dragonzone.promise.Promise;
 
-import org.bukkit.OfflinePlayer;
-
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.DbPlatform;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
@@ -46,20 +44,21 @@ public class EntityStatManager {
 
     /**
      * Get the blob for a player
+     * @param name name of the player
      * @param player
      * @return
      */
-    public Promise<EntityStatBlob> getPlayer(OfflinePlayer player){
-        return getPlayerAsync(player, true);
+    public Promise<EntityStatBlob> getPlayer(String name, UUID player){
+        return getPlayerAsync(name, player, true);
     }
     
-    public Promise<EntityStatBlob> getPlayerAsync(OfflinePlayer player, boolean create){
-        return get(new ProviderQuery(player, create));
+    public Promise<EntityStatBlob> getPlayerAsync(String name, UUID player, boolean create){
+        return get(new ProviderQuery(name, player, create));
     }
     
-    public EntityStatBlob getPlayer(OfflinePlayer player, boolean create){
+    public EntityStatBlob getPlayer(String name, UUID player, boolean create){
         try{
-        return getPlayerAsync(player, create).getValue();
+        return getPlayerAsync(name, player, create).getValue();
         }catch(Exception e){
             platform.handleError(new BeardStatRuntimeException("An error occured loading a stat blob for " + player.toString(), e, true));
             return null;
@@ -78,17 +77,6 @@ public class EntityStatManager {
         return uuidCache.get(query.getUUID());
     }
     
-//    public EntityStatBlob getPlayerByName(String name){
-//        for(Promise<EntityStatBlob> e : uuidCache.values()){
-//            if(e.isResolved()){
-//                if(e.getValue().getName().equalsIgnoreCase(name)){
-//                    return e.getValue();
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
     /**
      * Query the database
      *

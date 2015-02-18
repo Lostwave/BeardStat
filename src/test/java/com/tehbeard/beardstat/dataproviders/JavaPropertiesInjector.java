@@ -1,6 +1,6 @@
 package com.tehbeard.beardstat.dataproviders;
 
-import com.tehbeard.utils.syringe.configInjector.InjectConfig;
+import com.tehbeard.beardstat.cfg.InjectConfig;
 import java.lang.reflect.Field;
 import java.util.Properties;
 import com.tehbeard.utils.syringe.Injector;

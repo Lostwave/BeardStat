@@ -1,6 +1,7 @@
 package com.tehbeard.beardstat.dataproviders;
 
 import com.google.gson.stream.JsonReader;
+import com.tehbeard.beardstat.BeardStatRuntimeException;
 import java.sql.SQLException;
 
 import com.tehbeard.beardstat.DatabaseConfiguration;
@@ -10,10 +11,12 @@ import com.tehbeard.beardstat.containers.documents.StatDocument;
 import com.tehbeard.beardstat.containers.documents.DocumentRegistry;
 import com.tehbeard.beardstat.containers.documents.IStatDocument;
 import com.tehbeard.beardstat.containers.documents.docfile.DocumentFile;
+import com.tehbeard.utils.sql.SQLScript;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,7 +40,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     //Document meta scripts
     public static final String SQL_DOC_META_INSERT = "sql/doc/meta/metaInsert";
-    public static final String SQL_DOC_META_LOCK = "sql/doc/meta/metaLock";
+    //public static final String SQL_DOC_META_LOCK = "sql/doc/meta/metaLock";
     public static final String SQL_DOC_META_UPDATE = "sql/doc/meta/metaUpdate";
     public static final String SQL_DOC_META_DELETE = "sql/doc/meta/metaDelete";
     public static final String SQL_DOC_META_SELECT = "sql/doc/meta/metaSelect";
@@ -49,67 +52,78 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     public static final String SQL_DOC_STORE_DELETE = "sql/doc/store/storeDelete";
     public static final String SQL_DOC_STORE_PURGE = "sql/doc/store/storePurge";
     //meta
+    @SQLScript(value = SQL_DOC_META_INSERT, flags = Statement.RETURN_GENERATED_KEYS)
     private PreparedStatement stmtMetaInsert;
+    @SQLScript(SQL_DOC_META_UPDATE)
     private PreparedStatement stmtMetaUpdate;
+    @SQLScript(SQL_DOC_META_DELETE)
     private PreparedStatement stmtMetaDelete;
+    @SQLScript(SQL_DOC_META_SELECT)
     private PreparedStatement stmtMetaSelect;
+    @SQLScript(SQL_DOC_META_POLL)
     private PreparedStatement stmtMetaPoll;
     //docs
+    @SQLScript(value = SQL_DOC_STORE_INSERT, flags = Statement.RETURN_GENERATED_KEYS)
     private PreparedStatement stmtDocInsert;
+    @SQLScript(SQL_DOC_STORE_SELECT)
     private PreparedStatement stmtDocSelect;
+    @SQLScript(SQL_DOC_STORE_POLL)
     private PreparedStatement stmtDocPoll;
+    @SQLScript(SQL_DOC_STORE_DELETE)
     private PreparedStatement stmtDocDelete;
+    @SQLScript(SQL_DOC_STORE_PURGE)
     private PreparedStatement stmtDocPurge;
 
-    public MysqlStatDataProvider(DbPlatform platform, DatabaseConfiguration config) throws SQLException {
+    public MysqlStatDataProvider(DbPlatform platform, DatabaseConfiguration config) throws SQLException, ClassNotFoundException {
 
         super(platform, "sql", "com.mysql.jdbc.Driver", config);
-        this.connectionUrl = String.format("jdbc:mysql://%s:%s/%s", config.host, config.port, config.database);
+        setConnectionUrl(String.format("jdbc:mysql://%s:%s/%s?allowMultiQueries=true", config.host, config.port, config.database));
+        setTag("PREFIX", config.tablePrefix);
+        if(config.username == null){throw new BeardStatRuntimeException("config value stats.database.username must be provided.", null, false);}
+        if(config.password == null){throw new BeardStatRuntimeException("config value stats.database.password must be provided.", null, false);}
+        
         this.connectionProperties.put("user", config.username);
         this.connectionProperties.put("password", config.password);
         this.connectionProperties.put("autoReconnect", "true");
-        this.tblPrefix = config.tablePrefix;
         initialise();
     }
 
     @Override
-    protected void prepareStatements() {
-        super.prepareStatements();
-        //Meta
-        stmtMetaInsert = getStatementFromScript(SQL_DOC_META_INSERT, Statement.RETURN_GENERATED_KEYS);
-        stmtMetaUpdate = getStatementFromScript(SQL_DOC_META_UPDATE);
-        stmtMetaDelete = getStatementFromScript(SQL_DOC_META_DELETE);
-        stmtMetaSelect = getStatementFromScript(SQL_DOC_META_SELECT);
-        stmtMetaPoll = getStatementFromScript(SQL_DOC_META_POLL);
-        //Store
-        stmtDocInsert = getStatementFromScript(SQL_DOC_STORE_INSERT, Statement.RETURN_GENERATED_KEYS);
-        stmtDocSelect = getStatementFromScript(SQL_DOC_STORE_SELECT);
-        stmtDocPoll = getStatementFromScript(SQL_DOC_STORE_POLL);
-        stmtDocDelete = getStatementFromScript(SQL_DOC_STORE_DELETE);
-        stmtDocPurge = getStatementFromScript(SQL_DOC_STORE_PURGE);
-
-    }
-
-    @Override
-    public void generateBackup(File file) {
-        platform.getLogger().log(Level.INFO, "Creating backup of database at {0}", file.toString());
+    public boolean generateBackup(String file) {
+        platform.getLogger().log(Level.INFO, "Creating backup of database at {0}", file);
         try {
-            FileOutputStream fw = new FileOutputStream(file);
+            FileOutputStream fw = new FileOutputStream(new File(platform.getDataFolder(), file + ".sql.gz"));
             GZIPOutputStream gos = new GZIPOutputStream(fw) {
                 {
                     def.setLevel(Deflater.BEST_COMPRESSION);
                 }
             };
             dumpToBuffer(new BufferedWriter(new OutputStreamWriter(gos)));
+            return true;
         } catch (IOException ex) {
-            Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            platform.getLogger().log(Level.SEVERE, null, ex);
+            return false;
         }
-
 
     }
 
+    @Override
+    public boolean restoreBackup(String file) {
+        return false;//TODO - Implement
+//        try {
+//
+//            FileInputStream fr = new FileInputStream(new File(platform.getDataFolder(), file + ".sql.gz"));
+//            GZIPInputStream gis = new GZIPInputStream(fr);
+//            
+//            return true;
+//        } catch (IOException ex) {
+//            platform.getLogger().log(Level.SEVERE, null, ex);
+//            return false;
+//        }
+    }
+
     private ResultSet query(String sql) throws SQLException {
-        return conn.prepareStatement(sql).executeQuery();
+        return connection.prepareStatement(sql).executeQuery();
     }
 
     private void dumpToBuffer(BufferedWriter buff) {
@@ -120,14 +134,14 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
             ResultSet rs = query("SHOW FULL TABLES WHERE Table_type != 'VIEW'");
             while (rs.next()) {
                 String tbl = rs.getString(1);
-                if (!tbl.startsWith(tblPrefix)) {
+                if (!tbl.startsWith(getSQLTag("PREFIX"))) {
                     continue;
                 }
                 sb.append(version).append("\n");
                 sb.append("\n");
                 sb.append("-- ----------------------------\n")
-                .append("-- Table structure for `").append(tbl)
-                .append("`\n-- ----------------------------\n");
+                        .append("-- Table structure for `").append(tbl)
+                        .append("`\n-- ----------------------------\n");
                 sb.append("DROP TABLE IF EXISTS `").append(tbl).append("`;\n");
                 ResultSet rs2 = query("SHOW CREATE TABLE `" + tbl + "`");
                 rs2.next();
@@ -163,7 +177,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 }
             }
 
-
             buff.flush();
             buff.close();
         } catch (Exception e) {
@@ -176,7 +189,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         DocumentFile file = null;
 
         try {
-            boolean acStatus = conn.getAutoCommit();
+            boolean acStatus = connection.getAutoCommit();
             //Look for existing document
             ResultSet rs = getDocumentResultSet(entityId, domain, key);
 
@@ -198,7 +211,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                     Blob document = rs.getBlob("document");
                     JsonReader jsr = new JsonReader(new InputStreamReader(document.getBinaryStream()));
 
-
                     platform.getLogger().fine(new String(document.getBytes(1, (int) document.length())));
                     //Load the document
                     IStatDocument fromJson = DocumentRegistry.instance().fromJson(jsr, IStatDocument.class);
@@ -211,7 +223,7 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 platform.getLogger().fine("No document entry found.");
                 rs.close();
             }
-            conn.setAutoCommit(acStatus);
+            connection.setAutoCommit(acStatus);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -224,7 +236,6 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     @Override
     public DocumentFile pushDocument(int entityId, DocumentFile document) throws RevisionMismatchException, DocumentTooLargeException {
-
 
         DocumentFile returnDoc = null;
 
@@ -241,20 +252,17 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs.close();
 
                 IStatDocument doc = document.getDocument();
-                
+
                 boolean isNull = headRev == null && headRev == document.getRevision();
-                
+
                 if (!isNull && !headRev.equalsIgnoreCase(document.getRevision())) {
                     //TODO - Check this actually works.
                     DocumentFile dbDoc = pullDocument(entityId, document.getDomain(), document.getKey());
                     doc = doc.mergeDocument(dbDoc);
-
                 }
 
-
                 //2) Generate JSON
-
-                byte[] docData = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
+                byte[] docData = DocumentRegistry.instance().toJson(document.getDocument(), DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
 
                 if (docData.length > MAX_DOC_SIZE) {
                     throw new DocumentTooLargeException("Document exceeds max size.");//TODO - Change to a specific exception for this usecase
@@ -275,25 +283,24 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 //`documentId`, `revision`, `parentRev`, `added`, `document`
                 stmtDocInsert.setInt(1, docId);
                 stmtDocInsert.setString(2, newRevision);
-                stmtDocInsert.setString(3,isSingleton ? null : headRev);//Do not write out the parent revision
+                stmtDocInsert.setString(3, isSingleton ? null : headRev);//Do not write out the parent revision
                 Timestamp tStamp = new Timestamp(System.currentTimeMillis());
                 stmtDocInsert.setTimestamp(4, tStamp);
 
                 stmtDocInsert.setBlob(5, new ByteArrayInputStream(docData));
-
 
                 stmtDocInsert.executeUpdate();
                 rs = stmtDocInsert.getGeneratedKeys();
                 rs.next();
                 rs.close();
                 returnDoc = new DocumentFile(newRevision, headRev, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
-                if(isSingleton && document.getRevision() != null){
+                if (isSingleton && document.getRevision() != null) {
                     deleteDocumentRevision(entityId, document.getDomain(), document.getKey(), document.getRevision());
                 }
             } else {
                 rs.close();
 
-                byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(),DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
+                byte[] doc = DocumentRegistry.instance().toJson(document.getDocument(), DocumentRegistry.getSerializeAs(document.getDocument().getClass())).getBytes();
 
                 if (doc.length > MAX_DOC_SIZE) {
                     throw new RuntimeException("Document exceeds max size.");
@@ -327,11 +334,11 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
                 returnDoc = new DocumentFile(newRevision, null, document.getDomain(), document.getKey(), document.getDocument(), tStamp);
             }
-            conn.commit();
+            connection.commit();
         } catch (SQLException e) {
             try {
                 platform.mysqlError(e, "push doc");
-                conn.rollback();
+                connection.rollback();
             } catch (SQLException ex) {
                 Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -340,12 +347,12 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         } finally {
             try {
 
-                conn.setAutoCommit(true);
+                connection.setAutoCommit(true);
             } catch (SQLException ex) {
                 Logger.getLogger(MysqlStatDataProvider.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         returnDoc.setOwner(document.getOwner());
         return returnDoc;
     }
@@ -353,12 +360,12 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
     @Override
     public String[] getDocumentKeysInDomain(int entityId, String domain) {
         try {
-            stmtMetaPoll.setInt(1,entityId);
+            stmtMetaPoll.setInt(1, entityId);
             stmtMetaPoll.setInt(2, getDomain(domain, true).getDbId());
             ResultSet rs = stmtMetaPoll.executeQuery();
 
             List<String> keys = new ArrayList<String>();
-            while(rs.next()){
+            while (rs.next()) {
                 keys.add(rs.getString("key"));
             }
             rs.close();
@@ -384,11 +391,10 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 rs = stmtDocPoll.executeQuery();
                 DocumentHistory history = new DocumentHistory(domain, key, headRev);
 
-
-                while(rs.next()){
+                while (rs.next()) {
                     history.addEntry(
-                            rs.getString("revision"), 
-                            rs.getString("parentRev"), 
+                            rs.getString("revision"),
+                            rs.getString("parentRev"),
                             rs.getTimestamp("added"));
                 }
                 rs.close();
@@ -400,24 +406,22 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
         }
         return null;
 
-
     }
 
     @Override
     public void deleteDocumentRevision(int entityId, String domain, String key, String revision) {
-        if(revision == null){ throw new IllegalArgumentException("Cannot have null revision");}
-        try{
+        if (revision == null) {
+            throw new IllegalArgumentException("Cannot have null revision");
+        }
+        try {
             ResultSet rs = getDocumentResultSet(entityId, domain, key);
             int docId = -1;
             if (rs.next()) {
                 docId = getDocumentId(rs);
                 rs.close();
-            }
-            else
-            {
+            } else {
                 return;
             }
-
 
             //If the head rev is targeted, we want to set the head back to it's parent.
             DocumentHistory history = getDocumentHistory(entityId, domain, key);
@@ -430,34 +434,34 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
             //Update head revision to point to the parent of the revision we just deleted,
             //if that revision was the head one.
-            if(isHead){
-                stmtMetaUpdate.setString(1,newHeadRev);
-                stmtMetaUpdate.setInt(2,docId);
+            if (isHead) {
+                stmtMetaUpdate.setString(1, newHeadRev);
+                stmtMetaUpdate.setInt(2, docId);
                 stmtMetaUpdate.executeUpdate();
             }
 
-
             //If we have zero entries, delete the meta
-            if(getDocumentHistory(entityId, domain, key).getEntries().size() == 0){
+            if (getDocumentHistory(entityId, domain, key).getEntries().size() == 0) {
                 stmtMetaDelete.setInt(1, docId);
                 stmtMetaDelete.execute();
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             platform.mysqlError(e, "Delete document");
         }
     }
 
     /**
      * Get the ResultSet for document, or null on not found
+     *
      * @param entityId
      * @param domain
      * @param key
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
-    private ResultSet getDocumentResultSet(int entityId, String domain,String key) throws SQLException{
-        conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        conn.setAutoCommit(false);
+    private ResultSet getDocumentResultSet(int entityId, String domain, String key) throws SQLException {
+        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        connection.setAutoCommit(false);
         int domainId = getDomain(domain, true).getDbId();//Get domain int it
         stmtMetaSelect.setInt(1, entityId);
         stmtMetaSelect.setInt(2, domainId);
@@ -467,16 +471,17 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
 
     }
 
-    private String getCurrentRev(ResultSet rs) throws SQLException{
+    private String getCurrentRev(ResultSet rs) throws SQLException {
         return rs.getString("curRevision");
     }
-    private int getDocumentId(ResultSet rs) throws SQLException{
+
+    private int getDocumentId(ResultSet rs) throws SQLException {
         return rs.getInt("documentId");
     }
 
     @Override
     public void deleteDocument(int entityId, String domain, String key) {
-        try{
+        try {
             ResultSet rs = getDocumentResultSet(entityId, domain, key);
 
             if (rs.next()) {
@@ -486,12 +491,12 @@ public class MysqlStatDataProvider extends JDBCStatDataProvider {
                 stmtDocPurge.setInt(1, docId);
                 stmtDocPurge.execute();
                 //If we have zero entries, delete the meta
-                if(getDocumentHistory(entityId, domain, key).getEntries().size() == 0){
+                if (getDocumentHistory(entityId, domain, key).getEntries().size() == 0) {
                     stmtMetaDelete.setInt(1, docId);
                     stmtMetaDelete.execute();
                 }
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             platform.mysqlError(e, "deleteDocument");
         }
     }

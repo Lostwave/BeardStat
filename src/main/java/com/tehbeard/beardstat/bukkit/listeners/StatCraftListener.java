@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.listeners;
+package com.tehbeard.beardstat.bukkit.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -8,14 +8,14 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.utils.StatUtils;
+import com.tehbeard.beardstat.bukkit.utils.StatUtils;
 
 public class StatCraftListener extends StatListener {
 
-    public StatCraftListener(EntityStatManager playerStatManager, BeardStat plugin) {
+    public StatCraftListener(EntityStatManager playerStatManager, BukkitPlugin plugin) {
         super( playerStatManager, plugin);
     }
 

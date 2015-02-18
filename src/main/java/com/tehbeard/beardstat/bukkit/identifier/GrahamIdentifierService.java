@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.dataproviders.identifier;
+package com.tehbeard.beardstat.bukkit.identifier;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

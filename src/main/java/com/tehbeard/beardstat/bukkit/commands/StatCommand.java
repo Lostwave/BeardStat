@@ -1,4 +1,4 @@
-package com.tehbeard.beardstat.commands;
+package com.tehbeard.beardstat.bukkit.commands;
 
 import java.util.Stack;
 import java.util.regex.PatternSyntaxException;
@@ -10,15 +10,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.tehbeard.beardstat.BeardStat;
-import com.tehbeard.beardstat.BeardStat.Refs;
+import com.tehbeard.beardstat.bukkit.BukkitPlugin;
+import com.tehbeard.beardstat.Refs;
 import com.tehbeard.beardstat.BeardStatRuntimeException;
 import com.tehbeard.beardstat.containers.EntityStatBlob;
 import com.tehbeard.beardstat.containers.IStat;
 import com.tehbeard.beardstat.containers.StatVector;
 import com.tehbeard.beardstat.manager.EntityStatManager;
-import com.tehbeard.beardstat.utils.LanguagePack;
-import com.tehbeard.utils.commands.ArgumentPack;
+import com.tehbeard.beardstat.LanguagePack;
 
 /**
  * Show stats for a player,
@@ -28,7 +27,7 @@ import com.tehbeard.utils.commands.ArgumentPack;
  */
 public class StatCommand extends BeardStatCommand {
 
-    public StatCommand(EntityStatManager playerStatManager, BeardStat plugin) {
+    public StatCommand(EntityStatManager playerStatManager, BukkitPlugin plugin) {
         super(playerStatManager, plugin);
     }
 
@@ -46,6 +45,8 @@ public class StatCommand extends BeardStatCommand {
             if ((player == null) && (sender instanceof Player)) {
                 player = ((Player) sender);
             }
+            
+            EntityStatBlob blob = this.playerStatManager.getPlayer(null, player.getUniqueId(), false);
 
             // not a player and no player picked? or -h flag? show the help message.
             if ((player == null) || arguments.getFlag("h")) {
@@ -57,6 +58,7 @@ public class StatCommand extends BeardStatCommand {
                 sender.sendMessage("Interactive mode has been removed at this time.");
                 return true;
             }
+            
 
             if (arguments.getOption("s") != null) {
 
@@ -70,7 +72,7 @@ public class StatCommand extends BeardStatCommand {
                 String world = !stat.isEmpty() ? stat.pop() : ".*";
                 String domain = !stat.isEmpty() ? stat.pop() : ".*";
 
-                EntityStatBlob blob = this.playerStatManager.getPlayer(player, false);
+                
                 sender.sendMessage(ChatColor.YELLOW + "=========");
                 if (blob == null) {
                     sender.sendMessage(LanguagePack.getMsg("command.error.noplayer", player));
@@ -116,7 +118,8 @@ public class StatCommand extends BeardStatCommand {
             } else {
                 //TODO - Swap to API call instead?
                 sender.sendMessage(ChatColor.YELLOW + "=========");
-                Bukkit.dispatchCommand(sender, "statpage " + player + " default");
+                StatPageCommand.sendPages("default",sender,blob);
+
             }
 
         } catch (Exception e) {
