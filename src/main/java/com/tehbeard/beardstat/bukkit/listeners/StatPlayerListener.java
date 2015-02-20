@@ -84,6 +84,7 @@ public class StatPlayerListener extends StatListener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "login",1);
+        StatUtils.instance.set(event.getPlayer(), Refs.GLOBAL_WORLD, "stats", "lastlogin", (int) (System.currentTimeMillis() / 1000L));
         StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "lastlogin",
                 (int) (System.currentTimeMillis() / 1000L));
 
@@ -166,7 +167,8 @@ public class StatPlayerListener extends StatListener {
     public void onPlayerKick(PlayerKickEvent event) {
         if (event.isCancelled() == false) {
             StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "kicks", 1);
-            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout", (int) ((new Date()).getTime() / 1000L));
+            StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout", (int) (System.currentTimeMillis() / 1000L));
+            StatUtils.instance.set(event.getPlayer(), Refs.GLOBAL_WORLD, "stats", "lastlogout", (int) (System.currentTimeMillis() / 1000L));
             addTimeOnlineAndWipe(event.getPlayer());
         }
 
@@ -174,6 +176,7 @@ public class StatPlayerListener extends StatListener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        StatUtils.instance.set(event.getPlayer(), Refs.GLOBAL_WORLD, "stats", "lastlogout", (int) (System.currentTimeMillis() / 1000L));
         StatUtils.instance.modifyStatPlayer(event.getPlayer(), "stats", "lastlogout",
                 (int) ((new Date()).getTime() / 1000L));
         addTimeOnlineAndWipe(event.getPlayer());
