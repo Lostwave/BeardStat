@@ -29,7 +29,7 @@ public class StatisticMeta {
 
             @Override
             public String format(int value) {
-                return (new Date(value)).toString();
+                return (new Date((long)value * 1000)).toString();
             }
 
         });

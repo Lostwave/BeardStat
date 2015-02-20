@@ -1,6 +1,8 @@
 package com.tehbeard.beardstat.manager;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -88,7 +90,11 @@ public class EntityStatManager {
     }
 
     public void saveCache() {
-        for( Promise<EntityStatBlob> blobP : uuidCache.values()){
+        //for( Promise<EntityStatBlob> blobP : uuidCache.values()){
+
+        Iterator<Promise<EntityStatBlob>> vals = uuidCache.values().iterator();
+        while(vals.hasNext()){
+            Promise<EntityStatBlob> blobP = vals.next();
             if(blobP.isResolved()){
                 EntityStatBlob blob = blobP.getValue();
                 if (blob.getType().equals(IStatDataProvider.PLAYER_TYPE)) {
@@ -105,7 +111,7 @@ public class EntityStatManager {
                         OnlineTimeManager.setRecord(entityName, platform.getWorldForPlayer(entityName));
                     } else {
                         OnlineTimeManager.wipeRecord(entityName);
-                        uuidCache.remove(blob.getUUID());
+                        vals.remove();
                     }
                 }
                 backendDatabase.pushEntityBlob(blob);
