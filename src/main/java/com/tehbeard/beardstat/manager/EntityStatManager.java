@@ -57,11 +57,12 @@ public class EntityStatManager {
         return get(new ProviderQuery(name, player, create));
     }
     
+    @Deprecated
     public EntityStatBlob getPlayer(String name, UUID player, boolean create){
         try{
         return getPlayerAsync(name, player, create).getValue();
         }catch(Exception e){
-            platform.handleError(new BeardStatRuntimeException("An error occured loading a stat blob for " + player.toString(), e, true));
+            //platform.handleError(new BeardStatRuntimeException("An error occured loading a stat blob for " + player.toString(), e, true));
             return null;
         }
     }
