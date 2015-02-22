@@ -22,4 +22,4 @@ interactive.findplayer = Enter a player to lookup
 interactive.select.category = Select a category to view
 interactive.select.stat = Select a statistic to view 
 #Formatter output
-format.time = [F] %s [D]wks[F] %s [D]days[F] %s [D]hours[F] %s [D]mins[F]
+format.time = [F] %s [D]days[F] %s [D]hours[F] %s [D]mins[F]

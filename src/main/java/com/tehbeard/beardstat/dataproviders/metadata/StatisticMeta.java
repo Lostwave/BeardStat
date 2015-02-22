@@ -17,12 +17,11 @@ public class StatisticMeta {
             @Override
             public String format(int value) {
                 long seconds = value;
-                int weeks = (int) seconds / 604800;
-                int days = (int) Math.ceil((seconds - (604800 * weeks)) / 86400);
-                int hours = (int) Math.ceil((seconds - ((86400 * days) + (604800 * weeks))) / 3600);
-                int minutes = (int) Math.ceil((seconds - ((604800 * weeks) + (86400 * days) + (3600 * hours))) / 60);
+                int days = (int) Math.ceil(seconds / 86400);
+                int hours = (int) Math.ceil((seconds - (86400 * days)) / 3600);
+                int minutes = (int) Math.ceil((seconds - ((86400 * days) + (3600 * hours))) / 60);
 
-                return LanguagePack.getMsg("format.time", weeks, days, hours, minutes);
+                return LanguagePack.getMsg("format.time", days, hours, minutes);
             }
         });
         formatters.put(Formatting.timestamp, new StatFormatter() {
